@@ -3,7 +3,8 @@ require File.dirname(__FILE__) + '/spec_helper'
 describe Merb::Upload::Uploader do
   
   before do
-    @uploader = Merb::Upload::Uploader.new('something')
+    @uploader_class = Class.new(Merb::Upload::Uploader)
+    @uploader = @uploader_class.new('something')
   end
   
   after do
@@ -61,6 +62,49 @@ describe Merb::Upload::Uploader do
     it "should set the path to the tmp dir" do
       @uploader.retrieve_from_cache!
       @uploader.file.path.should == public_path('uploads/tmp/something')
+    end
+  end
+  
+  describe '#store!' do
+    before do
+      @storage = mock('storage')
+      @uploader.stub!(:storage).and_return(@storage)
+      @storage.stub!(:store!).and_return(:monkey)
+      @file = File.open(file_path('test.jpg'))
+    end
+    
+    it "should, if a file is given as argument, cache that file" do
+      @uploader.should_receive(:cache!).with(@file)
+      @uploader.store!(@file)
+    end
+    
+    it "should use a previously cached file if no argument is given" do
+      @uploader.should_not_receive(:cache!)
+      @uploader.store!
+    end
+    
+    it "should instruct the storage engine to store the file" do
+      @uploader.cache!(@file)
+      @storage.should_receive(:store!).with(@uploader.file).and_return(:monkey)
+      @uploader.store!
+    end
+
+    it "should cache the result given by the storage engine" do
+      @uploader.store!(@file)
+      @uploader.file.should == :monkey
+    end
+  end
+  
+  describe '#retrieve_from_store!' do
+    before do
+      @storage = mock('storage')
+      @uploader.stub!(:storage).and_return(@storage)
+    end
+    
+    it "should instruct the storage engine to retrieve the file and store the result" do
+      @storage.should_receive(:retrieve!).and_return(:monkey)
+      @uploader.retrieve_from_store!
+      @uploader.file.should == :monkey
     end
   end
   

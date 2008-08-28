@@ -69,7 +69,7 @@ module Merb
       
       def store!(new_file=nil)
         cache!(new_file) if new_file
-        storage.upload!(@file)
+        @file = storage.store!(@file)
       end
       
       def retrieve_from_store!

@@ -8,7 +8,7 @@ module Merb
           @uploader = uploader
         end
         
-        def upload!(file)
+        def store!(file)
           destination = File.join(@uploader.store_dir, @uploader.filename)
           file.move_to(destination)
         end
