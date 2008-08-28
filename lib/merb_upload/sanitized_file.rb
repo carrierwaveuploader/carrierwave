@@ -12,10 +12,10 @@ module Merb
     
       # Returns the filename before sanitation took place
       def original_filename
-        @original_filename ||= if @file and @file.respond_to?(:original_filename)
+        if @file and @file.respond_to?(:original_filename)
           @file.original_filename
-        elsif self.path
-          File.basename(self.path)
+        elsif path
+          File.basename(path)
         end
       end
     
@@ -35,20 +35,22 @@ module Merb
       # Returns the file's size
       def size
         return @file.size if @file.respond_to?(:size)
-        File.size(self.path) rescue nil
+        File.size(path) if path
       end
     
       # Returns the full path to the file
       def path
-        if string?
-          File.expand_path(@file)
-        else
-          File.expand_path(@file.path) rescue nil
+        unless @file.blank?
+          if string?
+            File.expand_path(@file)
+          elsif @file.respond_to?(:path) and not @file.path.blank?
+            File.expand_path(@file.path)
+          end
         end
       end
       
       def string?
-        !!(@file && @file.instance_of?(String) && !@file.empty?)
+        !!((@file.is_a?(String) || @file.is_a?(Pathname)) && !@file.blank?)
       end
     
       # Checks if the file is empty.

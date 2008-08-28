@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
-describe Merb::Uploader::SanitizedFile do
+describe Merb::Upload::SanitizedFile do
   
   include SanitizedFileSpecHelper
   
@@ -19,7 +19,7 @@ describe Merb::Uploader::SanitizedFile do
   describe '#empty?' do
     
     before do
-      @sanitized_file = Merb::Uploader::SanitizedFile.new(nil)
+      @sanitized_file = Merb::Upload::SanitizedFile.new(nil)
     end
     
     it "should be empty for nil" do
@@ -48,19 +48,19 @@ describe Merb::Uploader::SanitizedFile do
   describe '#original_filename' do
     it "should default to the original_filename" do
       file = mock('file', :original_filename => 'llama.jpg')
-      sanitized_file = Merb::Uploader::SanitizedFile.new(file)
+      sanitized_file = Merb::Upload::SanitizedFile.new(file)
       sanitized_file.original_filename.should == "llama.jpg"
     end
     
     it "should defer to the base name of the path if original_filename is unavailable" do
       file = mock('file', :path => '/path/to/test.jpg')
-      sanitized_file = Merb::Uploader::SanitizedFile.new(file)
+      sanitized_file = Merb::Upload::SanitizedFile.new(file)
       sanitized_file.original_filename.should == "test.jpg"
     end
     
     it "should be nil otherwise" do
       file = mock('file')
-      sanitized_file = Merb::Uploader::SanitizedFile.new(file)
+      sanitized_file = Merb::Upload::SanitizedFile.new(file)
       sanitized_file.original_filename.should be_nil
     end
   end
@@ -68,7 +68,7 @@ describe Merb::Uploader::SanitizedFile do
   describe '#filename' do
     
     before do
-      @sanitized_file = Merb::Uploader::SanitizedFile.new(nil)
+      @sanitized_file = Merb::Upload::SanitizedFile.new(nil)
       @sanitized_file.stub!(:original_filename).and_return('llama.jpg')
     end
   
@@ -272,7 +272,7 @@ describe Merb::Uploader::SanitizedFile do
   describe "with a valid Tempfile" do
     before do
       @tempfile = stub_tempfile('llama.jpg', 'image/jpeg')
-      @sanitized_file = Merb::Uploader::SanitizedFile.new(@tempfile)
+      @sanitized_file = Merb::Upload::SanitizedFile.new(@tempfile)
     end
 
     it_should_behave_like "all valid sanitized files"
@@ -320,7 +320,7 @@ describe Merb::Uploader::SanitizedFile do
 
   describe "with a valid StringIO" do
     before do
-      @sanitized_file = Merb::Uploader::SanitizedFile.new(stub_stringio('llama.jpg', 'image/jpeg'))
+      @sanitized_file = Merb::Upload::SanitizedFile.new(stub_stringio('llama.jpg', 'image/jpeg'))
     end
   
     it_should_behave_like "all valid sanitized files"
@@ -353,7 +353,7 @@ describe Merb::Uploader::SanitizedFile do
 
   describe "with a valid File object" do
     before do
-      @sanitized_file = Merb::Uploader::SanitizedFile.new(stub_file('llama.jpg', 'image/jpeg'))
+      @sanitized_file = Merb::Upload::SanitizedFile.new(stub_file('llama.jpg', 'image/jpeg'))
       @sanitized_file.should_not be_empty
     end
   
@@ -402,7 +402,48 @@ describe Merb::Uploader::SanitizedFile do
 
   describe "with a valid path" do
     before do
-      @sanitized_file = Merb::Uploader::SanitizedFile.new(file_path('llama.jpg'))
+      @sanitized_file = Merb::Upload::SanitizedFile.new(file_path('llama.jpg'))
+      @sanitized_file.should_not be_empty
+    end
+  
+    it_should_behave_like "all valid sanitized files"
+  
+    describe '#copy_to' do
+      it "should not raise an error when moved to its own location" do
+        running { @sanitized_file.move_to(@sanitized_file.path) }.should_not raise_error
+      end
+  
+      it "should return a new instance when copied to its own location" do
+        running {
+          new_file = @sanitized_file.copy_to(@sanitized_file.path)
+          new_file.should be_an_instance_of(@sanitized_file.class)
+        }.should_not raise_error
+      end
+    end
+    
+    describe '#exists?' do
+      it "should be true" do
+        @sanitized_file.exists?.should be_true
+      end
+    end
+
+    describe '#string?' do
+      it "should be true" do
+        @sanitized_file.string?.should be_true
+      end
+    end
+
+    describe '#path' do
+      it "should return the path of the tempfile" do
+        @sanitized_file.path.should_not be_nil
+        @sanitized_file.path.should == file_path('llama.jpg')
+      end
+    end
+  end
+  
+  describe "with a valid Pathname" do
+    before do
+      @sanitized_file = Merb::Upload::SanitizedFile.new(Pathname.new(file_path('llama.jpg')))
       @sanitized_file.should_not be_empty
     end
   
@@ -443,7 +484,7 @@ describe Merb::Uploader::SanitizedFile do
 
   describe "that is empty" do
     before do
-      @empty = Merb::Uploader::SanitizedFile.new(nil)
+      @empty = Merb::Upload::SanitizedFile.new(nil)
     end
 
     describe '#empty?' do
