@@ -1,5 +1,5 @@
 module Merb
-  module Uploader
+  module Upload
 
     class SanitizedFile
     

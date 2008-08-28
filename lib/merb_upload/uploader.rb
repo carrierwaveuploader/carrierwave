@@ -1,20 +1,41 @@
 module Merb
-  module Uploader
+  module Upload
     
-    def self.included(base)
-      super
-      base.extend ClassMethods
-    end
+    class Uploader
     
-    
-    module ClassMethods
+      class << self
       
-      def upload!(identifier, file)
-        self.new(identifier).upload(file)
+        def upload!(identifier, file)
+          self.new(identifier).upload(file)
+        end
+      
+        def retrieve!(identifier)
+          self.new(identifier)
+        end
+      
+        def storage(storage = nil)
+          @storage = storage if storage
+          return @storage
+        end
+      
       end
-      
-      def retrieve!(identifier)
-        self.new(identifier)
+    
+      attr_accessor :identifier
+    
+      def initialize(identifier)
+        @identifier = identifier
+      end
+    
+      def filename
+        identifier
+      end
+    
+      def store_dir
+        Merb::Plugins.config[:merb_upload][:store_dir]
+      end
+    
+      def tmp_dir
+        Merb::Plugins.config[:merb_upload][:tmp_dir]
       end
       
     end
