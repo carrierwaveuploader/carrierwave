@@ -3,6 +3,14 @@ if defined?(Merb::Plugins)
 
   require 'fileutils'
 
+  module Merb
+    module Upload
+      class UploadError < StandardError; end
+      class NoFileError < UploadError; end
+      class FormNotMultipart < UploadError; end
+    end
+  end
+
   # Merb gives you a Merb::Plugins.config hash...feel free to put your stuff in your piece of it
   Merb::Plugins.config[:merb_upload] ||= {}
   Merb::Plugins.config[:merb_upload][:storage] ||= :file

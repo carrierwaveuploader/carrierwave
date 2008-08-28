@@ -3,12 +3,29 @@ $:.push File.join(File.dirname(__FILE__), '..', 'lib')
 
 require 'rubygems'
 require 'merb-core'
-require 'merb_upload'
 require 'tempfile'
 require 'ruby-debug'
 require 'spec'
 
+Merb.root = File.dirname(__FILE__)
+
+require 'merb_upload'
+
 alias :running :lambda
+
+module UniversalSpecHelper
+  def file_path( *paths )
+    File.expand_path(File.join(File.dirname(__FILE__), 'fixtures', *paths))
+  end
+  
+  def public_path( *paths )
+    File.expand_path(File.join(File.dirname(__FILE__), 'public', *paths))
+  end
+end
+
+Spec::Runner.configure do |config|
+  config.include UniversalSpecHelper
+end
 
 module SanitizedFileSpecHelper
   def stub_tempfile(filename, mime_type=nil, fake_name=nil)
@@ -38,10 +55,6 @@ module SanitizedFileSpecHelper
   def stub_file(filename, mime_type=nil, fake_name=nil)
     f = File.open(file_path(filename))
     return f
-  end
-  
-  def file_path( *paths )
-    File.expand_path(File.join(File.dirname(__FILE__), 'fixtures', *paths))
   end
   
   class BeIdenticalTo
