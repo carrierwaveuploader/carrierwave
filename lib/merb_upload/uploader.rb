@@ -5,13 +5,37 @@ module Merb
     
       class << self
       
-        def store!(identifier, file)
-          self.new(identifier).store!(file)
+        def processors
+          @processors ||= []
+        end
+      
+        def process(*args)
+          args.each do |arg|
+            if arg.is_a?(Hash)
+              arg.each do |method, args|
+                processors.push([method, args])
+              end
+            else
+              processors.push([arg, []])
+            end
+          end
+        end
+      
+        def cache!(identifier, file)
+          uploader = self.new(identifier)
+          uploader.cache!(file)
+          uploader
         end
       
         def retrieve_from_cache!(identifier)
           uploader = self.new(identifier)
           uploader.retrieve_from_cache!
+          uploader
+        end
+
+        def store!(identifier, file)
+          uploader = self.new(identifier)
+          uploader.store!(file)
           uploader
         end
         
@@ -35,6 +59,12 @@ module Merb
       attr_accessor :identifier
       
       attr_reader :file
+      
+      def process!
+        self.class.processors.each do |method, args|
+          self.send(method, *args)
+        end
+      end
     
       def initialize(identifier)
         @identifier = identifier
@@ -65,6 +95,7 @@ module Merb
         raise Merb::Upload::FormNotMultipart, "check that your upload form is multipart encoded" if new_file.string?
         @file = new_file
         @file.move_to(tmp_path)
+        process!
       end
       
       def retrieve_from_cache!

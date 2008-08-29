@@ -11,6 +11,41 @@ describe Merb::Upload::Uploader do
     FileUtils.rm_rf(public_path)
   end
   
+  describe '.process' do
+    it "should add a single processor when a symbol is given" do
+      @uploader_class.process :sepiatone
+      @uploader.should_receive(:sepiatone)
+      @uploader.process!
+    end
+    
+    it "should add multiple processors when an array of symbols is given" do
+      @uploader_class.process :sepiatone, :desaturate, :invert
+      @uploader.should_receive(:sepiatone)
+      @uploader.should_receive(:desaturate)
+      @uploader.should_receive(:invert)
+      @uploader.process!
+    end
+    
+    it "should add a single processor with an argument when a hash is given" do
+      @uploader_class.process :format => 'png'
+      @uploader.should_receive(:format).with('png')
+      @uploader.process!
+    end
+
+    it "should add a single processor with several argument when a hash is given" do
+      @uploader_class.process :resize => [200, 300]
+      @uploader.should_receive(:resize).with(200, 300)
+      @uploader.process!
+    end
+    
+    it "should add multiple processors when an hash with multiple keys is given" do
+      @uploader_class.process :resize => [200, 300], :format => 'png'
+      @uploader.should_receive(:resize).with(200, 300)
+      @uploader.should_receive(:format).with('png')
+      @uploader.process!
+    end
+  end
+  
   describe ".storage" do
     it "should set the storage if an argument is given" do
       @uploader_class.storage "blah"
@@ -62,6 +97,11 @@ describe Merb::Upload::Uploader do
       @uploader.cache!(File.open(file_path('test.jpg')))
       @uploader.file.path.should == public_path('uploads/tmp/something')
       @uploader.file.exists?.should be_true
+    end
+    
+    it "should trigger a process!" do
+      @uploader.should_receive(:process!)
+      @uploader.cache!(File.open(file_path('test.jpg')))
     end
   end
   
