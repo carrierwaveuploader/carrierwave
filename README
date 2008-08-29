@@ -1,4 +1,32 @@
 merb_upload
 ===========
 
-A plugin for the Merb framework that provides ...
+This plugin for Merb provides a simple and extremely flexible way to upload files. Here's how:
+
+1 Add it as a dependency to your config/init.rb
+    
+    dependency 'merb_upload'
+
+2 Generate an uploader
+
+    merb-gen uploader avatar
+    
+  You'll have an uploader now in app/uploaders/avatar_uploader.rb.
+  
+3 Upload stuff
+
+    uploader = AvatarUploader.new('myfile.png')
+    
+    uploader.cache!( File.open('/path/to/my/file.rb') )
+    
+    uploader.store!
+    
+  or shorter:
+  
+    AvatarUploader.store!('myfile.png', '/path/to/my/file.rb')
+    
+  you can retrieve files by the identifier (the first argument)
+  
+    uploader = AvatarUploader.retrieve_from_store!
+    
+    
