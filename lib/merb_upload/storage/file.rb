@@ -9,12 +9,12 @@ module Merb
         end
         
         def store!(file)
-          destination = File.join(@uploader.store_dir, @uploader.filename)
-          file.move_to(destination)
+          file.move_to(@uploader.store_path)
+          file
         end
         
         def retrieve!(file)
-          source = File.join(@uploader.store_dir, @uploader.filename)
+          Merb::Upload::SanitizedFile.new(@uploader.store_path)
         end
         
       end

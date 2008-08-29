@@ -1,0 +1,23 @@
+class <%= class_name %>Uploader < Merb::Upload::Uploader
+  
+  # Choose what kind of storage to use for this uploader
+  storage :file
+  
+  # Process files as they are uploaded.
+  #     process :scale => [200, 300]
+  # 
+  #     def scale(width, height)
+  #       # do something
+  #     end 
+  
+  # Override the filename of the uploaded files
+  #     def filename
+  #       "something"
+  #     end
+  
+  # Override the directory where uploaded files will be stored
+  #     def store_dir
+  #       "something"
+  #     end
+  
+end

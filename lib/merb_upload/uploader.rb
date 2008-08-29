@@ -22,7 +22,11 @@ module Merb
         end
       
         def storage(storage = nil)
-          @storage = storage if storage
+          if storage.is_a?(Symbol)
+            @storage = Merb::Plugins.config[:merb_upload][:storage_engines][storage]
+          elsif storage
+            @storage = storage
+          end
           return @storage
         end
       

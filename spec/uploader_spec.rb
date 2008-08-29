@@ -10,6 +10,18 @@ describe Merb::Upload::Uploader do
   after do
     FileUtils.rm_rf(public_path)
   end
+  
+  describe ".storage" do
+    it "should set the storage if an argument is given" do
+      @uploader_class.storage "blah"
+      @uploader_class.storage.should == "blah"
+    end
+    
+    it "should set the storage from the configured shortcuts if a symbol is given" do
+      @uploader_class.storage :file
+      @uploader_class.storage.should == Merb::Upload::Storage::File
+    end
+  end
 
   describe '#identifier' do
     it "should be remembered" do

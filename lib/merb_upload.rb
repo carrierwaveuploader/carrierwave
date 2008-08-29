@@ -11,14 +11,23 @@ if defined?(Merb::Plugins)
     end
   end
 
-  # Merb gives you a Merb::Plugins.config hash...feel free to put your stuff in your piece of it
-  Merb::Plugins.config[:merb_upload] ||= {}
-  Merb::Plugins.config[:merb_upload][:storage] ||= :file
-  Merb::Plugins.config[:merb_upload][:store_dir] ||= Merb.root / 'public' / 'uploads'
-  Merb::Plugins.config[:merb_upload][:tmp_dir] ||= Merb.root / 'public' / 'uploads' / 'tmp'
-  
   dir = File.dirname(__FILE__) / 'merb_upload'
   require dir / 'sanitized_file'
   require dir / 'uploader'
+  require dir / 'storage' / 'file'
+  
+  # Merb gives you a Merb::Plugins.config hash...feel free to put your stuff in your piece of it
+  Merb::Plugins.config[:merb_upload] = {
+    :storage => :file,
+    :store_dir => Merb.root / 'public' / 'uploads',
+    :tmp_dir => Merb.root / 'public' / 'uploads' / 'tmp',
+    :storage_engines => {
+      :file => Merb::Upload::Storage::File
+    }
+  }
+  
+  Merb.push_path(:uploader, Merb.root / "app" / "uploaders", "**/*.rb")
+  
+  Merb.add_generators File.dirname(__FILE__) / 'generators' / 'uploader_generator'
 
 end

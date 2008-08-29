@@ -1,3 +1,5 @@
 doc
 .DS_Store
 spec/public
+pkg
+doc
