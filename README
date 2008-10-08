@@ -1,19 +1,35 @@
-merb_upload
-===========
+= merb_upload
 
-This plugin for Merb provides a simple and extremely flexible way to upload files. Here's how:
+This plugin for Merb provides a simple and extremely flexible way to upload files.
 
-1 Add it as a dependency to your config/init.rb
+=== Getting Started
+
+Add it as a dependency to your config/init.rb
     
     dependency 'merb_upload'
 
-2 Generate an uploader
+=== Simple Uploaders
+
+You can create your own uploaders for maximum flexibility. You can use them any way you like from your models or controllers. You're not constrained to uploading files submitted by the user. The aim of these uploaders is to give you the same flexibility you enjoy when you roll your own upload solution, while taking away all the fiddly stuff by using a sane set of conventions.
+
+First, Generate an uploader:
 
     merb-gen uploader avatar
     
-  You'll have an uploader now in app/uploaders/avatar_uploader.rb.
+You'll have an uploader now in app/uploaders/avatar_uploader.rb, it'll look something like this:
   
-3 Upload stuff
+    class AvatarUploader < Merb::Upload::Uploader
+
+      # Choose what kind of storage to use for this uploader
+      storage :file
+
+    end
+
+This is actually already pretty much useable. merb_uploads separates between the 'store' and the 'cache'. The store is for permanent storage, and the cache is a temporary place to put files to facilitate manipulation. By default, merb_upload will always use the cache, if you do not want/need it (for performance reasons) you can switch it off in your init.rb like this:
+
+    Merb::Plugins.config[:merb_upload][:use_cache] = false
+  
+Upload stuff
 
     uploader = AvatarUploader.new('myfile.png')
     
