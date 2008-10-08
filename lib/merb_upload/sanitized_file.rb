@@ -63,6 +63,10 @@ module Merb
         return File.exists?(self.path) if self.path
         return false
       end
+      
+      def read
+        string? ? File.read(@file) : @file.read
+      end
     
       # Moves the file to 'path'
       def move_to(new_path)

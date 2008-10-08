@@ -159,6 +159,12 @@ describe Merb::Upload::SanitizedFile do
         @sanitized_file.extension.should == ""
       end
     end
+    
+    describe "#read" do
+      it "should return the contents of the file" do
+        @sanitized_file.read.should == "this is stuff"
+      end
+    end
 
     describe '#move_to' do
     
