@@ -21,30 +21,6 @@ module Merb
           end
         end
       
-        def cache!(identifier, file)
-          uploader = self.new(identifier)
-          uploader.cache!(file)
-          uploader
-        end
-      
-        def retrieve_from_cache!(identifier)
-          uploader = self.new(identifier)
-          uploader.retrieve_from_cache!
-          uploader
-        end
-
-        def store!(identifier, file)
-          uploader = self.new(identifier)
-          uploader.store!(file)
-          uploader
-        end
-        
-        def retrieve_from_store!(identifier)
-          uploader = self.new(identifier)
-          uploader.retrieve_from_store!
-          uploader
-        end
-      
         def storage(storage = nil)
           if storage.is_a?(Symbol)
             @storage = Merb::Plugins.config[:merb_upload][:storage_engines][storage]
@@ -69,6 +45,10 @@ module Merb
       def initialize(identifier)
         @identifier = identifier
       end
+      
+      def current_path
+        file ? file.path : store_path
+      end
     
       def filename
         identifier
@@ -78,33 +58,53 @@ module Merb
         Merb::Plugins.config[:merb_upload][:store_dir]
       end
     
-      def tmp_dir
-        Merb::Plugins.config[:merb_upload][:tmp_dir]
+      def cache_dir
+        Merb::Plugins.config[:merb_upload][:cache_dir]
       end
       
       def store_path
         store_dir / filename
       end
       
-      def tmp_path
-        tmp_dir / filename
+      def cache_path
+        cache_dir / filename
+      end
+      
+      def cache(new_file)
+        cache!(new_file) unless file
       end
       
       def cache!(new_file)
         new_file = Merb::Upload::SanitizedFile.new(new_file)
         raise Merb::Upload::FormNotMultipart, "check that your upload form is multipart encoded" if new_file.string?
         @file = new_file
-        @file.move_to(tmp_path)
+        @file.move_to(cache_path)
         process!
       end
       
+      def retrieve_from_cache
+        retrieve_from_cache! unless file
+      end
+      
       def retrieve_from_cache!
-        @file = Merb::Upload::SanitizedFile.new(tmp_path)
+        @file = Merb::Upload::SanitizedFile.new(cache_path)
+      end
+      
+      def store(new_file=nil)
+        store!(new_file) unless file
       end
       
       def store!(new_file=nil)
-        cache!(new_file) if new_file
-        @file = storage.store!(@file)
+        if Merb::Plugins.config[:merb_upload][:use_cache]
+          cache!(new_file) if new_file
+          @file = storage.store!(@file)
+        else
+          @file = storage.store!(Merb::Upload::SanitizedFile.new(new_file))
+        end
+      end
+      
+      def retrieve_from_store
+        retrieve_from_store! unless file
       end
       
       def retrieve_from_store!

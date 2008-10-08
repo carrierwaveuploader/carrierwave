@@ -19,8 +19,9 @@ if defined?(Merb::Plugins)
   # Merb gives you a Merb::Plugins.config hash...feel free to put your stuff in your piece of it
   Merb::Plugins.config[:merb_upload] = {
     :storage => :file,
+    :use_cache => true,
     :store_dir => Merb.root / 'public' / 'uploads',
-    :tmp_dir => Merb.root / 'public' / 'uploads' / 'tmp',
+    :cache_dir => Merb.root / 'public' / 'uploads' / 'tmp',
     :storage_engines => {
       :file => Merb::Upload::Storage::File
     }

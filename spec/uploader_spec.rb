@@ -75,9 +75,9 @@ describe Merb::Upload::Uploader do
     end
   end
   
-  describe '#tmp_dir' do
+  describe '#cache_dir' do
     it "should default to the config option" do
-      @uploader.tmp_dir.should == Merb.root / 'public' / 'uploads' / 'tmp'
+      @uploader.cache_dir.should == Merb.root / 'public' / 'uploads' / 'tmp'
     end
   end
   
@@ -128,6 +128,13 @@ describe Merb::Upload::Uploader do
     it "should, if a file is given as argument, cache that file" do
       @uploader.should_receive(:cache!).with(@file)
       @uploader.store!(@file)
+    end
+    
+    it "should, if a files is given as an argument and use_cache is false, not cache that file" do
+      Merb::Plugins.config[:merb_upload][:use_cache] = false
+      @uploader.should_not_receive(:cache!)
+      @uploader.store!(@file)
+      Merb::Plugins.config[:merb_upload][:use_cache] = true
     end
     
     it "should use a previously cached file if no argument is given" do
