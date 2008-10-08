@@ -1,5 +1,7 @@
 = merb_upload
 
+NOTE: I am one of those very weird people who write the README first. This gives me a way to organize my toughts about how certain things will work. This plugin is a work in progress and this means that certain things in this README describe how things *will* work, not how they actually work right now.
+
 This plugin for Merb provides a simple and extremely flexible way to upload files.
 
 === Getting Started
@@ -28,21 +30,90 @@ You'll have an uploader now in app/uploaders/avatar_uploader.rb, it'll look some
 This is actually already pretty much useable. merb_uploads separates between the 'store' and the 'cache'. The store is for permanent storage, and the cache is a temporary place to put files to facilitate manipulation. By default, merb_upload will always use the cache, if you do not want/need it (for performance reasons) you can switch it off in your init.rb like this:
 
     Merb::Plugins.config[:merb_upload][:use_cache] = false
-  
-Upload stuff
+    
+==== Storing things in the cache
+
+By default the cache directory is ./public/upload/tmp. You might want to change this if you do not want temporary uploads to be publicly accessible.
+
+Every file stored in the cache has a cache_id, the cache_id is of the format YYYY-MM-DD-HH-MM-PID-RND. By default, cached files will be in a subdirectory with that name. This should ensure file descriptors do not run out, that there are no collisions between files and that it is relatively simple to parse out the date of their creation so they can easily be swept when no longer needed.
+
+Once you instantiate an uploader with an identifier, like this:
 
     uploader = AvatarUploader.new('myfile.png')
+
+You can store a file in the cache like this:
+
+    cache_id = uploader.cache!(File.open('path/to/file'))
+
+You only need the cache_id when the file should be retrieved much later (such as in a later request).
+
+    uploader.retrieve_from_cache!(cache_id)
+
+==== Storing things in the storage
+
+The storage is where files get stored on a permanent basis. It could be the local filesystem, or maybe something like Amazon S3. merb-upload is agnostic about what storage you would like to use.
+
+You can change the store via the 'storage' class method.
+
+Unlike in the cache, files are uniquely identified by their *identifier* in the store (there's no equivalent to cache_id).
+
+Files are stored like this:
+
+    uploader.store!(file)
     
-    uploader.cache!( File.open('/path/to/my/file.rb') )
+And retrieved like this:
     
-    uploader.store!
+    result = uploader.retrieve_from_store!(file)
+
+What +result+ is depends on the storage engine, however by convention, result should have a +url+ method, which points at the location of the file.
+
+ 
+=== Model Uploaders
+
+This kind of level of control is often unnecessary. More often than not, we simply want to attach a file to a model and be done with it. This is where model uploaders come in. Assuming the +users+ table has a column named +avatar+ we could do something like this:
+
+    # uploader:
+    class AvatarUploader < Merb::Upload::ModelUploader
+      # Choose what kind of storage to use for this uploader
+      storage :file
+    end
     
-  or shorter:
-  
-    AvatarUploader.store!('myfile.png', '/path/to/my/file.rb')
+    # model:
+    class User < ActiveRecord::Base
+      attach :avatar, AvatarUploader
+    end
     
-  you can retrieve files by the identifier (the first argument)
-  
-    uploader = AvatarUploader.retrieve_from_store!
+Now you can upload file like this:
+
+    # puts the file into the cache
+    @user = User.new :name => params[:name], :file => params[:file]
+    # puts the file into the store
+    @user.save!
     
-    
+It may be unneecessary or even undesirable to store the entire filename, instead it is often enough to store the extension, and have the file be uniquely identified by the ID of the model for example. To set this up, you can set the +:extension_only+ option to +attach+:
+
+    # uploader:
+    class AvatarUploader < Merb::Upload::ModelUploader
+      # Choose what kind of storage to use for this uploader
+      storage :file
+      
+      def filename
+        "#{model.id}.#{identifier}"
+      end
+    end
+
+    # model:
+    class User < ActiveRecord::Base
+      attach :avatar, AvatarUploader, :extension_only => true
+    end
+
+==== DataMapper
+      
+ModelUploaders are compatible with DataMapper's types, you can do this:
+
+    class User
+      include DataMapper::Resource
+      
+      property :avatar, AvatarUploader
+      
+    end
