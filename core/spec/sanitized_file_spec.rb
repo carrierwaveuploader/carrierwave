@@ -69,10 +69,10 @@ describe Merb::Upload::SanitizedFile do
     
     before do
       @sanitized_file = Merb::Upload::SanitizedFile.new(nil)
-      @sanitized_file.stub!(:original_filename).and_return('llama.jpg')
     end
   
-    it "should default to the original filename if it valid" do
+    it "should default to the original filename if it is valid" do
+      @sanitized_file.should_receive(:original_filename).at_least(:once).and_return("llama.jpg")
       @sanitized_file.filename.should == "llama.jpg"
     end
   
