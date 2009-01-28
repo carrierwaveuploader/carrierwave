@@ -63,7 +63,7 @@ module Merb
       end
       
       def store_path
-        store_dir / cache_id / filename
+        store_dir / filename
       end
       
       def cache_path
