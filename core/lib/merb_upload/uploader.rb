@@ -34,7 +34,7 @@ module Merb
     
       attr_accessor :identifier
       
-      attr_reader :file
+      attr_reader :file, :cache_id
       
       def process!
         self.class.processors.each do |method, args|
@@ -63,11 +63,11 @@ module Merb
       end
       
       def store_path
-        store_dir / filename
+        store_dir / cache_id / filename
       end
       
       def cache_path
-        cache_dir / filename
+        cache_dir / cache_id / filename
       end
       
       def cache(new_file)
@@ -75,18 +75,23 @@ module Merb
       end
       
       def cache!(new_file)
+        @cache_id = generate_cache_id
+        
         new_file = Merb::Upload::SanitizedFile.new(new_file)
         raise Merb::Upload::FormNotMultipart, "check that your upload form is multipart encoded" if new_file.string?
         @file = new_file
         @file.move_to(cache_path)
         process!
+        
+        return @cache_id
       end
       
-      def retrieve_from_cache
-        retrieve_from_cache! unless file
+      def retrieve_from_cache(cache_id)
+        retrieve_from_cache!(cache_id) unless file
       end
       
-      def retrieve_from_cache!
+      def retrieve_from_cache!(cache_id)
+        @cache_id = cache_id
         @file = Merb::Upload::SanitizedFile.new(cache_path)
       end
       
@@ -113,6 +118,12 @@ module Merb
       
       def storage
         @storage ||= self.class.storage.new(self)
+      end
+      
+    private
+      
+      def generate_cache_id
+        Time.now.strftime('%Y%m%d-%H%M') + '-' + Process.pid.to_s + '-' + ("%04d" % rand(9999))
       end
       
     end

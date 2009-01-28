@@ -88,14 +88,24 @@ describe Merb::Upload::Uploader do
   end
   
   describe '#cache!' do
+    
+    before do
+      @uploader.stub!(:generate_cache_id).and_return('12345')
+    end
+    
     it "should cache a file" do
       @uploader.cache!(File.open(file_path('test.jpg')))
       @uploader.file.should be_an_instance_of(Merb::Upload::SanitizedFile)
     end
     
+    it "should return a cache id" do
+      cache_id = @uploader.cache!(File.open(file_path('test.jpg')))
+      cache_id.should == '12345'
+    end
+    
     it "should move it to the tmp dir" do
       @uploader.cache!(File.open(file_path('test.jpg')))
-      @uploader.file.path.should == public_path('uploads/tmp/something')
+      @uploader.file.path.should == public_path('uploads/tmp/12345/something')
       @uploader.file.exists?.should be_true
     end
     
@@ -107,13 +117,13 @@ describe Merb::Upload::Uploader do
   
   describe '#retrieve_from_cache!' do
     it "should cache a file" do
-      @uploader.retrieve_from_cache!
+      @uploader.retrieve_from_cache!('12345')
       @uploader.file.should be_an_instance_of(Merb::Upload::SanitizedFile)
     end
     
     it "should set the path to the tmp dir" do
-      @uploader.retrieve_from_cache!
-      @uploader.file.path.should == public_path('uploads/tmp/something')
+      @uploader.retrieve_from_cache!('12345')
+      @uploader.file.path.should == public_path('uploads/tmp/12345/something')
     end
   end
   

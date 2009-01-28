@@ -35,7 +35,7 @@ This is actually already pretty much useable. merb_uploads separates between the
 
 By default the cache directory is ./public/upload/tmp. You might want to change this if you do not want temporary uploads to be publicly accessible.
 
-Every file stored in the cache has a cache_id, the cache_id is of the format YYYY-MM-DD-HH-MM-PID-RND. By default, cached files will be in a subdirectory with that name. This should ensure file descriptors do not run out, that there are no collisions between files and that it is relatively simple to parse out the date of their creation so they can easily be swept when no longer needed.
+Every file stored in the cache has a cache_id, the cache_id is of the format YYYYMMDD-HHMM-PID-RND. By default, cached files will be in a subdirectory with that name. This should ensure file descriptors do not run out, that there are no collisions between files and that it is relatively simple to parse out the date of their creation so they can easily be swept when no longer needed.
 
 Once you instantiate an uploader with an identifier, like this:
 
