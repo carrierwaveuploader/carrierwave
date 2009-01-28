@@ -103,6 +103,11 @@ describe Merb::Upload::Uploader do
       cache_id.should == '12345'
     end
     
+    it "should store the cache id" do
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      @uploader.cache_id.should == '12345'
+    end
+    
     it "should move it to the tmp dir" do
       @uploader.cache!(File.open(file_path('test.jpg')))
       @uploader.file.path.should == public_path('uploads/tmp/12345/something')
@@ -124,6 +129,11 @@ describe Merb::Upload::Uploader do
     it "should set the path to the tmp dir" do
       @uploader.retrieve_from_cache!('12345')
       @uploader.file.path.should == public_path('uploads/tmp/12345/something')
+    end
+    
+    it "should store the cache_id" do
+      @uploader.retrieve_from_cache!('12345')
+      @uploader.cache_id.should == '12345'
     end
   end
   
