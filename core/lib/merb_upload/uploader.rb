@@ -43,7 +43,7 @@ module Merb
       end
       
       def current_path
-        file.path if file
+        file.path if file.respond_to?(:path)
       end
     
       def filename
@@ -89,8 +89,8 @@ module Merb
         return @cache_id
       end
       
-      def retrieve_from_cache(cache_id)
-        retrieve_from_cache!(cache_id) unless file
+      def retrieve_from_cache(cache_name)
+        retrieve_from_cache!(cache_name) unless file
       rescue Merb::Upload::InvalidParameter
       end
       
@@ -115,11 +115,13 @@ module Merb
         
       end
       
-      def retrieve_from_store
-        retrieve_from_store! unless file
+      def retrieve_from_store(identifier)
+        retrieve_from_store!(identifier) unless file
+      rescue Merb::Upload::InvalidParameter
       end
       
-      def retrieve_from_store!
+      def retrieve_from_store!(identifier)
+        self.identifier = identifier
         @file = storage.retrieve!
       end
       

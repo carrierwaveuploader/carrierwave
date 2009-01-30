@@ -247,12 +247,60 @@ describe Merb::Upload::Uploader do
     before do
       @storage = mock('storage')
       @uploader.stub!(:storage).and_return(@storage)
+      @storage.stub!(:retrieve!).and_return(:monkey)
     end
     
     it "should instruct the storage engine to retrieve the file and store the result" do
       @storage.should_receive(:retrieve!).and_return(:monkey)
-      @uploader.retrieve_from_store!
+      @uploader.retrieve_from_store!('monkey.txt')
       @uploader.file.should == :monkey
+    end
+    
+    it "should overwrite a file that has already been cached" do
+      @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
+      @uploader.retrieve_from_store!('bork.txt')
+      @uploader.file.should == :monkey
+    end
+    
+    it "should set the identifier" do
+      @uploader.retrieve_from_store!('monkey.txt')
+      @uploader.identifier.should == 'monkey.txt'
+    end
+    
+    it "should raise an error if the identifier contains ivalid characters" do
+      running {
+        @uploader.retrieve_from_store!('mo%#nkey.txt')
+      }.should raise_error(Merb::Upload::InvalidParameter)
+    end
+  end
+  
+  describe '#retrieve_from_store' do
+    before do
+      @storage = mock('storage')
+      @uploader.stub!(:storage).and_return(@storage)
+      @storage.stub!(:retrieve!)
+    end
+    
+    it "should instruct the storage engine to retrieve the file and store the result" do
+      @storage.should_receive(:retrieve!).and_return(:monkey)
+      @uploader.retrieve_from_store('monkey.txt')
+      @uploader.file.should == :monkey
+    end
+    
+    it "should not overwrite a file that has already been cached" do
+      @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
+      @uploader.retrieve_from_store('bork.txt')
+      @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpeg')
+    end
+    
+    it "should set the identifier" do
+      @uploader.retrieve_from_store('monkey.txt')
+      @uploader.identifier.should == 'monkey.txt'
+    end
+    
+    it "should do nothing if the identifier contains ivalid characters" do
+      @storage.should_not_receive(:retrieve!)
+      @uploader.retrieve_from_store('mo%#nkey.txt')
     end
   end
   
