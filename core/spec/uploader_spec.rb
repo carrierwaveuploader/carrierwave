@@ -168,6 +168,13 @@ describe Merb::Upload::Uploader do
       @uploader.filename.should be_nil
       @uploader.identifier.should be_nil
     end
+    
+    it "should do nothing when the filename contains invalid characters" do
+      @uploader.retrieve_from_cache('20071201-1234-345-2255/te??%st.jpeg')
+      @uploader.file.should be_nil
+      @uploader.filename.should be_nil
+      @uploader.identifier.should be_nil
+    end
   end
   
   describe '#store!' do

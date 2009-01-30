@@ -91,12 +91,7 @@ module Merb
       end
       
       def retrieve_from_cache!(cache_name)
-        cache_id, identifier = cache_name.split('/', 2)
-        raise Merb::Upload::InvalidParameter, "invalid cache id" unless valid_cache_id?(cache_id)
-        raise Merb::Upload::InvalidParameter, "invalid identifier" unless identifier =~ /^[a-z0-9\.\-\+_]+$/i
-        
-        @identifier = identifier
-        @cache_id = cache_id
+        self.cache_id, self.identifier = cache_name.split('/', 2)
         @file = Merb::Upload::SanitizedFile.new(cache_path)
       end
       
@@ -129,6 +124,16 @@ module Merb
       end
       
     private
+    
+      def cache_id=(cache_id)
+        raise Merb::Upload::InvalidParameter, "invalid cache id" unless valid_cache_id?(cache_id)
+        @cache_id = cache_id
+      end
+      
+      def identifier=(identifier)
+        raise Merb::Upload::InvalidParameter, "invalid identifier" unless identifier =~ /^[a-z0-9\.\-\+_]+$/i
+        @identifier = identifier
+      end
       
       def generate_cache_id
         Time.now.strftime('%Y%m%d-%H%M') + '-' + Process.pid.to_s + '-' + ("%04d" % rand(9999))
