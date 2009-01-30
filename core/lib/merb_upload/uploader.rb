@@ -41,13 +41,9 @@ module Merb
           self.send(method, *args)
         end
       end
-    
-      def initialize(identifier)
-        @identifier = identifier
-      end
       
       def current_path
-        file ? file.path : store_path
+        file.path if file
       end
     
       def filename
@@ -79,6 +75,9 @@ module Merb
         
         new_file = Merb::Upload::SanitizedFile.new(new_file)
         raise Merb::Upload::FormNotMultipart, "check that your upload form is multipart encoded" if new_file.string?
+
+        @identifier = new_file.filename
+
         @file = new_file
         @file.move_to(cache_path)
         process!
@@ -90,9 +89,14 @@ module Merb
         retrieve_from_cache!(cache_id) unless file
       end
       
-      def retrieve_from_cache!(cache_id)
-        @cache_id = cache_id
-        @file = Merb::Upload::SanitizedFile.new(cache_path)
+      def retrieve_from_cache!(cache_name)
+        cache_id, identifier = cache_name.split('/')
+        
+        if valid_cache_id?(cache_id)
+          @identifier = identifier
+          @cache_id = cache_id
+          @file = Merb::Upload::SanitizedFile.new(cache_path)
+        end
       end
       
       def store(new_file=nil)
@@ -104,8 +108,11 @@ module Merb
           cache!(new_file) if new_file
           @file = storage.store!(@file)
         else
-          @file = storage.store!(Merb::Upload::SanitizedFile.new(new_file))
+          new_file = Merb::Upload::SanitizedFile.new(new_file)
+          @identifier = new_file.filename
+          @file = storage.store!(new_file)
         end
+        
       end
       
       def retrieve_from_store
@@ -124,6 +131,10 @@ module Merb
       
       def generate_cache_id
         Time.now.strftime('%Y%m%d-%H%M') + '-' + Process.pid.to_s + '-' + ("%04d" % rand(9999))
+      end
+      
+      def valid_cache_id?(cache_id)
+        /^[\d]{8}\-[\d]{4}\-[\d]+\-[\d]{4}$/ =~ cache_id
       end
       
     end

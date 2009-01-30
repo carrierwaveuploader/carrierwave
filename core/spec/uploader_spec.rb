@@ -4,7 +4,7 @@ describe Merb::Upload::Uploader do
   
   before do
     @uploader_class = Class.new(Merb::Upload::Uploader)
-    @uploader = @uploader_class.new('something')
+    @uploader = @uploader_class.new
   end
   
   after do
@@ -57,17 +57,6 @@ describe Merb::Upload::Uploader do
       @uploader_class.storage.should == Merb::Upload::Storage::File
     end
   end
-
-  describe '#identifier' do
-    it "should be remembered" do
-      @uploader.identifier.should == 'something'
-    end
-    
-    it "should be changeable" do
-      @uploader.identifier = 'anotherthing'
-      @uploader.identifier.should == 'anotherthing'
-    end
-  end
   
   describe '#store_dir' do
     it "should default to the config option" do
@@ -82,15 +71,15 @@ describe Merb::Upload::Uploader do
   end
   
   describe '#filename' do
-    it "should default to the identifier" do
-      @uploader.filename.should == 'something'
+    it "should default to nil" do
+      @uploader.filename.should be_nil
     end
   end
   
   describe '#cache!' do
     
     before do
-      @uploader.stub!(:generate_cache_id).and_return('12345')
+      @uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
     end
     
     it "should cache a file" do
@@ -100,17 +89,22 @@ describe Merb::Upload::Uploader do
     
     it "should return a cache id" do
       cache_id = @uploader.cache!(File.open(file_path('test.jpg')))
-      cache_id.should == '12345'
+      cache_id.should == '20071201-1234-345-2255'
     end
     
     it "should store the cache id" do
       @uploader.cache!(File.open(file_path('test.jpg')))
-      @uploader.cache_id.should == '12345'
+      @uploader.cache_id.should == '20071201-1234-345-2255'
+    end
+    
+    it "should set the filename to the file's sanitized filename" do
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      @uploader.filename.should == 'test.jpg'
     end
     
     it "should move it to the tmp dir" do
       @uploader.cache!(File.open(file_path('test.jpg')))
-      @uploader.file.path.should == public_path('uploads/tmp/12345/something')
+      @uploader.file.path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpg')
       @uploader.file.exists?.should be_true
     end
     
@@ -122,18 +116,35 @@ describe Merb::Upload::Uploader do
   
   describe '#retrieve_from_cache!' do
     it "should cache a file" do
-      @uploader.retrieve_from_cache!('12345')
+      @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
       @uploader.file.should be_an_instance_of(Merb::Upload::SanitizedFile)
     end
     
     it "should set the path to the tmp dir" do
-      @uploader.retrieve_from_cache!('12345')
-      @uploader.file.path.should == public_path('uploads/tmp/12345/something')
+      @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
+      @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpeg')
     end
     
     it "should store the cache_id" do
-      @uploader.retrieve_from_cache!('12345')
-      @uploader.cache_id.should == '12345'
+      @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
+      @uploader.cache_id.should == '20071201-1234-345-2255'
+    end
+    
+    it "should store the identifier" do
+      @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
+      @uploader.identifier.should == 'test.jpeg'
+    end
+    
+    it "should store the filename" do
+      @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
+      @uploader.filename.should == 'test.jpeg'
+    end
+    
+    it "should do nothing when the cache_id has an invalid format" do
+      @uploader.retrieve_from_cache!('12345/test.jpeg')
+      @uploader.file.should be_nil
+      @uploader.filename.should be_nil
+      @uploader.identifier.should be_nil
     end
   end
   
