@@ -34,7 +34,12 @@ module Merb
     
       attr_accessor :identifier
       
-      attr_reader :file, :cache_id
+      attr_reader :file, :cache_id, :model, :mounted_as
+      
+      def initialize(model=nil, mounted_as=nil)
+        @model = model
+        @mounted_as = mounted_as
+      end
       
       def process!
         self.class.processors.each do |method, args|
