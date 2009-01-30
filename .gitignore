@@ -3,3 +3,4 @@ doc
 spec/public
 pkg
 doc
+more/activerecord/spec/db

@@ -1,18 +1,24 @@
-# make sure we're running inside Merb
-if defined?(Merb::Plugins)
-
-  # Merb gives you a Merb::Plugins.config hash...feel free to put your stuff in your piece of it
-  Merb::Plugins.config[:merb_upload_activerecord] = {
-    :chickens => false
-  }
+module Merb
   
-  Merb::BootLoader.before_app_loads do
-    # require code that must be loaded before the application
+  module Upload
+    
+    module ActiveRecord
+      
+      def attach_uploader(uploader)
+        class_eval do
+          def file
+            
+          end
+        end
+      end
+      
+      def mount_uploader(column, uploader)
+      end
+      
+    end
+    
   end
   
-  Merb::BootLoader.after_app_loads do
-    # code that can be required after the application loads
-  end
-  
-  Merb::Plugins.add_rakefiles "merb_upload_activerecord/merbtasks"
 end
+
+ActiveRecord::Base.send(:extend, Merb::Upload::ActiveRecord)
