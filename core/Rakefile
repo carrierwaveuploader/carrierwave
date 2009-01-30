@@ -1,9 +1,8 @@
 require 'rubygems'
 require 'rake/gempackagetask'
-require 'rubygems/specification'
-require 'date'
-require 'merb-core/version'
-require 'merb-core/tasks/merb_rake_helper'
+
+require 'merb-core'
+require 'merb-core/tasks/merb'
 require 'spec/rake/spectask'
 
 NAME = "merb_upload"
@@ -25,7 +24,6 @@ spec = Gem::Specification.new do |s|
   s.author = AUTHOR
   s.email = EMAIL
   s.homepage = HOMEPAGE
-  s.add_dependency('merb', '>= 0.9.5')
   s.require_path = 'lib'
   s.files = %w(LICENSE README Rakefile TODO) + Dir.glob("{lib,spec}/**/*")
   
