@@ -8,6 +8,7 @@ if defined?(Merb::Plugins)
       class UploadError < StandardError; end
       class NoFileError < UploadError; end
       class FormNotMultipart < UploadError; end
+      class InvalidParameter < UploadError; end
     end
   end
 

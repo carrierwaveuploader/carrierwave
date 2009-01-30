@@ -140,8 +140,30 @@ describe Merb::Upload::Uploader do
       @uploader.filename.should == 'test.jpeg'
     end
     
+    it "should raise an error when the cache_id has an invalid format" do
+      running {
+        @uploader.retrieve_from_cache!('12345/test.jpeg')
+      }.should raise_error(Merb::Upload::InvalidParameter)
+    end
+    
+    it "should raise an error when the identifier contains invalid characters" do
+      running {
+        @uploader.retrieve_from_cache!('20071201-1234-345-2255/te/st.jpeg')
+      }.should raise_error(Merb::Upload::InvalidParameter)
+      running {
+        @uploader.retrieve_from_cache!('20071201-1234-345-2255/te??%st.jpeg')
+      }.should raise_error(Merb::Upload::InvalidParameter)
+    end
+  end
+  
+  describe '#retrieve_from_cache' do
+    it "should cache a file" do
+      @uploader.retrieve_from_cache('20071201-1234-345-2255/test.jpeg')
+      @uploader.file.should be_an_instance_of(Merb::Upload::SanitizedFile)
+    end
+
     it "should do nothing when the cache_id has an invalid format" do
-      @uploader.retrieve_from_cache!('12345/test.jpeg')
+      @uploader.retrieve_from_cache('12345/test.jpeg')
       @uploader.file.should be_nil
       @uploader.filename.should be_nil
       @uploader.identifier.should be_nil

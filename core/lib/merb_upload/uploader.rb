@@ -87,16 +87,17 @@ module Merb
       
       def retrieve_from_cache(cache_id)
         retrieve_from_cache!(cache_id) unless file
+      rescue Merb::Upload::InvalidParameter
       end
       
       def retrieve_from_cache!(cache_name)
-        cache_id, identifier = cache_name.split('/')
+        cache_id, identifier = cache_name.split('/', 2)
+        raise Merb::Upload::InvalidParameter, "invalid cache id" unless valid_cache_id?(cache_id)
+        raise Merb::Upload::InvalidParameter, "invalid identifier" unless identifier =~ /^[a-z0-9\.\-\+_]+$/i
         
-        if valid_cache_id?(cache_id)
-          @identifier = identifier
-          @cache_id = cache_id
-          @file = Merb::Upload::SanitizedFile.new(cache_path)
-        end
+        @identifier = identifier
+        @cache_id = cache_id
+        @file = Merb::Upload::SanitizedFile.new(cache_path)
       end
       
       def store(new_file=nil)
