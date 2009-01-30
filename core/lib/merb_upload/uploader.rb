@@ -66,6 +66,10 @@ module Merb
         cache_dir / cache_id / filename
       end
       
+      def cache_name
+        cache_id / identifier if cache_id and identifier
+      end
+      
       def cache(new_file)
         cache!(new_file) unless file
       end

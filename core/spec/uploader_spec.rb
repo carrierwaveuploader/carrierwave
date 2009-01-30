@@ -125,9 +125,20 @@ describe Merb::Upload::Uploader do
       @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpeg')
     end
     
+    it "should overwrite a file that has already been cached" do
+      @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
+      @uploader.retrieve_from_cache!('20071201-1234-345-2255/bork.txt')
+      @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/bork.txt')
+    end
+
     it "should store the cache_id" do
       @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
       @uploader.cache_id.should == '20071201-1234-345-2255'
+    end
+    
+    it "should store the cache_name" do
+      @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
+      @uploader.cache_name.should == '20071201-1234-345-2255/test.jpeg'
     end
     
     it "should store the identifier" do
@@ -144,6 +155,11 @@ describe Merb::Upload::Uploader do
       running {
         @uploader.retrieve_from_cache!('12345/test.jpeg')
       }.should raise_error(Merb::Upload::InvalidParameter)
+      
+      @uploader.file.should be_nil
+      @uploader.filename.should be_nil
+      @uploader.identifier.should be_nil
+      @uploader.cache_name.should be_nil
     end
     
     it "should raise an error when the identifier contains invalid characters" do
@@ -153,6 +169,11 @@ describe Merb::Upload::Uploader do
       running {
         @uploader.retrieve_from_cache!('20071201-1234-345-2255/te??%st.jpeg')
       }.should raise_error(Merb::Upload::InvalidParameter)
+      
+      @uploader.file.should be_nil
+      @uploader.filename.should be_nil
+      @uploader.identifier.should be_nil
+      @uploader.cache_name.should be_nil
     end
   end
   
@@ -161,12 +182,19 @@ describe Merb::Upload::Uploader do
       @uploader.retrieve_from_cache('20071201-1234-345-2255/test.jpeg')
       @uploader.file.should be_an_instance_of(Merb::Upload::SanitizedFile)
     end
+    
+    it "should not overwrite a file that has already been cached" do
+      @uploader.retrieve_from_cache('20071201-1234-345-2255/test.jpeg')
+      @uploader.retrieve_from_cache('20071201-1234-345-2255/bork.txt')
+      @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpeg')
+    end
 
     it "should do nothing when the cache_id has an invalid format" do
       @uploader.retrieve_from_cache('12345/test.jpeg')
       @uploader.file.should be_nil
       @uploader.filename.should be_nil
       @uploader.identifier.should be_nil
+      @uploader.cache_name.should be_nil
     end
     
     it "should do nothing when the filename contains invalid characters" do
@@ -174,6 +202,7 @@ describe Merb::Upload::Uploader do
       @uploader.file.should be_nil
       @uploader.filename.should be_nil
       @uploader.identifier.should be_nil
+      @uploader.cache_name.should be_nil
     end
   end
   
