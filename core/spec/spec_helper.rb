@@ -33,10 +33,13 @@ module SanitizedFileSpecHelper
 
     t = Tempfile.new(filename)
     FileUtils.copy_file(file_path(filename), t.path)
-
-    t.stub!(:original_filename).and_return(fake_name || filename)
-    t.stub!(:content_type).and_return(mime_type)
-    t.stub!(:local_path).and_return(t.path)
+    
+    # This is stupid, but for some reason rspec won't play nice...
+    eval <<-EOF
+    def t.original_filename; '#{fake_name || filename}'; end
+    def t.content_type; '#{mime_type}'; end
+    def t.local_path; path; end
+    EOF
     return t
   end
 
