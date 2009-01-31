@@ -8,9 +8,9 @@ module Merb
       
       first_argument :name, :required => true, :desc => "The name of this uploader"
       
-      template :uploader do
-        source 'uploader.rbt'
-        destination "app/uploaders/#{file_name}_uploader.rb"
+      template :uploader do |t|
+        t.source = 'uploader.rbt'
+        t.destination = "app/uploaders/#{file_name}_uploader.rb"
       end
     end
     

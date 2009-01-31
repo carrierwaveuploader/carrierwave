@@ -28,6 +28,15 @@ Spec::Runner.configure do |config|
 end
 
 module SanitizedFileSpecHelper
+  def stub_merb_tempfile(filename)
+    raise "#{path} file does not exist" unless File.exist?(file_path(filename))
+
+    t = Tempfile.new(filename)
+    FileUtils.copy_file(file_path(filename), t.path)
+    
+    return t
+  end
+  
   def stub_tempfile(filename, mime_type=nil, fake_name=nil)
     raise "#{path} file does not exist" unless File.exist?(file_path(filename))
 
@@ -40,6 +49,7 @@ module SanitizedFileSpecHelper
     def t.content_type; '#{mime_type}'; end
     def t.local_path; path; end
     EOF
+
     return t
   end
 

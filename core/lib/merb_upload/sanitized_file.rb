@@ -6,12 +6,22 @@ module Merb
       attr_accessor :file, :options
     
       def initialize(file, options = {})
-        @file = file
+        if file.is_a?(Hash)
+          @file = file["tempfile"]
+          # Add the original filename into the metaclass of the file object.
+          # Yeah, this is evil. I know.
+          file_metaclass = class << @file; self end
+          file_metaclass.send(:define_method, :original_filename) { file["filename"] }
+          file_metaclass.send(:define_method, :content_type) { file["content_type"] }
+        else
+          @file = file
+        end
         @options = options
       end
     
       # Returns the filename before sanitation took place
       def original_filename
+        return @original_filename if @original_filename
         if @file and @file.respond_to?(:original_filename)
           @file.original_filename
         elsif path
@@ -34,8 +44,13 @@ module Merb
     
       # Returns the file's size
       def size
-        return @file.size if @file.respond_to?(:size)
-        File.size(path) if path
+        if @file.respond_to?(:size)
+          @file.size 
+        elsif path
+          File.size(path)
+        else 
+          0
+        end
       end
     
       # Returns the full path to the file

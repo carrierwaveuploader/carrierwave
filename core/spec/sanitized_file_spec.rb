@@ -275,6 +275,59 @@ describe Merb::Upload::SanitizedFile do
 
   end
 
+  describe "with a valid Hash" do
+    before do
+      @hash = {
+        "tempfile" => stub_merb_tempfile('llama.jpg'),
+        "filename" => "llama.jpg",
+        "content_type" => 'image/jpeg'
+      }
+      @sanitized_file = Merb::Upload::SanitizedFile.new(@hash)
+    end
+  
+    it_should_behave_like "all valid sanitized files"
+  
+    describe '#copy_to' do
+      it "should not raise an error when moved to its own location" do
+        running { @sanitized_file.move_to(@sanitized_file.path) }.should_not raise_error
+      end
+  
+      it "should return a new instance when copied to its own location" do
+        running {
+          new_file = @sanitized_file.copy_to(@sanitized_file.path)
+          new_file.should be_an_instance_of(@sanitized_file.class)
+        }.should_not raise_error
+      end
+    end
+    
+    describe '#exists?' do
+      it "should be true" do
+        @sanitized_file.exists?.should be_true
+      end
+    end
+    
+    describe '#string?' do
+      it "should be false" do
+        @sanitized_file.string?.should be_false
+      end
+    end
+  
+    describe '#path' do
+      it "should return the path of the tempfile" do
+        @sanitized_file.path.should_not be_nil
+        @sanitized_file.path.should == @hash["tempfile"].path
+      end
+    end
+    
+    describe '#delete' do
+      it "should remove it from the filesystem" do
+        File.exists?(@sanitized_file.path).should be_true
+        @sanitized_file.delete
+        File.exists?(@sanitized_file.path).should be_false
+      end
+    end
+  end
+
   describe "with a valid Tempfile" do
     before do
       @tempfile = stub_tempfile('llama.jpg', 'image/jpeg')
@@ -512,8 +565,8 @@ describe Merb::Upload::SanitizedFile do
     end
 
     describe '#size' do
-      it "should be nil" do
-        @empty.size.should be_nil
+      it "should be zero" do
+        @empty.size.should be_zero
       end
     end
 
@@ -547,6 +600,72 @@ describe Merb::Upload::SanitizedFile do
       end
     end
     
+    describe '#delete' do
+      it "should not raise an error" do
+        running { @empty.delete }.should_not raise_error
+      end
+    end
+  end
+  
+  describe "that is an empty string" do
+    before do
+      @empty = Merb::Upload::SanitizedFile.new("")
+    end
+
+    describe '#empty?' do
+      it "should be true" do
+        @empty.should be_empty
+      end
+    end
+
+    describe '#exists?' do
+      it "should be false" do
+        @empty.exists?.should be_false
+      end
+    end
+
+    describe '#string?' do
+      it "should be false" do
+        @empty.string?.should be_false
+      end
+    end
+
+    describe '#size' do
+      it "should be zero" do
+        @empty.size.should be_zero
+      end
+    end
+
+    describe '#path' do
+      it "should be nil" do
+        @empty.path.should be_nil
+      end
+    end
+
+    describe '#original_filename' do
+      it "should be nil" do
+        @empty.original_filename.should be_nil
+      end
+    end
+
+    describe '#filename' do      
+      it "should be nil" do
+        @empty.filename.should be_nil
+      end
+    end
+
+    describe '#basename' do
+      it "should be nil" do
+        @empty.basename.should be_nil
+      end
+    end
+
+    describe '#extension' do
+      it "should be nil" do
+        @empty.extension.should be_nil
+      end
+    end
+
     describe '#delete' do
       it "should not raise an error" do
         running { @empty.delete }.should_not raise_error
