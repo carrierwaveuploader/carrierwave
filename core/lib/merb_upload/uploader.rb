@@ -23,18 +23,18 @@ module Merb
       
         def storage(storage = nil)
           if storage.is_a?(Symbol)
-            @storage = get_storage_by_sumbol(storage)
+            @storage = get_storage_by_symbol(storage)
           elsif storage
             @storage = storage
           elsif @storage.nil?
-            @storage = get_storage_by_sumbol(Merb::Plugins.config[:merb_upload][:storage])
+            @storage = get_storage_by_symbol(Merb::Plugins.config[:merb_upload][:storage])
           end
           return @storage
         end
       
       private
       
-        def get_storage_by_sumbol(symbol)
+        def get_storage_by_symbol(symbol)
           Merb::Plugins.config[:merb_upload][:storage_engines][symbol]
         end
       
