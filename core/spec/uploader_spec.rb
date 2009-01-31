@@ -173,7 +173,7 @@ describe Merb::Upload::Uploader do
     
     it "should set the url" do
       @uploader.cache!(File.open(file_path('test.jpg')))
-      @uploader.url.should == 'uploads/tmp/20071201-1234-345-2255/test.jpg'
+      @uploader.url.should == '/uploads/tmp/20071201-1234-345-2255/test.jpg'
     end
     
     it "should trigger a process!" do
@@ -221,7 +221,7 @@ describe Merb::Upload::Uploader do
     
     it "should set the url" do
       @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
-      @uploader.url.should == 'uploads/tmp/20071201-1234-345-2255/test.jpeg'
+      @uploader.url.should == '/uploads/tmp/20071201-1234-345-2255/test.jpeg'
     end
     
     it "should raise an error when the cache_id has an invalid format" do
