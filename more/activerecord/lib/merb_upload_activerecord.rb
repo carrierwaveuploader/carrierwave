@@ -32,8 +32,11 @@ module Merb
           end                                                                                 # end
                                                                                               # 
           def #{column}=(new_file)                                                            # def image=(new_file)
-            @#{column}_uploader ||= self.class.uploaders[:#{column}].new(self, :#{column})    #   @image_uploader ||= self.class.uploaders[:image].new(self, :image)
-            @#{column}_uploader.cache!(new_file)                                              #   @image_uploader.cache!(new_file)
+            new_file = Merb::Upload::SanitizedFile.new(new_file)                              #   new_file = Merb::Upload::SanitizedFile.new(new_file)
+            unless new_file.empty?                                                            #   unless new_file.empty?
+              @#{column}_uploader ||= self.class.uploaders[:#{column}].new(self, :#{column})  #     @image_uploader ||= self.class.uploaders[:image].new(self, :image)
+              @#{column}_uploader.cache!(new_file)                                            #     @image_uploader.cache!(new_file)
+            end                                                                               #   end
           end                                                                                 # end
                                                                                               # 
           private                                                                             # private

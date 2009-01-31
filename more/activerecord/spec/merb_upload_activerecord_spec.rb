@@ -11,7 +11,7 @@ describe Merb::Upload::ActiveRecord do
     before do
       @class = Class.new(ActiveRecord::Base)
       @class.table_name = "events"
-      @uploader = Class.new(Merb::Upload::AttachableUploader)
+      @uploader = Class.new(Merb::Upload::Uploader)
       @class.mount_uploader(:image, @uploader)
       @event = @class.new
     end
@@ -59,6 +59,16 @@ describe Merb::Upload::ActiveRecord do
       it "should copy a file into into the cache directory" do
         @event.image = stub_file('test.jpeg')
         @event.image.current_path.should =~ /^#{public_path('uploads/tmp')}/
+      end
+      
+      it "should do nothing when nil is assigned" do
+        @event.image = nil
+        @event.image.should be_nil
+      end
+      
+      it "should do nothing when an empty string is assigned" do
+        @event.image = ''
+        @event.image.should be_nil
       end
       
     end
