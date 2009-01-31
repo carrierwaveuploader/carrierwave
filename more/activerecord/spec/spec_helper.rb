@@ -6,8 +6,6 @@ require 'tempfile'
 require 'ruby-debug'
 require 'spec'
 
-require 'activerecord'
-
 require File.join(File.dirname(__FILE__), *%w[.. .. .. core lib merb_upload])
 
 require 'merb_upload_activerecord'

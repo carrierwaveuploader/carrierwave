@@ -1,3 +1,5 @@
+require 'activerecord'
+
 module Merb
   module Upload
     module ActiveRecord
