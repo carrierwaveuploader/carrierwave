@@ -137,12 +137,12 @@ module Merb
         @file = storage.retrieve!
       end
       
+    private
+    
       def storage
         @storage ||= self.class.storage.new(self)
       end
-      
-    private
-    
+
       def cache_id=(cache_id)
         raise Merb::Upload::InvalidParameter, "invalid cache id" unless valid_cache_id?(cache_id)
         @cache_id = cache_id
