@@ -58,6 +58,16 @@ module Merb
       def current_path
         file.path if file.respond_to?(:path)
       end
+      
+      def url
+        if file.respond_to?(:url)
+          file.url
+        else
+          '/' + current_path.relative_path_from(Merb.dir_for(:public)) if current_path
+        end
+      end
+      
+      alias_method :to_s, :url
     
       def filename
         identifier

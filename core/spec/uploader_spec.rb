@@ -97,6 +97,48 @@ describe Merb::Upload::Uploader do
     end
   end
   
+  describe '#url' do
+    before do
+      @uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+    end
+    
+    it "should default to nil" do
+      @uploader.url.should be_nil
+    end
+    
+    it "should get the directory relative to public, prepending a slash" do
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      @uploader.url.should == '/uploads/tmp/20071201-1234-345-2255/test.jpg'
+    end
+    
+    it "should return file#url if available" do
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      @uploader.file.stub!(:url).and_return('http://www.example.com/someurl.jpg')
+      @uploader.url.should == 'http://www.example.com/someurl.jpg'
+    end
+  end
+  
+  describe '#to_s' do
+      before do
+        @uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+      end
+
+      it "should default to nil" do
+        @uploader.to_s.should be_nil
+      end
+
+      it "should get the directory relative to public, prepending a slash" do
+        @uploader.cache!(File.open(file_path('test.jpg')))
+        @uploader.to_s.should == '/uploads/tmp/20071201-1234-345-2255/test.jpg'
+      end
+
+      it "should return file#url if available" do
+        @uploader.cache!(File.open(file_path('test.jpg')))
+        @uploader.file.stub!(:url).and_return('http://www.example.com/someurl.jpg')
+        @uploader.to_s.should == 'http://www.example.com/someurl.jpg'
+      end
+    end
+  
   describe '#cache!' do
     
     before do
@@ -127,6 +169,11 @@ describe Merb::Upload::Uploader do
       @uploader.cache!(File.open(file_path('test.jpg')))
       @uploader.file.path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpg')
       @uploader.file.exists?.should be_true
+    end
+    
+    it "should set the url" do
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      @uploader.url.should == 'uploads/tmp/20071201-1234-345-2255/test.jpg'
     end
     
     it "should trigger a process!" do
@@ -170,6 +217,11 @@ describe Merb::Upload::Uploader do
     it "should store the filename" do
       @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
       @uploader.filename.should == 'test.jpeg'
+    end
+    
+    it "should set the url" do
+      @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
+      @uploader.url.should == 'uploads/tmp/20071201-1234-345-2255/test.jpeg'
     end
     
     it "should raise an error when the cache_id has an invalid format" do
