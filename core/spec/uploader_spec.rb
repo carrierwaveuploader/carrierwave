@@ -52,6 +52,10 @@ describe Merb::Upload::Uploader do
       @uploader_class.storage.should == "blah"
     end
     
+    it "should default to file" do
+      @uploader_class.storage.should == Merb::Upload::Storage::File
+    end
+    
     it "should set the storage from the configured shortcuts if a symbol is given" do
       @uploader_class.storage :file
       @uploader_class.storage.should == Merb::Upload::Storage::File

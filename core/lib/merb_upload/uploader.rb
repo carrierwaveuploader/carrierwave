@@ -23,11 +23,19 @@ module Merb
       
         def storage(storage = nil)
           if storage.is_a?(Symbol)
-            @storage = Merb::Plugins.config[:merb_upload][:storage_engines][storage]
+            @storage = get_storage_by_sumbol(storage)
           elsif storage
             @storage = storage
+          elsif @storage.nil?
+            @storage = get_storage_by_sumbol(Merb::Plugins.config[:merb_upload][:storage])
           end
           return @storage
+        end
+      
+      private
+      
+        def get_storage_by_sumbol(symbol)
+          Merb::Plugins.config[:merb_upload][:storage_engines][symbol]
         end
       
       end
@@ -117,7 +125,6 @@ module Merb
           @identifier = new_file.filename
           @file = storage.store!(new_file)
         end
-        
       end
       
       def retrieve_from_store(identifier)
