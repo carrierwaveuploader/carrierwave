@@ -13,7 +13,7 @@ module Merb
           file
         end
         
-        def retrieve!(file)
+        def retrieve!
           Merb::Upload::SanitizedFile.new(@uploader.store_path)
         end
         
