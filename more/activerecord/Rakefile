@@ -6,10 +6,10 @@ require 'merb-core/tasks/merb'
 
 GEM_NAME = "merb_upload_activerecord"
 GEM_VERSION = "0.0.1"
-AUTHOR = "Your Name"
-EMAIL = "Your Email"
+AUTHOR = "Jonas Nicklas"
+EMAIL = "jonas.nicklas@gmail.com"
 HOMEPAGE = "http://merbivore.com/"
-SUMMARY = "Merb plugin that provides ..."
+SUMMARY = "ActiveRecord support for merb_upload"
 
 spec = Gem::Specification.new do |s|
   s.rubyforge_project = 'merb'
