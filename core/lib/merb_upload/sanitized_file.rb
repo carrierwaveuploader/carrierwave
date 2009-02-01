@@ -6,17 +6,8 @@ module Merb
       attr_accessor :file, :options
     
       def initialize(file, options = {})
-        if file.is_a?(Hash)
-          @file = file["tempfile"]
-          # Add the original filename into the metaclass of the file object.
-          # Yeah, this is evil. I know.
-          file_metaclass = class << @file; self end
-          file_metaclass.send(:define_method, :original_filename) { file["filename"] }
-          file_metaclass.send(:define_method, :content_type) { file["content_type"] }
-        else
-          @file = file
-        end
-        @options = options
+        self.file = file
+        self.options = options
       end
     
       # Returns the filename before sanitation took place
@@ -26,6 +17,18 @@ module Merb
           @file.original_filename
         elsif path
           File.basename(path)
+        end
+      end
+      
+      def file=(file)
+        if file.is_a?(Hash)
+          @file = file["tempfile"]
+          @original_filename = file["filename"]
+          @content_type = file["content_type"]
+        else
+          @file = file
+          @original_filename = nil
+          @content_type = nil
         end
       end
     
@@ -87,7 +90,7 @@ module Merb
       def move_to(new_path)
         new_path = File.expand_path(new_path)
         copy_file(new_path)
-        @file = new_path
+        self.file = new_path
       end
     
       # Copies the file to 'path' and returns a new SanitizedFile that points to the copy.
