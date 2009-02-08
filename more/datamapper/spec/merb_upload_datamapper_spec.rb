@@ -1,18 +1,28 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
+DataMapper.setup(:default, 'sqlite3::memory:')
+
 describe Merb::Upload::DataMapper do
   
   before do
-    @uploader = Class.new(Merb::Upload::Uploader)
+    uploader = Class.new(Merb::Upload::Uploader)
     
     @class = Class.new
-    @class.send(:include, DataMapper::Resource)
-    
-    @class.storage_names[:default] = 'events'
-    
-    @class.property :image, @uploader
+    @class.class_eval do
+      include DataMapper::Resource
+      extend Merb::Upload::DataMapper  
+
+      storage_names[:default] = 'events'
+      
+      property :id, Integer, :key => true
+      property :image, String
+      
+      mount_uploader :image, uploader
+    end
     
     @class.auto_migrate!
+    
+    @uploader = uploader
     
     @event = @class.new
   end
@@ -24,21 +34,23 @@ describe Merb::Upload::DataMapper do
     end
     
     it "should return nil when an empty string has been assigned" do
-      @event[:image] = ''
-      @event.save
-      @event.reload
+      repository(:default).adapter.query("INSERT INTO events (image) VALUES ('')")
+      @event = @class.first
+      
       @event.image.should be_nil
     end
     
     it "should retrieve a file from the storage if a value is stored in the database" do
-      @event[:image] = 'test.jpeg'
+      repository(:default).adapter.query("INSERT INTO events (image) VALUES ('test.jpg')")
+      @event = @class.first
+
       @event.save
       @event.reload
       @event.image.should be_an_instance_of(@uploader)
     end
     
     it "should set the path to the store dir" do
-      @event[:image] = 'test.jpeg'
+      @event.attribute_set(:image, 'test.jpeg')
       @event.save
       @event.reload
       @event.image.current_path.should == public_path('uploads/test.jpeg')
@@ -54,7 +66,7 @@ describe Merb::Upload::DataMapper do
     end
     
     it "should write nothing to the database, to prevent overriden filenames to fail because of unassigned attributes" do
-      @event[:image].should be_nil
+      @event.attribute_get(:image).should be_nil
     end
     
     it "should copy a file into into the cache directory" do
@@ -77,38 +89,40 @@ describe Merb::Upload::DataMapper do
   describe '#save' do
     
     it "should do nothing when no file has been assigned" do
-      @event.save.should be_true
+      @event.save
       @event.image.should be_nil
     end
     
     it "should copy the file to the upload directory when a file has been assigned" do
       @event.image = stub_file('test.jpeg')
-      @event.save.should be_true
+      @event.save
       @event.image.should be_an_instance_of(@uploader)
       @event.image.current_path.should == public_path('uploads/test.jpeg')
     end
     
     it "should do nothing when a validation fails" do
+      pending "how do we test with and without dm-validations?"
       @class.validate { |r| r.errors.add :textfile, "FAIL!" }
       @event.image = stub_file('test.jpeg')
-      @event.save.should be_false
+      @event.save
       @event.image.should be_an_instance_of(@uploader)
       @event.image.current_path.should =~ /^#{public_path('uploads/tmp')}/
     end
     
     it "should assign the filename to the database" do
       @event.image = stub_file('test.jpeg')
-      @event.save.should be_true
+      @event.save
       @event.reload
-      @event[:image].should == 'test.jpeg'
+      @event.attribute_get(:image).should == 'test.jpeg'
     end
     
     it "should assign the filename before validation" do
+      pending "how do we test with and without dm-validations?"
       @class.validate { |r| r.errors.add_to_base "FAIL!" if r[:image].nil? }
       @event.image = stub_file('test.jpeg')
-      @event.save.should be_true
+      @event.save
       @event.reload
-      @event[:image].should == 'test.jpeg'
+      @event.attribute_get(:image).should == 'test.jpeg'
     end
     
   end
