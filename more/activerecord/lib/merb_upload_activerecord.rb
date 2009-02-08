@@ -10,7 +10,7 @@ module Merb
       
       def mount_uploader(column, uploader)
         
-        uploaders[column] = uploader
+        uploaders[column.to_sym] = uploader
         
         class_eval <<-EOF, __FILE__, __LINE__
         
