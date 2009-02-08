@@ -5,3 +5,4 @@ pkg
 doc
 more/activerecord/spec/db
 more/activerecord/spec/public
+more/datamapper/spec/public
