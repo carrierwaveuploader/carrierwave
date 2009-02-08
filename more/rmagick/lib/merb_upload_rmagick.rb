@@ -1,16 +1,11 @@
-if defined?(Merb::Plugins)
-  dependency 'RMagick'
-end
-
+dependency 'rmagick'
 
 module Merb
   module Upload
     module RMagick
       
-      class ManipulationError < StandardError; end
-
       # Convert the image to format
-      def convert!(format)
+      def convert(format)
         manipulate! do |img|
           img.format = format.to_s.upcase
           img
@@ -18,9 +13,8 @@ module Merb
       end
 
       # Resize the image so that it will not exceed the dimensions passed
-      # via geometry, geometry should be a string, formatted like '200x100' where
-      # the first number is the height and the second is the width
-      def resize!( geometry )
+      def resize(height, width)
+        geometry = "#{height}x#{width}"
         manipulate! do |img|
           img.change_geometry( geometry ) do |c, r, i|
             i.resize(c,r)
@@ -29,15 +23,13 @@ module Merb
       end
 
       # Resize and crop the image so that it will have the exact dimensions passed
-      # via geometry, geometry should be a string, formatted like '200x100' where
-      # the first number is the height and the second is the width
-      def crop_resized!( geometry )
+      def crop_resized(height, width)
         manipulate! do |img|
-          h, w = geometry.split('x')
-          img.crop_resized(h.to_i,w.to_i)
+          img.crop_resized(height,width)
         end
       end
 
+      # Manipulate the image with rmagick
       def manipulate!
         image = ::Magick::Image.read(self.current_path)
 
@@ -51,8 +43,7 @@ module Merb
           yield( image.first ).write(self.current_path)
         end
       rescue ::Magick::ImageMagickError => e
-        # this is a more meaningful error message, which we could catch later
-        raise ManipulationError.new("Failed to manipulate with rmagick, maybe it is not an image? Original Error: #{e}")
+        raise Merb::Upload::ProcessingError.new("Failed to manipulate with rmagick, maybe it is not an image? Original Error: #{e}")
       end      
       
     end
