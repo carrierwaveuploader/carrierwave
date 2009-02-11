@@ -1,4 +1,5 @@
 doc
+.yardoc
 .DS_Store
 spec/public
 pkg

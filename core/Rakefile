@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'rake/gempackagetask'
 
+require 'yard'
 require 'merb-core'
 require 'merb-core/tasks/merb'
 require 'spec/rake/spectask'
@@ -27,6 +28,10 @@ spec = Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.files = %w(LICENSE Generators README Rakefile TODO) + Dir.glob("{lib,spec}/**/*")
   
+end
+
+YARD::Rake::YardocTask.new do |t|
+  t.files   = ["README", "LICENSE", "TODO", 'lib/**/*.rb']
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|
