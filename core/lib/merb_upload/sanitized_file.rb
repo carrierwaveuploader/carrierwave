@@ -20,18 +20,6 @@ module Merb
         end
       end
       
-      def file=(file)
-        if file.is_a?(Hash)
-          @file = file["tempfile"]
-          @original_filename = file["filename"]
-          @content_type = file["content_type"]
-        else
-          @file = file
-          @original_filename = nil
-          @content_type = nil
-        end
-      end
-    
       # Returns the files properly sanitized filename.
       def filename
         sanitize(original_filename) if original_filename
@@ -111,6 +99,18 @@ module Merb
       end
     
       private
+      
+      def file=(file)
+        if file.is_a?(Hash)
+          @file = file["tempfile"]
+          @original_filename = file["filename"]
+          @content_type = file["content_type"]
+        else
+          @file = file
+          @original_filename = nil
+          @content_type = nil
+        end
+      end
     
       def copy_file(new_path)
         unless self.empty?

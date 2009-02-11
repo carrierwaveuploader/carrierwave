@@ -18,28 +18,25 @@ describe Merb::Upload::SanitizedFile do
   
   describe '#empty?' do
     
-    before do
-      @sanitized_file = Merb::Upload::SanitizedFile.new(nil)
-    end
-    
     it "should be empty for nil" do
+      @sanitized_file = Merb::Upload::SanitizedFile.new(nil)
       @sanitized_file.should be_empty
     end
         
     it "should be empty for an empty string" do
-      @sanitized_file.file = ""
+      @sanitized_file = Merb::Upload::SanitizedFile.new("")
       @sanitized_file.should be_empty
     end
 
     it "should be empty for an empty StringIO" do
-      @sanitized_file.file = StringIO.new("")
+      @sanitized_file = Merb::Upload::SanitizedFile.new(StringIO.new(""))
       @sanitized_file.should be_empty
     end
     
     it "should be empty for a file with a zero size" do
       empty_file = mock('emptyfile')
       empty_file.should_receive(:size).at_least(:once).and_return(0)
-      @sanitized_file.file = empty_file
+      @sanitized_file = Merb::Upload::SanitizedFile.new(empty_file)
       @sanitized_file.should be_empty
     end
     
@@ -62,6 +59,30 @@ describe Merb::Upload::SanitizedFile do
       file = mock('file')
       sanitized_file = Merb::Upload::SanitizedFile.new(file)
       sanitized_file.original_filename.should be_nil
+    end
+  end
+  
+  describe '#basename' do
+    it "should return the basename for complicated extensions" do
+      @sanitized_file = Merb::Upload::SanitizedFile.new(file_path('complex.filename.tar.gz'))
+      @sanitized_file.basename.should == "complex.filename"
+    end
+    
+    it "should be the filename if the file has no extension" do
+      @sanitized_file = Merb::Upload::SanitizedFile.new(file_path('complex'))
+      @sanitized_file.basename.should == "complex"
+    end
+  end
+  
+  describe '#extension' do
+    it "should return the extension for complicated extensions" do
+      @sanitized_file = Merb::Upload::SanitizedFile.new(file_path('complex.filename.tar.gz'))
+      @sanitized_file.extension.should == "tar.gz"
+    end
+    
+    it "should be an empty string if the file has no extension" do
+      @sanitized_file = Merb::Upload::SanitizedFile.new(file_path('complex'))
+      @sanitized_file.extension.should == ""
     end
   end
   
@@ -132,31 +153,11 @@ describe Merb::Upload::SanitizedFile do
       it "should return the basename" do
         @sanitized_file.basename.should == "llama"
       end
-      
-      it "should return the basename for complicated extensions" do
-        @sanitized_file.file = file_path('complex.filename.tar.gz')
-        @sanitized_file.basename.should == "complex.filename"
-      end
-      
-      it "should be the filename if the file has no extension" do
-        @sanitized_file.file = file_path('complex')
-        @sanitized_file.basename.should == "complex"
-      end
     end
 
     describe '#extension' do
       it "should return the extension" do
         @sanitized_file.extension.should == "jpg"
-      end
-      
-      it "should return the extension for complicated extensions" do
-        @sanitized_file.file = file_path('complex.filename.tar.gz')
-        @sanitized_file.extension.should == "tar.gz"
-      end
-      
-      it "should be an empty string if the file has no extension" do
-        @sanitized_file.file = file_path('complex')
-        @sanitized_file.extension.should == ""
       end
     end
     
