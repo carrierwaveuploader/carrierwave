@@ -86,6 +86,23 @@ module Merb
       
       attr_reader :file, :cache_id, :model, :mounted_as
       
+      ##
+      # If a model is given as the first parameter, it will stored in the uploader, and
+      # available throught +#model+. Likewise, mounted_as stores the name of the column
+      # where this instance of the uploader is mounted. These values can then be used inside
+      # your uploader.
+      #
+      # If you do not wish to mount your uploaders with the ORM extensions in -more then you
+      # can override this method inside your uploader.
+      #
+      # @param [Object] model Any kind of model object
+      # @param [Symbol] mounted_as The name of the column where this uploader is mounted
+      # @example
+      #     class MyUploader < Merb::Uploader::Base
+      #       def store_dir
+      #         Merb.root / 'public' / 'files' / mounted_as / model.permalink
+      #       end
+      #     end
       def initialize(model=nil, mounted_as=nil)
         @model = model
         @mounted_as = mounted_as
