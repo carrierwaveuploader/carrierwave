@@ -9,6 +9,8 @@ if defined?(Merb::Plugins)
       class NoFileError < UploadError; end
       class FormNotMultipart < UploadError; end
       class InvalidParameter < UploadError; end
+      # Should be used by methods used as process callbacks.
+      class ProcessingError < UploadError; end
     end
   end
 
