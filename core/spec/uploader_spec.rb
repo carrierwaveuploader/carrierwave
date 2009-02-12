@@ -209,9 +209,9 @@ describe Merb::Upload::Uploader do
       @uploader.cache_name.should == '20071201-1234-345-2255/test.jpeg'
     end
     
-    it "should store the identifier" do
+    it "should store the original_filename" do
       @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
-      @uploader.identifier.should == 'test.jpeg'
+      @uploader.original_filename.should == 'test.jpeg'
     end
     
     it "should store the filename" do
@@ -231,11 +231,11 @@ describe Merb::Upload::Uploader do
       
       @uploader.file.should be_nil
       @uploader.filename.should be_nil
-      @uploader.identifier.should be_nil
+      @uploader.original_filename.should be_nil
       @uploader.cache_name.should be_nil
     end
     
-    it "should raise an error when the identifier contains invalid characters" do
+    it "should raise an error when the original_filename contains invalid characters" do
       running {
         @uploader.retrieve_from_cache!('20071201-1234-345-2255/te/st.jpeg')
       }.should raise_error(Merb::Upload::InvalidParameter)
@@ -245,7 +245,7 @@ describe Merb::Upload::Uploader do
       
       @uploader.file.should be_nil
       @uploader.filename.should be_nil
-      @uploader.identifier.should be_nil
+      @uploader.original_filename.should be_nil
       @uploader.cache_name.should be_nil
     end
   end
@@ -266,7 +266,7 @@ describe Merb::Upload::Uploader do
       @uploader.retrieve_from_cache('12345/test.jpeg')
       @uploader.file.should be_nil
       @uploader.filename.should be_nil
-      @uploader.identifier.should be_nil
+      @uploader.original_filename.should be_nil
       @uploader.cache_name.should be_nil
     end
     
@@ -274,7 +274,7 @@ describe Merb::Upload::Uploader do
       @uploader.retrieve_from_cache('20071201-1234-345-2255/te??%st.jpeg')
       @uploader.file.should be_nil
       @uploader.filename.should be_nil
-      @uploader.identifier.should be_nil
+      @uploader.original_filename.should be_nil
       @uploader.cache_name.should be_nil
     end
   end
@@ -335,12 +335,12 @@ describe Merb::Upload::Uploader do
       @uploader.file.should == :monkey
     end
     
-    it "should set the identifier" do
+    it "should not set the original_filename" do
       @uploader.retrieve_from_store!('monkey.txt')
-      @uploader.identifier.should == 'monkey.txt'
+      @uploader.original_filename.should be_nil
     end
     
-    it "should raise an error if the identifier contains ivalid characters" do
+    it "should raise an error if the filename contains ivalid characters" do
       running {
         @uploader.retrieve_from_store!('mo%#nkey.txt')
       }.should raise_error(Merb::Upload::InvalidParameter)
@@ -366,12 +366,12 @@ describe Merb::Upload::Uploader do
       @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpeg')
     end
     
-    it "should set the identifier" do
+    it "should not set the original_filename" do
       @uploader.retrieve_from_store('monkey.txt')
-      @uploader.identifier.should == 'monkey.txt'
+      @uploader.original_filename.should be_nil
     end
     
-    it "should do nothing if the identifier contains ivalid characters" do
+    it "should do nothing if the filename contains ivalid characters" do
       @storage.should_not_receive(:retrieve!)
       @uploader.retrieve_from_store('mo%#nkey.txt')
     end
@@ -510,6 +510,11 @@ describe Merb::Upload::Uploader do
       it "should set the store path" do
         @uploader.retrieve_from_store!('monkey.txt')
         @uploader.store_path.should == public_path('uploads/monkey.txt')
+      end
+      
+      it "should not set the filename" do
+        @uploader.retrieve_from_store!('monkey.txt')
+        @uploader.filename.should be_nil
       end
     end
     

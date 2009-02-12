@@ -141,8 +141,8 @@ module Merb
       ##
       # 
       #
-      def identifier
-        @identifier
+      def original_filename
+        @original_filename
       end
     
       ##
@@ -203,12 +203,12 @@ module Merb
       end
       
       ##
-      # Returns an identifier which uniquely identifies the currently cached file for later retrieval
+      # Returns an original_filename which uniquely identifies the currently cached file for later retrieval
       #
       # @return [String] a cache name, in the format YYYYMMDD-HHMM-PID-RND/filename.txt
       #
       def cache_name
-        cache_id / identifier if cache_id and identifier
+        cache_id / original_filename if cache_id and original_filename
       end
       
       ##
@@ -235,7 +235,7 @@ module Merb
         @file = new_file
 
         @filename = new_file.filename
-        self.identifier = new_file.filename
+        self.original_filename = new_file.filename
         
         @file.move_to(cache_path)
         process!
@@ -261,8 +261,8 @@ module Merb
       # @raise [Merb::Upload::InvalidParameter] if the cache_name is incorrectly formatted.
       #
       def retrieve_from_cache!(cache_name)
-        self.cache_id, self.identifier = cache_name.split('/', 2)
-        @filename = identifier
+        self.cache_id, self.original_filename = cache_name.split('/', 2)
+        @filename = original_filename
         @file = Merb::Upload::SanitizedFile.new(cache_path)
       end
       
@@ -297,7 +297,7 @@ module Merb
           new_file = Merb::Upload::SanitizedFile.new(new_file)
           
           @filename = new_file.filename
-          self.identifier = filename
+          self.original_filename = filename
           
           @file = storage.store!(new_file)
         end
@@ -307,21 +307,20 @@ module Merb
       # Retrieves the file from the storage, unless a file has
       # already been cached, stored or retrieved.
       # 
-      # @param [String] identifier uniquely identifies the file to retrieve
+      # @param [String] filename uniquely identifies the file to retrieve
       #
-      def retrieve_from_store(identifier)
-        retrieve_from_store!(identifier) unless file
+      def retrieve_from_store(filename)
+        retrieve_from_store!(filename) unless file
       rescue Merb::Upload::InvalidParameter
       end
       
       ##
       # Retrieves the file from the storage.
       # 
-      # @param [String] identifier uniquely identifies the file to retrieve
+      # @param [String] original_filename uniquely identifies the file to retrieve
       #
-      def retrieve_from_store!(identifier)
-        self.identifier = identifier
-        self.current_filename = identifier
+      def retrieve_from_store!(filename)
+        self.current_filename = filename
         @file = storage.retrieve!
       end
       
@@ -331,6 +330,11 @@ module Merb
       
       def current_filename
         @current_filename || filename
+      end
+      
+      def current_filename=(filename)
+        raise Merb::Upload::InvalidParameter, "invalid filename" unless filename =~ /^[a-z0-9\.\-\+_]+$/i
+        @current_filename = filename
       end
     
       def storage
@@ -342,9 +346,9 @@ module Merb
         @cache_id = cache_id
       end
       
-      def identifier=(identifier)
-        raise Merb::Upload::InvalidParameter, "invalid identifier" unless identifier =~ /^[a-z0-9\.\-\+_]+$/i
-        @identifier = identifier
+      def original_filename=(filename)
+        raise Merb::Upload::InvalidParameter, "invalid filename" unless filename =~ /^[a-z0-9\.\-\+_]+$/i
+        @original_filename = filename
       end
       
       def generate_cache_id
