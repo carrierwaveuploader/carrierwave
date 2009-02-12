@@ -13,14 +13,14 @@ module Merb
         #
         # @param [File, IOString, Tempfile] file any kind of file object
         def store!(file)
-          file.move_to(@uploader.store_path)
+          file.move_to(@uploader.store_dir / @uploader.filename)
           file
         end
         
         ##
         # Retrieve the file from its store path
-        def retrieve!
-          Merb::Upload::SanitizedFile.new(@uploader.store_path)
+        def retrieve!(identifier)
+          Merb::Upload::SanitizedFile.new(@uploader.store_dir / identifier)
         end
         
       end

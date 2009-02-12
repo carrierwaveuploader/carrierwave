@@ -179,18 +179,6 @@ module Merb
       end
       
       ##
-      # Override this in your Uploader to change the full path where the file backend stores files.
-      #
-      # A word of warning: don't change this unless you are doing really, really fancy stuff. In 
-      # most cases, overriding store_dir is better.
-      #
-      # @return [String] a path
-      #
-      def store_path
-        store_dir / current_filename
-      end
-      
-      ##
       # Returns an original_filename which uniquely identifies the currently cached file for later retrieval
       #
       # @return [String] a cache name, in the format YYYYMMDD-HHMM-PID-RND/filename.txt
@@ -307,24 +295,14 @@ module Merb
       # 
       # @param [String] original_filename uniquely identifies the file to retrieve
       #
-      def retrieve_from_store!(filename)
-        self.current_filename = filename
-        @file = storage.retrieve!
+      def retrieve_from_store!(identifier)
+        @file = storage.retrieve!(identifier)
       end
       
     private
     
       def cache_path
         cache_dir / cache_name
-      end
-
-      def current_filename
-        @current_filename || filename
-      end
-      
-      def current_filename=(filename)
-        raise Merb::Upload::InvalidParameter, "invalid filename" unless filename =~ /^[a-z0-9\.\-\+_]+$/i
-        @current_filename = filename
       end
     
       def storage

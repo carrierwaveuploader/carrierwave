@@ -324,7 +324,7 @@ describe Merb::Upload::Uploader do
     end
     
     it "should instruct the storage engine to retrieve the file and store the result" do
-      @storage.should_receive(:retrieve!).and_return(:monkey)
+      @storage.should_receive(:retrieve!).with('monkey.txt').and_return(:monkey)
       @uploader.retrieve_from_store!('monkey.txt')
       @uploader.file.should == :monkey
     end
@@ -338,12 +338,6 @@ describe Merb::Upload::Uploader do
     it "should not set the original_filename" do
       @uploader.retrieve_from_store!('monkey.txt')
       @uploader.original_filename.should be_nil
-    end
-    
-    it "should raise an error if the filename contains ivalid characters" do
-      running {
-        @uploader.retrieve_from_store!('mo%#nkey.txt')
-      }.should raise_error(Merb::Upload::InvalidParameter)
     end
   end
   
@@ -370,11 +364,6 @@ describe Merb::Upload::Uploader do
       @uploader.retrieve_from_store('monkey.txt')
       @uploader.original_filename.should be_nil
     end
-    
-    it "should do nothing if the filename contains ivalid characters" do
-      @storage.should_not_receive(:retrieve!)
-      @uploader.retrieve_from_store('mo%#nkey.txt')
-    end
   end
   
   describe 'with an overridden, reversing, filename' do
@@ -397,11 +386,6 @@ describe Merb::Upload::Uploader do
         @uploader.filename.should == "gpj.tset"
       end
       
-      it "should correctly set the reversed filename for the store path" do
-        @uploader.cache!(File.open(file_path('test.jpg')))
-        @uploader.store_path.should == public_path('uploads/gpj.tset')
-      end
-      
       it "should move it to the tmp dir with the filename unreversed" do
         @uploader.cache!(File.open(file_path('test.jpg')))
         @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpg')
@@ -418,11 +402,6 @@ describe Merb::Upload::Uploader do
       it "should set the filename to the reversed name of the file" do
         @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpg')
         @uploader.filename.should == "gpj.tset"
-      end
-      
-      it "should correctly set the reversed filename for the store path" do
-        @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpg')
-        @uploader.store_path.should == public_path('uploads/gpj.tset')
       end
     end
     
@@ -465,24 +444,6 @@ describe Merb::Upload::Uploader do
         @uploader.filename.should == 'gpj.tset'
       end
     
-      # FIXME: it's important that this happens before @storage.store! is invoked, this is
-      # however very very hard to spec.
-      it "should, if a file is given as argument, set the store path correctly" do
-        @uploader.store!(@file)
-        @uploader.store_path.should == public_path('uploads/gpj.tset')
-      end
-    
-      it "should, if a files is given as an argument and use_cache is false, set the store path correctly" do
-        Merb::Plugins.config[:merb_upload][:use_cache] = false
-        @uploader.store!(@file)
-        @uploader.store_path.should == public_path('uploads/gpj.tset')
-      end
-      
-      it "should, if a previously cached file is stored, set the store path correctly" do
-        @uploader.cache!(@file)
-        @uploader.store!
-        @uploader.store_path.should == public_path('uploads/gpj.tset')
-      end
     end
     
     describe '#retrieve_from_store!' do
@@ -507,9 +468,10 @@ describe Merb::Upload::Uploader do
         @uploader.url.should == 'http://www.example.com'
       end
       
-      it "should set the store path" do
+      it "should pass the identifier to the storage engine" do
+        @storage.should_receive(:retrieve!).with('monkey.txt').and_return(@stored_file)
         @uploader.retrieve_from_store!('monkey.txt')
-        @uploader.store_path.should == public_path('uploads/monkey.txt')
+        @uploader.file.should == @stored_file
       end
       
       it "should not set the filename" do
