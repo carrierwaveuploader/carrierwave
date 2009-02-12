@@ -14,6 +14,7 @@ module Merb
       # Returns the filename as is, without sanizting it.
       #
       # @return [String] the unsanitized filename
+      #
       def original_filename
         return @original_filename if @original_filename
         if @file and @file.respond_to?(:original_filename)
@@ -27,6 +28,7 @@ module Merb
       # Returns the filename, sanitized to strip out any evil characters.
       #
       # @return [String] the sanitized filename
+      #
       def filename
         sanitize(original_filename) if original_filename
       end
@@ -36,6 +38,7 @@ module Merb
       # this would return 'test'
       #
       # @return [String] the first part of the filename
+      #
       def basename
         split_extension(filename)[0] if filename
       end
@@ -44,6 +47,7 @@ module Merb
       # Returns the file extension
       #
       # @return [String] the extension
+      #
       def extension
         split_extension(filename)[1] if filename
       end
@@ -52,6 +56,7 @@ module Merb
       # Returns the file's size.
       #
       # @return [Integer] the file's size in bytes.
+      #
       def size
         if @file.respond_to?(:size)
           @file.size 
@@ -66,6 +71,7 @@ module Merb
       # Returns the full path to the file. If the file has no path, it will return nil.
       #
       # @return [String, nil] the path where the file is located.
+      #
       def path
         unless @file.blank?
           if string?
@@ -80,6 +86,7 @@ module Merb
       # Returns true if the file is supplied as a pathname or as a string.
       #
       # @return [Boolean]
+      #
       def string?
         !!((@file.is_a?(String) || @file.is_a?(Pathname)) && !@file.blank?)
       end
@@ -88,6 +95,7 @@ module Merb
       # Checks if the file is valid and has a non-zero size
       #
       # @return [Boolean]
+      #
       def empty?
         (@file.nil? && @path.nil?) || self.size.nil? || self.size.zero?
       end
@@ -96,6 +104,7 @@ module Merb
       # Checks if the file exists
       #
       # @return [Boolean]
+      #
       def exists?
         return File.exists?(self.path) if self.path
         return false
@@ -105,6 +114,7 @@ module Merb
       # Returns the contents of the file.
       #
       # @return [String] contents of the file
+      #
       def read
         string? ? File.read(@file) : @file.read
       end
@@ -113,6 +123,7 @@ module Merb
       # Moves the file to the given path
       #
       # @param [String] new_path The path where the file should be moved.
+      #
       # --
       # FIXME: this currently copies the file, which is wrong.
       def move_to(new_path)
@@ -126,6 +137,7 @@ module Merb
       #
       # @param [String] new_path The path where the file should be copied to.
       # @return [Merb::Upload::SanitizedFile] the location where the file will be stored.
+      #
       def copy_to(new_path)
         copy = self.clone
         copy.move_to(new_path)
@@ -134,6 +146,7 @@ module Merb
     
       ##
       # Removes the file from the filesystem.
+      #
       def delete
         FileUtils.rm(self.path) if self.path
       end
@@ -142,6 +155,7 @@ module Merb
       # Returns the content type of the file.
       #
       # @return [String] the content type of the file 
+      #
       def content_type
         @file.content_type.chomp if @file.respond_to?(:content_type) and @file.content_type
       end

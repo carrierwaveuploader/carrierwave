@@ -377,4 +377,142 @@ describe Merb::Upload::Uploader do
     end
   end
   
+  describe 'with an overridden, reversing, filename' do
+    before do
+      @uploader_class.class_eval do
+        def filename
+          super.reverse unless super.blank?
+        end
+      end
+    end
+    
+    describe '#cache!' do
+
+      before do
+        @uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+      end
+
+      it "should set the filename to the file's reversed filename" do
+        @uploader.cache!(File.open(file_path('test.jpg')))
+        @uploader.filename.should == "gpj.tset"
+      end
+      
+      it "should correctly set the reversed filename for the store path" do
+        @uploader.cache!(File.open(file_path('test.jpg')))
+        @uploader.store_path.should == public_path('uploads/gpj.tset')
+      end
+      
+      it "should move it to the tmp dir with the filename unreversed" do
+        @uploader.cache!(File.open(file_path('test.jpg')))
+        @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpg')
+        @uploader.file.exists?.should be_true
+      end
+    end
+
+    describe '#retrieve_from_cache!' do
+      it "should set the path to the tmp dir" do
+        @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpg')
+        @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpg')
+      end
+    
+      it "should set the filename to the reversed name of the file" do
+        @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpg')
+        @uploader.filename.should == "gpj.tset"
+      end
+      
+      it "should correctly set the reversed filename for the store path" do
+        @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpg')
+        @uploader.store_path.should == public_path('uploads/gpj.tset')
+      end
+    end
+    
+    describe '#store!' do
+      before do
+        @file = File.open(file_path('test.jpg'))
+
+        @stored_file = mock('a stored file')
+        @stored_file.stub!(:path).and_return('/path/to/somewhere')
+        @stored_file.stub!(:url).and_return('http://www.example.com')
+        
+        @storage = mock('storage')
+        @storage.stub!(:store!).and_return(@stored_file)
+        
+        @uploader.stub!(:storage).and_return(@storage)
+      end
+      
+      after do
+        Merb::Plugins.config[:merb_upload][:use_cache] = true
+      end
+      
+      it "should set the current path" do
+        @uploader.store!(@file)
+        @uploader.current_path.should == '/path/to/somewhere'
+      end
+      
+      it "should set the url" do
+        @uploader.store!(@file)
+        @uploader.url.should == 'http://www.example.com'
+      end
+    
+      it "should, if a file is given as argument, reverse the filename" do
+        @uploader.store!(@file)
+        @uploader.filename.should == 'gpj.tset'
+      end
+    
+      it "should, if a files is given as an argument and use_cache is false, reverse the filename" do
+        Merb::Plugins.config[:merb_upload][:use_cache] = false
+        @uploader.store!(@file)
+        @uploader.filename.should == 'gpj.tset'
+      end
+    
+      # FIXME: it's important that this happens before @storage.store! is invoked, this is
+      # however very very hard to spec.
+      it "should, if a file is given as argument, set the store path correctly" do
+        @uploader.store!(@file)
+        @uploader.store_path.should == public_path('uploads/gpj.tset')
+      end
+    
+      it "should, if a files is given as an argument and use_cache is false, set the store path correctly" do
+        Merb::Plugins.config[:merb_upload][:use_cache] = false
+        @uploader.store!(@file)
+        @uploader.store_path.should == public_path('uploads/gpj.tset')
+      end
+      
+      it "should, if a previously cached file is stored, set the store path correctly" do
+        @uploader.cache!(@file)
+        @uploader.store!
+        @uploader.store_path.should == public_path('uploads/gpj.tset')
+      end
+    end
+    
+    describe '#retrieve_from_store!' do
+      before do
+        @stored_file = mock('a stored file')
+        @stored_file.stub!(:path).and_return('/path/to/somewhere')
+        @stored_file.stub!(:url).and_return('http://www.example.com')
+        
+        @storage = mock('storage')
+        @storage.stub!(:retrieve!).and_return(@stored_file)
+        
+        @uploader.stub!(:storage).and_return(@storage)
+      end
+    
+      it "should set the current path" do
+        @uploader.retrieve_from_store!('monkey.txt')
+        @uploader.current_path.should == '/path/to/somewhere'
+      end
+      
+      it "should set the url" do
+        @uploader.retrieve_from_store!('monkey.txt')
+        @uploader.url.should == 'http://www.example.com'
+      end
+      
+      it "should set the store path" do
+        @uploader.retrieve_from_store!('monkey.txt')
+        @uploader.store_path.should == public_path('uploads/monkey.txt')
+      end
+    end
+    
+  end
+  
 end

@@ -56,8 +56,11 @@ module Merb
         # method. See lib/merb_upload/storage/file.rb for an example. Storage engines should
         # be added to Merb::Plugins.config[:merb_upload][:storage_engines] so they can be referred
         # to by a symbol, which should be more convenient
+        #
+        # If no argument is given, it will simply return the currently used storage engine.
         # 
         # @param [Symbol, Class] storage The storage engine to use for this uploader
+        # @return [Class] the storage engine to be used with this uploader
         # @example
         #     storage :file
         #     storage Merb::Upload::Storage::File
@@ -82,8 +85,6 @@ module Merb
       
       end
     
-      attr_accessor :identifier
-      
       attr_reader :file, :cache_id, :model, :mounted_as
       
       ##
@@ -119,12 +120,14 @@ module Merb
       
       ##
       # @return [String] the path where the file is currently located.
+      #
       def current_path
         file.path if file.respond_to?(:path)
       end
       
       ##
       # @return [String] the location where this file is accessible via a url
+      #
       def url
         if file.respond_to?(:url)
           file.url
@@ -136,6 +139,13 @@ module Merb
       alias_method :to_s, :url
     
       ##
+      # 
+      #
+      def identifier
+        @identifier
+      end
+    
+      ##
       # Override this in your Uploader to change the filename.
       #
       # Be careful using record ids as filenames. If the filename is stored in the database
@@ -143,8 +153,9 @@ module Merb
       # understand this limitation.
       #
       # @return [String] a filename
+      #
       def filename
-        identifier
+        @filename
       end
     
       ##
@@ -153,6 +164,7 @@ module Merb
       # Other backends may or may not use this method, depending on their specific needs.
       #
       # @return [String] a directory
+      #
       def store_dir
         Merb::Plugins.config[:merb_upload][:store_dir]
       end
@@ -161,6 +173,7 @@ module Merb
       # Override this in your Uploader to change the directory where files are cached.
       #
       # @return [String] a directory
+      #
       def cache_dir
         Merb::Plugins.config[:merb_upload][:cache_dir]
       end
@@ -172,8 +185,9 @@ module Merb
       # most cases, overriding store_dir is better.
       #
       # @return [String] a path
+      #
       def store_path
-        store_dir / filename
+        store_dir / current_filename
       end
       
       ##
@@ -183,14 +197,16 @@ module Merb
       # most cases, overriding cache_dir is better.
       #
       # @return [String] a path
+      #
       def cache_path
-        cache_dir / cache_id / filename
+        cache_dir / cache_name
       end
       
       ##
       # Returns an identifier which uniquely identifies the currently cached file for later retrieval
       #
       # @return [String] a cache name, in the format YYYYMMDD-HHMM-PID-RND/filename.txt
+      #
       def cache_name
         cache_id / identifier if cache_id and identifier
       end
@@ -200,6 +216,7 @@ module Merb
       #
       # @param [File, IOString, Tempfile] new_file any kind of file object
       # @raise [Merb::Upload::FormNotMultipart] if the assigned parameter is a string
+      #
       def cache(new_file)
         cache!(new_file) unless file
       end
@@ -209,15 +226,17 @@ module Merb
       #
       # @param [File, IOString, Tempfile] new_file any kind of file object
       # @raise [Merb::Upload::FormNotMultipart] if the assigned parameter is a string
+      #
       def cache!(new_file)
         @cache_id = generate_cache_id
-        
         new_file = Merb::Upload::SanitizedFile.new(new_file)
         raise Merb::Upload::FormNotMultipart, "check that your upload form is multipart encoded" if new_file.string?
 
-        @identifier = new_file.filename
-
         @file = new_file
+
+        @filename = new_file.filename
+        self.identifier = new_file.filename
+        
         @file.move_to(cache_path)
         process!
         
@@ -229,6 +248,7 @@ module Merb
       # already been cached, stored or retrieved.
       #
       # @param [String] cache_name uniquely identifies a cache file
+      #
       def retrieve_from_cache(cache_name)
         retrieve_from_cache!(cache_name) unless file
       rescue Merb::Upload::InvalidParameter
@@ -239,8 +259,10 @@ module Merb
       #
       # @param [String] cache_name uniquely identifies a cache file
       # @raise [Merb::Upload::InvalidParameter] if the cache_name is incorrectly formatted.
+      #
       def retrieve_from_cache!(cache_name)
         self.cache_id, self.identifier = cache_name.split('/', 2)
+        @filename = identifier
         @file = Merb::Upload::SanitizedFile.new(cache_path)
       end
       
@@ -252,6 +274,7 @@ module Merb
       # and apply any process callbacks before uploading it.
       #
       # @param [File, IOString, Tempfile] new_file any kind of file object
+      #
       def store(new_file)
         store!(new_file) unless file
       end
@@ -265,13 +288,17 @@ module Merb
       # and apply any process callbacks before uploading it.
       #
       # @param [File, IOString, Tempfile] new_file any kind of file object
+      #
       def store!(new_file=nil)
         if Merb::Plugins.config[:merb_upload][:use_cache]
           cache!(new_file) if new_file
           @file = storage.store!(@file)
         else
           new_file = Merb::Upload::SanitizedFile.new(new_file)
-          @identifier = new_file.filename
+          
+          @filename = new_file.filename
+          self.identifier = filename
+          
           @file = storage.store!(new_file)
         end
       end
@@ -281,6 +308,7 @@ module Merb
       # already been cached, stored or retrieved.
       # 
       # @param [String] identifier uniquely identifies the file to retrieve
+      #
       def retrieve_from_store(identifier)
         retrieve_from_store!(identifier) unless file
       rescue Merb::Upload::InvalidParameter
@@ -290,19 +318,27 @@ module Merb
       # Retrieves the file from the storage.
       # 
       # @param [String] identifier uniquely identifies the file to retrieve
+      #
       def retrieve_from_store!(identifier)
         self.identifier = identifier
+        self.current_filename = identifier
         @file = storage.retrieve!
       end
       
     private
+    
+      attr_writer :current_filename
+      
+      def current_filename
+        @current_filename || filename
+      end
     
       def storage
         @storage ||= self.class.storage.new(self)
       end
 
       def cache_id=(cache_id)
-        raise Merb::Upload::InvalidParameter, "invalid cache id" unless valid_cache_id?(cache_id)
+        raise Merb::Upload::InvalidParameter, "invalid cache id" unless cache_id =~ /^[\d]{8}\-[\d]{4}\-[\d]+\-[\d]{4}$/
         @cache_id = cache_id
       end
       
@@ -313,10 +349,6 @@ module Merb
       
       def generate_cache_id
         Time.now.strftime('%Y%m%d-%H%M') + '-' + Process.pid.to_s + '-' + ("%04d" % rand(9999))
-      end
-      
-      def valid_cache_id?(cache_id)
-        /^[\d]{8}\-[\d]{4}\-[\d]+\-[\d]{4}$/ =~ cache_id
       end
       
     end
