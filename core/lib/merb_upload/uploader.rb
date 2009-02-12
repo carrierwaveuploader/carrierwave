@@ -191,18 +191,6 @@ module Merb
       end
       
       ##
-      # Override this in your Uploader to change the full path where files are cached.
-      #
-      # A word of warning: don't change this unless you are doing really, really fancy stuff. In 
-      # most cases, overriding cache_dir is better.
-      #
-      # @return [String] a path
-      #
-      def cache_path
-        cache_dir / cache_name
-      end
-      
-      ##
       # Returns an original_filename which uniquely identifies the currently cached file for later retrieval
       #
       # @return [String] a cache name, in the format YYYYMMDD-HHMM-PID-RND/filename.txt
@@ -326,8 +314,10 @@ module Merb
       
     private
     
-      attr_writer :current_filename
-      
+      def cache_path
+        cache_dir / cache_name
+      end
+
       def current_filename
         @current_filename || filename
       end
