@@ -22,24 +22,16 @@ Given /^that the uploader has the store_dir overridden to '(.*?)'$/ do |store_di
   end
 end
 
-Then /^there should be a file at '(.*?)'$/ do |file|
-  File.exist?(file_path(file)).should be_true
+Given /^the class has a method called 'reverse' that reverses the contents of a file$/ do
+  @klass.class_eval do
+    def reverse
+      File.open(current_path, 'w') { |f| f.write File.read(current_path).reverse }
+    end
+  end
 end
 
-Then /^there should not be a file at '(.*?)'$/ do |file|
-  File.exist?(file_path(file)).should be_false
-end
-
-Then /^the file at '(.*?)' should be identical to the file at '(.*?)'$/ do |one, two|
-  File.read(file_path(one)).should == File.read(file_path(two))
-end
-
-Then /^there should be a file called '(.*?)' somewhere in a subdirectory of '(.*?)'$/ do |file, directory|
-  Dir.glob(File.join(file_path(directory), '**', file)).any?.should be_true
-end
-
-Then /^the file called '(.*?)' in a subdirectory of '(.*?)' should be identical to the file at '(.*?)'$/ do |file, directory, other|
-  File.read(Dir.glob(File.join(file_path(directory), '**', file)).first).should == File.read(file_path(other))
+Given /^the class will process '([a-zA-Z0-9\_\?!]*)'$/ do |name|
+  @klass.process name.to_sym
 end
 
 Then /^the uploader should have '(.*?)' as its current path$/ do |path|
