@@ -291,8 +291,29 @@ describe Merb::Upload::Uploader do
   
   describe '#store!' do
     before do
-      @uploader_class.storage.stub!(:store!).and_return(:monkey)
       @file = File.open(file_path('test.jpg'))
+
+      @stored_file = mock('a stored file')
+      @stored_file.stub!(:path).and_return('/path/to/somewhere')
+      @stored_file.stub!(:url).and_return('http://www.example.com')
+      @stored_file.stub!(:identifier).and_return('this-is-me')
+      
+      @uploader_class.storage.stub!(:store!).and_return(@stored_file)
+    end
+  
+    it "should set the current path" do
+      @uploader.store!(@file)
+      @uploader.current_path.should == '/path/to/somewhere'
+    end
+    
+    it "should set the url" do
+      @uploader.store!(@file)
+      @uploader.url.should == 'http://www.example.com'
+    end
+    
+    it "should set the identifier" do
+      @uploader.store!(@file)
+      @uploader.identifier.should == 'this-is-me'
     end
     
     it "should, if a file is given as argument, cache that file" do
@@ -320,25 +341,45 @@ describe Merb::Upload::Uploader do
 
     it "should cache the result given by the storage engine" do
       @uploader.store!(@file)
-      @uploader.file.should == :monkey
+      @uploader.file.should == @stored_file
     end
   end
   
   describe '#retrieve_from_store!' do
     before do
-      @uploader_class.storage.stub!(:retrieve!).and_return(:monkey)
+      @stored_file = mock('a stored file')
+      @stored_file.stub!(:path).and_return('/path/to/somewhere')
+      @stored_file.stub!(:url).and_return('http://www.example.com')
+      @stored_file.stub!(:identifier).and_return('this-is-me')
+
+      @uploader_class.storage.stub!(:retrieve!).and_return(@stored_file)
+    end
+
+    it "should set the current path" do
+      @uploader.retrieve_from_store!('monkey.txt')
+      @uploader.current_path.should == '/path/to/somewhere'
+    end
+
+    it "should set the url" do
+      @uploader.retrieve_from_store!('monkey.txt')
+      @uploader.url.should == 'http://www.example.com'
+    end
+
+    it "should set the identifier" do
+      @uploader.retrieve_from_store!('monkey.txt')
+      @uploader.identifier.should == 'this-is-me'
     end
     
     it "should instruct the storage engine to retrieve the file and store the result" do
-      @uploader_class.storage.should_receive(:retrieve!).with(@uploader, 'monkey.txt').and_return(:monkey)
+      @uploader_class.storage.should_receive(:retrieve!).with(@uploader, 'monkey.txt').and_return(@stored_file)
       @uploader.retrieve_from_store!('monkey.txt')
-      @uploader.file.should == :monkey
+      @uploader.file.should == @stored_file
     end
     
     it "should overwrite a file that has already been cached" do
       @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
       @uploader.retrieve_from_store!('bork.txt')
-      @uploader.file.should == :monkey
+      @uploader.file.should == @stored_file
     end
     
     it "should not set the original_filename" do
@@ -349,13 +390,33 @@ describe Merb::Upload::Uploader do
   
   describe '#retrieve_from_store' do
     before do
-      @uploader_class.storage.stub!(:retrieve!).and_return(:monkey)
+      @stored_file = mock('a stored file')
+      @stored_file.stub!(:path).and_return('/path/to/somewhere')
+      @stored_file.stub!(:url).and_return('http://www.example.com')
+      @stored_file.stub!(:identifier).and_return('this-is-me')
+
+      @uploader_class.storage.stub!(:retrieve!).and_return(@stored_file)
+    end
+
+    it "should set the current path" do
+      @uploader.retrieve_from_store('monkey.txt')
+      @uploader.current_path.should == '/path/to/somewhere'
+    end
+
+    it "should set the url" do
+      @uploader.retrieve_from_store('monkey.txt')
+      @uploader.url.should == 'http://www.example.com'
+    end
+
+    it "should set the identifier" do
+      @uploader.retrieve_from_store('monkey.txt')
+      @uploader.identifier.should == 'this-is-me'
     end
     
     it "should instruct the storage engine to retrieve the file and store the result" do
-      @uploader_class.storage.should_receive(:retrieve!).with(@uploader, 'monkey.txt').and_return(:monkey)
+      @uploader_class.storage.should_receive(:retrieve!).with(@uploader, 'monkey.txt').and_return(@stored_file)
       @uploader.retrieve_from_store('monkey.txt')
-      @uploader.file.should == :monkey
+      @uploader.file.should == @stored_file
     end
     
     it "should not overwrite a file that has already been cached" do

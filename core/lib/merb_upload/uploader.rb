@@ -140,6 +140,15 @@ module Merb
       end
       
       alias_method :to_s, :url
+      
+      ##
+      # Returns a string that uniquely identifies the last stored file
+      #
+      # @return [String] uniquely identifies a file
+      #
+      def identifier
+        file.identifier if file.respond_to?(:identifier)
+      end
     
       ##
       # 
