@@ -33,6 +33,8 @@ module Merb
         sanitize(original_filename) if original_filename
       end
       
+      alias_method :identifier, :filename
+      
       ##
       # Returns the part of the filename before the extension. So if a file is called 'test.jpeg'
       # this would return 'test'
