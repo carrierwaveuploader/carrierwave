@@ -21,6 +21,11 @@ module Merb
       class Abstract
         
         ##
+        # Do setup specific for this storage engine
+        #
+        def self.setup!; end
+
+        ##
         # Do something to store the file
         #
         # @param [Merb::Upload::Uploader] uploader an uploader object

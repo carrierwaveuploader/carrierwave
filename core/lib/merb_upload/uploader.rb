@@ -69,10 +69,13 @@ module Merb
         def storage(storage = nil)
           if storage.is_a?(Symbol)
             @storage = get_storage_by_symbol(storage)
+            @storage.setup!
           elsif storage
             @storage = storage
+            @storage.setup!
           elsif @storage.nil?
             @storage = get_storage_by_symbol(Merb::Plugins.config[:merb_upload][:storage])
+            @storage.setup!
           end
           return @storage
         end

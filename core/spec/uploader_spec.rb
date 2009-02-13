@@ -48,15 +48,19 @@ describe Merb::Upload::Uploader do
   
   describe ".storage" do
     it "should set the storage if an argument is given" do
-      @uploader_class.storage "blah"
-      @uploader_class.storage.should == "blah"
+      storage = mock('some kind of storage')
+      storage.should_receive(:setup!)
+      @uploader_class.storage storage
+      @uploader_class.storage.should == storage
     end
     
     it "should default to file" do
+      Merb::Upload::Storage::File.should_receive(:setup!)
       @uploader_class.storage.should == Merb::Upload::Storage::File
     end
     
     it "should set the storage from the configured shortcuts if a symbol is given" do
+      Merb::Upload::Storage::File.should_receive(:setup!)
       @uploader_class.storage :file
       @uploader_class.storage.should == Merb::Upload::Storage::File
     end
