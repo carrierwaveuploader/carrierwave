@@ -287,9 +287,7 @@ describe Merb::Upload::Uploader do
   
   describe '#store!' do
     before do
-      @storage = mock('storage')
-      @uploader.stub!(:storage).and_return(@storage)
-      @storage.stub!(:store!).and_return(:monkey)
+      @uploader_class.storage.stub!(:store!).and_return(:monkey)
       @file = File.open(file_path('test.jpg'))
     end
     
@@ -312,7 +310,7 @@ describe Merb::Upload::Uploader do
     
     it "should instruct the storage engine to store the file" do
       @uploader.cache!(@file)
-      @storage.should_receive(:store!).with(@uploader.file).and_return(:monkey)
+      @uploader_class.storage.should_receive(:store!).with(@uploader, @uploader.file).and_return(:monkey)
       @uploader.store!
     end
 
@@ -324,13 +322,11 @@ describe Merb::Upload::Uploader do
   
   describe '#retrieve_from_store!' do
     before do
-      @storage = mock('storage')
-      @uploader.stub!(:storage).and_return(@storage)
-      @storage.stub!(:retrieve!).and_return(:monkey)
+      @uploader_class.storage.stub!(:retrieve!).and_return(:monkey)
     end
     
     it "should instruct the storage engine to retrieve the file and store the result" do
-      @storage.should_receive(:retrieve!).with('monkey.txt').and_return(:monkey)
+      @uploader_class.storage.should_receive(:retrieve!).with(@uploader, 'monkey.txt').and_return(:monkey)
       @uploader.retrieve_from_store!('monkey.txt')
       @uploader.file.should == :monkey
     end
@@ -349,13 +345,11 @@ describe Merb::Upload::Uploader do
   
   describe '#retrieve_from_store' do
     before do
-      @storage = mock('storage')
-      @uploader.stub!(:storage).and_return(@storage)
-      @storage.stub!(:retrieve!)
+      @uploader_class.storage.stub!(:retrieve!).and_return(:monkey)
     end
     
     it "should instruct the storage engine to retrieve the file and store the result" do
-      @storage.should_receive(:retrieve!).and_return(:monkey)
+      @uploader_class.storage.should_receive(:retrieve!).with(@uploader, 'monkey.txt').and_return(:monkey)
       @uploader.retrieve_from_store('monkey.txt')
       @uploader.file.should == :monkey
     end
@@ -418,11 +412,8 @@ describe Merb::Upload::Uploader do
         @stored_file = mock('a stored file')
         @stored_file.stub!(:path).and_return('/path/to/somewhere')
         @stored_file.stub!(:url).and_return('http://www.example.com')
-        
-        @storage = mock('storage')
-        @storage.stub!(:store!).and_return(@stored_file)
-        
-        @uploader.stub!(:storage).and_return(@storage)
+
+        @uploader_class.storage.stub!(:store!).and_return(@stored_file)
       end
       
       after do
@@ -458,10 +449,7 @@ describe Merb::Upload::Uploader do
         @stored_file.stub!(:path).and_return('/path/to/somewhere')
         @stored_file.stub!(:url).and_return('http://www.example.com')
         
-        @storage = mock('storage')
-        @storage.stub!(:retrieve!).and_return(@stored_file)
-        
-        @uploader.stub!(:storage).and_return(@storage)
+        @uploader_class.storage.stub!(:retrieve!).and_return(@stored_file)
       end
     
       it "should set the current path" do
@@ -475,7 +463,7 @@ describe Merb::Upload::Uploader do
       end
       
       it "should pass the identifier to the storage engine" do
-        @storage.should_receive(:retrieve!).with('monkey.txt').and_return(@stored_file)
+        @uploader_class.storage.should_receive(:retrieve!).with(@uploader, 'monkey.txt').and_return(@stored_file)
         @uploader.retrieve_from_store!('monkey.txt')
         @uploader.file.should == @stored_file
       end

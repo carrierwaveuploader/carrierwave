@@ -268,14 +268,14 @@ module Merb
       def store!(new_file=nil)
         if Merb::Plugins.config[:merb_upload][:use_cache]
           cache!(new_file) if new_file
-          @file = storage.store!(@file)
+          @file = storage.store!(self, @file)
         else
           new_file = Merb::Upload::SanitizedFile.new(new_file)
           
           @filename = new_file.filename
           self.original_filename = filename
           
-          @file = storage.store!(new_file)
+          @file = storage.store!(self, new_file)
         end
       end
       
@@ -296,7 +296,7 @@ module Merb
       # @param [String] original_filename uniquely identifies the file to retrieve
       #
       def retrieve_from_store!(identifier)
-        @file = storage.retrieve!(identifier)
+        @file = storage.retrieve!(self, identifier)
       end
       
     private
@@ -306,7 +306,7 @@ module Merb
       end
     
       def storage
-        @storage ||= self.class.storage.new(self)
+        self.class.storage
       end
 
       def cache_id=(cache_id)
