@@ -129,7 +129,7 @@ module Merb
       # @return [String] the location where this file is accessible via a url
       #
       def url
-        if file.respond_to?(:url)
+        if file.respond_to?(:url) and not file.url.blank?
           file.url
         else
           '/' + current_path.relative_path_from(Merb.dir_for(:public)) if current_path
