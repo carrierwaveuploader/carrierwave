@@ -1,4 +1,4 @@
-Feature: uploader with file storage
+Feature: uploader with file storage and overriden filename
   In order to be awesome
   As a merb programmer
   I want to upload files to the filesystem with an overriden filename

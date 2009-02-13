@@ -14,6 +14,14 @@ Given /^that the uploader reverses the filename$/ do
   end
 end
 
+Given /^that the uploader has the store_dir overridden to '(.*?)'$/ do |store_dir|
+  @klass.class_eval do
+    define_method(:store_dir) do
+      Merb.root / store_dir
+    end
+  end
+end
+
 Then /^there should be a file at '(.*?)'$/ do |file|
   File.exist?(file_path(file)).should be_true
 end
