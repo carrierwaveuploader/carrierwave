@@ -42,7 +42,7 @@ module Merb
           private                                                                             # private
                                                                                               # 
           def set_#{column}_filename                                                          # def set_image_filename
-            self[:#{column}] = @#{column}_uploader.filename if @#{column}_uploader            #   self[:image] = @image_uploader.filename if @image_uploader
+            self[:#{column}] = @#{column}_uploader.identifier if @#{column}_uploader          #   self[:image] = @image_uploader.identifier if @image_uploader
           end                                                                                 # end
         EOF
       end
