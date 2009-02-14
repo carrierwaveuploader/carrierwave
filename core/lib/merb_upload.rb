@@ -17,6 +17,7 @@ if defined?(Merb::Plugins)
   dir = File.dirname(__FILE__) / 'merb_upload'
   require dir / 'sanitized_file'
   require dir / 'uploader'
+  require dir / 'mount'
   require dir / 'storage' / 'abstract'
   require dir / 'storage' / 'file'
   require dir / 'storage' / 's3'
