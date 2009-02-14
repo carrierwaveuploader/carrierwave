@@ -4,6 +4,8 @@ module Merb
   module Upload
     module ActiveRecord
       
+      include Merb::Upload::Mount
+      
       module Extension
       
         def read_uploader(column)
@@ -29,5 +31,4 @@ module Merb
   end # Upload
 end # Merb
 
-ActiveRecord::Base.send(:extend, Merb::Upload::Mount)
 ActiveRecord::Base.send(:extend, Merb::Upload::ActiveRecord)
