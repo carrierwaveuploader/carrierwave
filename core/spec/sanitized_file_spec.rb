@@ -14,6 +14,7 @@ describe Merb::Upload::SanitizedFile do
     if File.exists?(file_path('llama.jpg'))
       FileUtils.rm(file_path('llama.jpg'))
     end
+    FileUtils.rm_rf(public_path)
   end
   
   describe '#empty?' do
@@ -275,25 +276,20 @@ describe Merb::Upload::SanitizedFile do
     end
 
   end
-
-  describe "with a valid Hash" do
-    before do
-      @hash = {
-        "tempfile" => stub_merb_tempfile('llama.jpg'),
-        "filename" => "llama.jpg",
-        "content_type" => 'image/jpeg'
-      }
-      @sanitized_file = Merb::Upload::SanitizedFile.new(@hash)
-    end
   
-    it_should_behave_like "all valid sanitized files"
-  
+  shared_examples_for "all valid sanitized files that are stored on disk" do
     describe '#move_to' do
       it "should not raise an error when moved to its own location" do
         running { @sanitized_file.move_to(@sanitized_file.path) }.should_not raise_error
       end
+
+      it "should remove the original file" do
+        original_path = @sanitized_file.path
+        @sanitized_file.move_to(public_path('blah.txt'))
+        File.exist?(original_path).should be_false
+      end
     end
-  
+
     describe '#copy_to' do
       it "should return a new instance when copied to its own location" do
         running {
@@ -301,29 +297,17 @@ describe Merb::Upload::SanitizedFile do
           new_file.should be_an_instance_of(@sanitized_file.class)
         }.should_not raise_error
       end
-      
-      it "should not remove the original file when copied" do
-        @sanitized_file.copy_to(@sanitized_file.path)
+
+      it "should not remove the original file" do
+        new_file = @sanitized_file.copy_to(public_path('blah.txt'))
         File.exist?(@sanitized_file.path).should be_true
+        File.exist?(new_file.path).should be_true
       end
     end
     
     describe '#exists?' do
       it "should be true" do
         @sanitized_file.exists?.should be_true
-      end
-    end
-    
-    describe '#string?' do
-      it "should be false" do
-        @sanitized_file.string?.should be_false
-      end
-    end
-  
-    describe '#path' do
-      it "should return the path of the tempfile" do
-        @sanitized_file.path.should_not be_nil
-        @sanitized_file.path.should == @hash["tempfile"].path
       end
     end
     
@@ -336,6 +320,35 @@ describe Merb::Upload::SanitizedFile do
     end
   end
 
+  describe "with a valid Hash" do
+    before do
+      @hash = {
+        "tempfile" => stub_merb_tempfile('llama.jpg'),
+        "filename" => "llama.jpg",
+        "content_type" => 'image/jpeg'
+      }
+      @sanitized_file = Merb::Upload::SanitizedFile.new(@hash)
+    end
+  
+    it_should_behave_like "all valid sanitized files"
+
+    it_should_behave_like "all valid sanitized files that are stored on disk"
+    
+    describe '#path' do
+      it "should return the path of the tempfile" do
+        @sanitized_file.path.should_not be_nil
+        @sanitized_file.path.should == @hash["tempfile"].path
+      end
+    end
+  
+    describe '#string?' do
+      it "should be false" do
+        @sanitized_file.string?.should be_false
+      end
+    end
+  
+  end
+
   describe "with a valid Tempfile" do
     before do
       @tempfile = stub_tempfile('llama.jpg', 'image/jpeg')
@@ -343,53 +356,22 @@ describe Merb::Upload::SanitizedFile do
     end
 
     it_should_behave_like "all valid sanitized files"
-  
-    describe '#move_to' do
-      it "should not raise an error when moved to its own location" do
-        running { @sanitized_file.move_to(@sanitized_file.path) }.should_not raise_error
-      end
-    end
-  
-    describe '#copy_to' do
-      it "should return a new instance when copied to its own location" do
-        running {
-          new_file = @sanitized_file.copy_to(@sanitized_file.path)
-          new_file.should be_an_instance_of(@sanitized_file.class)
-        }.should_not raise_error
-      end
-      
-      it "should not remove the original file when copied" do
-        @sanitized_file.copy_to(@sanitized_file.path)
-        File.exist?(@sanitized_file.path).should be_true
-      end
-    end
-    
-    describe '#exists?' do
-      it "should be true" do
-        @sanitized_file.exists?.should be_true
-      end
-    end
-    
+
+    it_should_behave_like "all valid sanitized files that are stored on disk"
+
     describe '#string?' do
       it "should be false" do
         @sanitized_file.string?.should be_false
       end
     end
-
+    
     describe '#path' do
       it "should return the path of the tempfile" do
         @sanitized_file.path.should_not be_nil
         @sanitized_file.path.should == @tempfile.path
       end
     end
-    
-    describe '#delete' do
-      it "should remove it from the filesystem" do
-        File.exists?(@sanitized_file.path).should be_true
-        @sanitized_file.delete
-        File.exists?(@sanitized_file.path).should be_false
-      end
-    end
+
   end
 
   describe "with a valid StringIO" do
@@ -433,52 +415,21 @@ describe Merb::Upload::SanitizedFile do
   
     it_should_behave_like "all valid sanitized files"
   
-    describe '#move_to' do
-      it "should not raise an error when moved to its own location" do
-        running { @sanitized_file.move_to(@sanitized_file.path) }.should_not raise_error
-      end
-    end
-  
-    describe '#copy_to' do
-      it "should return a new instance when copied to its own location" do
-        running {
-          new_file = @sanitized_file.copy_to(@sanitized_file.path)
-          new_file.should be_an_instance_of(@sanitized_file.class)
-        }.should_not raise_error
-      end
-      
-      it "should not remove the original file when copied" do
-        @sanitized_file.copy_to(@sanitized_file.path)
-        File.exist?(@sanitized_file.path).should be_true
-      end
-    end
-    
-    describe '#exists?' do
-      it "should be true" do
-        @sanitized_file.exists?.should be_true
-      end
-    end
+    it_should_behave_like "all valid sanitized files that are stored on disk"
 
     describe '#string?' do
       it "should be false" do
         @sanitized_file.string?.should be_false
       end
     end
-
+    
     describe '#path' do
-      it "should return the path of the tempfile" do
+      it "should return the path of the file" do
         @sanitized_file.path.should_not be_nil
         @sanitized_file.path.should == file_path('llama.jpg')
       end
     end
-    
-    describe '#delete' do
-      it "should remove it from the filesystem" do
-        File.exists?(@sanitized_file.path).should be_true
-        @sanitized_file.delete
-        File.exists?(@sanitized_file.path).should be_false
-      end
-    end
+
   end
 
   describe "with a valid path" do
@@ -489,44 +440,21 @@ describe Merb::Upload::SanitizedFile do
   
     it_should_behave_like "all valid sanitized files"
   
-    describe '#move_to' do
-      it "should not raise an error when moved to its own location" do
-        running { @sanitized_file.move_to(@sanitized_file.path) }.should_not raise_error
-      end
-    end
-  
-    describe '#copy_to' do
-      it "should return a new instance when copied to its own location" do
-        running {
-          new_file = @sanitized_file.copy_to(@sanitized_file.path)
-          new_file.should be_an_instance_of(@sanitized_file.class)
-        }.should_not raise_error
-      end
-      
-      it "should not remove the original file when copied" do
-        @sanitized_file.copy_to(@sanitized_file.path)
-        File.exist?(@sanitized_file.path).should be_true
-      end
-    end
-    
-    describe '#exists?' do
-      it "should be true" do
-        @sanitized_file.exists?.should be_true
-      end
-    end
+    it_should_behave_like "all valid sanitized files that are stored on disk"
 
     describe '#string?' do
       it "should be true" do
         @sanitized_file.string?.should be_true
       end
     end
-
+    
     describe '#path' do
-      it "should return the path of the tempfile" do
+      it "should return the path of the file" do
         @sanitized_file.path.should_not be_nil
         @sanitized_file.path.should == file_path('llama.jpg')
       end
     end
+
   end
   
   describe "with a valid Pathname" do
@@ -536,45 +464,22 @@ describe Merb::Upload::SanitizedFile do
     end
   
     it_should_behave_like "all valid sanitized files"
-  
-    describe '#move_to' do
-      it "should not raise an error when moved to its own location" do
-        running { @sanitized_file.move_to(@sanitized_file.path) }.should_not raise_error
-      end
-    end
-  
-    describe '#copy_to' do
-      it "should return a new instance when copied to its own location" do
-        running {
-          new_file = @sanitized_file.copy_to(@sanitized_file.path)
-          new_file.should be_an_instance_of(@sanitized_file.class)
-        }.should_not raise_error
-      end
-      
-      it "should not remove the original file when copied" do
-        @sanitized_file.copy_to(@sanitized_file.path)
-        File.exist?(@sanitized_file.path).should be_true
-      end
-    end
-    
-    describe '#exists?' do
-      it "should be true" do
-        @sanitized_file.exists?.should be_true
-      end
-    end
+
+    it_should_behave_like "all valid sanitized files that are stored on disk"
 
     describe '#string?' do
       it "should be true" do
         @sanitized_file.string?.should be_true
       end
     end
-
+    
     describe '#path' do
-      it "should return the path of the tempfile" do
+      it "should return the path of the file" do
         @sanitized_file.path.should_not be_nil
         @sanitized_file.path.should == file_path('llama.jpg')
       end
     end
+
   end
 
   describe "that is empty" do
