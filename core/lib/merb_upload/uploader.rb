@@ -79,6 +79,8 @@ module Merb
           end
           return @storage
         end
+
+        alias_method :storage=, :storage
       
       private
       
