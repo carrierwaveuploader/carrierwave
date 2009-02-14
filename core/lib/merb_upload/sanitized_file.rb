@@ -118,7 +118,12 @@ module Merb
       # @return [String] contents of the file
       #
       def read
-        string? ? File.read(@file) : @file.read
+        if string?
+          File.read(@file)
+        else
+          @file.rewind if @file.respond_to?(:rewind)
+          @file.read
+        end
       end
     
       ##
@@ -127,9 +132,16 @@ module Merb
       # @param [String] new_path The path where the file should be moved.
       #
       def move_to(new_path)
+        return if self.empty?
         new_path = File.expand_path(new_path)
-        copy_file(new_path)
-        delete
+
+        mkdir!(new_path)
+        if exists?
+          FileUtils.mv(path, new_path) unless new_path == path
+        else
+          File.open(new_path, "wb") { |f| f.write(read) }
+        end
+        chmod!(new_path)
         self.file = new_path
       end
     
@@ -140,8 +152,16 @@ module Merb
       # @return [Merb::Upload::SanitizedFile] the location where the file will be stored.
       #
       def copy_to(new_path)
+        return if self.empty?
         new_path = File.expand_path(new_path)
-        copy_file(new_path)
+
+        mkdir!(new_path)
+        if exists?
+          FileUtils.cp(path, new_path) unless new_path == path
+        else
+          File.open(new_path, "wb") { |f| f.write(read) }
+        end
+        chmod!(new_path)
         self.class.new(new_path)
       end
     
@@ -158,6 +178,7 @@ module Merb
       # @return [String] the content type of the file 
       #
       def content_type
+        return @content_type if @content_type
         @file.content_type.chomp if @file.respond_to?(:content_type) and @file.content_type
       end
     
@@ -174,21 +195,14 @@ module Merb
           @content_type = nil
         end
       end
-    
-      def copy_file(new_path)
-        unless self.empty?
-          # create the directory if it doesn't exist
-          FileUtils.mkdir_p(File.dirname(new_path)) unless File.exists?(File.dirname(new_path))
-          # stringios don't have a path and can't be copied
-          if not path and @file.respond_to?(:read)
-            @file.rewind # Make sure we are at the beginning of the buffer
-            File.open(new_path, "wb") { |f| f.write(@file.read) }
-          elsif path != new_path
-            FileUtils.cp(path, new_path)
-          end
-          File.chmod(@options[:permissions], new_path) if @options[:permissions]
-          return true
-        end
+      
+      # create the directory if it doesn't exist
+      def mkdir!(path)
+        FileUtils.mkdir_p(File.dirname(path)) unless File.exists?(File.dirname(path))
+      end
+      
+      def chmod!(path)
+        File.chmod(@options[:permissions], path) if @options[:permissions]
       end
     
       def sanitize(name)
