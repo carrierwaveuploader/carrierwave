@@ -19,6 +19,7 @@ if defined?(Merb::Plugins)
   require dir / 'uploader'
   require dir / 'storage' / 'abstract'
   require dir / 'storage' / 'file'
+  require dir / 'storage' / 's3'
   
   # Merb gives you a Merb::Plugins.config hash...feel free to put your stuff in your piece of it
   Merb::Plugins.config[:merb_upload] = {
@@ -27,7 +28,11 @@ if defined?(Merb::Plugins)
     :store_dir => Merb.root / 'public' / 'uploads',
     :cache_dir => Merb.root / 'public' / 'uploads' / 'tmp',
     :storage_engines => {
-      :file => Merb::Upload::Storage::File
+      :file => Merb::Upload::Storage::File,
+      :s3 => Merb::Upload::Storage::S3
+    },
+    :s3 => {
+      :access => :public_read
     }
   }
   

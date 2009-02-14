@@ -12,7 +12,7 @@ HOMEPAGE = "http://merbivore.com/"
 SUMMARY = "ActiveRecord support for merb_upload"
 
 spec = Gem::Specification.new do |s|
-  s.rubyforge_project = 'merb'
+  s.rubyforge_project = 'merb_upload'
   s.name = GEM_NAME
   s.version = GEM_VERSION
   s.platform = Gem::Platform::RUBY
