@@ -160,14 +160,9 @@ describe Merb::Upload::Uploader do
       @uploader.file.should be_an_instance_of(Merb::Upload::SanitizedFile)
     end
     
-    it "should return a cache id" do
-      cache_id = @uploader.cache!(File.open(file_path('test.jpg')))
-      cache_id.should == '20071201-1234-345-2255'
-    end
-    
-    it "should store the cache id" do
+    it "should store the cache name" do
       @uploader.cache!(File.open(file_path('test.jpg')))
-      @uploader.cache_id.should == '20071201-1234-345-2255'
+      @uploader.cache_name.should == '20071201-1234-345-2255/test.jpg'
     end
     
     it "should set the filename to the file's sanitized filename" do
@@ -207,11 +202,6 @@ describe Merb::Upload::Uploader do
       @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
       @uploader.retrieve_from_cache!('20071201-1234-345-2255/bork.txt')
       @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/bork.txt')
-    end
-
-    it "should store the cache_id" do
-      @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
-      @uploader.cache_id.should == '20071201-1234-345-2255'
     end
     
     it "should store the cache_name" do

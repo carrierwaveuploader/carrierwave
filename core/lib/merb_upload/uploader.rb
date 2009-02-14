@@ -90,7 +90,7 @@ module Merb
       
       end
     
-      attr_reader :file, :cache_id, :model, :mounted_as
+      attr_reader :file, :model, :mounted_as
       
       ##
       # If a model is given as the first parameter, it will stored in the uploader, and
@@ -229,8 +229,6 @@ module Merb
         
         @file = @file.copy_to(cache_path)
         process!
-        
-        return @cache_id
       end
       
       ##
@@ -322,6 +320,8 @@ module Merb
       def storage
         self.class.storage
       end
+      
+      attr_reader :cache_id
 
       def cache_id=(cache_id)
         raise Merb::Upload::InvalidParameter, "invalid cache id" unless cache_id =~ /^[\d]{8}\-[\d]{4}\-[\d]+\-[\d]{4}$/
