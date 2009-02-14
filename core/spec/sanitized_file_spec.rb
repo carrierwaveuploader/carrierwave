@@ -178,8 +178,6 @@ describe Merb::Upload::SanitizedFile do
         @sanitized_file.move_to(file_path('gurr.png'))
         
         File.exists?( file_path('gurr.png') ).should be_true
-        
-        file_path('gurr.png').should be_identical_to(file_path('llama.jpg'))
       end
       
       it "should have changed its path when moved" do
@@ -409,6 +407,7 @@ describe Merb::Upload::SanitizedFile do
 
   describe "with a valid File object" do
     before do
+      FileUtils.cp(file_path('test.jpg'), file_path('llama.jpg'))
       @sanitized_file = Merb::Upload::SanitizedFile.new(stub_file('llama.jpg', 'image/jpeg'))
       @sanitized_file.should_not be_empty
     end
@@ -422,7 +421,7 @@ describe Merb::Upload::SanitizedFile do
         @sanitized_file.string?.should be_false
       end
     end
-    
+
     describe '#path' do
       it "should return the path of the file" do
         @sanitized_file.path.should_not be_nil
@@ -434,6 +433,7 @@ describe Merb::Upload::SanitizedFile do
 
   describe "with a valid path" do
     before do
+      FileUtils.cp(file_path('test.jpg'), file_path('llama.jpg'))
       @sanitized_file = Merb::Upload::SanitizedFile.new(file_path('llama.jpg'))
       @sanitized_file.should_not be_empty
     end
@@ -459,6 +459,7 @@ describe Merb::Upload::SanitizedFile do
   
   describe "with a valid Pathname" do
     before do
+      FileUtils.copy_file(file_path('test.jpg'), file_path('llama.jpg'))
       @sanitized_file = Merb::Upload::SanitizedFile.new(Pathname.new(file_path('llama.jpg')))
       @sanitized_file.should_not be_empty
     end

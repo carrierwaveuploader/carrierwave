@@ -126,11 +126,10 @@ module Merb
       #
       # @param [String] new_path The path where the file should be moved.
       #
-      # --
-      # FIXME: this currently copies the file, which is wrong.
       def move_to(new_path)
         new_path = File.expand_path(new_path)
         copy_file(new_path)
+        delete
         self.file = new_path
       end
     
@@ -141,16 +140,16 @@ module Merb
       # @return [Merb::Upload::SanitizedFile] the location where the file will be stored.
       #
       def copy_to(new_path)
-        copy = self.clone
-        copy.move_to(new_path)
-        return copy
+        new_path = File.expand_path(new_path)
+        copy_file(new_path)
+        self.class.new(new_path)
       end
     
       ##
       # Removes the file from the filesystem.
       #
       def delete
-        FileUtils.rm(self.path) if self.path
+        FileUtils.rm(self.path) if exists?
       end
     
       ##
