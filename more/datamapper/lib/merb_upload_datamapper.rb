@@ -6,19 +6,9 @@ module Merb
 
       include Merb::Upload::Mount
 
-      module Extension
-
-        def read_uploader(column)
-          attribute_get(column)
-        end
-
-        def write_uploader(column, identifier)
-          attribute_set(column, identifier)
-        end
-
-      end
-
       def after_mount(column, uploader)
+        alias_method :read_uploader, :attribute_get
+        alias_method :write_uploader, :attribute_set
 
         include Merb::Upload::DataMapper::Extension
 
