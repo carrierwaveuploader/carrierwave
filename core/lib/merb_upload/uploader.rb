@@ -225,7 +225,7 @@ module Merb
         @filename = new_file.filename
         self.original_filename = new_file.filename
         
-        @file.move_to(cache_path)
+        @file = @file.copy_to(cache_path)
         process!
         
         return @cache_id
