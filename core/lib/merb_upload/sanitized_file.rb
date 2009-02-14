@@ -205,10 +205,11 @@ module Merb
         File.chmod(@options[:permissions], path) if @options[:permissions]
       end
     
+      # Sanitize the filename, to prevent hacking
       def sanitize(name)
-        # Sanitize the filename, to prevent hacking
-        name = File.basename(name.gsub("\\", "/")) # work-around for IE
-        name.gsub!(/[^a-zA-Z0-9\.\-\+_]/,"_")
+        name = name.gsub("\\", "/") # work-around for IE
+        name = File.basename(name)
+        name = name.gsub(/[^a-zA-Z0-9\.\-\+_]/,"_")
         name = "_#{name}" if name =~ /^\.+$/
         name = "unnamed" if name.size == 0
         return name.downcase
