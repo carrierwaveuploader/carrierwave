@@ -288,16 +288,23 @@ describe Merb::Upload::SanitizedFile do
   
     it_should_behave_like "all valid sanitized files"
   
-    describe '#copy_to' do
+    describe '#move_to' do
       it "should not raise an error when moved to its own location" do
         running { @sanitized_file.move_to(@sanitized_file.path) }.should_not raise_error
       end
+    end
   
+    describe '#copy_to' do
       it "should return a new instance when copied to its own location" do
         running {
           new_file = @sanitized_file.copy_to(@sanitized_file.path)
           new_file.should be_an_instance_of(@sanitized_file.class)
         }.should_not raise_error
+      end
+      
+      it "should not remove the original file when copied" do
+        @sanitized_file.copy_to(@sanitized_file.path)
+        File.exist?(@sanitized_file.path).should be_true
       end
     end
     
@@ -337,16 +344,23 @@ describe Merb::Upload::SanitizedFile do
 
     it_should_behave_like "all valid sanitized files"
   
-    describe '#copy_to' do
+    describe '#move_to' do
       it "should not raise an error when moved to its own location" do
         running { @sanitized_file.move_to(@sanitized_file.path) }.should_not raise_error
       end
+    end
   
+    describe '#copy_to' do
       it "should return a new instance when copied to its own location" do
         running {
           new_file = @sanitized_file.copy_to(@sanitized_file.path)
           new_file.should be_an_instance_of(@sanitized_file.class)
         }.should_not raise_error
+      end
+      
+      it "should not remove the original file when copied" do
+        @sanitized_file.copy_to(@sanitized_file.path)
+        File.exist?(@sanitized_file.path).should be_true
       end
     end
     
@@ -419,16 +433,23 @@ describe Merb::Upload::SanitizedFile do
   
     it_should_behave_like "all valid sanitized files"
   
-    describe '#copy_to' do
+    describe '#move_to' do
       it "should not raise an error when moved to its own location" do
         running { @sanitized_file.move_to(@sanitized_file.path) }.should_not raise_error
       end
+    end
   
+    describe '#copy_to' do
       it "should return a new instance when copied to its own location" do
         running {
           new_file = @sanitized_file.copy_to(@sanitized_file.path)
           new_file.should be_an_instance_of(@sanitized_file.class)
         }.should_not raise_error
+      end
+      
+      it "should not remove the original file when copied" do
+        @sanitized_file.copy_to(@sanitized_file.path)
+        File.exist?(@sanitized_file.path).should be_true
       end
     end
     
@@ -468,16 +489,23 @@ describe Merb::Upload::SanitizedFile do
   
     it_should_behave_like "all valid sanitized files"
   
-    describe '#copy_to' do
+    describe '#move_to' do
       it "should not raise an error when moved to its own location" do
         running { @sanitized_file.move_to(@sanitized_file.path) }.should_not raise_error
       end
+    end
   
+    describe '#copy_to' do
       it "should return a new instance when copied to its own location" do
         running {
           new_file = @sanitized_file.copy_to(@sanitized_file.path)
           new_file.should be_an_instance_of(@sanitized_file.class)
         }.should_not raise_error
+      end
+      
+      it "should not remove the original file when copied" do
+        @sanitized_file.copy_to(@sanitized_file.path)
+        File.exist?(@sanitized_file.path).should be_true
       end
     end
     
@@ -509,16 +537,23 @@ describe Merb::Upload::SanitizedFile do
   
     it_should_behave_like "all valid sanitized files"
   
-    describe '#copy_to' do
+    describe '#move_to' do
       it "should not raise an error when moved to its own location" do
         running { @sanitized_file.move_to(@sanitized_file.path) }.should_not raise_error
       end
+    end
   
+    describe '#copy_to' do
       it "should return a new instance when copied to its own location" do
         running {
           new_file = @sanitized_file.copy_to(@sanitized_file.path)
           new_file.should be_an_instance_of(@sanitized_file.class)
         }.should_not raise_error
+      end
+      
+      it "should not remove the original file when copied" do
+        @sanitized_file.copy_to(@sanitized_file.path)
+        File.exist?(@sanitized_file.path).should be_true
       end
     end
     
