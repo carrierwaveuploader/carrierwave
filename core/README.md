@@ -1,10 +1,10 @@
-= merb_upload
-
-NOTE: I am one of those very weird people who write the README first. This gives me a way to organize my toughts about how certain things will work. This plugin is a work in progress and this means that certain things in this README describe how things *will* work, not how they actually work right now.
+= Merb Upload
 
 This plugin for Merb provides a simple and extremely flexible way to upload files.
 
 === Getting Started
+
+At the moment you are going to have to grab it here from github and install it yourself
 
 Add it as a dependency to your config/init.rb
     
