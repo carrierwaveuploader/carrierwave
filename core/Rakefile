@@ -20,14 +20,14 @@ spec = Gem::Specification.new do |s|
   s.version = GEM_VERSION
   s.platform = Gem::Platform::RUBY
   s.has_rdoc = true
-  s.extra_rdoc_files = ["README", "LICENSE", 'TODO']
+  s.extra_rdoc_files = ["README.md", "LICENSE", 'TODO']
   s.summary = SUMMARY
   s.description = s.summary
   s.author = AUTHOR
   s.email = EMAIL
   s.homepage = HOMEPAGE
   s.require_path = 'lib'
-  s.files = %w(LICENSE Generators README Rakefile TODO) + Dir.glob("{lib,spec}/**/*")
+  s.files = %w(LICENSE Generators README.md Rakefile TODO) + Dir.glob("{lib,spec}/**/*")
   
 end
 
@@ -41,7 +41,7 @@ Cucumber::Rake::Task.new do |t|
 end
 
 YARD::Rake::YardocTask.new do |t|
-  t.files   = ["README", "LICENSE", "TODO", 'lib/**/*.rb']
+  t.files   = ["README.md", "LICENSE", "TODO", 'lib/**/*.rb']
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|
