@@ -41,7 +41,7 @@ Cucumber::Rake::Task.new do |t|
 end
 
 YARD::Rake::YardocTask.new do |t|
-  t.files   = ["README.md", "LICENSE", "TODO", 'lib/**/*.rb']
+  t.files   = ["README.md", "LICENSE", "TODO", 'lib/merb_upload/**/*.rb']
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|
