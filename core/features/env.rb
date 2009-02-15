@@ -2,18 +2,18 @@ $TESTING=true
 $:.push File.join(File.dirname(__FILE__), '..', 'lib')
 
 require 'rubygems'
-require 'merb-core'
+require 'extlib'
 require 'tempfile'
 require 'ruby-debug'
 require 'spec'
 
-Merb.root = File.dirname(__FILE__)
-
 require 'merb_upload'
 
-alias :running :lambda
+Merb::Upload.config[:public] = File.dirname(__FILE__) / 'public'
+Merb::Upload.config[:store_dir] = File.dirname(__FILE__) / 'public' / 'uploads'
+Merb::Upload.config[:cache_dir] = File.dirname(__FILE__) / 'public' / 'uploads' / 'tmp'
 
-Merb.push_path(:public, File.dirname(__FILE__) / "public", nil)
+alias :running :lambda
 
 def file_path( *paths )
   File.expand_path(File.join(File.dirname(__FILE__), *paths))
