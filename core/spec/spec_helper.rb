@@ -11,9 +11,11 @@ Merb.root = File.dirname(__FILE__)
 
 require 'merb_upload'
 
-alias :running :lambda
+Merb::Upload.config[:public] = File.dirname(__FILE__) / 'public'
+Merb::Upload.config[:store_dir] = File.dirname(__FILE__) / 'public' / 'uploads'
+Merb::Upload.config[:cache_dir] = File.dirname(__FILE__) / 'public' / 'uploads' / 'tmp'
 
-Merb.push_path(:public, File.dirname(__FILE__) / "public", nil)
+alias :running :lambda
 
 module UniversalSpecHelper
   def file_path( *paths )

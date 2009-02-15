@@ -7,17 +7,18 @@ require 'tempfile'
 require 'ruby-debug'
 require 'spec'
 
-require 'merb_upload'
-
-Merb.push_path(:public, File.dirname(__FILE__) / 'public', nil)
 Merb.root = File.dirname(__FILE__)
 
+require 'merb_upload'
+
 alias :running :lambda
+
+Merb.push_path(:public, File.dirname(__FILE__) / "public", nil)
 
 def file_path( *paths )
   File.expand_path(File.join(File.dirname(__FILE__), *paths))
 end
 
 After do
-  FileUtils.rm_rf(File.dirname(__FILE__) / 'public')
+  FileUtils.rm_rf(file_path("public"))
 end

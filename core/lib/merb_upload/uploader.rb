@@ -137,7 +137,7 @@ module Merb
         if file.respond_to?(:url) and not file.url.blank?
           file.url
         else
-          '/' + current_path.relative_path_from(Merb.dir_for(:public)) if current_path
+          '/' + current_path.relative_path_from(Merb::Upload.config[:public]) if current_path
         end
       end
       
