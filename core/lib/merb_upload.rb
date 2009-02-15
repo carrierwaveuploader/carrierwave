@@ -46,3 +46,12 @@ if defined?(Merb::Plugins)
   
   Merb.add_generators File.dirname(__FILE__) / 'generators' / 'uploader_generator'
 end
+
+if defined?(Rails)
+  Merb::Upload.config[:public] = File.join(Rails.root, 'public')
+  Merb::Upload.config[:store_dir] = File.join(Rails.root, 'public', 'uploads')
+  Merb::Upload.config[:cache_dir] = File.join(Rails.root, 'public', 'uploads', 'tmp')
+  
+  # FIXME: this is broken? It works fine when I add load paths in environment.rb :S
+  Rails.configuration.load_paths << File.join(Rails.root, "app", "uploaders")
+end
