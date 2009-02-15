@@ -16,14 +16,14 @@ module Merb
   end
 end
 
-dir = File.dirname(__FILE__) / 'merb_upload'
+dir = File.join(File.dirname(__FILE__), 'merb_upload')
 
-require dir / 'sanitized_file'
-require dir / 'uploader'
-require dir / 'mount'
-require dir / 'storage' / 'abstract'
-require dir / 'storage' / 'file'
-require dir / 'storage' / 's3'
+require File.join(dir, 'sanitized_file')
+require File.join(dir, 'uploader')
+require File.join(dir, 'mount')
+require File.join(dir, 'storage', 'abstract')
+require File.join(dir, 'storage', 'file')
+require File.join(dir, 'storage', 's3')
 
 Merb::Upload.config = {
   :storage => :file,

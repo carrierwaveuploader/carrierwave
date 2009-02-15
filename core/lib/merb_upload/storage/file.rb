@@ -17,7 +17,7 @@ module Merb
         # @return [Merb::Upload::SanitizedFile] a sanitized file
         #
         def self.store!(uploader, file)
-          file.move_to(uploader.store_dir / uploader.filename)
+          file.move_to(::File.join(uploader.store_dir, uploader.filename))
           file
         end
         
@@ -30,7 +30,7 @@ module Merb
         # @return [Merb::Upload::SanitizedFile] a sanitized file
         #
         def self.retrieve!(uploader, identifier)
-          Merb::Upload::SanitizedFile.new(uploader.store_dir / identifier)
+          Merb::Upload::SanitizedFile.new(::File.join(uploader.store_dir, identifier))
         end
         
       end
