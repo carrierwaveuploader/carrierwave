@@ -136,8 +136,8 @@ module Merb
       def url
         if file.respond_to?(:url) and not file.url.blank?
           file.url
-        else
-          '/' + current_path.relative_path_from(Merb::Upload.config[:public]) if current_path
+        elsif current_path
+          File.expand_path(current_path).gsub(File.expand_path(Merb::Upload.config[:public]), '')
         end
       end
       
@@ -191,7 +191,7 @@ module Merb
       # @return [String] a cache name, in the format YYYYMMDD-HHMM-PID-RND/filename.txt
       #
       def cache_name
-        cache_id / original_filename if cache_id and original_filename
+        File.join(cache_id, original_filename) if cache_id and original_filename
       end
       
       ##
@@ -323,7 +323,7 @@ module Merb
     private
     
       def cache_path
-        cache_dir / cache_name
+        File.join(cache_dir, cache_name)
       end
     
       def storage

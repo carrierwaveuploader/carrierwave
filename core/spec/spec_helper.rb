@@ -2,31 +2,34 @@ $TESTING=true
 $:.push File.join(File.dirname(__FILE__), '..', 'lib')
 
 require 'rubygems'
+
+if ENV["AS"]
+  puts "--> using ActiveSupport"
+  require 'activesupport'
+else
+  puts "--> using Extlib"
+  require 'extlib'
+end
+
 require 'tempfile'
 require 'ruby-debug'
 require 'spec'
 
 require 'merb_upload'
 
-Merb::Upload.config[:public] = File.join(File.dirname(__FILE__), 'public')
-Merb::Upload.config[:store_dir] = File.join(File.dirname(__FILE__), 'public', 'uploads')
-Merb::Upload.config[:cache_dir] = File.join(File.dirname(__FILE__), 'public', 'uploads', 'tmp')
-
 alias :running :lambda
 
-module UniversalSpecHelper
-  def file_path( *paths )
-    File.expand_path(File.join(File.dirname(__FILE__), 'fixtures', *paths))
-  end
-  
-  def public_path( *paths )
-    File.expand_path(File.join(File.dirname(__FILE__), 'public', *paths))
-  end
+def file_path( *paths )
+  File.expand_path(File.join(File.dirname(__FILE__), 'fixtures', *paths))
 end
 
-Spec::Runner.configure do |config|
-  config.include UniversalSpecHelper
+def public_path( *paths )
+  File.expand_path(File.join(File.dirname(__FILE__), 'public', *paths))
 end
+
+Merb::Upload.config[:public] = public_path
+Merb::Upload.config[:store_dir] = public_path('uploads')
+Merb::Upload.config[:cache_dir] = public_path('uploads', 'tmp')
 
 module SanitizedFileSpecHelper
   def stub_merb_tempfile(filename)
