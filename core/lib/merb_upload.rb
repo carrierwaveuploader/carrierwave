@@ -22,7 +22,6 @@ if defined?(Merb::Plugins)
   require dir / 'storage' / 'file'
   require dir / 'storage' / 's3'
   
-  # Merb gives you a Merb::Plugins.config hash...feel free to put your stuff in your piece of it
   Merb::Plugins.config[:merb_upload] = {
     :storage => :file,
     :use_cache => true,

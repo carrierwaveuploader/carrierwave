@@ -68,13 +68,13 @@ describe Merb::Upload::Uploader do
   
   describe '#store_dir' do
     it "should default to the config option" do
-      @uploader.store_dir.should == Merb.root / 'public' / 'uploads'
+      @uploader.store_dir.should == public_path('uploads')
     end
   end
   
   describe '#cache_dir' do
     it "should default to the config option" do
-      @uploader.cache_dir.should == Merb.root / 'public' / 'uploads' / 'tmp'
+      @uploader.cache_dir.should == public_path('uploads/tmp')
     end
   end
   

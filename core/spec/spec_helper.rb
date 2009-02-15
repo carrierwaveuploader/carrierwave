@@ -13,7 +13,7 @@ require 'merb_upload'
 
 alias :running :lambda
 
-Merb.push_path(:public, Merb.root_path("public"), nil)
+Merb.push_path(:public, File.dirname(__FILE__) / "public", nil)
 
 module UniversalSpecHelper
   def file_path( *paths )

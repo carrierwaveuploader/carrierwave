@@ -17,7 +17,7 @@ end
 Given /^that the uploader has the store_dir overridden to '(.*?)'$/ do |store_dir|
   @klass.class_eval do
     define_method(:store_dir) do
-      Merb.root / store_dir
+      file_path(store_dir)
     end
   end
 end
