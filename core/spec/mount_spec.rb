@@ -4,6 +4,10 @@ describe Merb::Upload::Mount do
   
   include SanitizedFileSpecHelper
   
+  after do
+    FileUtils.rm_rf(public_path)
+  end
+
   describe '.mount_uploader' do
     
     before do
@@ -65,7 +69,79 @@ describe Merb::Upload::Mount do
       end
       
     end
+
+    describe '#image_cache' do
+
+      before do
+        @instance.stub!(:write_uploader)
+        @instance.stub!(:read_uploader).and_return(nil)
+      end
+
+      it "should return nil when nothing has been assigned" do
+        @instance.image_cache.should be_nil
+      end
+
+      it "should be nil when a file has been stored" do
+        @instance.image = stub_file('test.jpg')
+        @instance.image.store!
+        @instance.image_cache.should be_nil
+      end
+
+      it "should be the cache name when a file has been cached" do
+        @instance.image = stub_file('test.jpg')
+        @instance.image_cache.should =~ %r(^[\d]{8}\-[\d]{4}\-[\d]+\-[\d]{4}/test\.jpg$)
+      end
+
+    end
     
+    describe '#image_cache=' do
+
+      before do
+        @instance.stub!(:write_uploader)
+        @instance.stub!(:read_uploader).and_return(nil)
+      end
+
+      it "should do nothing when nil is assigned" do
+        @instance.image_cache = nil
+        @instance.image.should be_nil
+      end
+
+      it "should do nothing when an empty string is assigned" do
+        @instance.image_cache = ''
+        @instance.image.should be_nil
+      end
+
+      it "retrieve from cache when a cache name is assigned" do
+        @instance.image_cache = '19990512-1202-123-1234/test.jpg'
+        @instance.image.current_path.should == Merb.root / 'public/uploads/tmp/19990512-1202-123-1234/test.jpg'
+      end
+
+      it "should not write over a previously assigned file" do
+        @instance.image = stub_file('test.jpg')
+        @instance.image_cache = '19990512-1202-123-1234/monkey.jpg'
+        @instance.image.current_path.should =~ /test.jpg$/
+      end
+    end
+
+    describe '#store_image!' do
+
+      before do
+        @instance.stub!(:write_uploader)
+        @instance.stub!(:read_uploader).and_return(nil)
+      end
+
+      it "should do nothing when no file has been uploaded" do
+        @instance.store_image!
+        @instance.image.should be_nil
+      end
+
+      it "store an assigned file" do
+        @instance.image = stub_file('test.jpg')
+        @instance.store_image!
+        @instance.image.current_path.should == Merb.root / 'public/uploads/test.jpg'
+      end
+    end
+
   end
   
 end

@@ -5,6 +5,8 @@ module Merb
       
       module Extension
         
+      private
+
         def uploaders
           @uploaders ||= {}
         end
@@ -13,7 +15,7 @@ module Merb
           uploaders[column] ||= self.class.uploaders[column].new(self, column)
         end
         
-        def store_uploader(column)
+        def store_uploader!(column)
           uploaders[column].store! if uploaders[column]
         end
         
@@ -37,6 +39,14 @@ module Merb
           end
         end
         
+        def get_uploader_cache(column)
+          uploaders[column].cache_name if uploaders[column]
+        end
+
+        def set_uploader_cache(column, cache_name)
+          uploader(column).retrieve_from_cache(cache_name) unless cache_name.blank?
+        end
+
       end
       
       def uploaders
@@ -50,13 +60,25 @@ module Merb
         include Merb::Upload::Mount::Extension
         
         class_eval <<-EOF, __FILE__, __LINE__+1
-          def #{column}
-            get_uploader(:#{column})
-          end
-
-          def #{column}=(new_file)
-            set_uploader(:#{column}, new_file)
-          end                                                                         
+          def #{column}                                     # def image
+            get_uploader(:#{column})                        #   get_uploader(:image)
+          end                                               # end
+                                                            #
+          def #{column}=(new_file)                          # def image=(new_file)
+            set_uploader(:#{column}, new_file)              #   set_uploader(:image, new_file)
+          end                                               # end
+                                                            #
+          def #{column}_cache                               # def image_cache
+            get_uploader_cache(:#{column})                  #   get_uploader_cache(:image)
+          end                                               # end
+                                                            #
+          def #{column}_cache=(cache_name)                  # def image_cache=(cache_name)
+            set_uploader_cache(:#{column}, cache_name)      #   set_uploader_cache(:image, cache_name)
+          end                                               # end
+                                                            #
+          def store_#{column}!                              # def store_image!
+            store_uploader!(:#{column})                     #   store_uploader!(:image)
+          end                                               # end
         EOF
         
         after_mount(column, uploader) if respond_to?(:after_mount)
