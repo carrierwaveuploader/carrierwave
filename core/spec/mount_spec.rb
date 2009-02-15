@@ -144,4 +144,39 @@ describe Merb::Upload::Mount do
 
   end
   
+  describe '#mount_uploader with a block' do
+   
+    before do
+      @class = Class.new
+      @class.send(:extend, Merb::Upload::Mount)
+      @class.mount_uploader(:image) do
+        def monkey
+          'blah'
+        end
+      end
+      @instance = @class.new
+    end
+    
+    describe '#image' do
+      
+      before do
+        @instance.stub!(:read_uploader).and_return('test.jpg')
+      end
+      
+      it "should return an instance of a subclass of Merb::Upload::Uploader" do
+        @instance.image.should be_a(Merb::Upload::Uploader)
+      end
+      
+      it "should set the path to the store dir" do
+        @instance.image.current_path.should == public_path('uploads/test.jpg')
+      end
+    
+      it "should apply any custom modifications" do
+        @instance.image.monkey.should == "blah"
+      end
+    
+    end
+    
+  end
+  
 end

@@ -53,7 +53,11 @@ module Merb
         @uploaders ||= {}
       end
       
-      def mount_uploader(column, uploader)
+      def mount_uploader(column, uploader=nil, &block)
+        unless uploader
+          uploader = Class.new(Merb::Upload::Uploader)
+          uploader.class_eval(&block)
+        end
         
         uploaders[column.to_sym] = uploader
         
