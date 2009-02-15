@@ -54,7 +54,7 @@ module Merb
         # Sets the storage engine to be used when storing files with this uploader.
         # Can be any class that implements a #store!(Merb::Upload::SanitizedFile) and a #retrieve!
         # method. See lib/merb_upload/storage/file.rb for an example. Storage engines should
-        # be added to Merb::Plugins.config[:merb_upload][:storage_engines] so they can be referred
+        # be added to Merb::Upload.config[:storage_engines] so they can be referred
         # to by a symbol, which should be more convenient
         #
         # If no argument is given, it will simply return the currently used storage engine.
@@ -74,7 +74,7 @@ module Merb
             @storage = storage
             @storage.setup!
           elsif @storage.nil?
-            @storage = get_storage_by_symbol(Merb::Plugins.config[:merb_upload][:storage])
+            @storage = get_storage_by_symbol(Merb::Upload.config[:storage])
             @storage.setup!
           end
           return @storage
@@ -85,7 +85,7 @@ module Merb
       private
       
         def get_storage_by_symbol(symbol)
-          Merb::Plugins.config[:merb_upload][:storage_engines][symbol]
+          Merb::Upload.config[:storage_engines][symbol]
         end
       
       end
@@ -182,7 +182,7 @@ module Merb
       # @return [String] a directory
       #
       def cache_dir
-        Merb::Plugins.config[:merb_upload][:cache_dir]
+        Merb::Upload.config[:cache_dir]
       end
       
       ##
@@ -259,14 +259,14 @@ module Merb
       # @return [String] a directory
       #
       def store_dir
-        Merb::Plugins.config[:merb_upload][:store_dir]
+        Merb::Upload.config[:store_dir]
       end
       
       ##
       # Stores the file by passing it to this Uploader's storage engine, unless a file has
       # already been cached, stored or retrieved.
       #
-      # If Merb::Plugins.config[:merb_upload][:use_cache] is true, it will first cache the file
+      # If Merb::Upload.config[:use_cache] is true, it will first cache the file
       # and apply any process callbacks before uploading it.
       #
       # @param [File, IOString, Tempfile] new_file any kind of file object
@@ -280,13 +280,13 @@ module Merb
       #
       # If new_file is omitted, a previously cached file will be stored.
       #
-      # If Merb::Plugins.config[:merb_upload][:use_cache] is true, it will first cache the file
+      # If Merb::Upload.config[:use_cache] is true, it will first cache the file
       # and apply any process callbacks before uploading it.
       #
       # @param [File, IOString, Tempfile] new_file any kind of file object
       #
       def store!(new_file=nil)
-        if Merb::Plugins.config[:merb_upload][:use_cache]
+        if Merb::Upload.config[:use_cache]
           cache!(new_file) if new_file
           @file = storage.store!(self, @file)
           @cache_id = nil

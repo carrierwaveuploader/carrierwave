@@ -108,9 +108,9 @@ Merb Upload has support for a few different image manipulation libraries in more
 You'll need to configure a bucket, access id and secret key like this:
 
     Merb::BootLoader.before_app_loads do
-      Merb::Plugins.config[:merb_upload][:s3][:access_key_id] = 'xxxxxx'
-      Merb::Plugins.config[:merb_upload][:s3][:secret_access_key] = 'xxxxxx'
-      Merb::Plugins.config[:merb_upload][:s3][:bucket] = 'name_of_bucket'
+      Merb::Upload.config[:s3][:access_key_id] = 'xxxxxx'
+      Merb::Upload.config[:s3][:secret_access_key] = 'xxxxxx'
+      Merb::Upload.config[:s3][:bucket] = 'name_of_bucket'
     end
 
 And then in your uploader, set the storage to :s3

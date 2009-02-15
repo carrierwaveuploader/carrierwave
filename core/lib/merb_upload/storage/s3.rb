@@ -18,8 +18,8 @@ module Merb
         def self.setup!
           require 'aws/s3'
           AWS::S3::Base.establish_connection!(
-            :access_key_id     => Merb::Plugins.config[:merb_upload][:s3][:access_key_id],
-            :secret_access_key => Merb::Plugins.config[:merb_upload][:s3][:secret_access_key]
+            :access_key_id     => Merb::Upload.config[:s3][:access_key_id],
+            :secret_access_key => Merb::Upload.config[:s3][:secret_access_key]
           )
         end
         
@@ -27,14 +27,14 @@ module Merb
         # @return [String] the bucket set in the config options
         # 
         def self.bucket
-          Merb::Plugins.config[:merb_upload][:s3][:bucket]
+          Merb::Upload.config[:s3][:bucket]
         end
         
         ##
         # @return [Symbol] the access priviliges the uploaded files should have
         #
         def self.access
-          Merb::Plugins.config[:merb_upload][:s3][:access]
+          Merb::Upload.config[:s3][:access]
         end
         
         ##

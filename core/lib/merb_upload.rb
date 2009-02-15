@@ -5,6 +5,11 @@ if defined?(Merb::Plugins)
 
   module Merb
     module Upload
+      
+      class << self
+        attr_accessor :config
+      end
+      
       class UploadError < StandardError; end
       class NoFileError < UploadError; end
       class FormNotMultipart < UploadError; end
@@ -22,7 +27,7 @@ if defined?(Merb::Plugins)
   require dir / 'storage' / 'file'
   require dir / 'storage' / 's3'
   
-  Merb::Plugins.config[:merb_upload] = {
+  Merb::Upload.config = {
     :storage => :file,
     :use_cache => true,
     :store_dir => Merb.root / 'public' / 'uploads',

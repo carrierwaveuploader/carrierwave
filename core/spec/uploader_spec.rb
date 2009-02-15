@@ -312,10 +312,10 @@ describe Merb::Upload::Uploader do
     end
     
     it "should, if a files is given as an argument and use_cache is false, not cache that file" do
-      Merb::Plugins.config[:merb_upload][:use_cache] = false
+      Merb::Upload.config[:use_cache] = false
       @uploader.should_not_receive(:cache!)
       @uploader.store!(@file)
-      Merb::Plugins.config[:merb_upload][:use_cache] = true
+      Merb::Upload.config[:use_cache] = true
     end
     
     it "should use a previously cached file if no argument is given" do
@@ -478,7 +478,7 @@ describe Merb::Upload::Uploader do
       end
       
       after do
-        Merb::Plugins.config[:merb_upload][:use_cache] = true
+        Merb::Upload.config[:use_cache] = true
       end
       
       it "should set the current path" do
@@ -497,7 +497,7 @@ describe Merb::Upload::Uploader do
       end
     
       it "should, if a files is given as an argument and use_cache is false, reverse the filename" do
-        Merb::Plugins.config[:merb_upload][:use_cache] = false
+        Merb::Upload.config[:use_cache] = false
         @uploader.store!(@file)
         @uploader.filename.should == 'gpj.tset'
       end
