@@ -172,16 +172,9 @@ module Merb
         @filename
       end
     
-      ##
-      # Override this in your Uploader to change the directory where the file backend stores files.
-      #
-      # Other backends may or may not use this method, depending on their specific needs.
-      #
-      # @return [String] a directory
-      #
-      def store_dir
-        Merb::Plugins.config[:merb_upload][:store_dir]
-      end
+      ####################
+      ## Cache
+      ####################
     
       ##
       # Override this in your Uploader to change the directory where files are cached.
@@ -193,7 +186,7 @@ module Merb
       end
       
       ##
-      # Returns an original_filename which uniquely identifies the currently cached file for later retrieval
+      # Returns a String which uniquely identifies the currently cached file for later retrieval
       #
       # @return [String] a cache name, in the format YYYYMMDD-HHMM-PID-RND/filename.txt
       #
@@ -252,6 +245,21 @@ module Merb
         self.cache_id, self.original_filename = cache_name.split('/', 2)
         @filename = original_filename
         @file = Merb::Upload::SanitizedFile.new(cache_path)
+      end
+      
+      ####################
+      ## STORE
+      ####################
+      
+      ##
+      # Override this in your Uploader to change the directory where the file backend stores files.
+      #
+      # Other backends may or may not use this method, depending on their specific needs.
+      #
+      # @return [String] a directory
+      #
+      def store_dir
+        Merb::Plugins.config[:merb_upload][:store_dir]
       end
       
       ##
