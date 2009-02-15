@@ -281,6 +281,7 @@ module Merb
         if Merb::Plugins.config[:merb_upload][:use_cache]
           cache!(new_file) if new_file
           @file = storage.store!(self, @file)
+          @cache_id = nil
         else
           new_file = Merb::Upload::SanitizedFile.new(new_file)
           

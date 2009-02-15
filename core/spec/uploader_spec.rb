@@ -328,6 +328,12 @@ describe Merb::Upload::Uploader do
       @uploader_class.storage.should_receive(:store!).with(@uploader, @uploader.file).and_return(:monkey)
       @uploader.store!
     end
+    
+    it "should reset the cache_name" do
+      @uploader.cache!(@file)
+      @uploader.store!
+      @uploader.cache_name.should be_nil
+    end
 
     it "should cache the result given by the storage engine" do
       @uploader.store!(@file)
