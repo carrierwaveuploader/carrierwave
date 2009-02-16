@@ -103,7 +103,7 @@ describe Merb::Upload::Uploader do
   
   describe '#url' do
     before do
-      @uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+      @uploader_class.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
     end
     
     it "should default to nil" do
@@ -130,7 +130,7 @@ describe Merb::Upload::Uploader do
   
   describe '#to_s' do
       before do
-        @uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+        @uploader_class.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
       end
 
       it "should default to nil" do
@@ -152,7 +152,7 @@ describe Merb::Upload::Uploader do
   describe '#cache!' do
     
     before do
-      @uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+      @uploader_class.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
     end
     
     it "should cache a file" do
@@ -439,7 +439,7 @@ describe Merb::Upload::Uploader do
     describe '#cache!' do
 
       before do
-        @uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+        @uploader_class.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
       end
 
       it "should set the filename to the file's reversed filename" do

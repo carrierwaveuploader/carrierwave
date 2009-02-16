@@ -81,6 +81,15 @@ module Merb
         end
 
         alias_method :storage=, :storage
+        
+        ##
+        # Generates a unique cache id for use in the caching system
+        #
+        # @return [String] a cache if in the format YYYYMMDD-HHMM-PID-RND
+        #
+        def generate_cache_id
+          Time.now.strftime('%Y%m%d-%H%M') + '-' + Process.pid.to_s + '-' + ("%04d" % rand(9999))
+        end
       
       private
       
@@ -109,6 +118,7 @@ module Merb
       #         Merb.root / 'public' / 'files' / mounted_as / model.permalink
       #       end
       #     end
+      #
       def initialize(model=nil, mounted_as=nil)
         @model = model
         @mounted_as = mounted_as
@@ -211,7 +221,7 @@ module Merb
       # @raise [Merb::Upload::FormNotMultipart] if the assigned parameter is a string
       #
       def cache!(new_file)
-        @cache_id = generate_cache_id
+        self.cache_id = self.class.generate_cache_id
         new_file = Merb::Upload::SanitizedFile.new(new_file)
         raise Merb::Upload::FormNotMultipart, "check that your upload form is multipart encoded" if new_file.string?
 
@@ -340,10 +350,6 @@ module Merb
       def original_filename=(filename)
         raise Merb::Upload::InvalidParameter, "invalid filename" unless filename =~ /^[a-z0-9\.\-\+_]+$/i
         @original_filename = filename
-      end
-      
-      def generate_cache_id
-        Time.now.strftime('%Y%m%d-%H%M') + '-' + Process.pid.to_s + '-' + ("%04d" % rand(9999))
       end
       
     end
