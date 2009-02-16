@@ -42,6 +42,9 @@ if defined?(Merb::Plugins)
   Merb::Upload.config[:store_dir] = Merb.root / 'public' / 'uploads'
   Merb::Upload.config[:cache_dir] = Merb.root / 'public' / 'uploads' / 'tmp'
   
+  orm_path = File.dirname(__FILE__) / 'merb_upload' / 'orm' / Merb.orm
+  require orm_path if File.exist?(orm_path + '.rb')
+  
   Merb.push_path(:uploader, Merb.root / "app" / "uploaders", "**/*.rb")
   
   Merb.add_generators File.dirname(__FILE__) / 'generators' / 'uploader_generator'
@@ -51,6 +54,8 @@ if defined?(Rails)
   Merb::Upload.config[:public] = File.join(Rails.root, 'public')
   Merb::Upload.config[:store_dir] = File.join(Rails.root, 'public', 'uploads')
   Merb::Upload.config[:cache_dir] = File.join(Rails.root, 'public', 'uploads', 'tmp')
+  
+  require File.join(File.dirname(__FILE__), "merb_upload", "orm", 'activerecord')
   
   # FIXME: this is broken? It works fine when I add load paths in environment.rb :S
   Rails.configuration.load_paths << File.join(Rails.root, "app", "uploaders")
