@@ -8,7 +8,7 @@ require 'spec/rake/spectask'
 require 'cucumber/rake/task'
 
 NAME = "merb_upload"
-GEM_VERSION = "0.0.1"
+GEM_VERSION = "0.1"
 AUTHOR = "Jonas Nicklas"
 EMAIL = "jonas.nicklas@gmail.com"
 HOMEPAGE = "http://merbivore.com/"
