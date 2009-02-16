@@ -11,7 +11,7 @@ module Merb
         alias_method :write_uploader, :write_attribute
 
         before_save do |record|
-          record.store_uploader(column)
+          record.send("store_#{column}!")
         end
       end
 

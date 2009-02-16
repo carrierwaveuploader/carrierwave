@@ -13,7 +13,7 @@ module Merb
         include Merb::Upload::DataMapper::Extension
 
         before :save do
-          store_uploader(column)
+          send("store_#{column}!")
         end
       end
 

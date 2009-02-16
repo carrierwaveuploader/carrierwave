@@ -1,6 +1,34 @@
-require File.dirname(__FILE__) + '/spec_helper'
+require File.dirname(__FILE__) + '/../spec_helper'
+
+require 'merb_upload/orm/activerecord'
+
+# change this if sqlite is unavailable
+dbconfig = {
+  :adapter => 'sqlite3',
+  :database => ':memory:'
+}
+
+ActiveRecord::Base.establish_connection(dbconfig)
+ActiveRecord::Migration.verbose = false
+
+class TestMigration < ActiveRecord::Migration
+  def self.up
+    create_table :events, :force => true do |t|
+      t.column :image, :string
+      t.column :textfile, :string
+    end
+  end
+
+  def self.down
+    drop_table :events
+  end
+end
+
+class Event < ActiveRecord::Base; end # setup a basic AR class for testing
 
 describe Merb::Upload::ActiveRecord do
+  
+  include SanitizedFileSpecHelper
   
   describe '.mount_uploader' do
     

@@ -1,8 +1,12 @@
-require File.dirname(__FILE__) + '/spec_helper'
+require File.dirname(__FILE__) + '/../spec_helper'
+
+require 'merb_upload/orm/datamapper'
 
 DataMapper.setup(:default, 'sqlite3::memory:')
 
 describe Merb::Upload::DataMapper do
+  
+  include SanitizedFileSpecHelper
   
   before do
     uploader = Class.new(Merb::Upload::Uploader)
