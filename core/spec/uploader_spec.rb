@@ -47,6 +47,11 @@ describe Merb::Upload::Uploader do
   end
   
   describe ".storage" do
+    before do
+      Merb::Upload::Storage::File.stub!(:setup!)
+      Merb::Upload::Storage::S3.stub!(:setup!)
+    end
+    
     it "should set the storage if an argument is given" do
       storage = mock('some kind of storage')
       storage.should_receive(:setup!)
@@ -55,25 +60,21 @@ describe Merb::Upload::Uploader do
     end
     
     it "should default to file" do
-      Merb::Upload::Storage::File.should_receive(:setup!)
       @uploader_class.storage.should == Merb::Upload::Storage::File
     end
     
     it "should set the storage from the configured shortcuts if a symbol is given" do
-      Merb::Upload::Storage::File.should_receive(:setup!)
       @uploader_class.storage :file
       @uploader_class.storage.should == Merb::Upload::Storage::File
     end
     
     it "should remember the storage when inherited" do
-      Merb::Upload::Storage::S3.should_receive(:setup!)
       @uploader_class.storage :s3
       subclass = Class.new(@uploader_class)
       subclass.storage.should == Merb::Upload::Storage::S3
     end
     
     it "should be changeable when inherited" do
-      Merb::Upload::Storage::S3.should_receive(:setup!)
       @uploader_class.storage :s3
       subclass = Class.new(@uploader_class)
       subclass.storage.should == Merb::Upload::Storage::S3
