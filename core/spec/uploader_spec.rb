@@ -64,6 +64,22 @@ describe Merb::Upload::Uploader do
       @uploader_class.storage :file
       @uploader_class.storage.should == Merb::Upload::Storage::File
     end
+    
+    it "should remember the storage when inherited" do
+      Merb::Upload::Storage::S3.should_receive(:setup!)
+      @uploader_class.storage :s3
+      subclass = Class.new(@uploader_class)
+      subclass.storage.should == Merb::Upload::Storage::S3
+    end
+    
+    it "should be changeable when inherited" do
+      Merb::Upload::Storage::S3.should_receive(:setup!)
+      @uploader_class.storage :s3
+      subclass = Class.new(@uploader_class)
+      subclass.storage.should == Merb::Upload::Storage::S3
+      subclass.storage :file
+      subclass.storage.should == Merb::Upload::Storage::File
+    end
   end
   
   describe '#store_dir' do

@@ -9,6 +9,7 @@ module Merb
         # Returns a list of processor callbacks which have been declared for this uploader
         #
         # @return [String] 
+        #
         def processors
           @processors ||= []
         end
@@ -74,7 +75,12 @@ module Merb
             @storage = storage
             @storage.setup!
           elsif @storage.nil?
-            @storage = get_storage_by_symbol(Merb::Upload.config[:storage])
+            # Get the storage from the superclass if there is one
+            @storage = superclass.storage rescue nil
+          end
+          if @storage.nil?
+            # If we were not able to find a store any other way, setup the default store
+            @storage ||= get_storage_by_symbol(Merb::Upload.config[:storage])
             @storage.setup!
           end
           return @storage
