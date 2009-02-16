@@ -163,13 +163,6 @@ module Merb
       end
     
       ##
-      # 
-      #
-      def original_filename
-        @original_filename
-      end
-    
-      ##
       # Override this in your Uploader to change the filename.
       #
       # Be careful using record ids as filenames. If the filename is stored in the database
@@ -324,7 +317,7 @@ module Merb
       ##
       # Retrieves the file from the storage.
       # 
-      # @param [String] original_filename uniquely identifies the file to retrieve
+      # @param [String] identifier uniquely identifies the file to retrieve
       #
       def retrieve_from_store!(identifier)
         @file = storage.retrieve!(self, identifier)
@@ -340,7 +333,7 @@ module Merb
         self.class.storage
       end
       
-      attr_reader :cache_id
+      attr_reader :cache_id, :original_filename
 
       def cache_id=(cache_id)
         raise Merb::Upload::InvalidParameter, "invalid cache id" unless cache_id =~ /^[\d]{8}\-[\d]{4}\-[\d]+\-[\d]{4}$/

@@ -209,11 +209,6 @@ describe Merb::Upload::Uploader do
       @uploader.cache_name.should == '20071201-1234-345-2255/test.jpeg'
     end
     
-    it "should store the original_filename" do
-      @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
-      @uploader.original_filename.should == 'test.jpeg'
-    end
-    
     it "should store the filename" do
       @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
       @uploader.filename.should == 'test.jpeg'
@@ -231,7 +226,6 @@ describe Merb::Upload::Uploader do
       
       @uploader.file.should be_nil
       @uploader.filename.should be_nil
-      @uploader.original_filename.should be_nil
       @uploader.cache_name.should be_nil
     end
     
@@ -245,7 +239,6 @@ describe Merb::Upload::Uploader do
       
       @uploader.file.should be_nil
       @uploader.filename.should be_nil
-      @uploader.original_filename.should be_nil
       @uploader.cache_name.should be_nil
     end
   end
@@ -266,7 +259,6 @@ describe Merb::Upload::Uploader do
       @uploader.retrieve_from_cache('12345/test.jpeg')
       @uploader.file.should be_nil
       @uploader.filename.should be_nil
-      @uploader.original_filename.should be_nil
       @uploader.cache_name.should be_nil
     end
     
@@ -274,7 +266,6 @@ describe Merb::Upload::Uploader do
       @uploader.retrieve_from_cache('20071201-1234-345-2255/te??%st.jpeg')
       @uploader.file.should be_nil
       @uploader.filename.should be_nil
-      @uploader.original_filename.should be_nil
       @uploader.cache_name.should be_nil
     end
   end
@@ -377,11 +368,6 @@ describe Merb::Upload::Uploader do
       @uploader.retrieve_from_store!('bork.txt')
       @uploader.file.should == @stored_file
     end
-    
-    it "should not set the original_filename" do
-      @uploader.retrieve_from_store!('monkey.txt')
-      @uploader.original_filename.should be_nil
-    end
   end
   
   describe '#retrieve_from_store' do
@@ -419,11 +405,6 @@ describe Merb::Upload::Uploader do
       @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
       @uploader.retrieve_from_store('bork.txt')
       @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpeg')
-    end
-    
-    it "should not set the original_filename" do
-      @uploader.retrieve_from_store('monkey.txt')
-      @uploader.original_filename.should be_nil
     end
   end
   
