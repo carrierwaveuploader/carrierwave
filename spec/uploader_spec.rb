@@ -11,6 +11,47 @@ describe Merb::Upload::Uploader do
     FileUtils.rm_rf(public_path)
   end
   
+  describe '.version' do
+    it "should add it to .versions" do
+      @uploader_class.version :thumb
+      @uploader_class.versions[:thumb].should be_a(Class)
+      @uploader_class.versions[:thumb].ancestors.should include(@uploader_class)
+    end
+    
+    it "should add an accessor which returns the version" do
+      @uploader_class.version :thumb
+      @uploader.thumb.should be_a(@uploader_class)
+    end
+    
+    it "should add it to #versions which returns the version" do
+      @uploader_class.version :thumb
+      @uploader.versions[:thumb].should be_a(@uploader_class)
+    end
+    
+    it "should set the version name" do
+      @uploader_class.version :thumb
+      @uploader.version_name.should == nil
+      @uploader.thumb.version_name.should == :thumb
+    end
+    
+    it "should set the version name on the class" do
+      @uploader_class.version :thumb
+      @uploader.class.version_name.should == nil
+      @uploader.thumb.class.version_name.should == :thumb
+    end
+    
+    it "should apply any overrides given in a block" do
+      @uploader_class.version :thumb do
+        def store_dir
+          public_path('monkey/apache')
+        end
+      end
+      @uploader.store_dir.should == public_path('uploads')
+      @uploader.thumb.store_dir.should == public_path('monkey/apache')
+    end
+    
+  end
+  
   describe '.process' do
     it "should add a single processor when a symbol is given" do
       @uploader_class.process :sepiatone
@@ -120,7 +161,7 @@ describe Merb::Upload::Uploader do
   
   describe '#url' do
     before do
-      @uploader_class.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+      Merb::Upload::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
     end
     
     it "should default to nil" do
@@ -147,7 +188,7 @@ describe Merb::Upload::Uploader do
   
   describe '#to_s' do
       before do
-        @uploader_class.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+        Merb::Upload::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
       end
 
       it "should default to nil" do
@@ -169,7 +210,7 @@ describe Merb::Upload::Uploader do
   describe '#cache!' do
     
     before do
-      @uploader_class.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+      Merb::Upload::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
     end
     
     it "should cache a file" do
@@ -425,6 +466,124 @@ describe Merb::Upload::Uploader do
     end
   end
   
+  describe 'with a version' do
+    before do
+      @uploader_class.version(:thumb) do
+        def store_dir
+          'monkey/args'
+        end
+      end
+    end
+    
+    describe '#cache!' do
+
+      before do
+        Merb::Upload::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+      end
+
+      it "should set the version's filename to the preficed filename" do
+        @uploader.cache!(File.open(file_path('test.jpg')))
+        @uploader.thumb.filename.should == "thumb_test.jpg"
+      end
+      
+      it "should move it to the tmp dir with the filename prefixed" do
+        @uploader.cache!(File.open(file_path('test.jpg')))
+        @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpg')
+        @uploader.thumb.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/thumb_test.jpg')
+        @uploader.file.exists?.should be_true
+        @uploader.thumb.file.exists?.should be_true
+      end
+    end
+
+    describe '#retrieve_from_cache!' do
+      it "should set the path to the tmp dir" do
+        @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpg')
+        @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpg')
+        @uploader.thumb.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/thumb_test.jpg')
+      end
+    
+      it "should set the version's filename to the prefixed name of the file" do
+        @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpg')
+        @uploader.filename.should == "test.jpg"
+        @uploader.thumb.filename.should == "thumb_test.jpg"
+      end
+    end
+    
+    describe '#store!' do
+      before do
+        @file = File.open(file_path('test.jpg'))
+
+        @stored_file = mock('a stored file')
+        @stored_file.stub!(:path).and_return('/path/to/somewhere')
+        @stored_file.stub!(:url).and_return('http://www.example.com')
+
+        @uploader_class.storage.stub!(:store!).and_return(@stored_file)
+      end
+      
+      after do
+        Merb::Upload.config[:use_cache] = true
+      end
+      
+      it "should set the current path for the version" do
+        pending "find a decent way to spec this"
+        @uploader.store!(@file)
+        @uploader.current_path.should == '/path/to/somewhere'
+        @uploader.thumb.current_path.should == '/path/to/somewhere'
+      end
+      
+      it "should set the url" do
+        pending "find a decent way to spec this"
+        @uploader.store!(@file)
+        @uploader.url.should == 'http://www.example.com'
+      end
+    
+      it "should, if a file is given as argument, prefix the version's filename" do
+        @uploader.store!(@file)
+        @uploader.filename.should == 'test.jpg'
+        @uploader.thumb.filename.should == 'thumb_test.jpg'
+      end
+    
+      it "should, if a files is given as an argument and use_cache is false, prefix the version's filename" do
+        Merb::Upload.config[:use_cache] = false
+        @uploader.store!(@file)
+        @uploader.filename.should == 'test.jpg'
+        @uploader.thumb.filename.should == 'thumb_test.jpg'
+      end
+    
+    end
+    
+    describe '#retrieve_from_store!' do
+      before do
+        @stored_file = mock('a stored file')
+        @stored_file.stub!(:path).and_return('/path/to/somewhere')
+        @stored_file.stub!(:url).and_return('http://www.example.com')
+        
+        @uploader_class.storage.stub!(:retrieve!).and_return(@stored_file)
+      end
+    
+      it "should set the current path" do
+        @uploader.retrieve_from_store!('monkey.txt')
+        @uploader.current_path.should == '/path/to/somewhere'
+      end
+      
+      it "should set the url" do
+        @uploader.retrieve_from_store!('monkey.txt')
+        @uploader.url.should == 'http://www.example.com'
+      end
+      
+      it "should pass the identifier to the storage engine" do
+        @uploader_class.storage.should_receive(:retrieve!).with(@uploader, 'monkey.txt').and_return(@stored_file)
+        @uploader.retrieve_from_store!('monkey.txt')
+        @uploader.file.should == @stored_file
+      end
+      
+      it "should not set the filename" do
+        @uploader.retrieve_from_store!('monkey.txt')
+        @uploader.filename.should be_nil
+      end
+    end
+  end
+  
   describe 'with an overridden, reversing, filename' do
     before do
       @uploader_class.class_eval do
@@ -437,7 +596,7 @@ describe Merb::Upload::Uploader do
     describe '#cache!' do
 
       before do
-        @uploader_class.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+        Merb::Upload::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
       end
 
       it "should set the filename to the file's reversed filename" do

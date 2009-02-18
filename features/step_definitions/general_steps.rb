@@ -22,6 +22,10 @@ Given /^that the uploader has the store_dir overridden to '(.*?)'$/ do |store_di
   end
 end
 
+Given /^that the uploader class has a version named '(.*?)'$/ do |name|
+  @klass.version name.to_sym
+end
+
 Given /^the class has a method called 'reverse' that reverses the contents of a file$/ do
   @klass.class_eval do
     def reverse

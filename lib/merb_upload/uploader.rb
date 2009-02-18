@@ -88,6 +88,34 @@ module Merb
 
         alias_method :storage=, :storage
         
+        attr_accessor :version_name
+
+        ##
+        # Adds a new version to this uploader
+        #
+        # @param [#to_sym] name name of the version
+        # @param [Proc] &block a block to eval on this version of the uploader
+        #
+        def version(name, &block)
+          name = name.to_sym
+          klass = Class.new(self)
+          klass.version_name = name
+          klass.class_eval(&block) if block
+          versions[name] = klass
+          class_eval <<-RUBY
+            def #{name}
+              versions[:#{name}]
+            end
+          RUBY
+        end
+
+        ##
+        # @return [Hash{Symbol => Class}] a list of versions available for this uploader
+        #
+        def versions
+          @versions ||= {}
+        end
+
         ##
         # Generates a unique cache id for use in the caching system
         #
@@ -147,6 +175,20 @@ module Merb
       end
       
       ##
+      # Returns a hash mapping the name of each version of the uploader to an instance of it
+      #
+      # @return [Hash{Symbol => Merb::Upload::Uploader}] a list of uploader instances
+      #
+      def versions
+        return @versions if @versions
+        @versions = {}
+        self.class.versions.each do |name, klass|
+          @versions[name] = klass.new
+        end
+        @versions
+      end
+
+      ##
       # @return [String] the location where this file is accessible via a url
       #
       def url
@@ -178,7 +220,14 @@ module Merb
       # @return [String] a filename
       #
       def filename
-        @filename
+        [version_name, @filename].compact.join('_') if @filename
+      end
+
+      ##
+      # @return [String] the name of this version of the uploader
+      #
+      def version_name
+        self.class.version_name
       end
     
       ####################
@@ -200,7 +249,7 @@ module Merb
       # @return [String] a cache name, in the format YYYYMMDD-HHMM-PID-RND/filename.txt
       #
       def cache_name
-        File.join(cache_id, original_filename) if cache_id and original_filename
+        File.join(cache_id, [version_name, original_filename].compact.join('_')) if cache_id and original_filename
       end
       
       ##
@@ -220,7 +269,7 @@ module Merb
       # @raise [Merb::Upload::FormNotMultipart] if the assigned parameter is a string
       #
       def cache!(new_file)
-        self.cache_id = self.class.generate_cache_id
+        self.cache_id = Merb::Upload::Uploader.generate_cache_id
         new_file = Merb::Upload::SanitizedFile.new(new_file)
         raise Merb::Upload::FormNotMultipart, "check that your upload form is multipart encoded" if new_file.string?
 
@@ -231,6 +280,8 @@ module Merb
         
         @file = @file.copy_to(cache_path)
         process!
+
+        versions.each { |name, v| v.cache!(new_file) }
       end
       
       ##
@@ -254,6 +305,7 @@ module Merb
         self.cache_id, self.original_filename = cache_name.split('/', 2)
         @filename = original_filename
         @file = Merb::Upload::SanitizedFile.new(cache_path)
+        versions.each { |name, v| v.retrieve_from_cache!(cache_name) }
       end
       
       ####################
@@ -307,6 +359,7 @@ module Merb
           
           @file = storage.store!(self, new_file)
         end
+        versions.each { |name, v| v.store!(new_file) }
       end
       
       ##
@@ -327,6 +380,7 @@ module Merb
       #
       def retrieve_from_store!(identifier)
         @file = storage.retrieve!(self, identifier)
+        versions.each { |name, v| v.retrieve_from_store!(identifier) }
       end
       
     private
