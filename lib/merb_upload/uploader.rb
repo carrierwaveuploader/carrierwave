@@ -229,6 +229,13 @@ module Merb
       def version_name
         self.class.version_name
       end
+      
+      ##
+      # @return [String] the directory relative to which we will upload
+      #
+      def root
+        Merb::Upload.config[:root]
+      end
     
       ####################
       ## Cache
@@ -386,7 +393,7 @@ module Merb
     private
     
       def cache_path
-        File.join(cache_dir, cache_name)
+        File.expand_path(File.join(cache_dir, cache_name), root)
       end
     
       def storage

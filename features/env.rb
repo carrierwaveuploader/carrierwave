@@ -24,8 +24,9 @@ def file_path( *paths )
 end
 
 Merb::Upload.config[:public] = file_path('public')
-Merb::Upload.config[:store_dir] = file_path('public', 'uploads')
-Merb::Upload.config[:cache_dir] = file_path('public', 'uploads', 'tmp')
+Merb::Upload.config[:root] = file_path
+Merb::Upload.config[:store_dir] = 'public/uploads'
+Merb::Upload.config[:cache_dir] = 'public/uploads/tmp'
 
 After do
   FileUtils.rm_rf(file_path("public"))

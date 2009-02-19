@@ -28,8 +28,9 @@ def public_path( *paths )
 end
 
 Merb::Upload.config[:public] = public_path
-Merb::Upload.config[:store_dir] = public_path('uploads')
-Merb::Upload.config[:cache_dir] = public_path('uploads', 'tmp')
+Merb::Upload.config[:root] = File.expand_path(File.dirname(__FILE__))
+Merb::Upload.config[:store_dir] = 'public/uploads'
+Merb::Upload.config[:cache_dir] = 'public/uploads/tmp'
 
 module SanitizedFileSpecHelper
   def stub_merb_tempfile(filename)

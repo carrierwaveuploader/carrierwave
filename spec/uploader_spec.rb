@@ -46,7 +46,7 @@ describe Merb::Upload::Uploader do
           public_path('monkey/apache')
         end
       end
-      @uploader.store_dir.should == public_path('uploads')
+      @uploader.store_dir.should == 'public/uploads'
       @uploader.thumb.store_dir.should == public_path('monkey/apache')
     end
     
@@ -126,13 +126,19 @@ describe Merb::Upload::Uploader do
   
   describe '#store_dir' do
     it "should default to the config option" do
-      @uploader.store_dir.should == public_path('uploads')
+      @uploader.store_dir.should == 'public/uploads'
     end
   end
   
   describe '#cache_dir' do
     it "should default to the config option" do
-      @uploader.cache_dir.should == public_path('uploads/tmp')
+      @uploader.cache_dir.should == 'public/uploads/tmp'
+    end
+  end
+  
+  describe '#root' do
+    it "should default to the config option" do
+      @uploader.root.should == public_path('..')
     end
   end
   
