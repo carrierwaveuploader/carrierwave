@@ -183,7 +183,7 @@ module Merb
         return @versions if @versions
         @versions = {}
         self.class.versions.each do |name, klass|
-          @versions[name] = klass.new
+          @versions[name] = klass.new(model, mounted_as)
         end
         @versions
       end

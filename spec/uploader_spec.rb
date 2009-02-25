@@ -40,6 +40,15 @@ describe Merb::Upload::Uploader do
       @uploader.thumb.class.version_name.should == :thumb
     end
     
+    it "should remember mount options" do
+      model = mock('a model')
+      @uploader_class.version :thumb
+      @uploader = @uploader_class.new(model, :gazelle)
+
+      @uploader.thumb.model.should == model
+      @uploader.thumb.mounted_as.should == :gazelle
+    end
+    
     it "should apply any overrides given in a block" do
       @uploader_class.version :thumb do
         def store_dir
