@@ -13,6 +13,10 @@ module Merb
         before_save do |record|
           record.send("store_#{column}!")
         end
+        
+        before_validation do |record|
+          record.send("set_#{column}_column")
+        end
       end
 
     end # ActiveRecord

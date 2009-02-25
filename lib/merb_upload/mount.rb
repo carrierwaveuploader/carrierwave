@@ -11,10 +11,6 @@ module Merb
           @uploaders ||= {}
         end
         
-        def uploader(column)
-          uploaders[column] ||= self.class.uploaders[column].new(self, column)
-        end
-        
         def store_uploader!(column)
           uploaders[column].store! if uploaders[column]
         end
@@ -25,8 +21,9 @@ module Merb
           identifier = read_uploader(column)
           
           unless identifier.blank?
-            uploader(column).retrieve_from_store!(identifier)
-            uploader(column)
+            uploaders[column] ||= self.class.uploaders[column].new(self, column)
+            uploaders[column].retrieve_from_store!(identifier)
+            uploaders[column]
           end
         end
         
@@ -34,9 +31,13 @@ module Merb
           new_file = Merb::Upload::SanitizedFile.new(new_file)
           
           unless new_file.empty?
-            uploader(column).cache!(new_file) 
-            write_uploader(column, uploader(column).identifier)
+            uploaders[column] ||= self.class.uploaders[column].new(self, column)
+            uploaders[column].cache!(new_file) 
           end
+        end
+        
+        def set_uploader_column(column)
+          write_uploader(column, uploaders[column].identifier) if uploaders[column]
         end
         
         def get_uploader_cache(column)
@@ -44,7 +45,10 @@ module Merb
         end
 
         def set_uploader_cache(column, cache_name)
-          uploader(column).retrieve_from_cache(cache_name) unless cache_name.blank?
+          unless cache_name.blank?
+            uploaders[column] ||= self.class.uploaders[column].new(self, column)
+            uploaders[column].retrieve_from_cache(cache_name)
+          end
         end
 
       end
@@ -82,6 +86,12 @@ module Merb
                                                             #
           def store_#{column}!                              # def store_image!
             store_uploader!(:#{column})                     #   store_uploader!(:image)
+          end                                               # end
+                                                            #
+          private                                           # private
+                                                            #
+          def set_#{column}_column                          # def set_#{column}_column
+            set_uploader_column(:#{column})                 #   set_uploader_column(:#{column})
           end                                               # end
         EOF
         
