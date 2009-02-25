@@ -217,10 +217,13 @@ module Merb
       # the record id will be nil when the filename is set. Don't use record ids unless you
       # understand this limitation.
       #
+      # Do not use the version_name in the filename, as it will prevent versions from being
+      # loaded correctly.
+      #
       # @return [String] a filename
       #
       def filename
-        [version_name, @filename].compact.join('_') if @filename
+        @filename
       end
 
       ##
@@ -327,7 +330,7 @@ module Merb
       # @return [String] a directory
       #
       def store_dir
-        Merb::Upload.config[:store_dir]
+        [Merb::Upload.config[:store_dir], version_name].compact.join(File::Separator)
       end
       
       ##

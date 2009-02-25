@@ -474,11 +474,7 @@ describe Merb::Upload::Uploader do
   
   describe 'with a version' do
     before do
-      @uploader_class.version(:thumb) do
-        def store_dir
-          'monkey/args'
-        end
-      end
+      @uploader_class.version(:thumb)
     end
     
     describe '#cache!' do
@@ -487,9 +483,10 @@ describe Merb::Upload::Uploader do
         Merb::Upload::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
       end
 
-      it "should set the version's filename to the preficed filename" do
+      it "should suffix the version's store_dir" do
         @uploader.cache!(File.open(file_path('test.jpg')))
-        @uploader.thumb.filename.should == "thumb_test.jpg"
+        @uploader.store_dir.should == 'public/uploads'
+        @uploader.thumb.store_dir.should == 'public/uploads/thumb'
       end
       
       it "should move it to the tmp dir with the filename prefixed" do
@@ -508,10 +505,10 @@ describe Merb::Upload::Uploader do
         @uploader.thumb.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/thumb_test.jpg')
       end
     
-      it "should set the version's filename to the prefixed name of the file" do
+      it "should suffix the version's store_dir" do
         @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpg')
-        @uploader.filename.should == "test.jpg"
-        @uploader.thumb.filename.should == "thumb_test.jpg"
+        @uploader.store_dir.should == 'public/uploads'
+        @uploader.thumb.store_dir.should == 'public/uploads/thumb'
       end
     end
     
@@ -543,17 +540,17 @@ describe Merb::Upload::Uploader do
         @uploader.url.should == 'http://www.example.com'
       end
     
-      it "should, if a file is given as argument, prefix the version's filename" do
+      it "should, if a file is given as argument, suffix the version's store_dir" do
         @uploader.store!(@file)
-        @uploader.filename.should == 'test.jpg'
-        @uploader.thumb.filename.should == 'thumb_test.jpg'
+        @uploader.store_dir.should == 'public/uploads'
+        @uploader.thumb.store_dir.should == 'public/uploads/thumb'
       end
     
-      it "should, if a files is given as an argument and use_cache is false, prefix the version's filename" do
+      it "should, if a files is given as an argument and use_cache is false, suffix the version's store_dir" do
         Merb::Upload.config[:use_cache] = false
         @uploader.store!(@file)
-        @uploader.filename.should == 'test.jpg'
-        @uploader.thumb.filename.should == 'thumb_test.jpg'
+        @uploader.store_dir.should == 'public/uploads'
+        @uploader.thumb.store_dir.should == 'public/uploads/thumb'
       end
     
     end

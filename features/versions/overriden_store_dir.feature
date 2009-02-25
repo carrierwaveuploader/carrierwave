@@ -12,9 +12,9 @@ Feature: uploader with file storage and versions with overridden store dir
   Scenario: store a file
     When I store the file 'fixtures/bork.txt'
     Then there should be a file at 'public/uploads/bork.txt'
-    Then there should be a file at 'public/monkey/llama/thumb_bork.txt'
+    Then there should be a file at 'public/monkey/llama/bork.txt'
     And the file at 'public/uploads/bork.txt' should be identical to the file at 'fixtures/bork.txt'
-    And the file at 'public/monkey/llama/thumb_bork.txt' should be identical to the file at 'fixtures/bork.txt'
+    And the file at 'public/monkey/llama/bork.txt' should be identical to the file at 'fixtures/bork.txt'
   
   Scenario: cache a file and then store it
     When I cache the file 'fixtures/bork.txt'
@@ -22,12 +22,12 @@ Feature: uploader with file storage and versions with overridden store dir
     Then there should be a file called 'thumb_bork.txt' somewhere in a subdirectory of 'public/uploads/tmp'
     And the file called 'bork.txt' in a subdirectory of 'public/uploads/tmp' should be identical to the file at 'fixtures/bork.txt'
     And there should not be a file at 'public/uploads/bork.txt'
-    And there should not be a file at 'public/monkey/llama/thumb_bork.txt'
+    And there should not be a file at 'public/monkey/llama/bork.txt'
     When I store the file
     Then there should be a file at 'public/uploads/bork.txt'
-    Then there should be a file at 'public/monkey/llama/thumb_bork.txt'
+    Then there should be a file at 'public/monkey/llama/bork.txt'
     And the file at 'public/uploads/bork.txt' should be identical to the file at 'fixtures/bork.txt'
-    And the file at 'public/monkey/llama/thumb_bork.txt' should be identical to the file at 'fixtures/bork.txt'
+    And the file at 'public/monkey/llama/bork.txt' should be identical to the file at 'fixtures/bork.txt'
   
   Scenario: retrieving a file from cache then storing
     Given the file 'fixtures/bork.txt' is cached file at 'public/uploads/tmp/20090212-2343-8336-0348/bork.txt'
@@ -35,6 +35,6 @@ Feature: uploader with file storage and versions with overridden store dir
     When I retrieve the cache name '20090212-2343-8336-0348/bork.txt' from the cache
     And I store the file
     Then there should be a file at 'public/uploads/bork.txt'
-    Then there should be a file at 'public/monkey/llama/thumb_bork.txt'
+    Then there should be a file at 'public/monkey/llama/bork.txt'
     And the file at 'public/uploads/bork.txt' should be identical to the file at 'fixtures/bork.txt'
-    And the file at 'public/monkey/llama/thumb_bork.txt' should be identical to the file at 'fixtures/monkey.txt'
+    And the file at 'public/monkey/llama/bork.txt' should be identical to the file at 'fixtures/monkey.txt'
