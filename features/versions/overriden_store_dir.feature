@@ -1,4 +1,4 @@
-Feature: uploader with file storage and versions
+Feature: uploader with file storage and versions with overridden store dir
   In order to be awesome
   As a merb programmer
   I want to upload files to the filesystem

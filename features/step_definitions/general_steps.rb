@@ -49,3 +49,11 @@ end
 Then /^the uploader should have '(.*?)' as its current path$/ do |path|
   @uploader.current_path.should == file_path(path)
 end
+
+Then /^the uploader should have the url '(.*?)'$/ do |url|
+  @uploader.url.should == url
+end
+
+Then /^the uploader's version '(.*?)' should have the url '(.*?)'$/ do |version, url|
+  @uploader.versions[version.to_sym].url.should == url
+end
