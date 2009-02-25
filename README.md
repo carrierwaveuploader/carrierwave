@@ -34,7 +34,7 @@ You can use your uploader class to store and retrieve files like this:
     
     uploader.retrieve_from_store!('my_file.png')
 
-Merb Uploader gives you a +store+ for permanent storage, and a +cache+ for temporary storage. You can use different stores, at the moment a filesystem store and an Amazon S3 store are bundled.
+Merb Uploader gives you a `store` for permanent storage, and a `cache` for temporary storage. You can use different stores, at the moment a filesystem store and an Amazon S3 store are bundled.
 
 Most of the time you are going to want to use Merb Upload together with an ORM. It is quite simple to mount uploaders on columns in your model, so you can simply assign files and get going:
 
@@ -88,7 +88,7 @@ Now you can upload files!
 
 ## Changing the storage directory
 
-In order to change where uploaded files are put, just override the +store_dir+ method:
+In order to change where uploaded files are put, just override the `store_dir` method:
 
     class MyUploader < Merb::Upload::Uploader
       def store_dir
@@ -159,7 +159,7 @@ And then in your uploader, set the storage to :s3
       storage :s3
     end
 
-That's it! You can still use the +Merb::Upload::Uploader#url+ method to return the url to the file on Amazon S3
+That's it! You can still use the `Merb::Upload::Uploader#url` method to return the url to the file on Amazon S3
 
 ## Using RMagick
 
@@ -173,7 +173,7 @@ You'll also need to include it in your Uploader:
       include Merb::Upload::RMagick
     end
 
-The RMagick module gives you a few methods, like +Merb::Upload::RMagick#crop_resized+ which manipulate the image file in some way. You can set a +proces+ callback, which will call that method any time a file is uploaded.
+The RMagick module gives you a few methods, like `Merb::Upload::RMagick#crop_resized` which manipulate the image file in some way. You can set a `process` callback, which will call that method any time a file is uploaded.
 
     class AvatarUploader < Merb::Upload::Uploader
       include Merb::Upload::RMagick
