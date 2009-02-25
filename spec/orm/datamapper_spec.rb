@@ -14,7 +14,6 @@ describe Merb::Upload::DataMapper do
     @class = Class.new
     @class.class_eval do
       include DataMapper::Resource
-      extend Merb::Upload::DataMapper  
 
       storage_names[:default] = 'events'
       

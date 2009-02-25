@@ -20,3 +20,5 @@ module Merb
     end # DataMapper
   end # Upload
 end # Merb
+
+DataMapper::Model.send(:include, Merb::Upload::DataMapper)
