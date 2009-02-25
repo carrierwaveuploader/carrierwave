@@ -279,7 +279,7 @@ module Merb
       # @raise [Merb::Upload::FormNotMultipart] if the assigned parameter is a string
       #
       def cache!(new_file)
-        self.cache_id = Merb::Upload::Uploader.generate_cache_id
+        self.cache_id = Merb::Upload::Uploader.generate_cache_id unless cache_id
         new_file = Merb::Upload::SanitizedFile.new(new_file)
         raise Merb::Upload::FormNotMultipart, "check that your upload form is multipart encoded" if new_file.string?
 
@@ -291,7 +291,10 @@ module Merb
         @file = @file.copy_to(cache_path)
         process!
 
-        versions.each { |name, v| v.cache!(new_file) }
+        versions.each do |name, v|
+          v.send(:cache_id=, cache_id)
+          v.cache!(new_file)
+        end
       end
       
       ##
