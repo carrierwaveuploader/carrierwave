@@ -34,20 +34,22 @@ You can use your uploader class to store and retrieve files like this:
     
     uploader.retrieve_from_store!('my_file.png')
 
-Merb Uploader gives you a +store+ for permanent storage, and a +cache+ for temporary storage. You can use different stores, at the moment a filesystem store and an Amazon S3 store are bundled. 
+Merb Uploader gives you a +store+ for permanent storage, and a +cache+ for temporary storage. You can use different stores, at the moment a filesystem store and an Amazon S3 store are bundled.
 
 Most of the time you are going to want to use Merb Upload together with an ORM. It is quite simple to mount uploaders on columns in your model, so you can simply assign files and get going:
 
 ### ActiveRecord
 
-First, install the `merb_upload_activerecord` gem from more. Add it as a dependency.
+First require the activerecord extension:
+
+    require 'merb_upload/orm/activerecord
+
+You don't need to do this if you are using Merb or Rails.
 
 Open your model file, and do something like:
 
     class User < ActiveRecord::Base
-    
       mount_uploader :avatar, AvatarUploader
-
     end
 
 Now you can upload files!
@@ -56,22 +58,23 @@ Now you can upload files!
     u.avatar = params[:file]
     u.avatar = File.open('somewhere')
     u.save!
-    u.url # => '/url/to/file.png'
-    u.current_path # => 'path/to/file.png'
+    u.avatar.url # => '/url/to/file.png'
+    u.avatar.current_path # => 'path/to/file.png'
 
 ### DataMapper
 
-First, install the `merb_upload_datamapper` gem from more. Add it as a dependency.
+First require the activerecord extension:
+
+    require 'merb_upload/orm/datamapper
+
+You don't need to do this if you are using Merb or Rails.
 
 Open your model file, and do something like:
 
     class User
-    
       include DataMapper::Resource
-      extend Merb::Upload::DataMapper
 
       mount_uploader :avatar, AvatarUploader
-
     end
 
 Now you can upload files!
@@ -80,8 +83,45 @@ Now you can upload files!
     u.avatar = params[:file]
     u.avatar = File.open('somewhere')
     u.save!
-    u.url # => '/url/to/file.png'
-    u.current_path # => 'path/to/file.png'
+    u.avatar.url # => '/url/to/file.png'
+    u.avatar.current_path # => 'path/to/file.png'
+
+## Changing the storage directory
+
+In order to change where uploaded files are put, just override the +store_dir+ method:
+
+    class MyUploader < Merb::Upload::Uploader
+      def store_dir
+        'public/my/upload/directory'
+      end
+    end
+
+This works for the file storage as well as Amazon S3.
+
+## Adding versions
+
+Often you'll want to add different versions of the same file. The classic example is image thumbnails. There is built in support for this:
+
+    class MyUploader < Merb::Upload::Uploader
+      include Merb::Upload::RMagick
+      
+      process :resize => [800, 800]
+
+      version :thumb do
+        process :crop_resized => [200,200]
+      end
+      
+    end
+
+When this uploader is used, an uploaded image would be scaled to be no larger than 800 by 800 pixels. A version called thumb is then created, which is scaled and cropped to exactly 200 by 200 pixels. The uploader could be used like this:
+
+    uploader = AvatarUploader.new
+    uploader.store!(my_file)                              # size: 1024x768
+    
+    uploader.url # => '/url/to/my_file.png'               # size: 800x600
+    uploader.thumb.url # => '/url/to/thumb_my_file.png'   # size: 200x200
+
+One important thing to remember is that process is called *before* versions are created. This can cut down on processing cost.
 
 ## What's in that uploader file?
 
@@ -101,7 +141,7 @@ Many of the things you can do in Merb Upload are hard, or impossible to do in ot
 
 #### Easy to extend
 
-Merb Upload has support for a few different image manipulation libraries in more. These need *no* code to hook into Merb Upload, because they are simple modules. If you want to write your own manipulation library (doesn't need to be for images), you can do the same.
+Merb Upload has support for a few different image manipulation libraries. These need *no* code to hook into Merb Upload, because they are simple modules. If you want to write your own manipulation library (doesn't need to be for images), you can do the same.
 
 ## Using Amazon S3
 
@@ -119,15 +159,21 @@ And then in your uploader, set the storage to :s3
       storage :s3
     end
 
+That's it! You can still use the +Merb::Upload::Uploader#url+ method to return the url to the file on Amazon S3
+
 ## Using RMagick
 
-Install `merb_upload_rmagick` from more, add it as a dependency, then include it your uploader:
+If you're uploading images, you'll probably want to manipulate them in some way, you might want to create thumbnail images for example. Merb Upload comes with a small library to make manipulating images with RMagick easier. It's not loaded by default so you'll need to require it:
+
+    require 'merb_upload/processing/rmagick'
+
+You'll also need to include it in your Uploader:
 
     class AvatarUploader < Merb::Upload::Uploader
       include Merb::Upload::RMagick
     end
-    
-Now you can set a processor to do operations on your uploaded files:
+
+The RMagick module gives you a few methods, like +Merb::Upload::RMagick#crop_resized+ which manipulate the image file in some way. You can set a +proces+ callback, which will call that method any time a file is uploaded.
 
     class AvatarUploader < Merb::Upload::Uploader
       include Merb::Upload::RMagick
@@ -144,7 +190,11 @@ Check out the manipulate! method, which makes it easy for you to write your own 
 
 ## Using ImageScience
 
-Works the same way as RMagick. Install `merb_upload_imagescience` then just do:
+ImageScience works the same way as RMagick. As with RMagick you'll need to require it:
+
+    require 'merb_upload/processing/image_science'
+
+And then include it in your model:
 
     class AvatarUploader < Merb::Upload::Uploader
       include Merb::Upload::ImageScience
