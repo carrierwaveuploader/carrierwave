@@ -182,7 +182,7 @@ module Merb
         @file.content_type.chomp if @file.respond_to?(:content_type) and @file.content_type
       end
     
-      private
+    private
       
       def file=(file)
         if file.is_a?(Hash)
