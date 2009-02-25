@@ -12,7 +12,10 @@ module Merb
         end
         
         def store_uploader!(column)
-          uploaders[column].store! if uploaders[column]
+          if uploaders[column]
+            uploaders[column].store!
+            write_uploader(column, uploaders[column].identifier)
+          end
         end
         
         def get_uploader(column)
@@ -34,10 +37,6 @@ module Merb
             uploaders[column] ||= self.class.uploaders[column].new(self, column)
             uploaders[column].cache!(new_file) 
           end
-        end
-        
-        def set_uploader_column(column)
-          write_uploader(column, uploaders[column].identifier) if uploaders[column]
         end
         
         def get_uploader_cache(column)
@@ -86,12 +85,6 @@ module Merb
                                                             #
           def store_#{column}!                              # def store_image!
             store_uploader!(:#{column})                     #   store_uploader!(:image)
-          end                                               # end
-                                                            #
-          private                                           # private
-                                                            #
-          def set_#{column}_column                          # def set_#{column}_column
-            set_uploader_column(:#{column})                 #   set_uploader_column(:#{column})
           end                                               # end
         EOF
         

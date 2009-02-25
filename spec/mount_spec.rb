@@ -139,24 +139,6 @@ describe Merb::Upload::Mount do
         @instance.image.current_path.should == public_path('uploads/test.jpg')
       end
     end
-    
-    describe '#set_image_column' do
-      before do
-        @instance.stub!(:read_uploader).and_return(nil)
-      end
-
-      it "should do nothing when no file has been uploaded" do
-        @instance.should_not_receive(:write_uploader)
-        @instance.send :set_image_column
-      end
-
-      it "write the identifier of an assigned file" do
-        @instance.should_receive(:write_uploader).with(:image, 'test.jpg')  
-        @instance.image = stub_file('test.jpg')
-        @instance.send :set_image_column
-      end
-      
-    end
 
   end
   

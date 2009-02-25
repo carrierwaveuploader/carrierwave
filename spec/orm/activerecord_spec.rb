@@ -130,14 +130,37 @@ describe Merb::Upload::ActiveRecord do
         @event[:image].should == 'test.jpeg'
       end
       
-      it "should assign the filename before validation" do
-        @class.validate { |r| r.errors.add_to_base "FAIL!" if r[:image].nil? }
-        @event.image = stub_file('test.jpeg')
-        @event.save.should be_true
-        @event.reload
-        @event[:image].should == 'test.jpeg'
-      end
+    end
+    
+    describe 'with overriddent filename' do
       
+      describe '#save' do
+
+        before do
+          @uploader.class_eval do
+            def filename
+              model.name + File.extname(super)
+            end
+          end
+          @event.stub!(:name).and_return('jonas')
+        end
+
+        it "should copy the file to the upload directory when a file has been assigned" do
+          @event.image = stub_file('test.jpeg')
+          @event.save.should be_true
+          @event.image.should be_an_instance_of(@uploader)
+          @event.image.current_path.should == public_path('uploads/jonas.jpeg')
+        end
+
+        it "should assign an overridden filename to the database" do
+          @event.image = stub_file('test.jpeg')
+          @event.save.should be_true
+          @event.reload
+          @event[:image].should == 'jonas.jpeg'
+        end
+
+      end
+
     end
     
   end

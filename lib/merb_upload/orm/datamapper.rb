@@ -14,7 +14,6 @@ module Merb
 
         before :save do
           send("store_#{column}!")
-          send("set_#{column}_column")
         end
       end
 
