@@ -22,7 +22,7 @@ this should give you a file in:
 
 Check out this file for some hints on how you can customize your uploader. It should look something like this:
 
-    class AvatarUploader < Merb::Upload::Uploader
+    class AvatarUploader < Stapler::Uploader
       storage :file
     end
 
@@ -90,7 +90,7 @@ Now you can upload files!
 
 In order to change where uploaded files are put, just override the `store_dir` method:
 
-    class MyUploader < Merb::Upload::Uploader
+    class MyUploader < Stapler::Uploader
       def store_dir
         'public/my/upload/directory'
       end
@@ -102,8 +102,8 @@ This works for the file storage as well as Amazon S3.
 
 Often you'll want to add different versions of the same file. The classic example is image thumbnails. There is built in support for this:
 
-    class MyUploader < Merb::Upload::Uploader
-      include Merb::Upload::RMagick
+    class MyUploader < Stapler::Uploader
+      include Stapler::RMagick
       
       process :resize => [800, 800]
 
@@ -148,18 +148,18 @@ Merb Upload has support for a few different image manipulation libraries. These 
 You'll need to configure a bucket, access id and secret key like this:
 
     Merb::BootLoader.before_app_loads do
-      Merb::Upload.config[:s3][:access_key_id] = 'xxxxxx'
-      Merb::Upload.config[:s3][:secret_access_key] = 'xxxxxx'
-      Merb::Upload.config[:s3][:bucket] = 'name_of_bucket'
+      Stapler.config[:s3][:access_key_id] = 'xxxxxx'
+      Stapler.config[:s3][:secret_access_key] = 'xxxxxx'
+      Stapler.config[:s3][:bucket] = 'name_of_bucket'
     end
 
 And then in your uploader, set the storage to :s3
 
-    class AvatarUploader < Merb::Upload::Uploader
+    class AvatarUploader < Stapler::Uploader
       storage :s3
     end
 
-That's it! You can still use the `Merb::Upload::Uploader#url` method to return the url to the file on Amazon S3
+That's it! You can still use the `Stapler::Uploader#url` method to return the url to the file on Amazon S3
 
 ## Using RMagick
 
@@ -169,14 +169,14 @@ If you're uploading images, you'll probably want to manipulate them in some way,
 
 You'll also need to include it in your Uploader:
 
-    class AvatarUploader < Merb::Upload::Uploader
-      include Merb::Upload::RMagick
+    class AvatarUploader < Stapler::Uploader
+      include Stapler::RMagick
     end
 
-The RMagick module gives you a few methods, like `Merb::Upload::RMagick#crop_resized` which manipulate the image file in some way. You can set a `process` callback, which will call that method any time a file is uploaded.
+The RMagick module gives you a few methods, like `Stapler::RMagick#crop_resized` which manipulate the image file in some way. You can set a `process` callback, which will call that method any time a file is uploaded.
 
-    class AvatarUploader < Merb::Upload::Uploader
-      include Merb::Upload::RMagick
+    class AvatarUploader < Stapler::Uploader
+      include Stapler::RMagick
       
       process :crop_resized => [200, 200]
       process :convert => 'png'
@@ -196,8 +196,8 @@ ImageScience works the same way as RMagick. As with RMagick you'll need to requi
 
 And then include it in your model:
 
-    class AvatarUploader < Merb::Upload::Uploader
-      include Merb::Upload::ImageScience
+    class AvatarUploader < Stapler::Uploader
+      include Stapler::ImageScience
       
       process :crop_resized => [200, 200]
     end

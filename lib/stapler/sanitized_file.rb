@@ -148,7 +148,7 @@ module Stapler
       # Creates a copy of this file and moves it to the given path. Returns the copy.
       #
       # @param [String] new_path The path where the file should be copied to.
-      # @return [Merb::Upload::SanitizedFile] the location where the file will be stored.
+      # @return [Stapler::SanitizedFile] the location where the file will be stored.
       #
       def copy_to(new_path)
         return if self.empty?

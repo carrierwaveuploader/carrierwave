@@ -1,5 +1,5 @@
 Given /^an uploader class that uses the 'file' storage$/ do
-  @klass = Class.new(Merb::Upload::Uploader)
+  @klass = Class.new(Stapler::Uploader)
 end
 
 Given /^an instance of that class$/ do

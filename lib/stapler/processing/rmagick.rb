@@ -43,7 +43,7 @@ module Merb
           yield( image.first ).write(self.current_path)
         end
       rescue ::Magick::ImageMagickError => e
-        raise Merb::Upload::ProcessingError.new("Failed to manipulate with rmagick, maybe it is not an image? Original Error: #{e}")
+        raise Stapler::ProcessingError.new("Failed to manipulate with rmagick, maybe it is not an image? Original Error: #{e}")
       end      
       
     end
