@@ -1,6 +1,6 @@
 Feature: uploader with file storage and overriden filename
   In order to be awesome
-  As a merb programmer
+  As a developer using stapler
   I want to upload files to the filesystem with an overriden filename
   
   Background:

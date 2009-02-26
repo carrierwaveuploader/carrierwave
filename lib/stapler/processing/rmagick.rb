@@ -1,7 +1,6 @@
-dependency 'rmagick'
+require 'rmagick'
 
-module Merb
-  module Upload
+module Stapler
     module RMagick
       
       # Convert the image to format
@@ -46,6 +45,5 @@ module Merb
         raise Stapler::ProcessingError.new("Failed to manipulate with rmagick, maybe it is not an image? Original Error: #{e}")
       end      
       
-    end
   end
 end

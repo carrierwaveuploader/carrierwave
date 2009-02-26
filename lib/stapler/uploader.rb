@@ -53,7 +53,7 @@ module Stapler
         ##
         # Sets the storage engine to be used when storing files with this uploader.
         # Can be any class that implements a #store!(Stapler::SanitizedFile) and a #retrieve!
-        # method. See lib/merb_upload/storage/file.rb for an example. Storage engines should
+        # method. See lib/stapler/storage/file.rb for an example. Storage engines should
         # be added to Stapler.config[:storage_engines] so they can be referred
         # to by a symbol, which should be more convenient
         #
@@ -146,9 +146,9 @@ module Stapler
       # @param [Object] model Any kind of model object
       # @param [Symbol] mounted_as The name of the column where this uploader is mounted
       # @example
-      #     class MyUploader < Staplerer::Base
+      #     class MyUploader < Stapler::Uploader
       #       def store_dir
-      #         Merb.root / 'public' / 'files' / mounted_as / model.permalink
+      #         File.join('public', 'files', mounted_as, model.permalink)
       #       end
       #     end
       #

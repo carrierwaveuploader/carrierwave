@@ -1,6 +1,6 @@
 Feature: uploader with file storage and a processor that reverses the file
   In order to be awesome
-  As a merb programmer
+  As a developer using stapler
   I want to upload files to the filesystem
   
   Background:

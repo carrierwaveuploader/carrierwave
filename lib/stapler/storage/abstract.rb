@@ -59,7 +59,7 @@ module Stapler
 
         ##
         # Should return the url where the file is publically accessible. If this is not set, then
-        # it is assumed that the url is the path relative to the Merb public directory.
+        # it is assumed that the url is the path relative to the public directory.
         #
         # This is OPTIONAL
         #

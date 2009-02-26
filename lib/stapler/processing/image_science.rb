@@ -1,10 +1,6 @@
-# make sure we're running inside Merb
-if defined?(Merb::Plugins)
-  dependency "image_science"
-end
+require "image_science"
 
-module Merb
-  module Upload
+module Stapler
     module ImageScience
       
       # Resize the image so that it will not exceed the dimensions passed
@@ -70,6 +66,5 @@ module Merb
         geometry.split('x').map{|i| i.to_f }      
       end
 
-    end
   end
 end

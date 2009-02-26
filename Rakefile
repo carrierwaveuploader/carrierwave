@@ -2,20 +2,18 @@ require 'rubygems'
 require 'rake/gempackagetask'
 
 require 'yard'
-require 'merb-core'
-require 'merb-core/tasks/merb'
 require 'spec/rake/spectask'
 require 'cucumber/rake/task'
 
-NAME = "merb_upload"
+NAME = "stapler"
 GEM_VERSION = "0.1"
 AUTHOR = "Jonas Nicklas"
 EMAIL = "jonas.nicklas@gmail.com"
-HOMEPAGE = "http://merbivore.com/"
-SUMMARY = "Merb plugin that provides a framework for file uploads"
+HOMEPAGE = "http://www.example.com"
+SUMMARY = "Simple and powerful uploads for Merb and Rails"
 
 spec = Gem::Specification.new do |s|
-  s.rubyforge_project = 'merb'
+  s.rubyforge_project = 'stapler'
   s.name = NAME
   s.version = GEM_VERSION
   s.platform = Gem::Platform::RUBY
@@ -41,7 +39,7 @@ Cucumber::Rake::Task.new do |t|
 end
 
 YARD::Rake::YardocTask.new do |t|
-  t.files   = ["README.md", "LICENSE", "TODO", 'lib/merb_upload/**/*.rb']
+  t.files   = ["README.md", "LICENSE", "TODO", 'lib/stapler/**/*.rb']
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|

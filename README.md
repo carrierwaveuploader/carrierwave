@@ -1,14 +1,18 @@
-# Merb Upload
+# Stapler
 
-This plugin for Merb provides a simple and extremely flexible way to upload files.
+This plugin for Merb and Rails provides a simple and extremely flexible way to upload files.
 
 ## Getting Started
 
 At the moment you are going to have to grab it here from github and install it yourself.
 
-Add it as a dependency to your config/init.rb
+In Merb, add it as a dependency to your config/dependencies.rb:
     
-    dependency 'merb_upload'
+    dependency 'stapler'
+
+In Rails, add it to your environment.rb:
+
+    config.gem "stapler"
 
 ## Quick Start
 
@@ -34,15 +38,15 @@ You can use your uploader class to store and retrieve files like this:
     
     uploader.retrieve_from_store!('my_file.png')
 
-Merb Uploader gives you a `store` for permanent storage, and a `cache` for temporary storage. You can use different stores, at the moment a filesystem store and an Amazon S3 store are bundled.
+Stapler gives you a `store` for permanent storage, and a `cache` for temporary storage. You can use different stores, at the moment a filesystem store and an Amazon S3 store are bundled.
 
-Most of the time you are going to want to use Merb Upload together with an ORM. It is quite simple to mount uploaders on columns in your model, so you can simply assign files and get going:
+Most of the time you are going to want to use Stapler together with an ORM. It is quite simple to mount uploaders on columns in your model, so you can simply assign files and get going:
 
 ### ActiveRecord
 
 First require the activerecord extension:
 
-    require 'merb_upload/orm/activerecord
+    require 'stapler/orm/activerecord
 
 You don't need to do this if you are using Merb or Rails.
 
@@ -65,7 +69,7 @@ Now you can upload files!
 
 First require the activerecord extension:
 
-    require 'merb_upload/orm/datamapper
+    require 'stapler/orm/datamapper
 
 You don't need to do this if you are using Merb or Rails.
 
@@ -125,11 +129,11 @@ One important thing to remember is that process is called *before* versions are 
 
 ## What's in that uploader file?
 
-The fact that uploaders are separate classes in Merb Upload is a big advantage. What this means for you is:
+The fact that uploaders are separate classes in Stapler is a big advantage. What this means for you is:
 
 #### Less magic
 
-In order to customize your uploader, all you need to do is override methods and use normal, clear and simple Ruby code. That means no `alias_method_chain`'ing to hook into the upload process, no messing around with weird extensions. The code in Merb Upload is very simple and easy because of this.
+In order to customize your uploader, all you need to do is override methods and use normal, clear and simple Ruby code. That means no `alias_method_chain`'ing to hook into the upload process, no messing around with weird extensions. The code in Stapler is very simple and easy because of this.
 
 #### Easier to test
 
@@ -137,21 +141,21 @@ How do you test file uploads? I always found this ridiculously hard. A separate 
 
 #### More Flexible
 
-Many of the things you can do in Merb Upload are hard, or impossible to do in other file upload plugins, and have previously required you to roll your own. Now you can get all the flexibility without having to write low level stuff.
+Many of the things you can do in Stapler are hard, or impossible to do in other file upload plugins, and have previously required you to roll your own. Now you can get all the flexibility without having to write low level stuff.
 
 #### Easy to extend
 
-Merb Upload has support for a few different image manipulation libraries. These need *no* code to hook into Merb Upload, because they are simple modules. If you want to write your own manipulation library (doesn't need to be for images), you can do the same.
+Stapler has support for a few different image manipulation libraries. These need *no* code to hook into Stapler, because they are simple modules. If you want to write your own manipulation library (doesn't need to be for images), you can do the same.
 
 ## Using Amazon S3
 
 You'll need to configure a bucket, access id and secret key like this:
 
-    Merb::BootLoader.before_app_loads do
-      Stapler.config[:s3][:access_key_id] = 'xxxxxx'
-      Stapler.config[:s3][:secret_access_key] = 'xxxxxx'
-      Stapler.config[:s3][:bucket] = 'name_of_bucket'
-    end
+    Stapler.config[:s3][:access_key_id] = 'xxxxxx'
+    Stapler.config[:s3][:secret_access_key] = 'xxxxxx'
+    Stapler.config[:s3][:bucket] = 'name_of_bucket'
+
+Do this in an initializer in Rails, and in a `before_app_loads` block in Merb.
 
 And then in your uploader, set the storage to :s3
 
@@ -163,9 +167,9 @@ That's it! You can still use the `Stapler::Uploader#url` method to return the ur
 
 ## Using RMagick
 
-If you're uploading images, you'll probably want to manipulate them in some way, you might want to create thumbnail images for example. Merb Upload comes with a small library to make manipulating images with RMagick easier. It's not loaded by default so you'll need to require it:
+If you're uploading images, you'll probably want to manipulate them in some way, you might want to create thumbnail images for example. Stapler comes with a small library to make manipulating images with RMagick easier. It's not loaded by default so you'll need to require it:
 
-    require 'merb_upload/processing/rmagick'
+    require 'stapler/processing/rmagick'
 
 You'll also need to include it in your Uploader:
 
@@ -192,7 +196,7 @@ Check out the manipulate! method, which makes it easy for you to write your own 
 
 ImageScience works the same way as RMagick. As with RMagick you'll need to require it:
 
-    require 'merb_upload/processing/image_science'
+    require 'stapler/processing/image_science'
 
 And then include it in your model:
 
@@ -204,4 +208,4 @@ And then include it in your model:
 
 ## Read the source
 
-Merb Upload is still young, but most of it is pretty well documented. Just dig in and look at the source for more in-depth explanation of what things are doing.
+Stapler is still young, but most of it is pretty well documented. Just dig in and look at the source for more in-depth explanation of what things are doing.
