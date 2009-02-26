@@ -1,5 +1,4 @@
-module Merb
-  module Upload
+module Stapler
 
     class SanitizedFile
     
@@ -230,5 +229,4 @@ module Merb
       end
     
     end
-  end
 end

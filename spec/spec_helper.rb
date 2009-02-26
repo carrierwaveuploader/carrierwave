@@ -15,7 +15,7 @@ require 'tempfile'
 require 'ruby-debug'
 require 'spec'
 
-require 'merb_upload'
+require 'stapler'
 
 alias :running :lambda
 
@@ -27,10 +27,10 @@ def public_path( *paths )
   File.expand_path(File.join(File.dirname(__FILE__), 'public', *paths))
 end
 
-Merb::Upload.config[:public] = public_path
-Merb::Upload.config[:root] = File.expand_path(File.dirname(__FILE__))
-Merb::Upload.config[:store_dir] = 'public/uploads'
-Merb::Upload.config[:cache_dir] = 'public/uploads/tmp'
+Stapler.config[:public] = public_path
+Stapler.config[:root] = File.expand_path(File.dirname(__FILE__))
+Stapler.config[:store_dir] = 'public/uploads'
+Stapler.config[:cache_dir] = 'public/uploads/tmp'
 
 module SanitizedFileSpecHelper
   def stub_merb_tempfile(filename)

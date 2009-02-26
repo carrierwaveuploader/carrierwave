@@ -1,5 +1,4 @@
-module Merb
-  module Upload
+module Stapler
 
     module Mount
       
@@ -31,7 +30,7 @@ module Merb
         end
         
         def set_uploader(column, new_file)
-          new_file = Merb::Upload::SanitizedFile.new(new_file)
+          new_file = Stapler::SanitizedFile.new(new_file)
           
           unless new_file.empty?
             uploaders[column] ||= self.class.uploaders[column].new(self, column)
@@ -58,13 +57,13 @@ module Merb
       
       def mount_uploader(column, uploader=nil, &block)
         unless uploader
-          uploader = Class.new(Merb::Upload::Uploader)
+          uploader = Class.new(Stapler::Uploader)
           uploader.class_eval(&block)
         end
         
         uploaders[column.to_sym] = uploader
         
-        include Merb::Upload::Mount::Extension
+        include Stapler::Mount::Extension
         
         class_eval <<-EOF, __FILE__, __LINE__+1
           def #{column}                                     # def image
@@ -93,5 +92,4 @@ module Merb
       
     end
 
-  end
 end

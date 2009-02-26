@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-require 'merb_upload/orm/activerecord'
+require 'stapler/orm/activerecord'
 
 # change this if sqlite is unavailable
 dbconfig = {
@@ -26,7 +26,7 @@ end
 
 class Event < ActiveRecord::Base; end # setup a basic AR class for testing
 
-describe Merb::Upload::ActiveRecord do
+describe Stapler::ActiveRecord do
   
   include SanitizedFileSpecHelper
   
@@ -39,7 +39,7 @@ describe Merb::Upload::ActiveRecord do
     before do
       @class = Class.new(ActiveRecord::Base)
       @class.table_name = "events"
-      @uploader = Class.new(Merb::Upload::Uploader)
+      @uploader = Class.new(Stapler::Uploader)
       @class.mount_uploader(:image, @uploader)
       @event = @class.new
     end

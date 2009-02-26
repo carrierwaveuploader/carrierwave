@@ -1,5 +1,4 @@
-module Merb
-  module Upload
+module Stapler
     
     class Uploader
     
@@ -22,7 +21,7 @@ module Merb
         #
         # @param [*Symbol, Hash{Symbol => Array[]}] args
         # @example
-        #     class MyUploader < Merb::Upload::Uploader
+        #     class MyUploader < Stapler::Uploader
         #       process :sepiatone, :vignette
         #       process :scale => [200, 200]
         #     
@@ -53,9 +52,9 @@ module Merb
         
         ##
         # Sets the storage engine to be used when storing files with this uploader.
-        # Can be any class that implements a #store!(Merb::Upload::SanitizedFile) and a #retrieve!
+        # Can be any class that implements a #store!(Stapler::SanitizedFile) and a #retrieve!
         # method. See lib/merb_upload/storage/file.rb for an example. Storage engines should
-        # be added to Merb::Upload.config[:storage_engines] so they can be referred
+        # be added to Stapler.config[:storage_engines] so they can be referred
         # to by a symbol, which should be more convenient
         #
         # If no argument is given, it will simply return the currently used storage engine.
@@ -64,7 +63,7 @@ module Merb
         # @return [Class] the storage engine to be used with this uploader
         # @example
         #     storage :file
-        #     storage Merb::Upload::Storage::File
+        #     storage Stapler::Storage::File
         #     storage MyCustomStorageEngine
         # 
         def storage(storage = nil)
@@ -80,7 +79,7 @@ module Merb
           end
           if @storage.nil?
             # If we were not able to find a store any other way, setup the default store
-            @storage ||= get_storage_by_symbol(Merb::Upload.config[:storage])
+            @storage ||= get_storage_by_symbol(Stapler.config[:storage])
             @storage.setup!
           end
           return @storage
@@ -128,7 +127,7 @@ module Merb
       private
       
         def get_storage_by_symbol(symbol)
-          Merb::Upload.config[:storage_engines][symbol]
+          Stapler.config[:storage_engines][symbol]
         end
       
       end
@@ -147,7 +146,7 @@ module Merb
       # @param [Object] model Any kind of model object
       # @param [Symbol] mounted_as The name of the column where this uploader is mounted
       # @example
-      #     class MyUploader < Merb::Uploader::Base
+      #     class MyUploader < Staplerer::Base
       #       def store_dir
       #         Merb.root / 'public' / 'files' / mounted_as / model.permalink
       #       end
@@ -159,7 +158,7 @@ module Merb
       end
       
       ##
-      # Apply all process callbacks added through Merb::Uploader.process
+      # Apply all process callbacks added through Staplerer.process
       #
       def process!
         self.class.processors.each do |method, args|
@@ -177,7 +176,7 @@ module Merb
       ##
       # Returns a hash mapping the name of each version of the uploader to an instance of it
       #
-      # @return [Hash{Symbol => Merb::Upload::Uploader}] a list of uploader instances
+      # @return [Hash{Symbol => Stapler::Uploader}] a list of uploader instances
       #
       def versions
         return @versions if @versions
@@ -195,7 +194,7 @@ module Merb
         if file.respond_to?(:url) and not file.url.blank?
           file.url
         elsif current_path
-          File.expand_path(current_path).gsub(File.expand_path(Merb::Upload.config[:public]), '')
+          File.expand_path(current_path).gsub(File.expand_path(Stapler.config[:public]), '')
         end
       end
       
@@ -237,7 +236,7 @@ module Merb
       # @return [String] the directory relative to which we will upload
       #
       def root
-        Merb::Upload.config[:root]
+        Stapler.config[:root]
       end
     
       ####################
@@ -250,7 +249,7 @@ module Merb
       # @return [String] a directory
       #
       def cache_dir
-        Merb::Upload.config[:cache_dir]
+        Stapler.config[:cache_dir]
       end
       
       ##
@@ -266,7 +265,7 @@ module Merb
       # Caches the given file unless a file has already been cached, stored or retrieved.
       #
       # @param [File, IOString, Tempfile] new_file any kind of file object
-      # @raise [Merb::Upload::FormNotMultipart] if the assigned parameter is a string
+      # @raise [Stapler::FormNotMultipart] if the assigned parameter is a string
       #
       def cache(new_file)
         cache!(new_file) unless file
@@ -276,12 +275,12 @@ module Merb
       # Caches the given file. Calls process! to trigger any process callbacks.
       #
       # @param [File, IOString, Tempfile] new_file any kind of file object
-      # @raise [Merb::Upload::FormNotMultipart] if the assigned parameter is a string
+      # @raise [Stapler::FormNotMultipart] if the assigned parameter is a string
       #
       def cache!(new_file)
-        self.cache_id = Merb::Upload::Uploader.generate_cache_id unless cache_id
-        new_file = Merb::Upload::SanitizedFile.new(new_file)
-        raise Merb::Upload::FormNotMultipart, "check that your upload form is multipart encoded" if new_file.string?
+        self.cache_id = Stapler::Uploader.generate_cache_id unless cache_id
+        new_file = Stapler::SanitizedFile.new(new_file)
+        raise Stapler::FormNotMultipart, "check that your upload form is multipart encoded" if new_file.string?
 
         @file = new_file
 
@@ -305,19 +304,19 @@ module Merb
       #
       def retrieve_from_cache(cache_name)
         retrieve_from_cache!(cache_name) unless file
-      rescue Merb::Upload::InvalidParameter
+      rescue Stapler::InvalidParameter
       end
       
       ##
       # Retrieves the file with the given cache_name from the cache.
       #
       # @param [String] cache_name uniquely identifies a cache file
-      # @raise [Merb::Upload::InvalidParameter] if the cache_name is incorrectly formatted.
+      # @raise [Stapler::InvalidParameter] if the cache_name is incorrectly formatted.
       #
       def retrieve_from_cache!(cache_name)
         self.cache_id, self.original_filename = cache_name.split('/', 2)
         @filename = original_filename
-        @file = Merb::Upload::SanitizedFile.new(cache_path)
+        @file = Stapler::SanitizedFile.new(cache_path)
         versions.each { |name, v| v.retrieve_from_cache!(cache_name) }
       end
       
@@ -333,14 +332,14 @@ module Merb
       # @return [String] a directory
       #
       def store_dir
-        [Merb::Upload.config[:store_dir], version_name].compact.join(File::Separator)
+        [Stapler.config[:store_dir], version_name].compact.join(File::Separator)
       end
       
       ##
       # Stores the file by passing it to this Uploader's storage engine, unless a file has
       # already been cached, stored or retrieved.
       #
-      # If Merb::Upload.config[:use_cache] is true, it will first cache the file
+      # If Stapler.config[:use_cache] is true, it will first cache the file
       # and apply any process callbacks before uploading it.
       #
       # @param [File, IOString, Tempfile] new_file any kind of file object
@@ -354,18 +353,18 @@ module Merb
       #
       # If new_file is omitted, a previously cached file will be stored.
       #
-      # If Merb::Upload.config[:use_cache] is true, it will first cache the file
+      # If Stapler.config[:use_cache] is true, it will first cache the file
       # and apply any process callbacks before uploading it.
       #
       # @param [File, IOString, Tempfile] new_file any kind of file object
       #
       def store!(new_file=nil)
-        if Merb::Upload.config[:use_cache]
+        if Stapler.config[:use_cache]
           cache!(new_file) if new_file
           @file = storage.store!(self, @file)
           @cache_id = nil
         else
-          new_file = Merb::Upload::SanitizedFile.new(new_file)
+          new_file = Stapler::SanitizedFile.new(new_file)
           
           @filename = new_file.filename
           self.original_filename = filename
@@ -383,7 +382,7 @@ module Merb
       #
       def retrieve_from_store(filename)
         retrieve_from_store!(filename) unless file
-      rescue Merb::Upload::InvalidParameter
+      rescue Stapler::InvalidParameter
       end
       
       ##
@@ -409,16 +408,15 @@ module Merb
       attr_reader :cache_id, :original_filename
 
       def cache_id=(cache_id)
-        raise Merb::Upload::InvalidParameter, "invalid cache id" unless cache_id =~ /^[\d]{8}\-[\d]{4}\-[\d]+\-[\d]{4}$/
+        raise Stapler::InvalidParameter, "invalid cache id" unless cache_id =~ /^[\d]{8}\-[\d]{4}\-[\d]+\-[\d]{4}$/
         @cache_id = cache_id
       end
       
       def original_filename=(filename)
-        raise Merb::Upload::InvalidParameter, "invalid filename" unless filename =~ /^[a-z0-9\.\-\+_]+$/i
+        raise Stapler::InvalidParameter, "invalid filename" unless filename =~ /^[a-z0-9\.\-\+_]+$/i
         @original_filename = filename
       end
       
     end
     
-  end
 end

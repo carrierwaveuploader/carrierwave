@@ -1,10 +1,9 @@
 require 'activerecord'
 
-module Merb
-  module Upload
+module Stapler
     module ActiveRecord
 
-      include Merb::Upload::Mount
+      include Stapler::Mount
 
       def after_mount(column, uploader)
         alias_method :read_uploader, :read_attribute
@@ -16,7 +15,6 @@ module Merb
       end
 
     end # ActiveRecord
-  end # Upload
-end # Merb
+end # Stapler
 
-ActiveRecord::Base.send(:extend, Merb::Upload::ActiveRecord)
+ActiveRecord::Base.send(:extend, Stapler::ActiveRecord)

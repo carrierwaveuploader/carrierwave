@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
-describe Merb::Upload::Mount do
+describe Stapler::Mount do
   
   include SanitizedFileSpecHelper
   
@@ -12,9 +12,9 @@ describe Merb::Upload::Mount do
     
     before do
       @class = Class.new
-      @class.send(:extend, Merb::Upload::Mount)
+      @class.send(:extend, Stapler::Mount)
       
-      @uploader = Class.new(Merb::Upload::Uploader)
+      @uploader = Class.new(Stapler::Uploader)
 
       @class.mount_uploader(:image, @uploader)
       @instance = @class.new
@@ -146,7 +146,7 @@ describe Merb::Upload::Mount do
    
     before do
       @class = Class.new
-      @class.send(:extend, Merb::Upload::Mount)
+      @class.send(:extend, Stapler::Mount)
       @class.mount_uploader(:image) do
         def monkey
           'blah'
@@ -161,8 +161,8 @@ describe Merb::Upload::Mount do
         @instance.stub!(:read_uploader).and_return('test.jpg')
       end
       
-      it "should return an instance of a subclass of Merb::Upload::Uploader" do
-        @instance.image.should be_a(Merb::Upload::Uploader)
+      it "should return an instance of a subclass of Stapler::Uploader" do
+        @instance.image.should be_a(Stapler::Uploader)
       end
       
       it "should set the path to the store dir" do

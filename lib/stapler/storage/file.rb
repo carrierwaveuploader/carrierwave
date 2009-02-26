@@ -1,5 +1,4 @@
-module Merb
-  module Upload
+module Stapler
     
     module Storage
       class File < Abstract
@@ -11,10 +10,10 @@ module Merb
         ##
         # Move the file to the uploader's store path.
         #
-        # @param [Merb::Upload::Uploader] uploader an uploader object
-        # @param [Merb::Upload::SanitizedFile] file the file to store
+        # @param [Stapler::Uploader] uploader an uploader object
+        # @param [Stapler::SanitizedFile] file the file to store
         #
-        # @return [Merb::Upload::SanitizedFile] a sanitized file
+        # @return [Stapler::SanitizedFile] a sanitized file
         #
         def self.store!(uploader, file)
           path = ::File.join(uploader.store_dir, uploader.filename)
@@ -26,19 +25,18 @@ module Merb
         ##
         # Retrieve the file from its store path
         #
-        # @param [Merb::Upload::Uploader] uploader an uploader object
+        # @param [Stapler::Uploader] uploader an uploader object
         # @param [String] identifier the filename of the file
         #
-        # @return [Merb::Upload::SanitizedFile] a sanitized file
+        # @return [Stapler::SanitizedFile] a sanitized file
         #
         def self.retrieve!(uploader, identifier)
           path = ::File.join(uploader.store_dir, identifier)
           path = ::File.expand_path(path, uploader.root)
-          Merb::Upload::SanitizedFile.new(path)
+          Stapler::SanitizedFile.new(path)
         end
         
       end
     end
     
-  end
 end

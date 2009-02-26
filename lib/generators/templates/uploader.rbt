@@ -1,4 +1,8 @@
-class <%= class_name %>Uploader < Merb::Upload::Uploader
+class <%= class_name %>Uploader < Stapler::Uploader
+  
+  # Include RMagick or ImageScience support
+  #     include Stapler::RMagick
+  #     include Stapler::ImageScience
   
   # Choose what kind of storage to use for this uploader
   storage :file
@@ -9,6 +13,11 @@ class <%= class_name %>Uploader < Merb::Upload::Uploader
   #     def scale(width, height)
   #       # do something
   #     end 
+  
+  # Create different verions of your uploaded files
+  #     version :thumb do
+  #       process :scale => [50, 50]
+  #     end
   
   # Override the filename of the uploaded files
   #     def filename
