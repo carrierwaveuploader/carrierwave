@@ -31,13 +31,14 @@ Stapler.config = {
   },
   :s3 => {
     :access => :public_read
-  }
+  },
+  :store_dir => 'public/uploads',
+  :cache_dir => 'public/uploads/tmp'
 }
 
 if defined?(Merb::Plugins)
+  Stapler.config[:root] = Merb.root
   Stapler.config[:public] = Merb.dir_for(:public)
-  Stapler.config[:store_dir] = Merb.root / 'public' / 'uploads'
-  Stapler.config[:cache_dir] = Merb.root / 'public' / 'uploads' / 'tmp'
   
   orm_path = File.dirname(__FILE__) / 'stapler' / 'orm' / Merb.orm
   require orm_path if File.exist?(orm_path + '.rb')
@@ -48,12 +49,16 @@ if defined?(Merb::Plugins)
 end
 
 if defined?(Rails)
+  Stapler.config[:root] = Rails.root
   Stapler.config[:public] = File.join(Rails.root, 'public')
-  Stapler.config[:store_dir] = File.join(Rails.root, 'public', 'uploads')
-  Stapler.config[:cache_dir] = File.join(Rails.root, 'public', 'uploads', 'tmp')
   
   require File.join(File.dirname(__FILE__), "stapler", "orm", 'activerecord')
   
   # FIXME: this is broken? It works fine when I add load paths in environment.rb :S
   Rails.configuration.load_paths << File.join(Rails.root, "app", "uploaders")
+end
+
+if defined?(Sinatra)
+  Stapler.config[:root] = Sinatra::Application.root
+  Stapler.config[:public] = Sinatra::Application.public
 end
