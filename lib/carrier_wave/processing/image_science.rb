@@ -1,6 +1,6 @@
 require "image_science"
 
-module Stapler
+module CarrierWave
   module ImageScience
     
     # Resize the image so that it will not exceed the dimensions passed
@@ -67,4 +67,4 @@ module Stapler
     end
 
   end # ImageScience
-end # Stapler
+end # CarrierWave

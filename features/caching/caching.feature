@@ -1,6 +1,6 @@
 Feature: uploader with file storage
   In order to be able to temporarily store files to disk
-  As a developer using stapler
+  As a developer using CarrierWave
   I want to cache files
   
   Scenario: cache a file

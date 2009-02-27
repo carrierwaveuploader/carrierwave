@@ -1,6 +1,6 @@
 require 'fileutils'
 
-module Stapler
+module CarrierWave
   class << self
     attr_accessor :config
   end
@@ -13,7 +13,7 @@ module Stapler
   class ProcessingError < UploadError; end
 end
 
-dir = File.join(File.dirname(__FILE__), 'stapler')
+dir = File.join(File.dirname(__FILE__), 'carrier_wave')
 
 require File.join(dir, 'sanitized_file')
 require File.join(dir, 'uploader')
@@ -22,12 +22,12 @@ require File.join(dir, 'storage', 'abstract')
 require File.join(dir, 'storage', 'file')
 require File.join(dir, 'storage', 's3')
 
-Stapler.config = {
+CarrierWave.config = {
   :storage => :file,
   :use_cache => true,
   :storage_engines => {
-    :file => Stapler::Storage::File,
-    :s3 => Stapler::Storage::S3
+    :file => CarrierWave::Storage::File,
+    :s3 => CarrierWave::Storage::S3
   },
   :s3 => {
     :access => :public_read
@@ -37,10 +37,10 @@ Stapler.config = {
 }
 
 if defined?(Merb::Plugins)
-  Stapler.config[:root] = Merb.root
-  Stapler.config[:public] = Merb.dir_for(:public)
+  CarrierWave.config[:root] = Merb.root
+  CarrierWave.config[:public] = Merb.dir_for(:public)
   
-  orm_path = File.dirname(__FILE__) / 'stapler' / 'orm' / Merb.orm
+  orm_path = File.dirname(__FILE__) / 'carrier_wave' / 'orm' / Merb.orm
   require orm_path if File.exist?(orm_path + '.rb')
   
   Merb.push_path(:uploader, Merb.root / "app" / "uploaders", "**/*.rb")
@@ -49,16 +49,16 @@ if defined?(Merb::Plugins)
 end
 
 if defined?(Rails)
-  Stapler.config[:root] = Rails.root
-  Stapler.config[:public] = File.join(Rails.root, 'public')
+  CarrierWave.config[:root] = Rails.root
+  CarrierWave.config[:public] = File.join(Rails.root, 'public')
   
-  require File.join(File.dirname(__FILE__), "stapler", "orm", 'activerecord')
+  require File.join(File.dirname(__FILE__), "carrier_wave", "orm", 'activerecord')
   
   # FIXME: this is broken? It works fine when I add load paths in environment.rb :S
   Rails.configuration.load_paths << File.join(Rails.root, "app", "uploaders")
 end
 
 if defined?(Sinatra)
-  Stapler.config[:root] = Sinatra::Application.root
-  Stapler.config[:public] = Sinatra::Application.public
+  CarrierWave.config[:root] = Sinatra::Application.root
+  CarrierWave.config[:public] = Sinatra::Application.public
 end

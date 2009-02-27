@@ -1,4 +1,4 @@
-module Stapler
+module CarrierWave
   
   module Mount
     module Extension
@@ -29,7 +29,7 @@ module Stapler
       end
     
       def set_uploader(column, new_file)
-        new_file = Stapler::SanitizedFile.new(new_file)
+        new_file = CarrierWave::SanitizedFile.new(new_file)
       
         unless new_file.empty?
           uploaders[column] ||= self.class.uploaders[column].new(self, column)
@@ -56,13 +56,13 @@ module Stapler
   
     def mount_uploader(column, uploader=nil, &block)
       unless uploader
-        uploader = Class.new(Stapler::Uploader)
+        uploader = Class.new(CarrierWave::Uploader)
         uploader.class_eval(&block)
       end
     
       uploaders[column.to_sym] = uploader
     
-      include Stapler::Mount::Extension
+      include CarrierWave::Mount::Extension
     
       class_eval <<-EOF, __FILE__, __LINE__+1
         def #{column}                                     # def image
@@ -90,4 +90,4 @@ module Stapler
     end
   
   end # Mount
-end # Stapler
+end # CarrierWave

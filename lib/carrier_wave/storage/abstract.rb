@@ -1,4 +1,4 @@
-module Stapler
+module CarrierWave
   module Storage
     ##
     # This file serves mostly as a specification for Storage engines. There is no requirement
@@ -6,7 +6,7 @@ module Stapler
     # conform to the following interface:
     #
     # The storage engine must respond to store!, taking an uploader object and a
-    # Stapler::SanitizedFile as parameters. This method should do something to store
+    # CarrierWave::SanitizedFile as parameters. This method should do something to store
     # the given file, and then return an object.
     #
     # The storage engine must respond to retrieve!, taking an uploader object and an identifier
@@ -26,8 +26,8 @@ module Stapler
       ##
       # Do something to store the file
       #
-      # @param [Stapler::Uploader] uploader an uploader object
-      # @param [Stapler::SanitizedFile] file the file to store
+      # @param [CarrierWave::Uploader] uploader an uploader object
+      # @param [CarrierWave::SanitizedFile] file the file to store
       #
       # @return [#identifier] an object
       #
@@ -37,7 +37,7 @@ module Stapler
       
       # Do something to retrieve the file
       #
-      # @param [Stapler::Uploader] uploader an uploader object
+      # @param [CarrierWave::Uploader] uploader an uploader object
       # @param [String] identifier uniquely identifies the file
       #
       # @return [#identifier] an object
@@ -77,4 +77,4 @@ module Stapler
       
     end # Abstract
   end # Storage
-end # Stapler
+end # CarrierWave

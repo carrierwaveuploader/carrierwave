@@ -1,9 +1,9 @@
 require 'dm-core'
 
-module Stapler
+module CarrierWave
   module DataMapper
 
-    include Stapler::Mount
+    include CarrierWave::Mount
 
     def after_mount(column, uploader)
       alias_method :read_uploader, :attribute_get
@@ -15,6 +15,6 @@ module Stapler
     end
 
   end # DataMapper
-end # Stapler
+end # CarrierWave
 
-DataMapper::Model.send(:include, Stapler::DataMapper)
+DataMapper::Model.send(:include, CarrierWave::DataMapper)

@@ -1,9 +1,9 @@
 require 'activerecord'
 
-module Stapler
+module CarrierWave
   module ActiveRecord
 
-    include Stapler::Mount
+    include CarrierWave::Mount
 
     def after_mount(column, uploader)
       alias_method :read_uploader, :read_attribute
@@ -15,6 +15,6 @@ module Stapler
     end
 
   end # ActiveRecord
-end # Stapler
+end # CarrierWave
 
-ActiveRecord::Base.send(:extend, Stapler::ActiveRecord)
+ActiveRecord::Base.send(:extend, CarrierWave::ActiveRecord)

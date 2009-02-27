@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-require 'stapler/orm/activerecord'
+require 'carrier_wave/orm/activerecord'
 
 # change this if sqlite is unavailable
 dbconfig = {
@@ -26,7 +26,7 @@ end
 
 class Event < ActiveRecord::Base; end # setup a basic AR class for testing
 
-describe Stapler::ActiveRecord do
+describe CarrierWave::ActiveRecord do
   
   include SanitizedFileSpecHelper
   
@@ -39,7 +39,7 @@ describe Stapler::ActiveRecord do
     before do
       @class = Class.new(ActiveRecord::Base)
       @class.table_name = "events"
-      @uploader = Class.new(Stapler::Uploader)
+      @uploader = Class.new(CarrierWave::Uploader)
       @class.mount_uploader(:image, @uploader)
       @event = @class.new
     end

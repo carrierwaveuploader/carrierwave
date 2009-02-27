@@ -1,4 +1,4 @@
-module Stapler
+module CarrierWave
   module Storage
     ##
     # Uploads things to Amazon S3 webservices
@@ -17,8 +17,8 @@ module Stapler
       def self.setup!
         require 'aws/s3'
         AWS::S3::Base.establish_connection!(
-          :access_key_id     => Stapler.config[:s3][:access_key_id],
-          :secret_access_key => Stapler.config[:s3][:secret_access_key]
+          :access_key_id     => CarrierWave.config[:s3][:access_key_id],
+          :secret_access_key => CarrierWave.config[:s3][:secret_access_key]
         )
       end
       
@@ -26,21 +26,21 @@ module Stapler
       # @return [String] the bucket set in the config options
       # 
       def self.bucket
-        Stapler.config[:s3][:bucket]
+        CarrierWave.config[:s3][:bucket]
       end
       
       ##
       # @return [Symbol] the access priviliges the uploaded files should have
       #
       def self.access
-        Stapler.config[:s3][:access]
+        CarrierWave.config[:s3][:access]
       end
       
       ##
       # Store the file on S3
       #
-      # @param [Stapler::Uploader] uploader an uploader object
-      # @param [Stapler::SanitizedFile] file the file to store
+      # @param [CarrierWave::Uploader] uploader an uploader object
+      # @param [CarrierWave::SanitizedFile] file the file to store
       #
       # @return [#identifier] an object
       #
@@ -51,7 +51,7 @@ module Stapler
       
       # Do something to retrieve the file
       #
-      # @param [Stapler::Uploader] uploader an uploader object
+      # @param [CarrierWave::Uploader] uploader an uploader object
       # @param [String] identifier uniquely identifies the file
       #
       # @return [#identifier] an object
@@ -80,4 +80,4 @@ module Stapler
       
     end # S3
   end # Storage
-end # Stapler
+end # CarrierWave

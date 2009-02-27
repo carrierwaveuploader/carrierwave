@@ -1,24 +1,24 @@
 require 'rmagick'
 
-module Stapler
+module CarrierWave
   
   ##
   # This module simplifies manipulation with RMagick by providing a set
   # of convenient helper methods. If you want to use them, you'll need to
   # require this file
   #
-  #     require 'stapler/processing/rmagick'
+  #     require 'carrier_wave/processing/rmagick'
   #
   # And then include it in your uploader
   #
-  #     MyUploade < Stapler::Uploader
-  #       include Stapler::RMagick
+  #     MyUploade < CarrierWave::Uploader
+  #       include CarrierWave::RMagick
   #     end
   #
   # You can now use the provided helpers:
   #
-  #     MyUploade < Stapler::Uploader
-  #       include Stapler::RMagick
+  #     MyUploade < CarrierWave::Uploader
+  #       include CarrierWave::RMagick
   #       
   #       process :resize_to_fit => [200, 200] 
   #     end
@@ -27,8 +27,8 @@ module Stapler
   # out the RMagick docs at http://www.imagemagick.org/RMagick/doc/ for more
   # info
   #
-  #     MyUploade < Stapler::Uploader
-  #       include Stapler::RMagick
+  #     MyUploade < CarrierWave::Uploader
+  #       include CarrierWave::RMagick
   #       
   #       process :do_stuff => 10.0
   #       
@@ -139,7 +139,7 @@ module Stapler
     # any class that this is mixed into must have a current_path method.
     #
     # @yieldparam [Magick::Image] img manipulations to perform
-    # @raise [Stapler::ProcessingError] if manipulation failed.
+    # @raise [CarrierWave::ProcessingError] if manipulation failed.
     #
     def manipulate!
       image = ::Magick::Image.read(current_path)
@@ -154,8 +154,8 @@ module Stapler
         yield( image.first ).write(current_path)
       end
     rescue ::Magick::ImageMagickError => e
-      raise Stapler::ProcessingError.new("Failed to manipulate with rmagick, maybe it is not an image? Original Error: #{e}")
+      raise CarrierWave::ProcessingError.new("Failed to manipulate with rmagick, maybe it is not an image? Original Error: #{e}")
     end   
       
   end # RMagick
-end # Stapler
+end # CarrierWave

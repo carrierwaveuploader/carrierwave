@@ -1,4 +1,4 @@
-module Stapler
+module CarrierWave
     class SanitizedFile
 
     attr_accessor :file, :options
@@ -147,7 +147,7 @@ module Stapler
     # Creates a copy of this file and moves it to the given path. Returns the copy.
     #
     # @param [String] new_path The path where the file should be copied to.
-    # @return [Stapler::SanitizedFile] the location where the file will be stored.
+    # @return [CarrierWave::SanitizedFile] the location where the file will be stored.
     #
     def copy_to(new_path)
       return if self.empty?
@@ -228,4 +228,4 @@ module Stapler
     end
 
   end # SanitizedFile
-end # Stapler
+end # CarrierWave

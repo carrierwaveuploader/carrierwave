@@ -1,15 +1,15 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-require 'stapler/orm/datamapper'
+require 'carrier_wave/orm/datamapper'
 
 DataMapper.setup(:default, 'sqlite3::memory:')
 
-describe Stapler::DataMapper do
+describe CarrierWave::DataMapper do
   
   include SanitizedFileSpecHelper
   
   before do
-    uploader = Class.new(Stapler::Uploader)
+    uploader = Class.new(CarrierWave::Uploader)
     
     @class = Class.new
     @class.class_eval do

@@ -1,6 +1,6 @@
 Feature: uploader with file storage and a processor that reverses the file
   In order to be awesome
-  As a developer using stapler
+  As a developer using CarrierWave
   I want to upload files to the filesystem
   
   Background:

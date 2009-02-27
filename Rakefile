@@ -5,7 +5,7 @@ require 'yard'
 require 'spec/rake/spectask'
 require 'cucumber/rake/task'
 
-NAME = "stapler"
+NAME = "carrier_wave"
 GEM_VERSION = "0.1"
 AUTHOR = "Jonas Nicklas"
 EMAIL = "jonas.nicklas@gmail.com"
@@ -13,7 +13,7 @@ HOMEPAGE = "http://www.example.com"
 SUMMARY = "Simple and powerful uploads for Merb and Rails"
 
 spec = Gem::Specification.new do |s|
-  s.rubyforge_project = 'stapler'
+  s.rubyforge_project = 'carrier_wave'
   s.name = NAME
   s.version = GEM_VERSION
   s.platform = Gem::Platform::RUBY
@@ -39,7 +39,7 @@ Cucumber::Rake::Task.new do |t|
 end
 
 YARD::Rake::YardocTask.new do |t|
-  t.files   = ["README.md", "LICENSE", "TODO", 'lib/stapler/**/*.rb']
+  t.files   = ["README.md", "LICENSE", "TODO", 'lib/carrier_wave/**/*.rb']
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|

@@ -1,9 +1,9 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
-describe Stapler::Uploader do
+describe CarrierWave::Uploader do
   
   before do
-    @uploader_class = Class.new(Stapler::Uploader)
+    @uploader_class = Class.new(CarrierWave::Uploader)
     @uploader = @uploader_class.new
   end
   
@@ -98,8 +98,8 @@ describe Stapler::Uploader do
   
   describe ".storage" do
     before do
-      Stapler::Storage::File.stub!(:setup!)
-      Stapler::Storage::S3.stub!(:setup!)
+      CarrierWave::Storage::File.stub!(:setup!)
+      CarrierWave::Storage::S3.stub!(:setup!)
     end
     
     it "should set the storage if an argument is given" do
@@ -110,26 +110,26 @@ describe Stapler::Uploader do
     end
     
     it "should default to file" do
-      @uploader_class.storage.should == Stapler::Storage::File
+      @uploader_class.storage.should == CarrierWave::Storage::File
     end
     
     it "should set the storage from the configured shortcuts if a symbol is given" do
       @uploader_class.storage :file
-      @uploader_class.storage.should == Stapler::Storage::File
+      @uploader_class.storage.should == CarrierWave::Storage::File
     end
     
     it "should remember the storage when inherited" do
       @uploader_class.storage :s3
       subclass = Class.new(@uploader_class)
-      subclass.storage.should == Stapler::Storage::S3
+      subclass.storage.should == CarrierWave::Storage::S3
     end
     
     it "should be changeable when inherited" do
       @uploader_class.storage :s3
       subclass = Class.new(@uploader_class)
-      subclass.storage.should == Stapler::Storage::S3
+      subclass.storage.should == CarrierWave::Storage::S3
       subclass.storage :file
-      subclass.storage.should == Stapler::Storage::File
+      subclass.storage.should == CarrierWave::Storage::File
     end
   end
   
@@ -176,7 +176,7 @@ describe Stapler::Uploader do
   
   describe '#url' do
     before do
-      Stapler::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+      CarrierWave::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
     end
     
     it "should default to nil" do
@@ -203,7 +203,7 @@ describe Stapler::Uploader do
   
   describe '#to_s' do
       before do
-        Stapler::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+        CarrierWave::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
       end
 
       it "should default to nil" do
@@ -225,12 +225,12 @@ describe Stapler::Uploader do
   describe '#cache!' do
     
     before do
-      Stapler::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+      CarrierWave::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
     end
     
     it "should cache a file" do
       @uploader.cache!(File.open(file_path('test.jpg')))
-      @uploader.file.should be_an_instance_of(Stapler::SanitizedFile)
+      @uploader.file.should be_an_instance_of(CarrierWave::SanitizedFile)
     end
     
     it "should store the cache name" do
@@ -263,7 +263,7 @@ describe Stapler::Uploader do
   describe '#retrieve_from_cache!' do
     it "should cache a file" do
       @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
-      @uploader.file.should be_an_instance_of(Stapler::SanitizedFile)
+      @uploader.file.should be_an_instance_of(CarrierWave::SanitizedFile)
     end
     
     it "should set the path to the tmp dir" do
@@ -295,7 +295,7 @@ describe Stapler::Uploader do
     it "should raise an error when the cache_id has an invalid format" do
       running {
         @uploader.retrieve_from_cache!('12345/test.jpeg')
-      }.should raise_error(Stapler::InvalidParameter)
+      }.should raise_error(CarrierWave::InvalidParameter)
       
       @uploader.file.should be_nil
       @uploader.filename.should be_nil
@@ -305,10 +305,10 @@ describe Stapler::Uploader do
     it "should raise an error when the original_filename contains invalid characters" do
       running {
         @uploader.retrieve_from_cache!('20071201-1234-345-2255/te/st.jpeg')
-      }.should raise_error(Stapler::InvalidParameter)
+      }.should raise_error(CarrierWave::InvalidParameter)
       running {
         @uploader.retrieve_from_cache!('20071201-1234-345-2255/te??%st.jpeg')
-      }.should raise_error(Stapler::InvalidParameter)
+      }.should raise_error(CarrierWave::InvalidParameter)
       
       @uploader.file.should be_nil
       @uploader.filename.should be_nil
@@ -319,7 +319,7 @@ describe Stapler::Uploader do
   describe '#retrieve_from_cache' do
     it "should cache a file" do
       @uploader.retrieve_from_cache('20071201-1234-345-2255/test.jpeg')
-      @uploader.file.should be_an_instance_of(Stapler::SanitizedFile)
+      @uploader.file.should be_an_instance_of(CarrierWave::SanitizedFile)
     end
     
     it "should not overwrite a file that has already been cached" do
@@ -376,10 +376,10 @@ describe Stapler::Uploader do
     end
     
     it "should, if a files is given as an argument and use_cache is false, not cache that file" do
-      Stapler.config[:use_cache] = false
+      CarrierWave.config[:use_cache] = false
       @uploader.should_not_receive(:cache!)
       @uploader.store!(@file)
-      Stapler.config[:use_cache] = true
+      CarrierWave.config[:use_cache] = true
     end
     
     it "should use a previously cached file if no argument is given" do
@@ -489,7 +489,7 @@ describe Stapler::Uploader do
     describe '#cache!' do
 
       before do
-        Stapler::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+        CarrierWave::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
       end
 
       it "should suffix the version's store_dir" do
@@ -533,7 +533,7 @@ describe Stapler::Uploader do
       end
       
       after do
-        Stapler.config[:use_cache] = true
+        CarrierWave.config[:use_cache] = true
       end
       
       it "should set the current path for the version" do
@@ -556,7 +556,7 @@ describe Stapler::Uploader do
       end
     
       it "should, if a files is given as an argument and use_cache is false, suffix the version's store_dir" do
-        Stapler.config[:use_cache] = false
+        CarrierWave.config[:use_cache] = false
         @uploader.store!(@file)
         @uploader.store_dir.should == 'public/uploads'
         @uploader.thumb.store_dir.should == 'public/uploads/thumb'
@@ -608,7 +608,7 @@ describe Stapler::Uploader do
     describe '#cache!' do
 
       before do
-        Stapler::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+        CarrierWave::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
       end
 
       it "should set the filename to the file's reversed filename" do
@@ -647,7 +647,7 @@ describe Stapler::Uploader do
       end
       
       after do
-        Stapler.config[:use_cache] = true
+        CarrierWave.config[:use_cache] = true
       end
       
       it "should set the current path" do
@@ -666,7 +666,7 @@ describe Stapler::Uploader do
       end
     
       it "should, if a files is given as an argument and use_cache is false, reverse the filename" do
-        Stapler.config[:use_cache] = false
+        CarrierWave.config[:use_cache] = false
         @uploader.store!(@file)
         @uploader.filename.should == 'gpj.tset'
       end

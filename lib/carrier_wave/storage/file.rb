@@ -1,4 +1,4 @@
-module Stapler
+module CarrierWave
   module Storage
     class File < Abstract
       
@@ -9,10 +9,10 @@ module Stapler
       ##
       # Move the file to the uploader's store path.
       #
-      # @param [Stapler::Uploader] uploader an uploader object
-      # @param [Stapler::SanitizedFile] file the file to store
+      # @param [CarrierWave::Uploader] uploader an uploader object
+      # @param [CarrierWave::SanitizedFile] file the file to store
       #
-      # @return [Stapler::SanitizedFile] a sanitized file
+      # @return [CarrierWave::SanitizedFile] a sanitized file
       #
       def self.store!(uploader, file)
         path = ::File.join(uploader.store_dir, uploader.filename)
@@ -24,17 +24,17 @@ module Stapler
       ##
       # Retrieve the file from its store path
       #
-      # @param [Stapler::Uploader] uploader an uploader object
+      # @param [CarrierWave::Uploader] uploader an uploader object
       # @param [String] identifier the filename of the file
       #
-      # @return [Stapler::SanitizedFile] a sanitized file
+      # @return [CarrierWave::SanitizedFile] a sanitized file
       #
       def self.retrieve!(uploader, identifier)
         path = ::File.join(uploader.store_dir, identifier)
         path = ::File.expand_path(path, uploader.root)
-        Stapler::SanitizedFile.new(path)
+        CarrierWave::SanitizedFile.new(path)
       end
       
     end # File
   end # Storage
-end # Stapler
+end # CarrierWave

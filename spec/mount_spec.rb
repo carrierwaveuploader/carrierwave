@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
-describe Stapler::Mount do
+describe CarrierWave::Mount do
   
   include SanitizedFileSpecHelper
   
@@ -12,9 +12,9 @@ describe Stapler::Mount do
     
     before do
       @class = Class.new
-      @class.send(:extend, Stapler::Mount)
+      @class.send(:extend, CarrierWave::Mount)
       
-      @uploader = Class.new(Stapler::Uploader)
+      @uploader = Class.new(CarrierWave::Uploader)
 
       @class.mount_uploader(:image, @uploader)
       @instance = @class.new
@@ -146,7 +146,7 @@ describe Stapler::Mount do
    
     before do
       @class = Class.new
-      @class.send(:extend, Stapler::Mount)
+      @class.send(:extend, CarrierWave::Mount)
       @class.mount_uploader(:image) do
         def monkey
           'blah'
@@ -161,8 +161,8 @@ describe Stapler::Mount do
         @instance.stub!(:read_uploader).and_return('test.jpg')
       end
       
-      it "should return an instance of a subclass of Stapler::Uploader" do
-        @instance.image.should be_a(Stapler::Uploader)
+      it "should return an instance of a subclass of CarrierWave::Uploader" do
+        @instance.image.should be_a(CarrierWave::Uploader)
       end
       
       it "should set the path to the store dir" do

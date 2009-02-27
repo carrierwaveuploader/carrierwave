@@ -15,7 +15,7 @@ require 'tempfile'
 require 'ruby-debug'
 require 'spec'
 
-require 'stapler'
+require 'carrier_wave'
 
 alias :running :lambda
 
@@ -27,10 +27,10 @@ def public_path( *paths )
   File.expand_path(File.join(File.dirname(__FILE__), 'public', *paths))
 end
 
-Stapler.config[:public] = public_path
-Stapler.config[:root] = File.expand_path(File.dirname(__FILE__))
-Stapler.config[:store_dir] = 'public/uploads'
-Stapler.config[:cache_dir] = 'public/uploads/tmp'
+CarrierWave.config[:public] = public_path
+CarrierWave.config[:root] = File.expand_path(File.dirname(__FILE__))
+CarrierWave.config[:store_dir] = 'public/uploads'
+CarrierWave.config[:cache_dir] = 'public/uploads/tmp'
 
 module SanitizedFileSpecHelper
   def stub_merb_tempfile(filename)
