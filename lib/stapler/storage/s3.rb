@@ -5,8 +5,9 @@ module Stapler
     #
     class S3 < Abstract
       
-      def initialize(bucket, identifier)
+      def initialize(bucket, store_dir, identifier)
         @bucket = bucket
+        @store_dir = store_dir
         @identifier = identifier
       end
       
@@ -44,8 +45,8 @@ module Stapler
       # @return [#identifier] an object
       #
       def self.store!(uploader, file)
-        AWS::S3::S3Object.store(uploader.filename, file.read, bucket, :access => access)
-        self.new(bucket, uploader.filename)
+        AWS::S3::S3Object.store(::File.join(uploader.store_dir, uploader.filename), file.read, bucket, :access => access)
+        self.new(bucket, uploader.store_dir, uploader.filename)
       end
       
       # Do something to retrieve the file
@@ -56,7 +57,7 @@ module Stapler
       # @return [#identifier] an object
       #
       def self.retrieve!(uploader, identifier)
-        self.new(bucket, identifier)
+        self.new(bucket, uploader.store_dir, identifier)
       end
       
       ##
@@ -74,7 +75,7 @@ module Stapler
       # @return [String] file's url
       #
       def url
-        "http://s3.amazonaws.com/#{self.class.bucket}/#{identifier}"
+        "http://s3.amazonaws.com/#{self.class.bucket}/#{@store_dir}/#{@identifier}"
       end
       
     end # S3
