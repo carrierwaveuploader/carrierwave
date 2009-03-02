@@ -8,11 +8,11 @@ At the moment you are going to have to grab it here from github and install it y
 
 In Merb, add it as a dependency to your config/dependencies.rb:
     
-    dependency 'carrier_wave'
+    dependency 'carrierwave'
 
 In Rails, add it to your environment.rb:
 
-    config.gem "carrier_wave"
+    config.gem "carrierwave"
 
 ## Quick Start
 
@@ -46,7 +46,7 @@ Most of the time you are going to want to use CarrierWave together with an ORM. 
 
 First require the activerecord extension:
 
-    require 'carrier_wave/orm/activerecord
+    require 'carrierwave/orm/activerecord
 
 You don't need to do this if you are using Merb or Rails.
 
@@ -69,7 +69,7 @@ Now you can upload files!
 
 First require the activerecord extension:
 
-    require 'carrier_wave/orm/datamapper
+    require 'carrierwave/orm/datamapper
 
 You don't need to do this if you are using Merb or Rails.
 
@@ -169,7 +169,7 @@ That's it! You can still use the `CarrierWave::Uploader#url` method to return th
 
 If you're uploading images, you'll probably want to manipulate them in some way, you might want to create thumbnail images for example. CarrierWave comes with a small library to make manipulating images with RMagick easier. It's not loaded by default so you'll need to require it:
 
-    require 'carrier_wave/processing/rmagick'
+    require 'carrierwave/processing/rmagick'
 
 You'll also need to include it in your Uploader:
 
@@ -196,7 +196,7 @@ Check out the manipulate! method, which makes it easy for you to write your own 
 
 ImageScience works the same way as RMagick. As with RMagick you'll need to require it:
 
-    require 'carrier_wave/processing/image_science'
+    require 'carrierwave/processing/image_science'
 
 And then include it in your model:
 

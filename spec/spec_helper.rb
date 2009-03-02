@@ -12,10 +12,10 @@ else
 end
 
 require 'tempfile'
-require 'ruby-debug'
+#require 'ruby-debug'
 require 'spec'
 
-require 'carrier_wave'
+require 'carrierwave'
 
 alias :running :lambda
 

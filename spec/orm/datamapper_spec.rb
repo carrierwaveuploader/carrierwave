@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-require 'carrier_wave/orm/datamapper'
+require 'carrierwave/orm/datamapper'
 
 DataMapper.setup(:default, 'sqlite3::memory:')
 

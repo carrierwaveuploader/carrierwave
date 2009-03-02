@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-require 'carrier_wave/orm/activerecord'
+require 'carrierwave/orm/activerecord'
 
 # change this if sqlite is unavailable
 dbconfig = {

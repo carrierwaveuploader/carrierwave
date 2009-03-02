@@ -7,7 +7,7 @@ module CarrierWave
   # of convenient helper methods. If you want to use them, you'll need to
   # require this file
   #
-  #     require 'carrier_wave/processing/rmagick'
+  #     require 'carrierwave/processing/rmagick'
   #
   # And then include it in your uploader
   #

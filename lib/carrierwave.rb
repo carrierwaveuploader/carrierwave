@@ -13,7 +13,7 @@ module CarrierWave
   class ProcessingError < UploadError; end
 end
 
-dir = File.join(File.dirname(__FILE__), 'carrier_wave')
+dir = File.join(File.dirname(__FILE__), 'carrierwave')
 
 require File.join(dir, 'sanitized_file')
 require File.join(dir, 'uploader')
@@ -36,14 +36,14 @@ CarrierWave.config = {
   :cache_dir => 'public/uploads/tmp'
 }
 
-if defined?(Merb::Plugins)
+if defined?(Merb)
   CarrierWave.config[:root] = Merb.root
   CarrierWave.config[:public] = Merb.dir_for(:public)
   
-  orm_path = File.dirname(__FILE__) / 'carrier_wave' / 'orm' / Merb.orm
+  orm_path = File.dirname(__FILE__) / 'carrierwave' / 'orm' / Merb.orm
   require orm_path if File.exist?(orm_path + '.rb')
   
-  Merb.push_path(:uploader, Merb.root / "app" / "uploaders", "**/*.rb")
+  Merb.push_path(:model, Merb.root / "app" / "uploaders")
   
   Merb.add_generators File.dirname(__FILE__) / 'generators' / 'uploader_generator'
 end
@@ -52,10 +52,9 @@ if defined?(Rails)
   CarrierWave.config[:root] = Rails.root
   CarrierWave.config[:public] = File.join(Rails.root, 'public')
   
-  require File.join(File.dirname(__FILE__), "carrier_wave", "orm", 'activerecord')
-  
-  # FIXME: this is broken? It works fine when I add load paths in environment.rb :S
-  Rails.configuration.load_paths << File.join(Rails.root, "app", "uploaders")
+  require File.join(File.dirname(__FILE__), "carrierwave", "orm", 'activerecord')
+
+  ActiveSupport::Dependencies.load_paths << File.join(Rails.root, "app", "uploaders")
 end
 
 if defined?(Sinatra)
