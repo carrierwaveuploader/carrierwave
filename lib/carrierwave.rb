@@ -43,7 +43,7 @@ if defined?(Merb)
   orm_path = File.dirname(__FILE__) / 'carrierwave' / 'orm' / Merb.orm
   require orm_path if File.exist?(orm_path + '.rb')
   
-  Merb.push_path(:model, Merb.root / "app" / "uploaders")
+  Merb.push_path(:uploader, Merb.root / "app" / "uploaders")
   
   Merb.add_generators File.dirname(__FILE__) / 'generators' / 'uploader_generator'
 end
