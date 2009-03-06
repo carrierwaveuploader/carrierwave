@@ -193,7 +193,7 @@ module CarrierWave
       if file.respond_to?(:url) and not file.url.blank?
         file.url
       elsif current_path
-        File.expand_path(current_path).gsub(File.expand_path(CarrierWave.config[:public]), '')
+        File.expand_path(current_path).gsub(File.expand_path(public), '')
       end
     end
     
@@ -232,10 +232,17 @@ module CarrierWave
     end
     
     ##
-    # @return [String] the directory relative to which we will upload
+    # @return [String] the directory that is the root of the application
     #
     def root
       CarrierWave.config[:root]
+    end
+    
+    ##
+    # @return [String] the directory where files will be publically accessible
+    #
+    def public
+      CarrierWave.config[:public]
     end
   
     ####################
@@ -397,7 +404,7 @@ module CarrierWave
   private
   
     def cache_path
-      File.expand_path(File.join(cache_dir, cache_name), root)
+      File.expand_path(File.join(cache_dir, cache_name), public)
     end
   
     def storage

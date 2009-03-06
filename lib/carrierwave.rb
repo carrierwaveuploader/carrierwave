@@ -32,8 +32,8 @@ CarrierWave.config = {
   :s3 => {
     :access => :public_read
   },
-  :store_dir => 'public/uploads',
-  :cache_dir => 'public/uploads/tmp'
+  :store_dir => 'uploads',
+  :cache_dir => 'uploads/tmp'
 }
 
 if defined?(Merb)

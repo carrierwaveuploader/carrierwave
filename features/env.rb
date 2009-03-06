@@ -25,8 +25,6 @@ end
 
 CarrierWave.config[:public] = file_path('public')
 CarrierWave.config[:root] = file_path
-CarrierWave.config[:store_dir] = 'public/uploads'
-CarrierWave.config[:cache_dir] = 'public/uploads/tmp'
 
 After do
   FileUtils.rm_rf(file_path("public"))

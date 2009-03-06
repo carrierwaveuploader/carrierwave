@@ -55,7 +55,7 @@ describe CarrierWave::Uploader do
           public_path('monkey/apache')
         end
       end
-      @uploader.store_dir.should == 'public/uploads'
+      @uploader.store_dir.should == 'uploads'
       @uploader.thumb.store_dir.should == public_path('monkey/apache')
     end
     
@@ -135,13 +135,13 @@ describe CarrierWave::Uploader do
   
   describe '#store_dir' do
     it "should default to the config option" do
-      @uploader.store_dir.should == 'public/uploads'
+      @uploader.store_dir.should == 'uploads'
     end
   end
   
   describe '#cache_dir' do
     it "should default to the config option" do
-      @uploader.cache_dir.should == 'public/uploads/tmp'
+      @uploader.cache_dir.should == 'uploads/tmp'
     end
   end
   
@@ -494,8 +494,8 @@ describe CarrierWave::Uploader do
 
       it "should suffix the version's store_dir" do
         @uploader.cache!(File.open(file_path('test.jpg')))
-        @uploader.store_dir.should == 'public/uploads'
-        @uploader.thumb.store_dir.should == 'public/uploads/thumb'
+        @uploader.store_dir.should == 'uploads'
+        @uploader.thumb.store_dir.should == 'uploads/thumb'
       end
       
       it "should move it to the tmp dir with the filename prefixed" do
@@ -516,8 +516,8 @@ describe CarrierWave::Uploader do
     
       it "should suffix the version's store_dir" do
         @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpg')
-        @uploader.store_dir.should == 'public/uploads'
-        @uploader.thumb.store_dir.should == 'public/uploads/thumb'
+        @uploader.store_dir.should == 'uploads'
+        @uploader.thumb.store_dir.should == 'uploads/thumb'
       end
     end
     
@@ -551,15 +551,15 @@ describe CarrierWave::Uploader do
     
       it "should, if a file is given as argument, suffix the version's store_dir" do
         @uploader.store!(@file)
-        @uploader.store_dir.should == 'public/uploads'
-        @uploader.thumb.store_dir.should == 'public/uploads/thumb'
+        @uploader.store_dir.should == 'uploads'
+        @uploader.thumb.store_dir.should == 'uploads/thumb'
       end
     
       it "should, if a files is given as an argument and use_cache is false, suffix the version's store_dir" do
         CarrierWave.config[:use_cache] = false
         @uploader.store!(@file)
-        @uploader.store_dir.should == 'public/uploads'
-        @uploader.thumb.store_dir.should == 'public/uploads/thumb'
+        @uploader.store_dir.should == 'uploads'
+        @uploader.thumb.store_dir.should == 'uploads/thumb'
       end
     
     end
