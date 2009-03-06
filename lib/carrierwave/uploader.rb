@@ -377,10 +377,10 @@ module CarrierWave
     # Retrieves the file from the storage, unless a file has
     # already been cached, stored or retrieved.
     # 
-    # @param [String] filename uniquely identifies the file to retrieve
+    # @param [String] identifier uniquely identifies the file to retrieve
     #
-    def retrieve_from_store(filename)
-      retrieve_from_store!(filename) unless file
+    def retrieve_from_store(identifier)
+      retrieve_from_store!(identifier) unless file
     rescue CarrierWave::InvalidParameter
     end
     
