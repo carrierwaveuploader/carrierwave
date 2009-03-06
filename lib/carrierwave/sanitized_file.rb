@@ -1,5 +1,14 @@
 module CarrierWave
-    class SanitizedFile
+
+  ##
+  # SanitizedFile is a base class which provides a common API around all
+  # the different quirky Ruby File libraries. It has support for Tempfile,
+  # File, StringIO, Merb-style upload Hashes, as well as paths given as
+  # Strings and Pathnames.
+  #
+  # It's probably needlessly comprehensive and complex. Help is appreciated.
+  #
+  class SanitizedFile
 
     attr_accessor :file, :options
 
