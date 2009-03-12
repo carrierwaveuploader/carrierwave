@@ -127,6 +127,33 @@ When this uploader is used, an uploaded image would be scaled to be no larger th
 
 One important thing to remember is that process is called *before* versions are created. This can cut down on processing cost.
 
+## Making uploads work across form redisplays
+
+Often you'll notice that uploaded files disappear when a validation
+fails. CarrierWave has a feature that makes it easy to remember the
+uploaded file even in that case. Suppose your `user` model has an uploader mounted on `avatar` file, just add a hidden field called `avatar_cache`.
+In Rails, this would look like this:
+
+    <% form_for @user do |f| %>
+      <p>
+        <label>My Avatar</label>
+        <%= f.file_field :avatar %>
+        <%= f.hidden_field :avatar_cache %>
+      </p>
+    <% end %>
+
+It might be a good idea to show th user that a file has been uploaded,
+in the case of images, a small thumbnail would be a good indicator:
+
+    <% form_for @user do |f| %>
+      <p>
+        <label>My Avatar</label>
+        <%= image_tag(@user.avatar.url) if @user.avatar %>
+        <%= f.file_field :avatar %>
+        <%= f.hidden_field :avatar_cache %>
+      </p>
+    <% end %>
+
 ## What's in that uploader file?
 
 The fact that uploaders are separate classes in CarrierWave is a big advantage. What this means for you is:
