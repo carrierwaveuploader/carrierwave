@@ -6,6 +6,7 @@ class <%= class_name %>Uploader < CarrierWave::Uploader
   
   # Choose what kind of storage to use for this uploader
   storage :file
+  #     storage :s3
   
   # Process files as they are uploaded.
   #     process :scale => [200, 300]
@@ -21,7 +22,7 @@ class <%= class_name %>Uploader < CarrierWave::Uploader
   
   # Override the filename of the uploaded files
   #     def filename
-  #       "something"
+  #       "something.jpg"
   #     end
   
   # Override the directory where uploaded files will be stored
