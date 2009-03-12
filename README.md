@@ -4,7 +4,13 @@ This plugin for Merb and Rails provides a simple and extremely flexible way to u
 
 ## Getting Started
 
-At the moment you are going to have to grab it here from github and install it yourself.
+Install the latest stable release:
+
+    [sudo] gem install carrierwave
+
+Or the cutting edge development version:
+
+    [sudo] gem install jnicklas-carrierwave --source http://gems.github.com
 
 In Merb, add it as a dependency to your config/dependencies.rb:
     
