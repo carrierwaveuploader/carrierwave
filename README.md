@@ -20,6 +20,10 @@ Start off by generating an uploader:
 
     merb-gen uploader Avatar
 
+or in Rails:
+
+    script/generate uploader Avatar
+
 this should give you a file in:
 
     app/uploaders/avatar_uploader.rb
