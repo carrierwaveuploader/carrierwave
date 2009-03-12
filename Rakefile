@@ -6,7 +6,7 @@ require 'spec/rake/spectask'
 require 'cucumber/rake/task'
 
 NAME = "carrierwave"
-GEM_VERSION = "0.1"
+GEM_VERSION = "0.1.1"
 AUTHOR = "Jonas Nicklas"
 EMAIL = "jonas.nicklas@gmail.com"
 HOMEPAGE = "http://www.example.com"
