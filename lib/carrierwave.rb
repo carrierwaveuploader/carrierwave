@@ -7,7 +7,11 @@ module CarrierWave
   
   class UploadError < StandardError; end
   class NoFileError < UploadError; end
-  class FormNotMultipart < UploadError; end
+  class FormNotMultipart < UploadError
+    def message
+      "You tried to assign a String or a Pathname to an uploader, for security reasons, this is not allowed.\n\n If this is a file upload, please check that your upload form is multipart encoded."
+    end
+  end
   class InvalidParameter < UploadError; end
   # Should be used by methods used as process callbacks.
   class ProcessingError < UploadError; end

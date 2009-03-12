@@ -67,10 +67,12 @@ module CarrierWave
     # @return [Integer] the file's size in bytes.
     #
     def size
-      if @file.respond_to?(:size)
+      if string?
+        exists? ? File.size(path) : 0
+      elsif @file.respond_to?(:size)
         @file.size 
       elsif path
-        File.size(path)
+        exists? ? File.size(path) : 0
       else 
         0
       end
@@ -106,7 +108,7 @@ module CarrierWave
     # @return [Boolean]
     #
     def empty?
-      (@file.nil? && @path.nil?) || self.size.nil? || self.size.zero?
+      @file.nil? || self.size.nil? || self.size.zero?
     end
 
     ##

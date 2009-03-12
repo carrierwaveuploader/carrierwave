@@ -157,7 +157,14 @@ module CarrierWave
     end
     
     ##
-    # Apply all process callbacks added through CarrierWaveer.process
+    # @return [Boolean] Whether the uploaded file is blank
+    #
+    def blank?
+      !file or file.empty?
+    end
+    
+    ##
+    # Apply all process callbacks added through CarrierWave.process
     #
     def process!
       self.class.processors.each do |method, args|
@@ -284,21 +291,24 @@ module CarrierWave
     # @raise [CarrierWave::FormNotMultipart] if the assigned parameter is a string
     #
     def cache!(new_file)
-      self.cache_id = CarrierWave::Uploader.generate_cache_id unless cache_id
       new_file = CarrierWave::SanitizedFile.new(new_file)
-      raise CarrierWave::FormNotMultipart, "check that your upload form is multipart encoded" if new_file.string?
+      raise CarrierWave::FormNotMultipart if new_file.string?
 
-      @file = new_file
+      unless new_file.empty?
+        self.cache_id = CarrierWave::Uploader.generate_cache_id unless cache_id
 
-      @filename = new_file.filename
-      self.original_filename = new_file.filename
+        @file = new_file
+
+        @filename = new_file.filename
+        self.original_filename = new_file.filename
       
-      @file = @file.copy_to(cache_path)
-      process!
+        @file = @file.copy_to(cache_path)
+        process!
 
-      versions.each do |name, v|
-        v.send(:cache_id=, cache_id)
-        v.cache!(new_file)
+        versions.each do |name, v|
+          v.send(:cache_id=, cache_id)
+          v.cache!(new_file)
+        end
       end
     end
     
@@ -359,25 +369,15 @@ module CarrierWave
     #
     # If new_file is omitted, a previously cached file will be stored.
     #
-    # If CarrierWave.config[:use_cache] is true, it will first cache the file
-    # and apply any process callbacks before uploading it.
-    #
     # @param [File, IOString, Tempfile] new_file any kind of file object
     #
     def store!(new_file=nil)
-      if CarrierWave.config[:use_cache]
-        cache!(new_file) if new_file
+      cache!(new_file) if new_file
+      if @file
         @file = storage.store!(self, @file)
         @cache_id = nil
-      else
-        new_file = CarrierWave::SanitizedFile.new(new_file)
-        
-        @filename = new_file.filename
-        self.original_filename = filename
-        
-        @file = storage.store!(self, new_file)
+        versions.each { |name, v| v.store!(new_file) }
       end
-      versions.each { |name, v| v.store!(new_file) }
     end
     
     ##

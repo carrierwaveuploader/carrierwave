@@ -101,6 +101,12 @@ module CarrierWave
     module Extension
     
     private
+    
+      # overwrite this to read from a serialized attribute
+      def read_uploader(column); end
+
+      # overwrite this to write to a serialized attribute
+      def write_uploader(column, identifier); end
 
       def uploaders
         @uploaders ||= {}
@@ -114,7 +120,7 @@ module CarrierWave
       end
     
       def get_uploader(column)
-        return uploaders[column] if uploaders[column]
+        return uploaders[column] unless uploaders[column].blank?
 
         identifier = read_uploader(column)
       
@@ -126,16 +132,12 @@ module CarrierWave
       end
     
       def set_uploader(column, new_file)
-        new_file = CarrierWave::SanitizedFile.new(new_file)
-      
-        unless new_file.empty?
-          uploaders[column] ||= self.class.uploaders[column].new(self, column)
-          uploaders[column].cache!(new_file) 
-        end
+        uploaders[column] ||= self.class.uploaders[column].new(self, column)
+        uploaders[column].cache!(new_file)
       end
     
       def get_uploader_cache(column)
-        uploaders[column].cache_name if uploaders[column]
+        uploaders[column].cache_name unless uploaders[column].blank?
       end
 
       def set_uploader_cache(column, cache_name)

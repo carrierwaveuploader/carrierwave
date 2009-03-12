@@ -97,6 +97,7 @@ describe CarrierWave::Mount do
       before do
         @instance.stub!(:write_uploader)
         @instance.stub!(:read_uploader).and_return(nil)
+        CarrierWave::SanitizedFile.new(file_path('test.jpg')).copy_to(public_path('uploads/tmp/19990512-1202-123-1234/test.jpg'))
       end
 
       it "should do nothing when nil is assigned" do

@@ -168,6 +168,12 @@ describe CarrierWave::SanitizedFile do
       end
     end
 
+    describe "#size" do
+      it "should return the size of the file" do
+        @sanitized_file.size.should == 13
+      end
+    end
+
     describe '#move_to' do
     
       after do

@@ -133,6 +133,22 @@ describe CarrierWave::Uploader do
     end
   end
   
+  describe '#blank' do
+    it "should be true when nothing has been done" do
+      @uploader.should be_blank
+    end
+
+    it "should not be true when the file is empty" do
+      @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
+      @uploader.should be_blank
+    end
+
+    it "should not be true when a file has been cached" do
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      @uploader.should_not be_blank      
+    end
+  end
+  
   describe '#store_dir' do
     it "should default to the config option" do
       @uploader.store_dir.should == 'uploads'
@@ -258,6 +274,22 @@ describe CarrierWave::Uploader do
       @uploader.should_receive(:process!)
       @uploader.cache!(File.open(file_path('test.jpg')))
     end
+    
+    it "should raise an error when trying to cache a string" do
+      running {
+        @uploader.cache!(file_path('test.jpg'))
+      }.should raise_error(CarrierWave::FormNotMultipart)
+    end
+    
+    it "should raise an error when trying to cache a pathname" do
+      running {
+        @uploader.cache!(Pathname.new(file_path('test.jpg')))
+      }.should raise_error(CarrierWave::FormNotMultipart)
+    end
+    
+    it "should do nothing when trying to cache an empty file" do
+      @uploader.cache!(nil)
+    end
   end
   
   describe '#retrieve_from_cache!' do
@@ -375,14 +407,8 @@ describe CarrierWave::Uploader do
       @uploader.store!(@file)
     end
     
-    it "should, if a files is given as an argument and use_cache is false, not cache that file" do
-      CarrierWave.config[:use_cache] = false
-      @uploader.should_not_receive(:cache!)
-      @uploader.store!(@file)
-      CarrierWave.config[:use_cache] = true
-    end
-    
     it "should use a previously cached file if no argument is given" do
+      @uploader.cache!(File.open(file_path('test.jpg')))
       @uploader.should_not_receive(:cache!)
       @uploader.store!
     end
@@ -402,6 +428,10 @@ describe CarrierWave::Uploader do
     it "should cache the result given by the storage engine" do
       @uploader.store!(@file)
       @uploader.file.should == @stored_file
+    end
+    
+    it "should do nothing when trying to store an empty file" do
+      @uploader.store!(nil)
     end
   end
   
