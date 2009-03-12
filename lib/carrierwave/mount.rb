@@ -113,7 +113,7 @@ module CarrierWave
       end
     
       def store_uploader!(column)
-        if uploaders[column]
+        unless uploaders[column].blank?
           uploaders[column].store!
           write_uploader(column, uploaders[column].identifier)
         end
