@@ -243,6 +243,10 @@ And then include it in your model:
       process :crop_resized => [200, 200]
     end
 
+## Documentation
+
+Full YARD documentation is [available at Rubyforge](http://carrierwave.rubyforge.org/).
+
 ## Read the source
 
 CarrierWave is still young, but most of it is pretty well documented. Just dig in and look at the source for more in-depth explanation of what things are doing.
