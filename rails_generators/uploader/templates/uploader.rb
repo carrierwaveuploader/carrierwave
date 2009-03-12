@@ -14,7 +14,7 @@ class <%= class_name %>Uploader < CarrierWave::Uploader
   #       # do something
   #     end 
   
-  # Create different verions of your uploaded files
+  # Create different versions of your uploaded files
   #     version :thumb do
   #       process :scale => [50, 50]
   #     end

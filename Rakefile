@@ -25,7 +25,7 @@ spec = Gem::Specification.new do |s|
   s.email = EMAIL
   s.homepage = HOMEPAGE
   s.require_path = 'lib'
-  s.files = %w(LICENSE Generators README.md Rakefile TODO) + Dir.glob("{lib,spec}/**/*")
+  s.files = %w(LICENSE Generators README.md Rakefile TODO) + Dir.glob("{lib,spec,rails_generators}/**/*")
   
 end
 
