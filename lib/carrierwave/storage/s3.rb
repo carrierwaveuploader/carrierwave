@@ -98,7 +98,7 @@ module CarrierWave
       # @return [String] file's url
       #
       def url
-        "http://s3.amazonaws.com/#{self.class.bucket}/#{@store_dir}/#{@identifier}"
+        ["http://s3.amazonaws.com", self.class.bucket, @store_dir, @identifier].compact.join('/')
       end
       
     end # S3
