@@ -1,7 +1,30 @@
 module CarrierWave
   module Storage
     ##
-    # Uploads things to Amazon S3 webservices
+    # Uploads things to Amazon S3 webservices. It requies the aws/s3 gem. In order for
+    # CarrierWave to connect to Amazon S3, you'll need to specify an access key id, secret key
+    # and bucket
+    #
+    #     CarrierWave.config[:s3][:access_key_id] = "xxxxxx"
+    #     CarrierWave.config[:s3][:secret_access_key] = "xxxxxx"
+    #     CarrierWave.config[:s3][:bucket] = "my_bucket_name"
+    #
+    # You can also set the access policy for the uploaded files:
+    #
+    #     CarrierWave.config[:s3][:access] = :public_read
+    #
+    # Possible values are the 'canned access control policies' provided in the aws/s3 gem,
+    # they are:
+    #
+    #     :private              No one else has any access rights.
+    #     :public_read          The anonymous principal is granted READ access.
+    #                           If this policy is used on an object, it can be read from a
+    #                           browser with no authentication.
+    #     :public_read_write    The anonymous principal is granted READ and WRITE access.
+    #     :authenticated_read   Any principal authenticated as a registered Amazon S3 user
+    #                           is granted READ access.
+    #
+    # The default is :public_read, it should work in most cases.
     #
     class S3 < Abstract
       
