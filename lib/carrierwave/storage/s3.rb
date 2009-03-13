@@ -1,5 +1,6 @@
 module CarrierWave
   module Storage
+
     ##
     # Uploads things to Amazon S3 webservices. It requies the aws/s3 gem. In order for
     # CarrierWave to connect to Amazon S3, you'll need to specify an access key id, secret key

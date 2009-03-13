@@ -1,5 +1,6 @@
 module CarrierWave
   module Storage
+
     ##
     # This file serves mostly as a specification for Storage engines. There is no requirement
     # that storage engines must be a subclass of this class. However, any storage engine must
