@@ -430,12 +430,12 @@ module CarrierWave
     attr_reader :cache_id, :original_filename
 
     def cache_id=(cache_id)
-      raise CarrierWave::InvalidParameter, "invalid cache id" unless cache_id =~ /^[\d]{8}\-[\d]{4}\-[\d]+\-[\d]{4}$/
+      raise CarrierWave::InvalidParameter, "invalid cache id" unless cache_id =~ /\A[\d]{8}\-[\d]{4}\-[\d]+\-[\d]{4}\z/
       @cache_id = cache_id
     end
     
     def original_filename=(filename)
-      raise CarrierWave::InvalidParameter, "invalid filename" unless filename =~ /^[a-z0-9\.\-\+_]+$/i
+      raise CarrierWave::InvalidParameter, "invalid filename" unless filename =~ /\A[a-z0-9\.\-\+_]+\z/i
       @original_filename = filename
     end
     

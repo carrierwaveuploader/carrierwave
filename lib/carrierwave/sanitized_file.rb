@@ -219,7 +219,7 @@ module CarrierWave
       name = name.gsub("\\", "/") # work-around for IE
       name = File.basename(name)
       name = name.gsub(/[^a-zA-Z0-9\.\-\+_]/,"_")
-      name = "_#{name}" if name =~ /^\.+$/
+      name = "_#{name}" if name =~ /\A\.+\z/
       name = "unnamed" if name.size == 0
       return name.downcase
     end
@@ -227,8 +227,8 @@ module CarrierWave
     def split_extension(fn)
       # regular expressions to try for identifying extensions
       ext_regexps = [ 
-        /^(.+)\.([^\.]{1,3}\.[^\.]{1,4})$/, # matches "something.tar.gz"
-        /^(.+)\.([^\.]+)$/ # matches "something.jpg"
+        /\A(.+)\.([^\.]{1,3}\.[^\.]{1,4})\z/, # matches "something.tar.gz"
+        /\A(.+)\.([^\.]+)\z/ # matches "something.jpg"
       ]
       ext_regexps.each do |regexp|
         if fn =~ regexp
