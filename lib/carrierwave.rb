@@ -12,6 +12,7 @@ module CarrierWave
       "You tried to assign a String or a Pathname to an uploader, for security reasons, this is not allowed.\n\n If this is a file upload, please check that your upload form is multipart encoded."
     end
   end
+  class IntegrityError < UploadError; end
   class InvalidParameter < UploadError; end
   # Should be used by methods used as process callbacks.
   class ProcessingError < UploadError; end

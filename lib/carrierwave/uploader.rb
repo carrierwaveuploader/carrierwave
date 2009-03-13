@@ -267,6 +267,18 @@ module CarrierWave
     def public
       CarrierWave.config[:public]
     end
+
+    ##
+    # Override this method in your uploader to provide a white list of extensions which
+    # are allowed to be uploaded.
+    #
+    # @return [NilClass, Array[String]] a white list of extensions which are allowed to be uploaded
+    # @example
+    #     def extension_white_list
+    #       %w(jpg jpeg gif png)
+    #     end
+    #
+    def extension_white_list; end
   
     ####################
     ## Cache
@@ -311,6 +323,10 @@ module CarrierWave
       raise CarrierWave::FormNotMultipart if new_file.string?
 
       unless new_file.empty?
+        if extension_white_list and not extension_white_list.include?(new_file.extension.to_s)
+          raise CarrierWave::IntegrityError, "You are not allowed to upload #{new_file.extension.inspect} files, allowed types: #{extension_white_list.inspect}"
+        end
+
         self.cache_id = CarrierWave::Uploader.generate_cache_id unless cache_id
 
         @file = new_file

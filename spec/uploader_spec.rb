@@ -290,6 +290,27 @@ describe CarrierWave::Uploader do
     it "should do nothing when trying to cache an empty file" do
       @uploader.cache!(nil)
     end
+    
+    it "should not raise an integiry error if there is no white list" do
+      @uploader.stub!(:extension_white_list).and_return(nil)
+      running {
+        @uploader.cache!(File.open(file_path('test.jpg')))
+      }.should_not raise_error(CarrierWave::IntegrityError)
+    end
+    
+    it "should not raise an integiry error if there is a white list and the file is on it" do
+      @uploader.stub!(:extension_white_list).and_return(%w(jpg gif png))
+      running {
+        @uploader.cache!(File.open(file_path('test.jpg')))
+      }.should_not raise_error(CarrierWave::IntegrityError)
+    end
+
+    it "should raise an integiry error if there is a white list and the file is not on it" do
+      @uploader.stub!(:extension_white_list).and_return(%w(txt doc xls))
+      running {
+        @uploader.cache!(File.open(file_path('test.jpg')))
+      }.should raise_error(CarrierWave::IntegrityError)
+    end
   end
   
   describe '#retrieve_from_cache!' do
