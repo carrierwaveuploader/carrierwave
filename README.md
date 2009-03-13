@@ -249,4 +249,4 @@ Full YARD documentation is [available at Rubyforge](http://carrierwave.rubyforge
 
 ## Read the source
 
-CarrierWave is still young, but most of it is pretty well documented. Just dig in and look at the source for more in-depth explanation of what things are doing.
+CarrierWave is still young, but most of it is pretty well documented. It is also extensively specced, and there are cucumber features for some common use cases. Just dig in and look at the source for more in-depth explanation of what things are doing.
