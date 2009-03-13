@@ -94,8 +94,6 @@ module CarrierWave
           store_uploader!(:#{column})                     #   store_uploader!(:image)
         end                                               # end
       EOF
-
-      after_mount(column, uploader) if respond_to?(:after_mount)
     end
 
     module Extension

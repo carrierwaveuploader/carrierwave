@@ -5,7 +5,9 @@ module CarrierWave
 
     include CarrierWave::Mount
 
-    def after_mount(column, uploader)
+    def mount_uploader(column, uploader)
+      super
+
       alias_method :read_uploader, :read_attribute
       alias_method :write_uploader, :write_attribute
 
