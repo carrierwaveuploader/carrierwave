@@ -1,5 +1,5 @@
 module CarrierWave
-  
+
   ##
   # If a Class is extended with this module, it gains the mount_uploader
   # method, which is used for mapping attributes to uploaders and allowing
@@ -74,78 +74,91 @@ module CarrierWave
       include CarrierWave::Mount::Extension
 
       class_eval <<-EOF, __FILE__, __LINE__+1
+        def #{column}_uploader                            # def image_uploader
+          _uploader_get(:#{column})                       #   _uploader_get(:image)
+        end                                               # end
+                                                          #
+        def #{column}_uploader=(uploader)                 # def image_uploader=(uploader)
+          _uploader_set(:#{column}, uploader)             #   _uploader_set(:image, uploader)
+        end                                               # end
+                                                          #
         def #{column}                                     # def image
-          get_uploader(:#{column})                        #   get_uploader(:image)
+          _uploader_get_column(:#{column})                #   _uploader_get_column(:image)
         end                                               # end
                                                           #
         def #{column}=(new_file)                          # def image=(new_file)
-          set_uploader(:#{column}, new_file)              #   set_uploader(:image, new_file)
+          _uploader_set_column(:#{column}, new_file)      #   _uploader_set_column(:image, new_file)
         end                                               # end
                                                           #
         def #{column}_cache                               # def image_cache
-          get_uploader_cache(:#{column})                  #   get_uploader_cache(:image)
+          _uploader_get_cache(:#{column})                 #   _uploader_get_cache(:image)
         end                                               # end
                                                           #
         def #{column}_cache=(cache_name)                  # def image_cache=(cache_name)
-          set_uploader_cache(:#{column}, cache_name)      #   set_uploader_cache(:image, cache_name)
+          _uploader_set_cache(:#{column}, cache_name)     #   _uploader_set_cache(:image, cache_name)
         end                                               # end
                                                           #
         def store_#{column}!                              # def store_image!
-          store_uploader!(:#{column})                     #   store_uploader!(:image)
+          _uploader_store!(:#{column})                    #   _uploader_store!(:image)
         end                                               # end
       EOF
     end
 
     module Extension
-    
-    private
-    
+
+      ##
       # overwrite this to read from a serialized attribute
+      #
       def read_uploader(column); end
 
+      ##
       # overwrite this to write to a serialized attribute
+      #
       def write_uploader(column, identifier); end
 
-      def uploaders
+    private
+
+      def _uploader_get(column)
         @uploaders ||= {}
+        @uploaders[column] ||= self.class.uploaders[column].new(self, column)
       end
-    
-      def store_uploader!(column)
-        unless uploaders[column].blank?
-          uploaders[column].store!
-          write_uploader(column, uploaders[column].identifier)
-        end
+
+      def _uploader_set(column, uploader)
+        @uploaders ||= {}
+        @uploaders[column] = uploader
       end
-    
-      def get_uploader(column)
-        return uploaders[column] unless uploaders[column].blank?
+
+      def _uploader_get_column(column)
+        return _uploader_get(column) unless _uploader_get(column).blank?
 
         identifier = read_uploader(column)
-      
+
         unless identifier.blank?
-          uploaders[column] ||= self.class.uploaders[column].new(self, column)
-          uploaders[column].retrieve_from_store!(identifier)
-          uploaders[column]
+          _uploader_get(column).retrieve_from_store!(identifier)
+          _uploader_get(column)
         end
       end
-    
-      def set_uploader(column, new_file)
-        uploaders[column] ||= self.class.uploaders[column].new(self, column)
-        uploaders[column].cache!(new_file)
-      end
-    
-      def get_uploader_cache(column)
-        uploaders[column].cache_name unless uploaders[column].blank?
+
+      def _uploader_set_column(column, new_file)
+        _uploader_get(column).cache!(new_file)
       end
 
-      def set_uploader_cache(column, cache_name)
-        unless cache_name.blank?
-          uploaders[column] ||= self.class.uploaders[column].new(self, column)
-          uploaders[column].retrieve_from_cache(cache_name)
+      def _uploader_get_cache(column)
+        _uploader_get(column).cache_name
+      end
+
+      def _uploader_set_cache(column, cache_name)
+        _uploader_get(column).retrieve_from_cache(cache_name) unless cache_name.blank?
+      end
+
+      def _uploader_store!(column)
+        unless _uploader_get(column).blank?
+          _uploader_get(column).store!
+          write_uploader(column, _uploader_get(column).identifier)
         end
       end
 
     end # Extension
-  
+
   end # Mount
 end # CarrierWave
