@@ -2,7 +2,7 @@ require "image_science"
 
 module CarrierWave
   module ImageScience
-    
+
     # Resize the image so that it will not exceed the dimensions passed
     # via geometry, geometry should be a string, formatted like '200x100' where
     # the first number is the height and the second is the width
@@ -63,7 +63,7 @@ module CarrierWave
     end
 
     def convert_geometry(geometry)
-      geometry.split('x').map{|i| i.to_f }      
+      geometry.split('x').map{|i| i.to_f }
     end
 
   end # ImageScience

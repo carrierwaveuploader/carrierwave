@@ -1,7 +1,7 @@
 require 'rmagick'
 
 module CarrierWave
-  
+
   ##
   # This module simplifies manipulation with RMagick by providing a set
   # of convenient helper methods. If you want to use them, you'll need to
@@ -19,8 +19,8 @@ module CarrierWave
   #
   #     MyUploade < CarrierWave::Uploader
   #       include CarrierWave::RMagick
-  #       
-  #       process :resize_to_fit => [200, 200] 
+  #
+  #       process :resize_to_fit => [200, 200]
   #     end
   #
   # Or create your own helpers with the powerful manipulate! method. Check
@@ -29,9 +29,9 @@ module CarrierWave
   #
   #     MyUploade < CarrierWave::Uploader
   #       include CarrierWave::RMagick
-  #       
+  #
   #       process :do_stuff => 10.0
-  #       
+  #
   #       def do_stuff(blur_factor)
   #         manipulate! do |img|
   #           img = img.sepiatone
@@ -42,7 +42,7 @@ module CarrierWave
   #     end
   #
   module RMagick
-    
+
     ##
     # Changes the image encoding format to the given format
     #
@@ -51,7 +51,7 @@ module CarrierWave
     # @yieldparam [Magick::Image] img additional manipulations to perform
     # @example
     #     image.convert(:png)
-    # 
+    #
     def convert(format)
       manipulate! do |img|
         img.format = format.to_s.upcase
@@ -71,7 +71,7 @@ module CarrierWave
     # @param [Integer] width the width to scale the image to
     # @param [Integer] height the height to scale the image to
     # @yieldparam [Magick::Image] img additional manipulations to perform
-    # 
+    #
     def resize_to_fit(width, height)
       manipulate! do |img|
         img.resize_to_fit!(width, height)
@@ -79,7 +79,7 @@ module CarrierWave
         img
       end
     end
-    
+
     alias_method :resize, :resize_to_fit
 
     ##
@@ -100,9 +100,9 @@ module CarrierWave
         img
       end
     end
-    
+
     alias_method :crop_resized, :resize_to_fill
-    
+
     ##
     # Resize the image to fit within the specified dimensions while retaining
     # the original aspect ratio. If necessary will pad the remaining area
@@ -155,7 +155,7 @@ module CarrierWave
       end
     rescue ::Magick::ImageMagickError => e
       raise CarrierWave::ProcessingError.new("Failed to manipulate with rmagick, maybe it is not an image? Original Error: #{e}")
-    end   
-      
+    end
+
   end # RMagick
 end # CarrierWave

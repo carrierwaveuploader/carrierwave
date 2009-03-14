@@ -18,16 +18,16 @@ module CarrierWave
   class Uploader
 
     class << self
-    
+
       ##
       # Returns a list of processor callbacks which have been declared for this uploader
       #
-      # @return [String] 
+      # @return [String]
       #
       def processors
         @processors ||= []
       end
-    
+
       ##
       # Adds a processor callback which applies operations as a file is uploaded.
       # The argument may be the name of any method of the uploader, expressed as a symbol,
@@ -39,15 +39,15 @@ module CarrierWave
       #     class MyUploader < CarrierWave::Uploader
       #       process :sepiatone, :vignette
       #       process :scale => [200, 200]
-      #     
+      #
       #       def sepiatone
       #         ...
       #       end
-      #     
+      #
       #       def vignette
       #         ...
       #       end
-      #     
+      #
       #       def scale(height, width)
       #         ...
       #       end
@@ -64,7 +64,7 @@ module CarrierWave
           end
         end
       end
-      
+
       ##
       # Sets the storage engine to be used when storing files with this uploader.
       # Can be any class that implements a #store!(CarrierWave::SanitizedFile) and a #retrieve!
@@ -73,14 +73,14 @@ module CarrierWave
       # to by a symbol, which should be more convenient
       #
       # If no argument is given, it will simply return the currently used storage engine.
-      # 
+      #
       # @param [Symbol, Class] storage The storage engine to use for this uploader
       # @return [Class] the storage engine to be used with this uploader
       # @example
       #     storage :file
       #     storage CarrierWave::Storage::File
       #     storage MyCustomStorageEngine
-      # 
+      #
       def storage(storage = nil)
         if storage.is_a?(Symbol)
           @storage = get_storage_by_symbol(storage)
@@ -101,7 +101,7 @@ module CarrierWave
       end
 
       alias_method :storage=, :storage
-      
+
       attr_accessor :version_name
 
       ##
@@ -138,17 +138,17 @@ module CarrierWave
       def generate_cache_id
         Time.now.strftime('%Y%m%d-%H%M') + '-' + Process.pid.to_s + '-' + ("%04d" % rand(9999))
       end
-    
+
     private
-    
+
       def get_storage_by_symbol(symbol)
         CarrierWave.config[:storage_engines][symbol]
       end
-    
+
     end # class << self
-  
+
     attr_reader :file, :model, :mounted_as
-    
+
     ##
     # If a model is given as the first parameter, it will stored in the uploader, and
     # available throught +#model+. Likewise, mounted_as stores the name of the column
@@ -171,14 +171,14 @@ module CarrierWave
       @model = model
       @mounted_as = mounted_as
     end
-    
+
     ##
     # @return [Boolean] Whether the uploaded file is blank
     #
     def blank?
       !file or file.empty?
     end
-    
+
     ##
     # Apply all process callbacks added through CarrierWave.process
     #
@@ -187,14 +187,14 @@ module CarrierWave
         self.send(method, *args)
       end
     end
-    
+
     ##
     # @return [String] the path where the file is currently located.
     #
     def current_path
       file.path if file.respond_to?(:path)
     end
-    
+
     ##
     # Returns a hash mapping the name of each version of the uploader to an instance of it
     #
@@ -219,9 +219,9 @@ module CarrierWave
         File.expand_path(current_path).gsub(File.expand_path(public), '')
       end
     end
-    
+
     alias_method :to_s, :url
-    
+
     ##
     # Returns a string that uniquely identifies the last stored file
     #
@@ -230,7 +230,7 @@ module CarrierWave
     def identifier
       file.identifier if file.respond_to?(:identifier)
     end
-  
+
     ##
     # Override this in your Uploader to change the filename.
     #
@@ -253,14 +253,14 @@ module CarrierWave
     def version_name
       self.class.version_name
     end
-    
+
     ##
     # @return [String] the directory that is the root of the application
     #
     def root
       CarrierWave.config[:root]
     end
-    
+
     ##
     # @return [String] the directory where files will be publically accessible
     #
@@ -279,11 +279,11 @@ module CarrierWave
     #     end
     #
     def extension_white_list; end
-  
+
     ####################
     ## Cache
     ####################
-  
+
     ##
     # Override this in your Uploader to change the directory where files are cached.
     #
@@ -292,7 +292,7 @@ module CarrierWave
     def cache_dir
       CarrierWave.config[:cache_dir]
     end
-    
+
     ##
     # Returns a String which uniquely identifies the currently cached file for later retrieval
     #
@@ -301,7 +301,7 @@ module CarrierWave
     def cache_name
       File.join(cache_id, [version_name, original_filename].compact.join('_')) if cache_id and original_filename
     end
-    
+
     ##
     # Caches the given file unless a file has already been cached, stored or retrieved.
     #
@@ -311,7 +311,7 @@ module CarrierWave
     def cache(new_file)
       cache!(new_file) unless file
     end
-    
+
     ##
     # Caches the given file. Calls process! to trigger any process callbacks.
     #
@@ -333,7 +333,7 @@ module CarrierWave
 
         @filename = new_file.filename
         self.original_filename = new_file.filename
-      
+
         @file = @file.copy_to(cache_path)
         process!
 
@@ -343,7 +343,7 @@ module CarrierWave
         end
       end
     end
-    
+
     ##
     # Retrieves the file with the given cache_name from the cache, unless a file has
     # already been cached, stored or retrieved.
@@ -354,7 +354,7 @@ module CarrierWave
       retrieve_from_cache!(cache_name) unless file
     rescue CarrierWave::InvalidParameter
     end
-    
+
     ##
     # Retrieves the file with the given cache_name from the cache.
     #
@@ -367,11 +367,11 @@ module CarrierWave
       @file = CarrierWave::SanitizedFile.new(cache_path)
       versions.each { |name, v| v.retrieve_from_cache!(cache_name) }
     end
-    
+
     ####################
     ## STORE
     ####################
-    
+
     ##
     # Override this in your Uploader to change the directory where the file backend stores files.
     #
@@ -382,7 +382,7 @@ module CarrierWave
     def store_dir
       [CarrierWave.config[:store_dir], version_name].compact.join(File::Separator)
     end
-    
+
     ##
     # Stores the file by passing it to this Uploader's storage engine, unless a file has
     # already been cached, stored or retrieved.
@@ -395,7 +395,7 @@ module CarrierWave
     def store(new_file)
       store!(new_file) unless file
     end
-    
+
     ##
     # Stores the file by passing it to this Uploader's storage engine.
     #
@@ -411,49 +411,49 @@ module CarrierWave
         versions.each { |name, v| v.store!(new_file) }
       end
     end
-    
+
     ##
     # Retrieves the file from the storage, unless a file has
     # already been cached, stored or retrieved.
-    # 
+    #
     # @param [String] identifier uniquely identifies the file to retrieve
     #
     def retrieve_from_store(identifier)
       retrieve_from_store!(identifier) unless file
     rescue CarrierWave::InvalidParameter
     end
-    
+
     ##
     # Retrieves the file from the storage.
-    # 
+    #
     # @param [String] identifier uniquely identifies the file to retrieve
     #
     def retrieve_from_store!(identifier)
       @file = storage.retrieve!(self, identifier)
       versions.each { |name, v| v.retrieve_from_store!(identifier) }
     end
-    
+
   private
-  
+
     def cache_path
       File.expand_path(File.join(cache_dir, cache_name), public)
     end
-  
+
     def storage
       self.class.storage
     end
-    
+
     attr_reader :cache_id, :original_filename
 
     def cache_id=(cache_id)
       raise CarrierWave::InvalidParameter, "invalid cache id" unless cache_id =~ /\A[\d]{8}\-[\d]{4}\-[\d]+\-[\d]{4}\z/
       @cache_id = cache_id
     end
-    
+
     def original_filename=(filename)
       raise CarrierWave::InvalidParameter, "invalid filename" unless filename =~ /\A[a-z0-9\.\-\+_]+\z/i
       @original_filename = filename
     end
-    
+
   end # Uploader
 end # CarrierWave

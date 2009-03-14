@@ -30,7 +30,7 @@ module CarrierWave
         File.basename(path)
       end
     end
-  
+
     ##
     # Returns the filename, sanitized to strip out any evil characters.
     #
@@ -39,9 +39,9 @@ module CarrierWave
     def filename
       sanitize(original_filename) if original_filename
     end
-  
+
     alias_method :identifier, :filename
-  
+
     ##
     # Returns the part of the filename before the extension. So if a file is called 'test.jpeg'
     # this would return 'test'
@@ -51,7 +51,7 @@ module CarrierWave
     def basename
       split_extension(filename)[0] if filename
     end
-  
+
     ##
     # Returns the file extension
     #
@@ -70,10 +70,10 @@ module CarrierWave
       if string?
         exists? ? File.size(path) : 0
       elsif @file.respond_to?(:size)
-        @file.size 
+        @file.size
       elsif path
         exists? ? File.size(path) : 0
-      else 
+      else
         0
       end
     end
@@ -92,7 +92,7 @@ module CarrierWave
         end
       end
     end
-  
+
     ##
     # Returns true if the file is supplied as a pathname or as a string.
     #
@@ -120,7 +120,7 @@ module CarrierWave
       return File.exists?(self.path) if self.path
       return false
     end
-  
+
     ##
     # Returns the contents of the file.
     #
@@ -184,7 +184,7 @@ module CarrierWave
     ##
     # Returns the content type of the file.
     #
-    # @return [String] the content type of the file 
+    # @return [String] the content type of the file
     #
     def content_type
       return @content_type if @content_type
@@ -192,7 +192,7 @@ module CarrierWave
     end
 
   private
-  
+
     def file=(file)
       if file.is_a?(Hash)
         @file = file["tempfile"]
@@ -204,12 +204,12 @@ module CarrierWave
         @content_type = nil
       end
     end
-  
+
     # create the directory if it doesn't exist
     def mkdir!(path)
       FileUtils.mkdir_p(File.dirname(path)) unless File.exists?(File.dirname(path))
     end
-  
+
     def chmod!(path)
       File.chmod(@options[:permissions], path) if @options[:permissions]
     end
@@ -226,7 +226,7 @@ module CarrierWave
 
     def split_extension(fn)
       # regular expressions to try for identifying extensions
-      ext_regexps = [ 
+      ext_regexps = [
         /\A(.+)\.([^\.]{1,3}\.[^\.]{1,4})\z/, # matches "something.tar.gz"
         /\A(.+)\.([^\.]+)\z/ # matches "something.jpg"
       ]
