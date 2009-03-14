@@ -37,7 +37,8 @@ end
 Given /^the class has a method called 'reverse' that reverses the contents of a file$/ do
   @klass.class_eval do
     def reverse
-      File.open(current_path, 'w') { |f| f.write File.read(current_path).reverse }
+      text = File.read(current_path)
+      File.open(current_path, 'w') { |f| f.write(text.reverse) }
     end
   end
 end

@@ -36,5 +36,5 @@ end
 # REVERSING
 
 Then /^the file at '(.*?)' should be the reverse of the file at '(.*?)'$/ do |one, two|
-  File.read(file_path(one)).should_not == File.read(file_path(two)).reverse
+  File.read(file_path(one)).should == File.read(file_path(two)).reverse
 end
