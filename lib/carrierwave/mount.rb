@@ -101,6 +101,10 @@ module CarrierWave
         def store_#{column}!                              # def store_image!
           _uploader_store!(:#{column})                    #   _uploader_store!(:image)
         end                                               # end
+
+        def #{column}_integrity_error?
+          _uploader_integrity_errors[:#{column}]
+        end
       EOF
     end
 
@@ -119,13 +123,13 @@ module CarrierWave
     private
 
       def _uploader_get(column)
-        @uploaders ||= {}
-        @uploaders[column] ||= self.class.uploaders[column].new(self, column)
+        @_uploaders ||= {}
+        @_uploaders[column] ||= self.class.uploaders[column].new(self, column)
       end
 
       def _uploader_set(column, uploader)
-        @uploaders ||= {}
-        @uploaders[column] = uploader
+        @_uploaders ||= {}
+        @_uploaders[column] = uploader
       end
 
       def _uploader_get_column(column)
@@ -141,6 +145,9 @@ module CarrierWave
 
       def _uploader_set_column(column, new_file)
         _uploader_get(column).cache!(new_file)
+        _uploader_integrity_errors[column] = nil
+      rescue CarrierWave::IntegrityError
+        _uploader_integrity_errors[column] = true
       end
 
       def _uploader_get_cache(column)
@@ -156,6 +163,10 @@ module CarrierWave
           _uploader_get(column).store!
           write_uploader(column, _uploader_get(column).identifier)
         end
+      end
+
+      def _uploader_integrity_errors
+        @_uploader_integrity_errors ||= {}
       end
 
     end # Extension

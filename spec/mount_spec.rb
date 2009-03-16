@@ -89,6 +89,16 @@ describe CarrierWave::Mount do
         @instance.image = ''
       end
       
+      it "should fail silently if the image fails an integrity check" do
+        @uploader.class_eval do
+          def extension_white_list
+            %(txt)
+          end
+        end
+        @instance.image = stub_file('test.jpg')
+        @instance.image.should be_nil   
+      end
+      
     end
 
     describe '#image_cache' do
@@ -161,6 +171,28 @@ describe CarrierWave::Mount do
         @instance.image = stub_file('test.jpg')
         @instance.store_image!
         @instance.image.current_path.should == public_path('uploads/test.jpg')
+      end
+    end
+    
+    describe '#image_integrity_error?' do
+
+      it "should be nil by default" do
+        @instance.image_integrity_error?.should be_nil
+      end
+
+      it "should be nil after a file is cached" do
+        @instance.image = stub_file('test.jpg')
+        @instance.image_integrity_error?.should be_nil
+      end
+
+      it "should be true after an integrity check has failed" do
+        @uploader.class_eval do
+          def extension_white_list
+            %(txt)
+          end
+        end
+        @instance.image = stub_file('test.jpg')
+        @instance.image_integrity_error?.should be_true
       end
     end
 
