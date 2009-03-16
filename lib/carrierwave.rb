@@ -38,7 +38,10 @@ CarrierWave.config = {
     :access => :public_read
   },
   :store_dir => 'uploads',
-  :cache_dir => 'uploads/tmp'
+  :cache_dir => 'uploads/tmp',
+  :mount => {
+    :ignore_integrity_errors => true
+  }
 }
 
 if defined?(Merb)

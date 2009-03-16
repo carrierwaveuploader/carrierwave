@@ -233,4 +233,29 @@ describe CarrierWave::Mount do
     
   end
   
+  describe '#mount_uploader with :ignore_integrity_errors => false' do
+   
+    before do
+      @class = Class.new
+      @class.send(:extend, CarrierWave::Mount)
+      
+      @uploader = Class.new(CarrierWave::Uploader)
+
+      @class.mount_uploader(:image, @uploader, :ignore_integrity_errors => false)
+      @instance = @class.new
+    end
+
+    it "should raise an error if the image fails an integrity check" do
+      @uploader.class_eval do
+        def extension_white_list
+          %(txt)
+        end
+      end
+      running {
+        @instance.image = stub_file('test.jpg')
+      }.should raise_error(CarrierWave::IntegrityError)
+    end
+
+  end
+
 end

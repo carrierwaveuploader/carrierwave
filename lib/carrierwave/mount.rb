@@ -20,6 +20,13 @@ module CarrierWave
     end
 
     ##
+    # @return [Hash{Symbol => Hash}] options for mounted uploaders
+    #
+    def uploader_options
+      @uploader_options ||= {}
+    end
+
+    ##
     # Mounts the given uploader on the given column. This means that assigning
     # and reading from the column will upload and retrieve files. Supposing
     # that a User class has an uploader mounted on image, you can assign and
@@ -38,24 +45,49 @@ module CarrierWave
     # but if there is any significatnt logic in the uploader, you should do
     # the right thing and have it in its own file.
     #
-    # @param [Symbol] column the attribute to mount this uploader on
-    # @param [CarrierWave::Uploader] uploader the uploader class to mount
-    # @param [Proc] &block customize anonymous uploaders
-    # @example
+    # === Added instance methods
+    #
+    # Supposing a class has used +mount_uploader+ to mount an uploader on a column
+    # named +image+, in that case the following methods will be added to the class:
+    #
+    # image_uploader          :: Returns an instance of the uploader
+    # image_uploader=         :: Sets the uploader (be careful!)
+    # image                   :: Returns an instance of the uploader only if anything has been uploaded
+    # image=                  :: Caches the given file
+    # image_cache             :: Returns a string that identifies the cache location of the file 
+    # image_cache=            :: Retrieves the file from the cache based on the given cache name
+    # store_image!            :: Stores a file that has been assigned with +image=+
+    # image_integrity_error?  :: Returns true if the last file to be assigned caused an integrty error
+    #
+    # === Parameters
+    #
+    # column [Symbol] :: the attribute to mount this uploader on
+    # uploader [CarrierWave::Uploader] :: the uploader class to mount
+    # options [Hash{Symbol => Object}] :: a set of options
+    # &block [Proc] :: customize anonymous uploaders
+    #
+    # === Options
+    # 
+    # :ignore_integrity_errors [Boolean] :: if set to true, integrity errors will result in caching failing silently
+    #
+    # === Examples
+    #
+    # Mounting uploaders on different columns.
+    #
     #     class Song
     #       mount_uploader :lyrics, LyricsUploader
     #       mount_uploader :file, SongUploader
     #     end
-    # @example
+    #
+    # This will add an anonymous uploader with only the default settings:
+    #
     #     class Data
-    #       # this will add an anonymous uploader with only
-    #       # the default settings
     #       mount_uploader :csv
     #     end
-    # @example
+    #
+    # this will add an anonymous uploader overriding the store_dir:
+    #
     #     class Product
-    #       # this will add an anonymous uploader overriding
-    #       # the store_dir
     #       mount_uploader :blueprint do
     #         def store_dir
     #           'blueprints'
@@ -63,13 +95,14 @@ module CarrierWave
     #       end
     #     end
     #
-    def mount_uploader(column, uploader=nil, &block)
+    def mount_uploader(column, uploader=nil, options={}, &block)
       unless uploader
         uploader = Class.new(CarrierWave::Uploader)
         uploader.class_eval(&block)
       end
 
       uploaders[column.to_sym] = uploader
+      uploader_options[column.to_sym] = CarrierWave.config[:mount].merge(options)
 
       include CarrierWave::Mount::Extension
 
@@ -132,6 +165,10 @@ module CarrierWave
         @_uploaders[column] = uploader
       end
 
+      def _uploader_options(column)
+        self.class.uploader_options[column]
+      end
+
       def _uploader_get_column(column)
         return _uploader_get(column) unless _uploader_get(column).blank?
 
@@ -146,8 +183,9 @@ module CarrierWave
       def _uploader_set_column(column, new_file)
         _uploader_get(column).cache!(new_file)
         _uploader_integrity_errors[column] = nil
-      rescue CarrierWave::IntegrityError
+      rescue CarrierWave::IntegrityError => e
         _uploader_integrity_errors[column] = true
+        raise e unless _uploader_options(column)[:ignore_integrity_errors]
       end
 
       def _uploader_get_cache(column)
