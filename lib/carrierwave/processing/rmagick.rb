@@ -5,19 +5,19 @@ module CarrierWave
   ##
   # This module simplifies manipulation with RMagick by providing a set
   # of convenient helper methods. If you want to use them, you'll need to
-  # require this file
+  # require this file:
   #
   #     require 'carrierwave/processing/rmagick'
   #
-  # And then include it in your uploader
+  # And then include it in your uploader:
   #
-  #     MyUploade < CarrierWave::Uploader
+  #     MyUploader < CarrierWave::Uploader
   #       include CarrierWave::RMagick
   #     end
   #
   # You can now use the provided helpers:
   #
-  #     MyUploade < CarrierWave::Uploader
+  #     MyUploader < CarrierWave::Uploader
   #       include CarrierWave::RMagick
   #
   #       process :resize_to_fit => [200, 200]
@@ -27,7 +27,7 @@ module CarrierWave
   # out the RMagick docs at http://www.imagemagick.org/RMagick/doc/ for more
   # info
   #
-  #     MyUploade < CarrierWave::Uploader
+  #     MyUploader < CarrierWave::Uploader
   #       include CarrierWave::RMagick
   #
   #       process :do_stuff => 10.0
@@ -105,7 +105,7 @@ module CarrierWave
 
     ##
     # Resize the image to fit within the specified dimensions while retaining
-    # the original aspect ratio. If necessary will pad the remaining area
+    # the original aspect ratio. If necessary, will pad the remaining area
     # with the given color, which defaults to transparent (for gif and png,
     # white for jpeg).
     #
@@ -135,8 +135,10 @@ module CarrierWave
     # and then pass each of its frames to the supplied block. It will then
     # save the image to disk.
     #
-    # Note: This method assumes that the object responds to current_path
-    # any class that this is mixed into must have a current_path method.
+    # Note: This method assumes that the object responds to +current_path+.
+    # Any class that this is mixed into must have a +current_path+ method.
+    # CarrierWave::Uploader does, so you won't need to worry about this in
+    # most cases.
     #
     # @yieldparam [Magick::Image] img manipulations to perform
     # @raise [CarrierWave::ProcessingError] if manipulation failed.
