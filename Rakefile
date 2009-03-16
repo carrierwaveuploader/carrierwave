@@ -1,7 +1,9 @@
 require 'rubygems'
 require 'rake/gempackagetask'
+require 'rake/rdoctask'
+gem 'rdoc', '>=2.4.0'
+require 'rdoc'
 
-require 'yard'
 require 'spec/rake/spectask'
 require 'cucumber/rake/task'
 
@@ -38,8 +40,12 @@ Cucumber::Rake::Task.new do |t|
   t.cucumber_opts = "--profile #{profile}"
 end
 
-YARD::Rake::YardocTask.new do |t|
-  t.files   = ["README.md", "LICENSE", "TODO", 'lib/carrierwave/**/*.rb']
+Rake::RDocTask.new do |rd|
+  rd.main = "README.rdoc"
+  rd.title = "CarrierWave"
+  rd.options << "--diagram" if ENV["DIAGRAM"]
+  rd.rdoc_dir = File.join(File.dirname(__FILE__), 'doc')
+  rd.rdoc_files.include("README.rdoc", "LICENSE", "TODO", 'lib/carrierwave/**/*.rb')
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|
