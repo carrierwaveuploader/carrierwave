@@ -20,9 +20,11 @@ module CarrierWave
     class << self
 
       ##
-      # Returns a list of processor callbacks which have been declared for this uploader
+      # Lists processor callbacks declared
       #
-      # @return [String]
+      # === Returns
+      #
+      # [Array[Array[Symbol, Array]]] a list of processor callbacks which have been declared for this uploader
       #
       def processors
         @processors ||= []
@@ -34,8 +36,12 @@ module CarrierWave
       # or a list of such methods, or a hash where the key is a method and the value is
       # an array of arguments to call the method with
       #
-      # @param [*Symbol, Hash{Symbol => Array[]}] args
-      # @example
+      # === Parameters
+      #
+      # args (*Symbol, Hash{Symbol => Array[]})
+      #
+      # === Examples
+      #
       #     class MyUploader < CarrierWave::Uploader
       #       process :sepiatone, :vignette
       #       process :scale => [200, 200]
@@ -74,9 +80,16 @@ module CarrierWave
       #
       # If no argument is given, it will simply return the currently used storage engine.
       #
-      # @param [Symbol, Class] storage The storage engine to use for this uploader
-      # @return [Class] the storage engine to be used with this uploader
-      # @example
+      # === Parameters
+      #
+      # [storage (Symbol, Class)] The storage engine to use for this uploader
+      #
+      # === Returns
+      #
+      # [Class] the storage engine to be used with this uploader
+      #
+      # === Examples
+      #
       #     storage :file
       #     storage CarrierWave::Storage::File
       #     storage MyCustomStorageEngine
@@ -107,8 +120,10 @@ module CarrierWave
       ##
       # Adds a new version to this uploader
       #
-      # @param [#to_sym] name name of the version
-      # @param [Proc] &block a block to eval on this version of the uploader
+      # === Parameters
+      #
+      # [name (#to_sym)] name of the version
+      # [&block (Proc)] a block to eval on this version of the uploader
       #
       def version(name, &block)
         name = name.to_sym
@@ -124,7 +139,9 @@ module CarrierWave
       end
 
       ##
-      # @return [Hash{Symbol => Class}] a list of versions available for this uploader
+      # === Returns
+      #
+      # [Hash{Symbol => Class}] a list of versions available for this uploader
       #
       def versions
         @versions ||= {}
@@ -133,7 +150,9 @@ module CarrierWave
       ##
       # Generates a unique cache id for use in the caching system
       #
-      # @return [String] a cache if in the format YYYYMMDD-HHMM-PID-RND
+      # === Returns
+      #
+      # [String] a cache id in the format YYYYMMDD-HHMM-PID-RND
       #
       def generate_cache_id
         Time.now.strftime('%Y%m%d-%H%M') + '-' + Process.pid.to_s + '-' + ("%04d" % rand(9999))
@@ -158,9 +177,13 @@ module CarrierWave
     # If you do not wish to mount your uploaders with the ORM extensions in -more then you
     # can override this method inside your uploader.
     #
-    # @param [Object] model Any kind of model object
-    # @param [Symbol] mounted_as The name of the column where this uploader is mounted
-    # @example
+    # === Parameters
+    #
+    # [model (Object)] Any kind of model object
+    # [mounted_as (Symbol)] The name of the column where this uploader is mounted
+    #
+    # === Examples
+    #
     #     class MyUploader < CarrierWave::Uploader
     #       def store_dir
     #         File.join('public', 'files', mounted_as, model.permalink)
@@ -173,7 +196,9 @@ module CarrierWave
     end
 
     ##
-    # @return [Boolean] Whether the uploaded file is blank
+    # === Returns
+    #
+    # [Boolean] Whether the uploaded file is blank
     #
     def blank?
       !file or file.empty?
@@ -189,7 +214,9 @@ module CarrierWave
     end
 
     ##
-    # @return [String] the path where the file is currently located.
+    # === Returns
+    #
+    # [String] the path where the file is currently located.
     #
     def current_path
       file.path if file.respond_to?(:path)
@@ -198,7 +225,9 @@ module CarrierWave
     ##
     # Returns a hash mapping the name of each version of the uploader to an instance of it
     #
-    # @return [Hash{Symbol => CarrierWave::Uploader}] a list of uploader instances
+    # === Returns
+    #
+    # [Hash{Symbol => CarrierWave::Uploader}] a list of uploader instances
     #
     def versions
       return @versions if @versions
@@ -210,7 +239,9 @@ module CarrierWave
     end
 
     ##
-    # @return [String] the location where this file is accessible via a url
+    # === Returns
+    #
+    # [String] the location where this file is accessible via a url
     #
     def url
       if file.respond_to?(:url) and not file.url.blank?
@@ -225,7 +256,9 @@ module CarrierWave
     ##
     # Returns a string that uniquely identifies the last stored file
     #
-    # @return [String] uniquely identifies a file
+    # === Returns
+    #
+    # [String] uniquely identifies a file
     #
     def identifier
       file.identifier if file.respond_to?(:identifier)
@@ -241,28 +274,36 @@ module CarrierWave
     # Do not use the version_name in the filename, as it will prevent versions from being
     # loaded correctly.
     #
-    # @return [String] a filename
+    # === Returns
+    #
+    # [String] a filename
     #
     def filename
       @filename
     end
 
     ##
-    # @return [String] the name of this version of the uploader
+    # === Returns
+    #
+    # [String] the name of this version of the uploader
     #
     def version_name
       self.class.version_name
     end
 
     ##
-    # @return [String] the directory that is the root of the application
+    # === Returns
+    #
+    # [String] the directory that is the root of the application
     #
     def root
       CarrierWave.config[:root]
     end
 
     ##
-    # @return [String] the directory where files will be publically accessible
+    # === Returns
+    #
+    # [String] the directory where files will be publically accessible
     #
     def public
       CarrierWave.config[:public]
@@ -272,8 +313,12 @@ module CarrierWave
     # Override this method in your uploader to provide a white list of extensions which
     # are allowed to be uploaded.
     #
-    # @return [NilClass, Array[String]] a white list of extensions which are allowed to be uploaded
-    # @example
+    # === Returns
+    #
+    # [NilClass, Array[String]] a white list of extensions which are allowed to be uploaded
+    #
+    # === Examples
+    #
     #     def extension_white_list
     #       %w(jpg jpeg gif png)
     #     end
@@ -287,7 +332,9 @@ module CarrierWave
     ##
     # Override this in your Uploader to change the directory where files are cached.
     #
-    # @return [String] a directory
+    # === Returns
+    #
+    # [String] a directory
     #
     def cache_dir
       CarrierWave.config[:cache_dir]
@@ -296,7 +343,9 @@ module CarrierWave
     ##
     # Returns a String which uniquely identifies the currently cached file for later retrieval
     #
-    # @return [String] a cache name, in the format YYYYMMDD-HHMM-PID-RND/filename.txt
+    # === Returns
+    #
+    # [String] a cache name, in the format YYYYMMDD-HHMM-PID-RND/filename.txt
     #
     def cache_name
       File.join(cache_id, [version_name, original_filename].compact.join('_')) if cache_id and original_filename
@@ -305,8 +354,13 @@ module CarrierWave
     ##
     # Caches the given file unless a file has already been cached, stored or retrieved.
     #
-    # @param [File, IOString, Tempfile] new_file any kind of file object
-    # @raise [CarrierWave::FormNotMultipart] if the assigned parameter is a string
+    # === Parameters
+    #
+    # [new_file (File, IOString, Tempfile)] any kind of file object
+    #
+    # === Raises
+    #
+    # [CarrierWave::FormNotMultipart] if the assigned parameter is a string
     #
     def cache(new_file)
       cache!(new_file) unless file
@@ -315,8 +369,13 @@ module CarrierWave
     ##
     # Caches the given file. Calls process! to trigger any process callbacks.
     #
-    # @param [File, IOString, Tempfile] new_file any kind of file object
-    # @raise [CarrierWave::FormNotMultipart] if the assigned parameter is a string
+    # === Parameters
+    #
+    # [new_file (File, IOString, Tempfile)] any kind of file object
+    #
+    # === Raises
+    #
+    # [CarrierWave::FormNotMultipart] if the assigned parameter is a string
     #
     def cache!(new_file)
       new_file = CarrierWave::SanitizedFile.new(new_file)
@@ -348,7 +407,9 @@ module CarrierWave
     # Retrieves the file with the given cache_name from the cache, unless a file has
     # already been cached, stored or retrieved.
     #
-    # @param [String] cache_name uniquely identifies a cache file
+    # === Parameters
+    #
+    # [cache_name (String)] uniquely identifies a cache file
     #
     def retrieve_from_cache(cache_name)
       retrieve_from_cache!(cache_name) unless file
@@ -358,8 +419,13 @@ module CarrierWave
     ##
     # Retrieves the file with the given cache_name from the cache.
     #
-    # @param [String] cache_name uniquely identifies a cache file
-    # @raise [CarrierWave::InvalidParameter] if the cache_name is incorrectly formatted.
+    # === Parameters
+    #
+    # [cache_name (String)] uniquely identifies a cache file
+    #
+    # === Raises
+    #
+    # [CarrierWave::InvalidParameter] if the cache_name is incorrectly formatted.
     #
     def retrieve_from_cache!(cache_name)
       self.cache_id, self.original_filename = cache_name.split('/', 2)
@@ -377,7 +443,9 @@ module CarrierWave
     #
     # Other backends may or may not use this method, depending on their specific needs.
     #
-    # @return [String] a directory
+    # === Returns
+    #
+    # [String] a directory
     #
     def store_dir
       [CarrierWave.config[:store_dir], version_name].compact.join(File::Separator)
@@ -390,7 +458,9 @@ module CarrierWave
     # If CarrierWave.config[:use_cache] is true, it will first cache the file
     # and apply any process callbacks before uploading it.
     #
-    # @param [File, IOString, Tempfile] new_file any kind of file object
+    # === Parameters
+    #
+    # [new_file (File, IOString, Tempfile)] any kind of file object
     #
     def store(new_file)
       store!(new_file) unless file
@@ -401,7 +471,9 @@ module CarrierWave
     #
     # If new_file is omitted, a previously cached file will be stored.
     #
-    # @param [File, IOString, Tempfile] new_file any kind of file object
+    # === Parameters
+    #
+    # [new_file (File, IOString, Tempfile)] any kind of file object
     #
     def store!(new_file=nil)
       cache!(new_file) if new_file
@@ -416,7 +488,9 @@ module CarrierWave
     # Retrieves the file from the storage, unless a file has
     # already been cached, stored or retrieved.
     #
-    # @param [String] identifier uniquely identifies the file to retrieve
+    # === Parameters
+    #
+    # [identifier (String)] uniquely identifies the file to retrieve
     #
     def retrieve_from_store(identifier)
       retrieve_from_store!(identifier) unless file
@@ -426,7 +500,9 @@ module CarrierWave
     ##
     # Retrieves the file from the storage.
     #
-    # @param [String] identifier uniquely identifies the file to retrieve
+    # === Parameters
+    #
+    # [identifier (String)] uniquely identifies the file to retrieve
     #
     def retrieve_from_store!(identifier)
       @file = storage.retrieve!(self, identifier)
