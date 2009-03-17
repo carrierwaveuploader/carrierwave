@@ -17,13 +17,13 @@ module CarrierWave
     # Possible values are the 'canned access control policies' provided in the aws/s3 gem,
     # they are:
     #
-    #     :private              No one else has any access rights.
-    #     :public_read          The anonymous principal is granted READ access.
-    #                           If this policy is used on an object, it can be read from a
-    #                           browser with no authentication.
-    #     :public_read_write    The anonymous principal is granted READ and WRITE access.
-    #     :authenticated_read   Any principal authenticated as a registered Amazon S3 user
-    #                           is granted READ access.
+    # [:private]              No one else has any access rights.
+    # [:public_read]          The anonymous principal is granted READ access.
+    #                         If this policy is used on an object, it can be read from a
+    #                         browser with no authentication.
+    # [:public_read_write]    The anonymous principal is granted READ and WRITE access.
+    # [:authenticated_read]   Any principal authenticated as a registered Amazon S3 user
+    #                         is granted READ access.
     #
     # The default is :public_read, it should work in most cases.
     #
@@ -47,14 +47,18 @@ module CarrierWave
       end
       
       ##
-      # @return [String] the bucket set in the config options
+      # === Returns
+      #
+      # [String] the bucket set in the config options
       # 
       def self.bucket
         CarrierWave.config[:s3][:bucket]
       end
       
       ##
-      # @return [Symbol] the access priviliges the uploaded files should have
+      # === Returns
+      #
+      # [Symbol] the access priviliges the uploaded files should have
       #
       def self.access
         CarrierWave.config[:s3][:access]
@@ -63,10 +67,14 @@ module CarrierWave
       ##
       # Store the file on S3
       #
-      # @param [CarrierWave::Uploader] uploader an uploader object
-      # @param [CarrierWave::SanitizedFile] file the file to store
+      # === Parameters
       #
-      # @return [#identifier] an object
+      # [uploader (CarrierWave::Uploader)] an uploader object
+      # [file (CarrierWave::SanitizedFile)] the file to store
+      #
+      # === Returns
+      #
+      # [CarrierWave::Storage::S3] the stored file
       #
       def self.store!(uploader, file)
         AWS::S3::S3Object.store(::File.join(uploader.store_dir, uploader.filename), file.read, bucket, :access => access)
@@ -78,7 +86,12 @@ module CarrierWave
       # @param [CarrierWave::Uploader] uploader an uploader object
       # @param [String] identifier uniquely identifies the file
       #
-      # @return [#identifier] an object
+      # [uploader (CarrierWave::Uploader)] an uploader object
+      # [identifier (String)] uniquely identifies the file
+      #
+      # === Returns
+      #
+      # [CarrierWave::Storage::S3] the stored file
       #
       def self.retrieve!(uploader, identifier)
         self.new(bucket, uploader.store_dir, identifier)
@@ -87,7 +100,9 @@ module CarrierWave
       ##
       # Returns the filename on S3
       #
-      # @return [String] path to the file
+      # === Returns
+      #
+      # [String] path to the file
       #
       def identifier
         @identifier
@@ -96,7 +111,9 @@ module CarrierWave
       ##
       # Returns the url on Amazon's S3 service
       #
-      # @return [String] file's url
+      # === Returns
+      #
+      # [String] file's url
       #
       def url
         ["http://s3.amazonaws.com", self.class.bucket, @store_dir, @identifier].compact.join('/')

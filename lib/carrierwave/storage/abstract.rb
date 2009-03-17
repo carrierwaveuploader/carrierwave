@@ -27,10 +27,14 @@ module CarrierWave
       ##
       # Do something to store the file
       #
-      # @param [CarrierWave::Uploader] uploader an uploader object
-      # @param [CarrierWave::SanitizedFile] file the file to store
+      # === Parameters
       #
-      # @return [#identifier] an object
+      # [uploader (CarrierWave::Uploader)] an uploader object
+      # [file (CarrierWave::SanitizedFile)] the file to store
+      #
+      # === Returns
+      #
+      # [#identifier] an object
       #
       def self.store!(uploader, file)
         self.new
@@ -38,10 +42,14 @@ module CarrierWave
       
       # Do something to retrieve the file
       #
-      # @param [CarrierWave::Uploader] uploader an uploader object
-      # @param [String] identifier uniquely identifies the file
+      # === Parameters
       #
-      # @return [#identifier] an object
+      # [uploader (CarrierWave::Uploader)] an uploader object
+      # [identifier (String)] uniquely identifies the file
+      #
+      # === Returns
+      #
+      # [#identifier] an object
       #
       def self.retrieve!(uploader, identifier)
         self.new
@@ -53,7 +61,9 @@ module CarrierWave
       #
       # This is OPTIONAL
       #
-      # @return [String] path to the file
+      # === Returns
+      #
+      # [String] path to the file
       #
       def identifier; end
 
@@ -63,7 +73,9 @@ module CarrierWave
       #
       # This is OPTIONAL
       #
-      # @return [String] file's url
+      # === Returns
+      #
+      # [String] file's url
       #
       def url; end
       
@@ -72,7 +84,9 @@ module CarrierWave
       #
       # This is OPTIONAL
       #
-      # @return [String] path to the file
+      # === Returns
+      #
+      # [String] path to the file
       #
       def path; end
       

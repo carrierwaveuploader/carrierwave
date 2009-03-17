@@ -20,7 +20,9 @@ module CarrierWave
     ##
     # Returns the filename as is, without sanizting it.
     #
-    # @return [String] the unsanitized filename
+    # === Returns
+    #
+    # [String] the unsanitized filename
     #
     def original_filename
       return @original_filename if @original_filename
@@ -34,7 +36,9 @@ module CarrierWave
     ##
     # Returns the filename, sanitized to strip out any evil characters.
     #
-    # @return [String] the sanitized filename
+    # === Returns
+    #
+    # [String] the sanitized filename
     #
     def filename
       sanitize(original_filename) if original_filename
@@ -46,7 +50,9 @@ module CarrierWave
     # Returns the part of the filename before the extension. So if a file is called 'test.jpeg'
     # this would return 'test'
     #
-    # @return [String] the first part of the filename
+    # === Returns
+    #
+    # [String] the first part of the filename
     #
     def basename
       split_extension(filename)[0] if filename
@@ -55,7 +61,9 @@ module CarrierWave
     ##
     # Returns the file extension
     #
-    # @return [String] the extension
+    # === Returns
+    #
+    # [String] the extension
     #
     def extension
       split_extension(filename)[1] if filename
@@ -64,7 +72,9 @@ module CarrierWave
     ##
     # Returns the file's size.
     #
-    # @return [Integer] the file's size in bytes.
+    # === Returns
+    #
+    # [Integer] the file's size in bytes.
     #
     def size
       if string?
@@ -81,7 +91,9 @@ module CarrierWave
     ##
     # Returns the full path to the file. If the file has no path, it will return nil.
     #
-    # @return [String, nil] the path where the file is located.
+    # === Returns
+    #
+    # [String, nil] the path where the file is located.
     #
     def path
       unless @file.blank?
@@ -94,27 +106,27 @@ module CarrierWave
     end
 
     ##
-    # Returns true if the file is supplied as a pathname or as a string.
+    # === Returns
     #
-    # @return [Boolean]
+    # [Boolean] whether the file is supplied as a pathname or string.
     #
     def string?
       !!((@file.is_a?(String) || @file.is_a?(Pathname)) && !@file.blank?)
     end
 
     ##
-    # Checks if the file is valid and has a non-zero size
+    # === Returns
     #
-    # @return [Boolean]
+    # [Boolean] whether the file is valid and has a non-zero size
     #
     def empty?
       @file.nil? || self.size.nil? || self.size.zero?
     end
 
     ##
-    # Checks if the file exists
+    # === Returns
     #
-    # @return [Boolean]
+    # [Boolean] Whether the file exists
     #
     def exists?
       return File.exists?(self.path) if self.path
@@ -124,7 +136,9 @@ module CarrierWave
     ##
     # Returns the contents of the file.
     #
-    # @return [String] contents of the file
+    # === Returns
+    #
+    # [String] contents of the file
     #
     def read
       if string?
@@ -138,7 +152,9 @@ module CarrierWave
     ##
     # Moves the file to the given path
     #
-    # @param [String] new_path The path where the file should be moved.
+    # === Parameters
+    #
+    # [new_path (String)] The path where the file should be moved.
     #
     def move_to(new_path)
       return if self.empty?
@@ -157,7 +173,12 @@ module CarrierWave
     ##
     # Creates a copy of this file and moves it to the given path. Returns the copy.
     #
-    # @param [String] new_path The path where the file should be copied to.
+    # === Parameters
+    #
+    # [new_path (String)] The path where the file should be copied to.
+    #
+    # === Returns
+    #
     # @return [CarrierWave::SanitizedFile] the location where the file will be stored.
     #
     def copy_to(new_path)
@@ -184,7 +205,9 @@ module CarrierWave
     ##
     # Returns the content type of the file.
     #
-    # @return [String] the content type of the file
+    # === Returns
+    #
+    # [String] the content type of the file
     #
     def content_type
       return @content_type if @content_type

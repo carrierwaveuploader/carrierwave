@@ -5,6 +5,9 @@ module CarrierWave
 
     include CarrierWave::Mount
 
+    ##
+    # See +CarrierWave::Mount#mount_uploader+ for documentation
+    #
     def mount_uploader(column, uploader)
       super
 
