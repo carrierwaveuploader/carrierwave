@@ -20,14 +20,14 @@ spec = Gem::Specification.new do |s|
   s.version = GEM_VERSION
   s.platform = Gem::Platform::RUBY
   s.has_rdoc = true
-  s.extra_rdoc_files = ["README.md", "LICENSE", 'TODO']
+  s.extra_rdoc_files = ["README.rdoc", "LICENSE", 'TODO']
   s.summary = SUMMARY
   s.description = s.summary
   s.author = AUTHOR
   s.email = EMAIL
   s.homepage = HOMEPAGE
   s.require_path = 'lib'
-  s.files = %w(LICENSE Generators README.md Rakefile TODO) + Dir.glob("{lib,spec,rails_generators}/**/*")
+  s.files = %w(LICENSE Generators README.rdoc Rakefile TODO) + Dir.glob("{lib,spec,rails_generators}/**/*")
   
 end
 
