@@ -41,6 +41,22 @@ module CarrierWave
   #       end
   #     end
   #
+  # === Note
+  #
+  # You should be aware how RMagick handles memory. manipulate! takes care
+  # of freeing up memory for you, but for optimum memory usage you should
+  # use destructive operations as much as possible:
+  #
+  # DON'T DO THIS:
+  #     img = img.resize_to_fit
+  #
+  # DO THIS INSTEAD:
+  #     img.resize_to_fit!
+  #
+  # Read this for more information why:
+  #
+  # http://rubyforge.org/forum/forum.php?thread_id=1374&forum_id=1618
+  #
   module RMagick
 
     ##
@@ -143,13 +159,15 @@ module CarrierWave
         img.resize_to_fit!(width, height)
         new_img = ::Magick::Image.new(width, height)
         if background == :transparent
-          new_img = new_img.matte_floodfill(1, 1)
+          filled = new_img.matte_floodfill(1, 1)
         else
-          new_img = new_img.color_floodfill(1, 1, ::Magick::Pixel.from_color(background))
+          filled = new_img.color_floodfill(1, 1, ::Magick::Pixel.from_color(background))
         end
-        new_img = new_img.composite(img, gravity, ::Magick::OverCompositeOp)
-        new_img = yield(new_img) if block_given?
-        new_img
+        new_img.destroy!
+        filled.composite!(img, gravity, ::Magick::OverCompositeOp)
+        img.destroy!
+        filled = yield(filled) if block_given?
+        filled
       end
     end
 
@@ -182,8 +200,11 @@ module CarrierWave
           list << yield( frame )
         end
         list.write(current_path)
+        list.destroy!
       else
-        yield( image.first ).write(current_path)
+        frame = image.first
+        yield( frame ).write(current_path)
+        frame.destroy!
       end
     rescue ::Magick::ImageMagickError => e
       raise CarrierWave::ProcessingError.new("Failed to manipulate with rmagick, maybe it is not an image? Original Error: #{e}")
