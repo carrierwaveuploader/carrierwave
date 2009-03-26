@@ -135,7 +135,7 @@ describe CarrierWave::Uploader do
     end
   end
   
-  describe '#blank' do
+  describe '#blank?' do
     it "should be true when nothing has been done" do
       @uploader.should be_blank
     end
