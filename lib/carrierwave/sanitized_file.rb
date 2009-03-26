@@ -219,9 +219,9 @@ module CarrierWave
 
     def file=(file)
       if file.is_a?(Hash)
-        @file = file["tempfile"]
-        @original_filename = file["filename"]
-        @content_type = file["content_type"]
+        @file = file["tempfile"] || file[:tempfile]
+        @original_filename = file["filename"] || file[:filename]
+        @content_type = file["content_type"] || file[:content_type]
       else
         @file = file
         @original_filename = nil
