@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/spec_helper'
 
 describe CarrierWave::SanitizedFile do
   
-  include SanitizedFileSpecHelper
+  include CarrierWaveSpecHelper
   
   before do
     unless File.exists?(file_path('llama.jpg'))

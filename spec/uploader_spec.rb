@@ -1,6 +1,8 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
 describe CarrierWave::Uploader do
+
+  include CarrierWaveSpecHelper
   
   before do
     @uploader_class = Class.new(CarrierWave::Uploader)

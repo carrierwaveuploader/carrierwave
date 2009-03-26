@@ -6,7 +6,7 @@ DataMapper.setup(:default, 'sqlite3::memory:')
 
 describe CarrierWave::DataMapper do
   
-  include SanitizedFileSpecHelper
+  include CarrierWaveSpecHelper
   
   before do
     uploader = Class.new(CarrierWave::Uploader)
