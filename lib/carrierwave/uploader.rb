@@ -222,6 +222,8 @@ module CarrierWave
       file.path if file.respond_to?(:path)
     end
 
+    alias_method :path, :current_path
+
     ##
     # Returns a hash mapping the name of each version of the uploader to an instance of it
     #
@@ -393,7 +395,7 @@ module CarrierWave
         @filename = new_file.filename
         self.original_filename = new_file.filename
 
-        @file = @file.copy_to(cache_path)
+        @file = @file.copy_to(cache_path, CarrierWave.config[:permissions])
         process!
 
         versions.each do |name, v|
