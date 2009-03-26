@@ -154,6 +154,7 @@ module CarrierWave
     # === Parameters
     #
     # [new_path (String)] The path where the file should be moved.
+    # [permissions (Integer)] permissions to set on the file in its new location.
     #
     def move_to(new_path, permissions=nil)
       return if self.empty?
@@ -175,6 +176,7 @@ module CarrierWave
     # === Parameters
     #
     # [new_path (String)] The path where the file should be copied to.
+    # [permissions (Integer)] permissions to set on the copy
     #
     # === Returns
     #
