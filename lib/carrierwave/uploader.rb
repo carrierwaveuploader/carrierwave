@@ -379,7 +379,7 @@ module CarrierWave
     #
     def cache!(new_file)
       new_file = CarrierWave::SanitizedFile.new(new_file)
-      raise CarrierWave::FormNotMultipart if new_file.string?
+      raise CarrierWave::FormNotMultipart if new_file.is_path?
 
       unless new_file.empty?
         if extension_white_list and not extension_white_list.include?(new_file.extension.to_s)

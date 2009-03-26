@@ -76,7 +76,7 @@ module CarrierWave
     # [Integer] the file's size in bytes.
     #
     def size
-      if string?
+      if is_path?
         exists? ? File.size(path) : 0
       elsif @file.respond_to?(:size)
         @file.size
@@ -96,7 +96,7 @@ module CarrierWave
     #
     def path
       unless @file.blank?
-        if string?
+        if is_path?
           File.expand_path(@file)
         elsif @file.respond_to?(:path) and not @file.path.blank?
           File.expand_path(@file.path)
@@ -109,7 +109,7 @@ module CarrierWave
     #
     # [Boolean] whether the file is supplied as a pathname or string.
     #
-    def string?
+    def is_path?
       !!((@file.is_a?(String) || @file.is_a?(Pathname)) && !@file.blank?)
     end
 
@@ -140,7 +140,7 @@ module CarrierWave
     # [String] contents of the file
     #
     def read
-      if string?
+      if is_path?
         File.read(@file)
       else
         @file.rewind if @file.respond_to?(:rewind)

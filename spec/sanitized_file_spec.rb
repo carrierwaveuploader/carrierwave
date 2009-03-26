@@ -333,9 +333,9 @@ describe CarrierWave::SanitizedFile do
       end
     end
   
-    describe '#string?' do
+    describe '#is_path?' do
       it "should be false" do
-        @sanitized_file.string?.should be_false
+        @sanitized_file.is_path?.should be_false
       end
     end
   
@@ -351,9 +351,9 @@ describe CarrierWave::SanitizedFile do
 
     it_should_behave_like "all valid sanitized files that are stored on disk"
 
-    describe '#string?' do
+    describe '#is_path?' do
       it "should be false" do
-        @sanitized_file.string?.should be_false
+        @sanitized_file.is_path?.should be_false
       end
     end
     
@@ -379,9 +379,9 @@ describe CarrierWave::SanitizedFile do
       end
     end
     
-    describe '#string?' do
+    describe '#is_path?' do
       it "should be false" do
-        @sanitized_file.string?.should be_false
+        @sanitized_file.is_path?.should be_false
       end
     end
 
@@ -410,9 +410,9 @@ describe CarrierWave::SanitizedFile do
   
     it_should_behave_like "all valid sanitized files that are stored on disk"
 
-    describe '#string?' do
+    describe '#is_path?' do
       it "should be false" do
-        @sanitized_file.string?.should be_false
+        @sanitized_file.is_path?.should be_false
       end
     end
 
@@ -436,9 +436,9 @@ describe CarrierWave::SanitizedFile do
   
     it_should_behave_like "all valid sanitized files that are stored on disk"
 
-    describe '#string?' do
+    describe '#is_path?' do
       it "should be true" do
-        @sanitized_file.string?.should be_true
+        @sanitized_file.is_path?.should be_true
       end
     end
     
@@ -462,9 +462,9 @@ describe CarrierWave::SanitizedFile do
 
     it_should_behave_like "all valid sanitized files that are stored on disk"
 
-    describe '#string?' do
+    describe '#is_path?' do
       it "should be true" do
-        @sanitized_file.string?.should be_true
+        @sanitized_file.is_path?.should be_true
       end
     end
     
@@ -494,9 +494,9 @@ describe CarrierWave::SanitizedFile do
       end
     end
 
-    describe '#string?' do
+    describe '#is_path?' do
       it "should be false" do
-        @empty.string?.should be_false
+        @empty.is_path?.should be_false
       end
     end
 
@@ -560,9 +560,9 @@ describe CarrierWave::SanitizedFile do
       end
     end
 
-    describe '#string?' do
+    describe '#is_path?' do
       it "should be false" do
-        @empty.string?.should be_false
+        @empty.is_path?.should be_false
       end
     end
 
