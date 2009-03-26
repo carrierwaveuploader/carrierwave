@@ -10,11 +10,10 @@ module CarrierWave
   #
   class SanitizedFile
 
-    attr_accessor :file, :options
+    attr_accessor :file
 
-    def initialize(file, options = {})
+    def initialize(file)
       self.file = file
-      self.options = options
     end
 
     ##
@@ -156,7 +155,7 @@ module CarrierWave
     #
     # [new_path (String)] The path where the file should be moved.
     #
-    def move_to(new_path)
+    def move_to(new_path, permissions=nil)
       return if self.empty?
       new_path = File.expand_path(new_path)
 
@@ -166,7 +165,7 @@ module CarrierWave
       else
         File.open(new_path, "wb") { |f| f.write(read) }
       end
-      chmod!(new_path)
+      chmod!(new_path, permissions)
       self.file = new_path
     end
 
@@ -181,7 +180,7 @@ module CarrierWave
     #
     # @return [CarrierWave::SanitizedFile] the location where the file will be stored.
     #
-    def copy_to(new_path)
+    def copy_to(new_path, permissions=nil)
       return if self.empty?
       new_path = File.expand_path(new_path)
 
@@ -191,7 +190,7 @@ module CarrierWave
       else
         File.open(new_path, "wb") { |f| f.write(read) }
       end
-      chmod!(new_path)
+      chmod!(new_path, permissions)
       self.class.new(new_path)
     end
 
@@ -233,8 +232,8 @@ module CarrierWave
       FileUtils.mkdir_p(File.dirname(path)) unless File.exists?(File.dirname(path))
     end
 
-    def chmod!(path)
-      File.chmod(@options[:permissions], path) if @options[:permissions]
+    def chmod!(path, permissions)
+      File.chmod(permissions, path) if permissions
     end
 
     # Sanitize the filename, to prevent hacking

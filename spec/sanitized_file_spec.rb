@@ -206,15 +206,9 @@ describe CarrierWave::SanitizedFile do
         @sanitized_file.extension.should == 'png'
       end
       
-      describe "with permissions set" do
-        before do
-          @sanitized_file.options[:permissions] = 0755
-        end
-
-        it "should set the right permissions" do
-          @sanitized_file.move_to(file_path('gurr.png'))
-          @sanitized_file.should have_permissions(0755)
-        end
+      it "should set the right permissions" do
+        @sanitized_file.move_to(file_path('gurr.png'), 0755)
+        @sanitized_file.should have_permissions(0755)
       end
       
     end
@@ -266,15 +260,9 @@ describe CarrierWave::SanitizedFile do
         new_file.extension.should == 'png'
       end
       
-      describe "with permissions set" do
-        before do
-          @sanitized_file.options[:permissions] = 0755
-        end
-
-        it "should set the right permissions" do
-          new_file = @sanitized_file.copy_to(file_path('gurr.png'))
-          new_file.should have_permissions(0755)
-        end
+      it "should set the right permissions" do
+        new_file = @sanitized_file.copy_to(file_path('gurr.png'), 0755)
+        new_file.should have_permissions(0755)
       end
 
     end
