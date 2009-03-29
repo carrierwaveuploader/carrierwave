@@ -15,9 +15,25 @@ module CarrierWave
   # these are *very* simple (they are only a dozen lines of code), so adding your own should
   # be trivial.
   #
-  class Uploader
+  module Uploader
 
-    class << self
+    def self.append_features(base) #:nodoc:
+      super
+      base.extend(ClassMethods)
+    end
+    
+    ##
+    # Generates a unique cache id for use in the caching system
+    #
+    # === Returns
+    #
+    # [String] a cache id in the format YYYYMMDD-HHMM-PID-RND
+    #
+    def self.generate_cache_id
+      Time.now.strftime('%Y%m%d-%H%M') + '-' + Process.pid.to_s + '-' + ("%04d" % rand(9999))
+    end
+
+    module ClassMethods
 
       ##
       # Lists processor callbacks declared
@@ -147,24 +163,13 @@ module CarrierWave
         @versions ||= {}
       end
 
-      ##
-      # Generates a unique cache id for use in the caching system
-      #
-      # === Returns
-      #
-      # [String] a cache id in the format YYYYMMDD-HHMM-PID-RND
-      #
-      def generate_cache_id
-        Time.now.strftime('%Y%m%d-%H%M') + '-' + Process.pid.to_s + '-' + ("%04d" % rand(9999))
-      end
-
     private
 
       def get_storage_by_symbol(symbol)
         CarrierWave.config[:storage_engines][symbol]
       end
 
-    end # class << self
+    end # ClassMethods
 
     attr_reader :file, :model, :mounted_as
 

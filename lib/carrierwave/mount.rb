@@ -102,7 +102,9 @@ module CarrierWave
     #
     def mount_uploader(column, uploader=nil, options={}, &block)
       unless uploader
-        uploader = Class.new(CarrierWave::Uploader)
+        uploader = Class.new do
+          include CarrierWave::Uploader
+        end
         uploader.class_eval(&block)
       end
 

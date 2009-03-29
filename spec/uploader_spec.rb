@@ -5,7 +5,9 @@ describe CarrierWave::Uploader do
   include CarrierWaveSpecHelper
   
   before do
-    @uploader_class = Class.new(CarrierWave::Uploader)
+    @uploader_class = Class.new do
+      include CarrierWave::Uploader
+    end
     @uploader = @uploader_class.new
   end
   

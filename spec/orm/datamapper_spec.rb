@@ -9,7 +9,9 @@ describe CarrierWave::DataMapper do
   include CarrierWaveSpecHelper
   
   before do
-    uploader = Class.new(CarrierWave::Uploader)
+    uploader = Class.new do
+      include CarrierWave::Uploader
+    end
     
     @class = Class.new
     @class.class_eval do

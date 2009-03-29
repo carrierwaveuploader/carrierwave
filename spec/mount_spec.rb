@@ -14,7 +14,9 @@ describe CarrierWave::Mount do
       @class = Class.new
       @class.send(:extend, CarrierWave::Mount)
       
-      @uploader = Class.new(CarrierWave::Uploader)
+      @uploader = Class.new do
+        include CarrierWave::Uploader
+      end
 
       @class.mount_uploader(:image, @uploader)
       @instance = @class.new
@@ -239,7 +241,9 @@ describe CarrierWave::Mount do
       @class = Class.new
       @class.send(:extend, CarrierWave::Mount)
       
-      @uploader = Class.new(CarrierWave::Uploader)
+      @uploader = Class.new do
+        include CarrierWave::Uploader
+      end
 
       @class.mount_uploader(:image, @uploader, :ignore_integrity_errors => false)
       @instance = @class.new

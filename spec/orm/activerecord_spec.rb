@@ -39,7 +39,9 @@ describe CarrierWave::ActiveRecord do
     before do
       @class = Class.new(ActiveRecord::Base)
       @class.table_name = "events"
-      @uploader = Class.new(CarrierWave::Uploader)
+      @uploader = Class.new do
+        include CarrierWave::Uploader
+      end
       @class.mount_uploader(:image, @uploader)
       @event = @class.new
     end

@@ -9,7 +9,9 @@ describe CarrierWave::Sequel do
   include CarrierWaveSpecHelper
   
   def setup_variables_for_class(klass)
-    uploader = Class.new(CarrierWave::Uploader)
+    uploader = Class.new do
+      include CarrierWave::Uploader
+    end
     klass.mount_uploader(:image, uploader)
     model = klass.new
     [klass, uploader, model] 
