@@ -11,14 +11,14 @@ module CarrierWave
   #
   # And then include it in your uploader:
   #
-  #     MyUploader
+  #     class MyUploader
   #       include CarrierWave::Uploader
   #       include CarrierWave::RMagick
   #     end
   #
   # You can now use the provided helpers:
   #
-  #     MyUploader
+  #     class MyUploader
   #       include CarrierWave::Uploader
   #       include CarrierWave::RMagick
   #
@@ -29,7 +29,7 @@ module CarrierWave
   # out the RMagick docs at http://www.imagemagick.org/RMagick/doc/ for more
   # info
   #
-  #     MyUploader
+  #     class MyUploader
   #       include CarrierWave::Uploader
   #       include CarrierWave::RMagick
   #
