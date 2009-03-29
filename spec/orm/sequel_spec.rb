@@ -6,8 +6,6 @@ DB = Sequel.sqlite
 
 describe CarrierWave::Sequel do
 
-  include CarrierWaveSpecHelper
-  
   def setup_variables_for_class(klass)
     uploader = Class.new do
       include CarrierWave::Uploader

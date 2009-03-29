@@ -28,8 +28,6 @@ class Event < ActiveRecord::Base; end # setup a basic AR class for testing
 
 describe CarrierWave::ActiveRecord do
   
-  include CarrierWaveSpecHelper
-  
   describe '.mount_uploader' do
     
     before(:all) { TestMigration.up }

@@ -2,8 +2,6 @@ require File.dirname(__FILE__) + '/spec_helper'
 
 describe CarrierWave::Mount do
   
-  include CarrierWaveSpecHelper
-  
   after do
     FileUtils.rm_rf(public_path)
   end
