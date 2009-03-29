@@ -58,7 +58,9 @@ module CarrierWave
       #
       # === Examples
       #
-      #     class MyUploader < CarrierWave::Uploader
+      #     class MyUploader
+      #       include CarrierWave::Uploader
+      #
       #       process :sepiatone, :vignette
       #       process :scale => [200, 200]
       #
@@ -189,7 +191,9 @@ module CarrierWave
     #
     # === Examples
     #
-    #     class MyUploader < CarrierWave::Uploader
+    #     class MyUploader
+    #       include CarrierWave::Uploader
+    #
     #       def store_dir
     #         File.join('public', 'files', mounted_as, model.permalink)
     #       end

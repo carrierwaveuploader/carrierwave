@@ -11,13 +11,15 @@ module CarrierWave
   #
   # And then include it in your uploader:
   #
-  #     MyUploader < CarrierWave::Uploader
+  #     MyUploader
+  #       include CarrierWave::Uploader
   #       include CarrierWave::RMagick
   #     end
   #
   # You can now use the provided helpers:
   #
-  #     MyUploader < CarrierWave::Uploader
+  #     MyUploader
+  #       include CarrierWave::Uploader
   #       include CarrierWave::RMagick
   #
   #       process :resize_to_fit => [200, 200]
@@ -27,7 +29,8 @@ module CarrierWave
   # out the RMagick docs at http://www.imagemagick.org/RMagick/doc/ for more
   # info
   #
-  #     MyUploader < CarrierWave::Uploader
+  #     MyUploader
+  #       include CarrierWave::Uploader
   #       include CarrierWave::RMagick
   #
   #       process :do_stuff => 10.0
