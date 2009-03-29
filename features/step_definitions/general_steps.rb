@@ -1,5 +1,7 @@
 Given /^an uploader class that uses the 'file' storage$/ do
-  @klass = Class.new(CarrierWave::Uploader)
+  @klass = Class.new do
+    include CarrierWave::Uploader
+  end
 end
 
 Given /^an instance of that class$/ do
