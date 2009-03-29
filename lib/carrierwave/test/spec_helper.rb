@@ -74,7 +74,7 @@ module CarrierWave
         BeNoLargerThan.new(width, height)
       end
 
-      class HaveTheExactDimensionsOf
+      class HaveDimensions
         def initialize(width, height)
           @width, @height = width, height
         end
@@ -98,8 +98,8 @@ module CarrierWave
         end
       end
 
-      def have_the_exact_dimensions_of(width, height)
-        HaveTheExactDimensionsOf.new(width, height)
+      def have_dimensions(width, height)
+        HaveDimensions.new(width, height)
       end
       
     end # SpecHelper
