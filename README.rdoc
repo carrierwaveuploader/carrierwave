@@ -54,38 +54,23 @@ CarrierWave gives you a +store+ for permanent storage, and a +cache+ for tempora
 
 Most of the time you are going to want to use CarrierWave together with an ORM. It is quite simple to mount uploaders on columns in your model, so you can simply assign files and get going:
 
-=== ActiveRecord
+=== ActiveRecord, DataMapper, Sequel
 
-First require the activerecord extension:
+First require the relevant extension:
 
     require 'carrierwave/orm/activerecord'
+    require 'carrierwave/orm/datamapper'
+    require 'carrierwave/orm/sequel'
 
 You don't need to do this if you are using Merb or Rails.
 
-Open your model file, and do something like:
+Open your model file, for ActiveRecord do something like:
 
     class User < ActiveRecord::Base
       mount_uploader :avatar, AvatarUploader
     end
 
-Now you can upload files!
-
-    u = User.new
-    u.avatar = params[:file]
-    u.avatar = File.open('somewhere')
-    u.save!
-    u.avatar.url # => '/url/to/file.png'
-    u.avatar.current_path # => 'path/to/file.png'
-
-=== DataMapper
-
-First require the DataMapper extension:
-
-    require 'carrierwave/orm/datamapper
-
-You don't need to do this if you are using Merb or Rails.
-
-Open your model file, and do something like:
+Or for DataMapper:
 
     class User
       include DataMapper::Resource
@@ -93,7 +78,13 @@ Open your model file, and do something like:
       mount_uploader :avatar, AvatarUploader
     end
 
-Now you can upload files!
+Or for Sequel
+
+    class User < Sequel::Model
+      mount_uploader :avatar, AvatarUploader
+    end
+
+Now you can cache files by assigning them to the attribute, they will automatically be stored when the record is saved.
 
     u = User.new
     u.avatar = params[:file]
