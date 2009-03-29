@@ -160,26 +160,6 @@ in the case of images, a small thumbnail would be a good indicator:
       </p>
     <% end %>
 
-== What's in that uploader file?
-
-The fact that uploaders are separate classes in CarrierWave is a big advantage. What this means for you is:
-
-==== Less magic
-
-In order to customize your uploader, all you need to do is override methods and use normal, clear and simple Ruby code. That means no +alias_method_chain+'ing to hook into the upload process, no messing around with weird extensions. The code in CarrierWave is very simple and easy because of this.
-
-==== Easier to test
-
-How do you test file uploads? I always found this ridiculously hard. A separate class means you can test is separately, which is nicer, easier and more maintainable.
-
-==== More Flexible
-
-Many of the things you can do in CarrierWave are hard, or impossible to do in other file upload plugins, and have previously required you to roll your own. Now you can get all the flexibility without having to write low level stuff.
-
-==== Easy to extend
-
-CarrierWave has support for a few different image manipulation libraries. These need *no* code to hook into CarrierWave, because they are simple modules. If you want to write your own manipulation library (doesn't need to be for images), you can do the same.
-
 == Using Amazon S3
 
 You'll need to configure a bucket, access id and secret key like this:
