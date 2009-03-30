@@ -30,7 +30,7 @@ end
 CarrierWave.config[:public] = public_path
 CarrierWave.config[:root] = File.expand_path(File.dirname(__FILE__))
 
-module SanitizedFileSpecHelper
+module CarrierWaveSpecHelper
   def stub_merb_tempfile(filename)
     raise "#{path} file does not exist" unless File.exist?(file_path(filename))
 

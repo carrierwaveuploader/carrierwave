@@ -41,15 +41,39 @@ module CarrierWave
   #       end
   #     end
   #
+  # === Note
+  #
+  # You should be aware how RMagick handles memory. manipulate! takes care
+  # of freeing up memory for you, but for optimum memory usage you should
+  # use destructive operations as much as possible:
+  #
+  # DON'T DO THIS:
+  #     img = img.resize_to_fit
+  #
+  # DO THIS INSTEAD:
+  #     img.resize_to_fit!
+  #
+  # Read this for more information why:
+  #
+  # http://rubyforge.org/forum/forum.php?thread_id=1374&forum_id=1618
+  #
   module RMagick
 
     ##
     # Changes the image encoding format to the given format
     #
-    # @see http://www.imagemagick.org/RMagick/doc/magick.html#formats
-    # @param [#to_s] format an abreviation of the format
-    # @yieldparam [Magick::Image] img additional manipulations to perform
-    # @example
+    # See even http://www.imagemagick.org/RMagick/doc/magick.html#formats
+    #
+    # === Parameters
+    #
+    # [format (#to_s)] an abreviation of the format
+    #
+    # === Yields
+    #
+    # [Magick::Image] additional manipulations to perform
+    #
+    # === Examples
+    #
     #     image.convert(:png)
     #
     def convert(format)
@@ -66,11 +90,16 @@ module CarrierWave
     # image may be shorter or narrower than specified in the smaller dimension
     # but will not be larger than the specified values."
     #
-    # @see http://www.imagemagick.org/RMagick/doc/image3.html#resize_to_fit
+    # See even http://www.imagemagick.org/RMagick/doc/image3.html#resize_to_fit
     #
-    # @param [Integer] width the width to scale the image to
-    # @param [Integer] height the height to scale the image to
-    # @yieldparam [Magick::Image] img additional manipulations to perform
+    # === Parameters
+    #
+    # [width (Integer)] the width to scale the image to
+    # [height (Integer)] the height to scale the image to
+    #
+    # === Yields
+    #
+    # [Magick::Image] additional manipulations to perform
     #
     def resize_to_fit(width, height)
       manipulate! do |img|
@@ -87,11 +116,16 @@ module CarrierWave
     # specified dimensions while retaining the aspect ratio of the original
     # image. If necessary, crop the image in the larger dimension."
     #
-    # @see http://www.imagemagick.org/RMagick/doc/image3.html#resize_to_fill
+    # See even http://www.imagemagick.org/RMagick/doc/image3.html#resize_to_fill
     #
-    # @param [Integer] width the width to scale the image to
-    # @param [Integer] height the height to scale the image to
-    # @yieldparam [Magick::Image] img additional manipulations to perform
+    # === Parameters
+    #
+    # [width (Integer)] the width to scale the image to
+    # [height (Integer)] the height to scale the image to
+    #
+    # === Yields
+    #
+    # [Magick::Image] additional manipulations to perform
     #
     def resize_to_fill(width, height)
       manipulate! do |img|
@@ -109,24 +143,31 @@ module CarrierWave
     # with the given color, which defaults to transparent (for gif and png,
     # white for jpeg).
     #
-    # @param [Integer] width the width to scale the image to
-    # @param [Integer] height the height to scale the image to
-    # @param [String, :transparent] background the color of the background as a hexcode, like "#ff45de"
-    # @param [Magick::GravityType] gravity how to position the image
-    # @yieldparam [Magick::Image] img additional manipulations to perform
+    # === Parameters
+    #
+    # [width (Integer)] the width to scale the image to
+    # [height (Integer)] the height to scale the image to
+    # [background (String, :transparent)] the color of the background as a hexcode, like "#ff45de"
+    # [gravity (Magick::GravityType)] how to position the image
+    #
+    # === Yields
+    #
+    # [Magick::Image] additional manipulations to perform
     #
     def resize_and_pad(width, height, background=:transparent, gravity=::Magick::CenterGravity)
       manipulate! do |img|
         img.resize_to_fit!(width, height)
         new_img = ::Magick::Image.new(width, height)
         if background == :transparent
-          new_img = new_img.matte_floodfill(1, 1)
+          filled = new_img.matte_floodfill(1, 1)
         else
-          new_img = new_img.color_floodfill(1, 1, ::Magick::Pixel.from_color(background))
+          filled = new_img.color_floodfill(1, 1, ::Magick::Pixel.from_color(background))
         end
-        new_img = new_img.composite(img, gravity, ::Magick::OverCompositeOp)
-        new_img = yield(new_img) if block_given?
-        new_img
+        new_img.destroy!
+        filled.composite!(img, gravity, ::Magick::OverCompositeOp)
+        img.destroy!
+        filled = yield(filled) if block_given?
+        filled
       end
     end
 
@@ -135,13 +176,20 @@ module CarrierWave
     # and then pass each of its frames to the supplied block. It will then
     # save the image to disk.
     #
-    # Note: This method assumes that the object responds to +current_path+.
-    # Any class that this is mixed into must have a +current_path+ method.
+    # === Gotcha
+    #
+    # This method assumes that the object responds to +current_path+.
+    # Any class that this module is mixed into must have a +current_path+ method.
     # CarrierWave::Uploader does, so you won't need to worry about this in
     # most cases.
     #
-    # @yieldparam [Magick::Image] img manipulations to perform
-    # @raise [CarrierWave::ProcessingError] if manipulation failed.
+    # === Yields
+    #
+    # [Magick::Image] manipulations to perform
+    #
+    # === Raises
+    #
+    # [CarrierWave::ProcessingError] if manipulation failed.
     #
     def manipulate!
       image = ::Magick::Image.read(current_path)
@@ -152,8 +200,11 @@ module CarrierWave
           list << yield( frame )
         end
         list.write(current_path)
+        list.destroy!
       else
-        yield( image.first ).write(current_path)
+        frame = image.first
+        yield( frame ).write(current_path)
+        frame.destroy!
       end
     rescue ::Magick::ImageMagickError => e
       raise CarrierWave::ProcessingError.new("Failed to manipulate with rmagick, maybe it is not an image? Original Error: #{e}")

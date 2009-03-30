@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/spec_helper'
 
 describe CarrierWave::SanitizedFile do
   
-  include SanitizedFileSpecHelper
+  include CarrierWaveSpecHelper
   
   before do
     unless File.exists?(file_path('llama.jpg'))
@@ -206,15 +206,9 @@ describe CarrierWave::SanitizedFile do
         @sanitized_file.extension.should == 'png'
       end
       
-      describe "with permissions set" do
-        before do
-          @sanitized_file.options[:permissions] = 0755
-        end
-
-        it "should set the right permissions" do
-          @sanitized_file.move_to(file_path('gurr.png'))
-          @sanitized_file.should have_permissions(0755)
-        end
+      it "should set the right permissions" do
+        @sanitized_file.move_to(file_path('gurr.png'), 0755)
+        @sanitized_file.should have_permissions(0755)
       end
       
     end
@@ -266,15 +260,9 @@ describe CarrierWave::SanitizedFile do
         new_file.extension.should == 'png'
       end
       
-      describe "with permissions set" do
-        before do
-          @sanitized_file.options[:permissions] = 0755
-        end
-
-        it "should set the right permissions" do
-          new_file = @sanitized_file.copy_to(file_path('gurr.png'))
-          new_file.should have_permissions(0755)
-        end
+      it "should set the right permissions" do
+        new_file = @sanitized_file.copy_to(file_path('gurr.png'), 0755)
+        new_file.should have_permissions(0755)
       end
 
     end
@@ -345,9 +333,9 @@ describe CarrierWave::SanitizedFile do
       end
     end
   
-    describe '#string?' do
+    describe '#is_path?' do
       it "should be false" do
-        @sanitized_file.string?.should be_false
+        @sanitized_file.is_path?.should be_false
       end
     end
   
@@ -363,9 +351,9 @@ describe CarrierWave::SanitizedFile do
 
     it_should_behave_like "all valid sanitized files that are stored on disk"
 
-    describe '#string?' do
+    describe '#is_path?' do
       it "should be false" do
-        @sanitized_file.string?.should be_false
+        @sanitized_file.is_path?.should be_false
       end
     end
     
@@ -391,9 +379,9 @@ describe CarrierWave::SanitizedFile do
       end
     end
     
-    describe '#string?' do
+    describe '#is_path?' do
       it "should be false" do
-        @sanitized_file.string?.should be_false
+        @sanitized_file.is_path?.should be_false
       end
     end
 
@@ -422,9 +410,9 @@ describe CarrierWave::SanitizedFile do
   
     it_should_behave_like "all valid sanitized files that are stored on disk"
 
-    describe '#string?' do
+    describe '#is_path?' do
       it "should be false" do
-        @sanitized_file.string?.should be_false
+        @sanitized_file.is_path?.should be_false
       end
     end
 
@@ -448,9 +436,9 @@ describe CarrierWave::SanitizedFile do
   
     it_should_behave_like "all valid sanitized files that are stored on disk"
 
-    describe '#string?' do
+    describe '#is_path?' do
       it "should be true" do
-        @sanitized_file.string?.should be_true
+        @sanitized_file.is_path?.should be_true
       end
     end
     
@@ -474,9 +462,9 @@ describe CarrierWave::SanitizedFile do
 
     it_should_behave_like "all valid sanitized files that are stored on disk"
 
-    describe '#string?' do
+    describe '#is_path?' do
       it "should be true" do
-        @sanitized_file.string?.should be_true
+        @sanitized_file.is_path?.should be_true
       end
     end
     
@@ -506,9 +494,9 @@ describe CarrierWave::SanitizedFile do
       end
     end
 
-    describe '#string?' do
+    describe '#is_path?' do
       it "should be false" do
-        @empty.string?.should be_false
+        @empty.is_path?.should be_false
       end
     end
 
@@ -572,9 +560,9 @@ describe CarrierWave::SanitizedFile do
       end
     end
 
-    describe '#string?' do
+    describe '#is_path?' do
       it "should be false" do
-        @empty.string?.should be_false
+        @empty.is_path?.should be_false
       end
     end
 

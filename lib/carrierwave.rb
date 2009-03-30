@@ -28,6 +28,7 @@ require File.join(dir, 'storage', 'file')
 require File.join(dir, 'storage', 's3')
 
 CarrierWave.config = {
+  :permissions => 0644,
   :storage => :file,
   :use_cache => true,
   :storage_engines => {

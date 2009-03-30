@@ -13,14 +13,18 @@ module CarrierWave
   module Mount
 
     ##
-    # @return [Hash{Symbol => CarrierWave}] what uploaders are mounted on which columns
+    # === Returns
+    #
+    # [Hash{Symbol => CarrierWave}] what uploaders are mounted on which columns
     #
     def uploaders
       @uploaders ||= {}
     end
 
     ##
-    # @return [Hash{Symbol => Hash}] options for mounted uploaders
+    # === Returns
+    #
+    # [Hash{Symbol => Hash}] options for mounted uploaders
     #
     def uploader_options
       @uploader_options ||= {}
@@ -50,25 +54,25 @@ module CarrierWave
     # Supposing a class has used +mount_uploader+ to mount an uploader on a column
     # named +image+, in that case the following methods will be added to the class:
     #
-    # image_uploader          :: Returns an instance of the uploader
-    # image_uploader=         :: Sets the uploader (be careful!)
-    # image                   :: Returns an instance of the uploader only if anything has been uploaded
-    # image=                  :: Caches the given file
-    # image_cache             :: Returns a string that identifies the cache location of the file 
-    # image_cache=            :: Retrieves the file from the cache based on the given cache name
-    # store_image!            :: Stores a file that has been assigned with +image=+
-    # image_integrity_error?  :: Returns true if the last file to be assigned caused an integrty error
+    # [image]                   Returns an instance of the uploader only if anything has been uploaded
+    # [image=]                  Caches the given file
+    # [image_cache]             Returns a string that identifies the cache location of the file 
+    # [image_cache=]            Retrieves the file from the cache based on the given cache name
+    # [image_uploader]          Returns an instance of the uploader
+    # [image_uploader=]         Sets the uploader (be careful!)
+    # [store_image!]            Stores a file that has been assigned with +image=+
+    # [image_integrity_error?]  Returns true if the last file to be assigned caused an integrty error
     #
     # === Parameters
     #
-    # column [Symbol] :: the attribute to mount this uploader on
-    # uploader [CarrierWave::Uploader] :: the uploader class to mount
-    # options [Hash{Symbol => Object}] :: a set of options
-    # &block [Proc] :: customize anonymous uploaders
+    # [column (Symbol)] the attribute to mount this uploader on
+    # [uploader (CarrierWave::Uploader)] the uploader class to mount
+    # [options (Hash{Symbol => Object})] a set of options
+    # [&block (Proc)] customize anonymous uploaders
     #
     # === Options
     # 
-    # :ignore_integrity_errors [Boolean] :: if set to true, integrity errors will result in caching failing silently
+    # [:ignore_integrity_errors (Boolean)] if set to true, integrity errors will result in caching failing silently
     #
     # === Examples
     #
@@ -76,6 +80,7 @@ module CarrierWave
     #
     #     class Song
     #       mount_uploader :lyrics, LyricsUploader
+    #       mount_uploader :alternative_lyrics, LyricsUploader
     #       mount_uploader :file, SongUploader
     #     end
     #
@@ -106,7 +111,7 @@ module CarrierWave
 
       include CarrierWave::Mount::Extension
 
-      class_eval <<-EOF, __FILE__, __LINE__+1
+      class_eval <<-RUBY, __FILE__, __LINE__+1
         def #{column}_uploader                            # def image_uploader
           _uploader_get(:#{column})                       #   _uploader_get(:image)
         end                                               # end
@@ -134,11 +139,11 @@ module CarrierWave
         def store_#{column}!                              # def store_image!
           _uploader_store!(:#{column})                    #   _uploader_store!(:image)
         end                                               # end
-
-        def #{column}_integrity_error?
-          _uploader_integrity_errors[:#{column}]
-        end
-      EOF
+                                                          #
+        def #{column}_integrity_error?                    # def image_integrity_error?
+          _uploader_integrity_errors[:#{column}]          #   _uploader_integrity_errors[:image]
+        end                                               # end
+      RUBY
     end
 
     module Extension

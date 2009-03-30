@@ -4,8 +4,11 @@ module CarrierWave
   module ActiveRecord
 
     include CarrierWave::Mount
-
-    def mount_uploader(column, uploader)
+    
+    ##
+    # See +CarrierWave::Mount#mount_uploader+ for documentation
+    #
+    def mount_uploader(column, uploader, options={}, &block)
       super
 
       alias_method :read_uploader, :read_attribute

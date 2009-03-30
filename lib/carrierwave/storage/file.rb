@@ -15,25 +15,33 @@ module CarrierWave
       ##
       # Move the file to the uploader's store path.
       #
-      # @param [CarrierWave::Uploader] uploader an uploader object
-      # @param [CarrierWave::SanitizedFile] file the file to store
+      # === Parameters
       #
-      # @return [CarrierWave::SanitizedFile] a sanitized file
+      # [uploader (CarrierWave::Uploader)] an uploader object
+      # [file (CarrierWave::SanitizedFile)] the file to store
+      #
+      # === Returns
+      #
+      # [CarrierWave::SanitizedFile] a sanitized file
       #
       def self.store!(uploader, file)
         path = ::File.join(uploader.store_dir, uploader.filename)
         path = ::File.expand_path(path, uploader.public)
-        file.move_to(path)
+        file.move_to(path, CarrierWave.config[:permissions])
         file
       end
       
       ##
       # Retrieve the file from its store path
       #
-      # @param [CarrierWave::Uploader] uploader an uploader object
-      # @param [String] identifier the filename of the file
+      # === Parameters
       #
-      # @return [CarrierWave::SanitizedFile] a sanitized file
+      # [uploader (CarrierWave::Uploader)] an uploader object
+      # [identifier (String)] the filename of the file
+      #
+      # === Returns
+      #
+      # [CarrierWave::SanitizedFile] a sanitized file
       #
       def self.retrieve!(uploader, identifier)
         path = ::File.join(uploader.store_dir, identifier)

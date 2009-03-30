@@ -201,7 +201,7 @@ module CarrierWave
     # [Boolean] Whether the uploaded file is blank
     #
     def blank?
-      !file or file.empty?
+      !file or file.blank?
     end
 
     ##
@@ -221,6 +221,8 @@ module CarrierWave
     def current_path
       file.path if file.respond_to?(:path)
     end
+
+    alias_method :path, :current_path
 
     ##
     # Returns a hash mapping the name of each version of the uploader to an instance of it
@@ -379,7 +381,7 @@ module CarrierWave
     #
     def cache!(new_file)
       new_file = CarrierWave::SanitizedFile.new(new_file)
-      raise CarrierWave::FormNotMultipart if new_file.string?
+      raise CarrierWave::FormNotMultipart if new_file.is_path?
 
       unless new_file.empty?
         if extension_white_list and not extension_white_list.include?(new_file.extension.to_s)
@@ -393,7 +395,7 @@ module CarrierWave
         @filename = new_file.filename
         self.original_filename = new_file.filename
 
-        @file = @file.copy_to(cache_path)
+        @file = @file.copy_to(cache_path, CarrierWave.config[:permissions])
         process!
 
         versions.each do |name, v|
