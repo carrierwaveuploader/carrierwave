@@ -77,7 +77,7 @@ Now you can upload files!
 
 === DataMapper
 
-First require the activerecord extension:
+First require the datamapper extension:
 
     require 'carrierwave/orm/datamapper
 
@@ -97,6 +97,30 @@ Now you can upload files!
     u.avatar = params[:file]
     u.avatar = File.open('somewhere')
     u.save!
+    u.avatar.url # => '/url/to/file.png'
+    u.avatar.current_path # => 'path/to/file.png'
+
+=== Sequel
+
+First require the sequel extension:
+
+    require 'carrierwave/orm/sequel
+
+You don't need to do this if you are using Merb or Rails.
+
+Open your model file, and do something like:
+
+    class User < Sequel::Model
+
+      mount_uploader :avatar, AvatarUploader
+    end
+
+Now you can upload files!
+
+    u = User.new
+    u.avatar = params[:file]
+    u.avatar = File.open('somewhere')
+    u.save
     u.avatar.url # => '/url/to/file.png'
     u.avatar.current_path # => 'path/to/file.png'
 
