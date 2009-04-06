@@ -16,6 +16,14 @@ Given /^that the uploader reverses the filename$/ do
   end
 end
 
+Given /^that the uploader has the filename overridden to '(.*?)'$/ do |filename|
+  @klass.class_eval do
+    define_method(:filename) do
+      filename
+    end
+  end
+end
+
 Given /^that the uploader has the store_dir overridden to '(.*?)'$/ do |store_dir|
   @klass.class_eval do
     define_method(:store_dir) do
