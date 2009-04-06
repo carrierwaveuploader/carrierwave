@@ -459,7 +459,23 @@ module CarrierWave
     # [String] a directory
     #
     def store_dir
-      [CarrierWave.config[:store_dir], version_name].compact.join(File::Separator)
+      CarrierWave.config[:store_dir]
+    end
+
+    ##
+    # Calculates the path where the file should be stored. If +for_file+ is given, it will be
+    # used as the filename, otherwise +CarrierWave::Uploader#filename+ is assumed.
+    #
+    # === Parameters
+    #
+    # [for_file (String)] name of the file <optional>
+    #
+    # === Returns
+    #
+    # [String] the store path
+    #
+    def store_path(for_file=filename)
+      File.join(store_dir, [version_name, for_file].compact.join('_'))
     end
 
     ##

@@ -29,9 +29,9 @@ module CarrierWave
     #
     class S3 < Abstract
       
-      def initialize(bucket, store_dir, identifier)
+      def initialize(bucket, store_path, identifier)
         @bucket = bucket
-        @store_dir = store_dir
+        @store_path = store_path
         @identifier = identifier
       end
       
@@ -77,7 +77,7 @@ module CarrierWave
       # [CarrierWave::Storage::S3] the stored file
       #
       def self.store!(uploader, file)
-        AWS::S3::S3Object.store(::File.join(uploader.store_dir, uploader.filename), file.read, bucket, :access => access)
+        AWS::S3::S3Object.store(::File.join(uploader.store_path), file.read, bucket, :access => access)
         self.new(bucket, uploader.store_dir, uploader.filename)
       end
       
@@ -94,7 +94,7 @@ module CarrierWave
       # [CarrierWave::Storage::S3] the stored file
       #
       def self.retrieve!(uploader, identifier)
-        self.new(bucket, uploader.store_dir, identifier)
+        self.new(bucket, uploader.store_path(identifier), identifier)
       end
       
       ##
@@ -116,7 +116,7 @@ module CarrierWave
       # [String] file's url
       #
       def url
-        ["http://s3.amazonaws.com", self.class.bucket, @store_dir, @identifier].compact.join('/')
+        ["http://s3.amazonaws.com", self.class.bucket, @store_path].compact.join('/')
       end
       
     end # S3

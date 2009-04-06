@@ -555,10 +555,11 @@ describe CarrierWave::Uploader do
         CarrierWave::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
       end
 
-      it "should suffix the version's store_dir" do
+      it "should set store_path with versions" do
         @uploader.cache!(File.open(file_path('test.jpg')))
-        @uploader.store_dir.should == 'uploads'
-        @uploader.thumb.store_dir.should == 'uploads/thumb'
+        @uploader.store_path.should == 'uploads/test.jpg'
+        @uploader.thumb.store_path.should == 'uploads/thumb_test.jpg'
+        @uploader.thumb.store_path('kebab.png').should == 'uploads/thumb_kebab.png'
       end
       
       it "should move it to the tmp dir with the filename prefixed" do
@@ -577,10 +578,11 @@ describe CarrierWave::Uploader do
         @uploader.thumb.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/thumb_test.jpg')
       end
     
-      it "should suffix the version's store_dir" do
+      it "should set store_path with versions" do
         @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpg')
-        @uploader.store_dir.should == 'uploads'
-        @uploader.thumb.store_dir.should == 'uploads/thumb'
+        @uploader.store_path.should == 'uploads/test.jpg'
+        @uploader.thumb.store_path.should == 'uploads/thumb_test.jpg'
+        @uploader.thumb.store_path('kebab.png').should == 'uploads/thumb_kebab.png'
       end
     end
     
@@ -612,17 +614,11 @@ describe CarrierWave::Uploader do
         @uploader.url.should == 'http://www.example.com'
       end
     
-      it "should, if a file is given as argument, suffix the version's store_dir" do
+      it "should, if a file is given as argument, set the store_path" do
         @uploader.store!(@file)
-        @uploader.store_dir.should == 'uploads'
-        @uploader.thumb.store_dir.should == 'uploads/thumb'
-      end
-    
-      it "should, if a files is given as an argument and use_cache is false, suffix the version's store_dir" do
-        CarrierWave.config[:use_cache] = false
-        @uploader.store!(@file)
-        @uploader.store_dir.should == 'uploads'
-        @uploader.thumb.store_dir.should == 'uploads/thumb'
+        @uploader.store_path.should == 'uploads/test.jpg'
+        @uploader.thumb.store_path.should == 'uploads/thumb_test.jpg'
+        @uploader.thumb.store_path('kebab.png').should == 'uploads/thumb_kebab.png'
       end
     
     end
