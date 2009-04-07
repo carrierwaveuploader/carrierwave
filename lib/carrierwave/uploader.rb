@@ -133,7 +133,9 @@ module CarrierWave
 
       alias_method :storage=, :storage
 
-      attr_accessor :version_name
+      def version_names
+        @version_names ||= []
+      end
 
       ##
       # Adds a new version to this uploader
@@ -147,7 +149,8 @@ module CarrierWave
         name = name.to_sym
         unless versions[name]
           versions[name] = Class.new(self)
-          versions[name].version_name = name
+          versions[name].version_names.push(*version_names)
+          versions[name].version_names.push(name)
           class_eval <<-RUBY
             def #{name}
               versions[:#{name}]
@@ -301,7 +304,7 @@ module CarrierWave
     # [String] the name of this version of the uploader
     #
     def version_name
-      self.class.version_name
+      self.class.version_names.join('_').to_sym unless self.class.version_names.blank?
     end
 
     ##

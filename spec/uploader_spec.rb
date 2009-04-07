@@ -36,10 +36,10 @@ describe CarrierWave::Uploader do
       @uploader.thumb.version_name.should == :thumb
     end
     
-    it "should set the version name on the class" do
+    it "should set the version names on the class" do
       @uploader_class.version :thumb
-      @uploader.class.version_name.should == nil
-      @uploader.thumb.class.version_name.should == :thumb
+      @uploader.class.version_names.should == []
+      @uploader.thumb.class.version_names.should == [:thumb]
     end
     
     it "should remember mount options" do
@@ -74,6 +74,30 @@ describe CarrierWave::Uploader do
       end
       @uploader_class.version(:thumb).monkey.should == "monkey"
       @uploader_class.version(:thumb).llama.should == "llama"
+    end
+    
+    describe 'with nested versions' do
+      before do
+        @uploader_class.version :thumb do
+          version :mini
+          version :micro
+        end
+      end
+      
+      it "should add an array of version names" do
+        @uploader.class.version_names.should == []
+        @uploader.thumb.class.version_names.should == [:thumb]
+        @uploader.thumb.mini.class.version_names.should == [:thumb, :mini]
+        @uploader.thumb.micro.class.version_names.should == [:thumb, :micro]
+      end
+
+      it "should set the version name for the instances" do
+        @uploader.version_name.should be_nil
+        @uploader.thumb.version_name.should == :thumb
+        @uploader.thumb.mini.version_name.should == :thumb_mini
+        @uploader.thumb.micro.version_name.should == :thumb_micro
+      end
+
     end
     
   end
