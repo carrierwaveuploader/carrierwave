@@ -16,6 +16,14 @@ Given /^that the uploader reverses the filename$/ do
   end
 end
 
+Given /^that the uploader has the filename overridden to '(.*?)'$/ do |filename|
+  @klass.class_eval do
+    define_method(:filename) do
+      filename
+    end
+  end
+end
+
 Given /^that the uploader has the store_dir overridden to '(.*?)'$/ do |store_dir|
   @klass.class_eval do
     define_method(:store_dir) do
@@ -33,7 +41,13 @@ Given /^that the version '(.*?)' has the store_dir overridden to '(.*?)'$/ do |v
 end
 
 Given /^that the uploader class has a version named '(.*?)'$/ do |name|
-  @klass.version name.to_sym
+  @klass.version(name)
+end
+
+Given /^yo dawg, I put a version called '(.*?)' in your version called '(.*?)'$/ do |v2, v1|
+  @klass.version(v1) do
+    version(v2)
+  end
 end
 
 Given /^the class has a method called 'reverse' that reverses the contents of a file$/ do
@@ -59,4 +73,8 @@ end
 
 Then /^the uploader's version '(.*?)' should have the url '(.*?)'$/ do |version, url|
   @uploader.versions[version.to_sym].url.should == url
+end
+
+Then /^the uploader's nested version '(.*?)' nested in '(.*?)' should have the url '(.*?)'$/ do |v2, v1, url|
+  @uploader.versions[v1.to_sym].versions[v2.to_sym].url.should == url
 end

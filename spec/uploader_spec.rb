@@ -36,10 +36,10 @@ describe CarrierWave::Uploader do
       @uploader.thumb.version_name.should == :thumb
     end
     
-    it "should set the version name on the class" do
+    it "should set the version names on the class" do
       @uploader_class.version :thumb
-      @uploader.class.version_name.should == nil
-      @uploader.thumb.class.version_name.should == :thumb
+      @uploader.class.version_names.should == []
+      @uploader.thumb.class.version_names.should == [:thumb]
     end
     
     it "should remember mount options" do
@@ -59,6 +59,45 @@ describe CarrierWave::Uploader do
       end
       @uploader.store_dir.should == 'uploads'
       @uploader.thumb.store_dir.should == public_path('monkey/apache')
+    end
+
+    it "should reopen the same class when called multiple times" do
+      @uploader_class.version :thumb do
+        def self.monkey
+          "monkey"
+        end
+      end
+      @uploader_class.version :thumb do
+        def self.llama
+          "llama"
+        end
+      end
+      @uploader_class.version(:thumb).monkey.should == "monkey"
+      @uploader_class.version(:thumb).llama.should == "llama"
+    end
+    
+    describe 'with nested versions' do
+      before do
+        @uploader_class.version :thumb do
+          version :mini
+          version :micro
+        end
+      end
+      
+      it "should add an array of version names" do
+        @uploader.class.version_names.should == []
+        @uploader.thumb.class.version_names.should == [:thumb]
+        @uploader.thumb.mini.class.version_names.should == [:thumb, :mini]
+        @uploader.thumb.micro.class.version_names.should == [:thumb, :micro]
+      end
+
+      it "should set the version name for the instances" do
+        @uploader.version_name.should be_nil
+        @uploader.thumb.version_name.should == :thumb
+        @uploader.thumb.mini.version_name.should == :thumb_mini
+        @uploader.thumb.micro.version_name.should == :thumb_micro
+      end
+
     end
     
   end
@@ -572,10 +611,11 @@ describe CarrierWave::Uploader do
         CarrierWave::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
       end
 
-      it "should suffix the version's store_dir" do
+      it "should set store_path with versions" do
         @uploader.cache!(File.open(file_path('test.jpg')))
-        @uploader.store_dir.should == 'uploads'
-        @uploader.thumb.store_dir.should == 'uploads/thumb'
+        @uploader.store_path.should == 'uploads/test.jpg'
+        @uploader.thumb.store_path.should == 'uploads/thumb_test.jpg'
+        @uploader.thumb.store_path('kebab.png').should == 'uploads/thumb_kebab.png'
       end
       
       it "should move it to the tmp dir with the filename prefixed" do
@@ -594,10 +634,11 @@ describe CarrierWave::Uploader do
         @uploader.thumb.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/thumb_test.jpg')
       end
     
-      it "should suffix the version's store_dir" do
+      it "should set store_path with versions" do
         @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpg')
-        @uploader.store_dir.should == 'uploads'
-        @uploader.thumb.store_dir.should == 'uploads/thumb'
+        @uploader.store_path.should == 'uploads/test.jpg'
+        @uploader.thumb.store_path.should == 'uploads/thumb_test.jpg'
+        @uploader.thumb.store_path('kebab.png').should == 'uploads/thumb_kebab.png'
       end
     end
     
@@ -629,17 +670,11 @@ describe CarrierWave::Uploader do
         @uploader.url.should == 'http://www.example.com'
       end
     
-      it "should, if a file is given as argument, suffix the version's store_dir" do
+      it "should, if a file is given as argument, set the store_path" do
         @uploader.store!(@file)
-        @uploader.store_dir.should == 'uploads'
-        @uploader.thumb.store_dir.should == 'uploads/thumb'
-      end
-    
-      it "should, if a files is given as an argument and use_cache is false, suffix the version's store_dir" do
-        CarrierWave.config[:use_cache] = false
-        @uploader.store!(@file)
-        @uploader.store_dir.should == 'uploads'
-        @uploader.thumb.store_dir.should == 'uploads/thumb'
+        @uploader.store_path.should == 'uploads/test.jpg'
+        @uploader.thumb.store_path.should == 'uploads/thumb_test.jpg'
+        @uploader.thumb.store_path('kebab.png').should == 'uploads/thumb_kebab.png'
       end
     
     end

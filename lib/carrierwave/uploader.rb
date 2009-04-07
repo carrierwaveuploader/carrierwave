@@ -133,7 +133,9 @@ module CarrierWave
 
       alias_method :storage=, :storage
 
-      attr_accessor :version_name
+      def version_names
+        @version_names ||= []
+      end
 
       ##
       # Adds a new version to this uploader
@@ -145,15 +147,18 @@ module CarrierWave
       #
       def version(name, &block)
         name = name.to_sym
-        klass = Class.new(self)
-        klass.version_name = name
-        klass.class_eval(&block) if block
-        versions[name] = klass
-        class_eval <<-RUBY
-          def #{name}
-            versions[:#{name}]
-          end
-        RUBY
+        unless versions[name]
+          versions[name] = Class.new(self)
+          versions[name].version_names.push(*version_names)
+          versions[name].version_names.push(name)
+          class_eval <<-RUBY
+            def #{name}
+              versions[:#{name}]
+            end
+          RUBY
+        end
+        versions[name].class_eval(&block) if block
+        versions[name]
       end
 
       ##
@@ -310,7 +315,7 @@ module CarrierWave
     # [String] the name of this version of the uploader
     #
     def version_name
-      self.class.version_name
+      self.class.version_names.join('_').to_sym unless self.class.version_names.blank?
     end
 
     ##
@@ -470,7 +475,23 @@ module CarrierWave
     # [String] a directory
     #
     def store_dir
-      [CarrierWave.config[:store_dir], version_name].compact.join(File::Separator)
+      CarrierWave.config[:store_dir]
+    end
+
+    ##
+    # Calculates the path where the file should be stored. If +for_file+ is given, it will be
+    # used as the filename, otherwise +CarrierWave::Uploader#filename+ is assumed.
+    #
+    # === Parameters
+    #
+    # [for_file (String)] name of the file <optional>
+    #
+    # === Returns
+    #
+    # [String] the store path
+    #
+    def store_path(for_file=filename)
+      File.join(store_dir, [version_name, for_file].compact.join('_'))
     end
 
     ##
