@@ -133,6 +133,18 @@ When this uploader is used, an uploaded image would be scaled to be no larger th
 
 One important thing to remember is that process is called *before* versions are created. This can cut down on processing cost.
 
+It is possible to nest versions within versions:
+
+    class MyUploader
+      include CarrierWave::Uploader
+
+      version :animal do
+        version :human
+        version :monkey
+        version :llama
+      end
+    end
+
 == Making uploads work across form redisplays
 
 Often you'll notice that uploaded files disappear when a validation
