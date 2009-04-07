@@ -44,6 +44,10 @@ Given /^that the uploader class has a version named '(.*?)'$/ do |name|
   @klass.version name.to_sym
 end
 
+Given /^yo dawg, I put a version called '(.*?)' in your version called '(.*?)'$/ do |v1, v2|
+  
+end
+
 Given /^the class has a method called 'reverse' that reverses the contents of a file$/ do
   @klass.class_eval do
     def reverse
@@ -67,4 +71,8 @@ end
 
 Then /^the uploader's version '(.*?)' should have the url '(.*?)'$/ do |version, url|
   @uploader.versions[version.to_sym].url.should == url
+end
+
+Then /^the uploader's nested version '(.*?)' nested in '(.*?)' should have the url '(.*?)'$/ do |v2, v1, url|
+  @uploader.versions[v1.to_sym].versions[v2.to_sym].url.should == url
 end
