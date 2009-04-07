@@ -276,6 +276,17 @@ module CarrierWave
     end
 
     ##
+    # Read the contents of the file
+    #
+    # === Returns
+    #
+    # [String] contents of the file
+    #
+    def read
+      file.read if file.respond_to?(:read)
+    end
+
+    ##
     # Override this in your Uploader to change the filename.
     #
     # Be careful using record ids as filenames. If the filename is stored in the database

@@ -151,6 +151,17 @@ describe CarrierWave::Uploader do
     end
   end
   
+  describe '#read' do
+    it "should be nil by default" do
+      @uploader.read.should be_nil
+    end
+
+    it "should read the contents of a cached file" do
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      @uploader.read.should == "this is stuff"
+    end
+  end
+  
   describe '#store_dir' do
     it "should default to the config option" do
       @uploader.store_dir.should == 'uploads'
@@ -512,6 +523,7 @@ describe CarrierWave::Uploader do
       @stored_file.stub!(:path).and_return('/path/to/somewhere')
       @stored_file.stub!(:url).and_return('http://www.example.com')
       @stored_file.stub!(:identifier).and_return('this-is-me')
+      @stored_file.stub!(:read).and_return('here be content')
 
       @uploader_class.storage.stub!(:retrieve!).and_return(@stored_file)
     end
@@ -529,6 +541,11 @@ describe CarrierWave::Uploader do
     it "should set the identifier" do
       @uploader.retrieve_from_store('monkey.txt')
       @uploader.identifier.should == 'this-is-me'
+    end
+
+    it "should read out the contents" do
+      @uploader.retrieve_from_store('monkey.txt')
+      @uploader.read.should == 'here be content'
     end
     
     it "should instruct the storage engine to retrieve the file and store the result" do

@@ -109,6 +109,17 @@ module CarrierWave
       end
 
       ##
+      # Reads the contents of the file from S3
+      #
+      # === Returns
+      #
+      # [String] contents of the file
+      #
+      def read
+        S3Object.value "#{@store_dir}/#{@identifier}", @bucket
+      end
+
+      ##
       # Returns the url on Amazon's S3 service
       #
       # === Returns
