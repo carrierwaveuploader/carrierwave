@@ -41,11 +41,11 @@ Given /^that the version '(.*?)' has the store_dir overridden to '(.*?)'$/ do |v
 end
 
 Given /^that the uploader class has a version named '(.*?)'$/ do |name|
-  @klass.version name.to_sym
+  @klass.version(name)
 end
 
 Given /^yo dawg, I put a version called '(.*?)' in your version called '(.*?)'$/ do |v1, v2|
-  
+  @klass.version(v1).version(v2)
 end
 
 Given /^the class has a method called 'reverse' that reverses the contents of a file$/ do

@@ -60,6 +60,21 @@ describe CarrierWave::Uploader do
       @uploader.store_dir.should == 'uploads'
       @uploader.thumb.store_dir.should == public_path('monkey/apache')
     end
+
+    it "should reopen the same class when called multiple times" do
+      @uploader_class.version :thumb do
+        def self.monkey
+          "monkey"
+        end
+      end
+      @uploader_class.version :thumb do
+        def self.llama
+          "llama"
+        end
+      end
+      @uploader_class.version(:thumb).monkey.should == "monkey"
+      @uploader_class.version(:thumb).llama.should == "llama"
+    end
     
   end
   
