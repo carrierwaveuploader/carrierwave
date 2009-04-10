@@ -61,7 +61,7 @@ module CarrierWave
     # [image_uploader]          Returns an instance of the uploader
     # [image_uploader=]         Sets the uploader (be careful!)
     # [store_image!]            Stores a file that has been assigned with +image=+
-    # [image_integrity_error?]  Returns true if the last file to be assigned caused an integrty error
+    # [image_integrity_error]   Returns an error object if the last file to be assigned caused an integrty error
     #
     # === Parameters
     #
@@ -142,7 +142,7 @@ module CarrierWave
           _uploader_store!(:#{column})                    #   _uploader_store!(:image)
         end                                               # end
                                                           #
-        def #{column}_integrity_error?                    # def image_integrity_error?
+        def #{column}_integrity_error                     # def image_integrity_error
           _uploader_integrity_errors[:#{column}]          #   _uploader_integrity_errors[:image]
         end                                               # end
       RUBY
@@ -191,7 +191,7 @@ module CarrierWave
         _uploader_get(column).cache!(new_file)
         _uploader_integrity_errors[column] = nil
       rescue CarrierWave::IntegrityError => e
-        _uploader_integrity_errors[column] = true
+        _uploader_integrity_errors[column] = e
         raise e unless _uploader_options(column)[:ignore_integrity_errors]
       end
 
