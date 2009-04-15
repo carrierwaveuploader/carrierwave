@@ -7,7 +7,7 @@ module CarrierWave
     #
     module Matchers
 
-      class BeIdenticalTo
+      class BeIdenticalTo # :nodoc:
         def initialize(expected)
           @expected = expected
         end
@@ -27,7 +27,7 @@ module CarrierWave
         BeIdenticalTo.new(expected)
       end
 
-      class HavePermissions
+      class HavePermissions # :nodoc:
         def initialize(expected)
           @expected = expected
         end
@@ -51,7 +51,7 @@ module CarrierWave
         HavePermissions.new(expected)
       end
 
-      class BeNoLargerThan
+      class BeNoLargerThan # :nodoc:
         def initialize(width, height)
           @width, @height = width, height
         end
@@ -79,7 +79,7 @@ module CarrierWave
         BeNoLargerThan.new(width, height)
       end
 
-      class HaveDimensions
+      class HaveDimensions # :nodoc:
         def initialize(width, height)
           @width, @height = width, height
         end
