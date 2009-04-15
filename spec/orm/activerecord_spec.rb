@@ -98,6 +98,27 @@ describe CarrierWave::ActiveRecord do
         @event.image = ''
         @event.image.should be_nil
       end
+
+      it "should make the record invalid when an integrity error occurs" do
+        @uploader.class_eval do
+          def extension_white_list
+            %(txt)
+          end
+        end
+        @event.image = stub_file('test.jpg')
+        @event.should_not be_valid
+      end
+  
+      it "should make the record invalid when a processing error occurs" do
+        @uploader.class_eval do
+          process :monkey
+          def monkey
+            raise CarrierWave::ProcessingError, "Ohh noez!"
+          end
+        end
+        @event.image = stub_file('test.jpg')
+        @event.should_not be_valid
+      end
       
     end
     
