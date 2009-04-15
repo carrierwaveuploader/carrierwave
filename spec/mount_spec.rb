@@ -99,6 +99,16 @@ describe CarrierWave::Mount do
         @instance.image.should be_nil   
       end
       
+      it "should fail silently if the image fails to be processed" do
+        @uploader.class_eval do
+          process :monkey
+          def monkey
+            raise CarrierWave::ProcessingError, "Ohh noez!"
+          end
+        end
+        @instance.image = stub_file('test.jpg')
+      end
+      
     end
 
     describe '#image_cache' do
@@ -195,6 +205,29 @@ describe CarrierWave::Mount do
         @instance.image_integrity_error.should be_an_instance_of(CarrierWave::IntegrityError)
       end
     end
+    
+    describe '#image_processing_error' do
+
+      it "should be nil by default" do
+        @instance.image_processing_error.should be_nil
+      end
+
+      it "should be nil after a file is cached" do
+        @instance.image = stub_file('test.jpg')
+        @instance.image_processing_error.should be_nil
+      end
+
+      it "should be an error instance after an integrity check has failed" do
+        @uploader.class_eval do
+          process :monkey
+          def monkey
+            raise CarrierWave::ProcessingError, "Ohh noez!"
+          end
+        end
+        @instance.image = stub_file('test.jpg')
+        @instance.image_processing_error.should be_an_instance_of(CarrierWave::ProcessingError)
+      end
+    end
 
   end
   
@@ -259,5 +292,34 @@ describe CarrierWave::Mount do
     end
 
   end
+
+  describe '#mount_uploader with :ignore_processing_errors => false' do
+   
+    before do
+      @class = Class.new
+      @class.send(:extend, CarrierWave::Mount)
+      
+      @uploader = Class.new do
+        include CarrierWave::Uploader
+      end
+
+      @class.mount_uploader(:image, @uploader, :ignore_processing_errors => false)
+      @instance = @class.new
+    end
+
+    it "should raise an error if the image fails to be processed" do
+      @uploader.class_eval do
+        process :monkey
+        def monkey
+          raise CarrierWave::ProcessingError, "Ohh noez!"
+        end
+      end
+      running {
+        @instance.image = stub_file('test.jpg')
+      }.should raise_error(CarrierWave::ProcessingError)
+    end
+
+  end
+
 
 end

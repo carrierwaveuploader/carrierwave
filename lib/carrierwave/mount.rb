@@ -145,6 +145,10 @@ module CarrierWave
         def #{column}_integrity_error                     # def image_integrity_error
           _uploader_integrity_errors[:#{column}]          #   _uploader_integrity_errors[:image]
         end                                               # end
+                                                          #
+        def #{column}_processing_error                    # def image_processing_error
+          _uploader_processing_errors[:#{column}]         #   _uploader_processing_errors[:image]
+        end                                               # end
       RUBY
     end
 
@@ -190,9 +194,13 @@ module CarrierWave
       def _uploader_set_column(column, new_file)
         _uploader_get(column).cache!(new_file)
         _uploader_integrity_errors[column] = nil
+        _uploader_processing_errors[column] = nil
       rescue CarrierWave::IntegrityError => e
         _uploader_integrity_errors[column] = e
         raise e unless _uploader_options(column)[:ignore_integrity_errors]
+      rescue CarrierWave::ProcessingError => e
+        _uploader_processing_errors[column] = e
+        raise e unless _uploader_options(column)[:ignore_processing_errors]
       end
 
       def _uploader_get_cache(column)
@@ -212,6 +220,10 @@ module CarrierWave
 
       def _uploader_integrity_errors
         @_uploader_integrity_errors ||= {}
+      end
+
+      def _uploader_processing_errors
+        @_uploader_processing_errors ||= {}
       end
 
     end # Extension
