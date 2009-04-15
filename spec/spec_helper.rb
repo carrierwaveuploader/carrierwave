@@ -16,7 +16,6 @@ require 'tempfile'
 require 'spec'
 
 require 'carrierwave'
-require 'carrierwave/test/spec_helper'
 
 alias :running :lambda
 
@@ -80,6 +79,6 @@ module CarrierWave
 end
 
 Spec::Runner.configure do |config|
-  config.include CarrierWave::Test::SpecHelper
+  config.include CarrierWave::Test::Matchers
   config.include CarrierWave::Test::MockFiles
 end

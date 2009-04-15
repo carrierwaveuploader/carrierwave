@@ -1,6 +1,11 @@
 module CarrierWave
   module Test
-    module SpecHelper
+
+    ##
+    # These are some matchers that can be used in RSpec specs, to simplify the testing
+    # of uploaders.
+    #
+    module Matchers
 
       class BeIdenticalTo
         def initialize(expected)

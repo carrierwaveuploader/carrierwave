@@ -29,6 +29,10 @@ module CarrierWave
     autoload :S3, 'carrierwave/storage/s3'
   end
 
+  module Test
+    autoload :Matchers, 'carrierwave/test/matchers'
+  end
+
 end
 
 CarrierWave.config = {
