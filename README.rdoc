@@ -194,11 +194,7 @@ That's it! You can still use the +CarrierWave::Uploader#url+ method to return th
 
 == Using RMagick
 
-If you're uploading images, you'll probably want to manipulate them in some way, you might want to create thumbnail images for example. CarrierWave comes with a small library to make manipulating images with RMagick easier. It's not loaded by default so you'll need to require it:
-
-    require 'carrierwave/processing/rmagick'
-
-You'll also need to include it in your Uploader:
+If you're uploading images, you'll probably want to manipulate them in some way, you might want to create thumbnail images for example. CarrierWave comes with a small library to make manipulating images with RMagick easier, you'll need to include it in your Uploader:
 
     class AvatarUploader
       include CarrierWave::Uploader
@@ -223,11 +219,7 @@ Check out the manipulate! method, which makes it easy for you to write your own 
 
 == Using ImageScience
 
-ImageScience works the same way as RMagick. As with RMagick you'll need to require it:
-
-    require 'carrierwave/processing/image_science'
-
-And then include it in your model:
+ImageScience works the same way as RMagick.
 
     class AvatarUploader
       include CarrierWave::Uploader
