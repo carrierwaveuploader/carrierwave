@@ -173,7 +173,7 @@ module CarrierWave
     private
 
       def get_storage_by_symbol(symbol)
-        CarrierWave.config[:storage_engines][symbol]
+        eval(CarrierWave.config[:storage_engines][symbol])
       end
 
     end # ClassMethods

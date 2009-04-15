@@ -16,24 +16,28 @@ module CarrierWave
   class InvalidParameter < UploadError; end
   # Should be used by methods used as process callbacks.
   class ProcessingError < UploadError; end
+
+  autoload :SanitizedFile, 'carrierwave/sanitized_file'
+  autoload :Uploader, 'carrierwave/uploader'
+  autoload :Mount, 'carrierwave/mount'
+  autoload :RMagick, 'carrierwave/processing/rmagick'
+  autoload :ImageScience, 'carrierwave/processing/image_science'
+
+  module Storage
+    autoload :Abstract, 'carrierwave/storage/abstract'
+    autoload :File, 'carrierwave/storage/file'
+    autoload :S3, 'carrierwave/storage/s3'
+  end
+
 end
-
-dir = File.join(File.dirname(__FILE__), 'carrierwave')
-
-require File.join(dir, 'sanitized_file')
-require File.join(dir, 'uploader')
-require File.join(dir, 'mount')
-require File.join(dir, 'storage', 'abstract')
-require File.join(dir, 'storage', 'file')
-require File.join(dir, 'storage', 's3')
 
 CarrierWave.config = {
   :permissions => 0644,
   :storage => :file,
   :use_cache => true,
   :storage_engines => {
-    :file => CarrierWave::Storage::File,
-    :s3 => CarrierWave::Storage::S3
+    :file => "CarrierWave::Storage::File",
+    :s3 => "CarrierWave::Storage::S3"
   },
   :s3 => {
     :access => :public_read
