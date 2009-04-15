@@ -1,4 +1,4 @@
-# Version 0.1.1
+# Version 0.2
 
 * [changed] The version is no longer stored in the store dir. This will break the paths for files uploaded with 0.1
 * [changed] CarrierWave::Uploader is now a module, not a class, so you need to include it, not inherit from it.
