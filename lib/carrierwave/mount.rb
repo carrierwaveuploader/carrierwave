@@ -65,10 +65,10 @@ module CarrierWave
     #
     # === Parameters
     #
-    # [column (Symbol)] the attribute to mount this uploader on
-    # [uploader (CarrierWave::Uploader)] the uploader class to mount
-    # [options (Hash{Symbol => Object})] a set of options
-    # [&block (Proc)] customize anonymous uploaders
+    # [column (Symbol)]                   the attribute to mount this uploader on
+    # [uploader (CarrierWave::Uploader)]  the uploader class to mount
+    # [options (Hash{Symbol => Object})]  a set of options
+    # [&block (Proc)]                     customize anonymous uploaders
     #
     # === Options
     # 
