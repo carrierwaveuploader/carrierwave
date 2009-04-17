@@ -57,6 +57,7 @@ CarrierWave.config = {
 }
 
 if defined?(Merb)
+
   CarrierWave.config[:root] = Merb.root
   CarrierWave.config[:public] = Merb.dir_for(:public)
 
@@ -66,18 +67,19 @@ if defined?(Merb)
   Merb.push_path(:uploader, Merb.root / "app" / "uploaders")
 
   Merb.add_generators File.dirname(__FILE__) / 'generators' / 'uploader_generator'
-end
 
-if defined?(Rails)
+elsif defined?(Rails)
+
   CarrierWave.config[:root] = Rails.root
   CarrierWave.config[:public] = File.join(Rails.root, 'public')
 
   require File.join(File.dirname(__FILE__), "carrierwave", "orm", 'activerecord')
 
   ActiveSupport::Dependencies.load_paths << File.join(Rails.root, "app", "uploaders")
-end
 
-if defined?(Sinatra)
+elsif defined?(Sinatra)
+
   CarrierWave.config[:root] = Sinatra::Application.root
   CarrierWave.config[:public] = Sinatra::Application.public
+
 end
