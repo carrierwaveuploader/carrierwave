@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{carrierwave}
-  s.version = "0.2.0"
+  s.version = "0.2.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jonas Nicklas"]
-  s.date = %q{2009-04-15}
+  s.date = %q{2009-04-17}
   s.description = %q{Simple and powerful uploads for Merb and Rails}
   s.email = %q{jonas.nicklas@gmail.com}
   s.extra_rdoc_files = ["README.rdoc", "LICENSE", "TODO"]
