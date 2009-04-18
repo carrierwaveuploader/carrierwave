@@ -56,12 +56,21 @@ module CarrierWave
     #
     # [image]                   Returns an instance of the uploader only if anything has been uploaded
     # [image=]                  Caches the given file
+    #
     # [image_cache]             Returns a string that identifies the cache location of the file 
     # [image_cache=]            Retrieves the file from the cache based on the given cache name
+    #
     # [image_uploader]          Returns an instance of the uploader
     # [image_uploader=]         Sets the uploader (be careful!)
+    #
+    # [remove_image]            An attribute reader that can be used with a checkbox to mark a file for removal
+    # [remove_image=]           An attribute writer can be used with a checkbox to mark a file for removal
+    # [remove_image?]           Whether the file should be removed when store_image! is called.
+    #
     # [store_image!]            Stores a file that has been assigned with +image=+
+    #
     # [image_integrity_error]   Returns an error object if the last file to be assigned caused an integrty error
+    # [image_processing_error]  Returns an error object if the last file to be assigned caused a processing error
     #
     # === Parameters
     #
@@ -73,6 +82,7 @@ module CarrierWave
     # === Options
     # 
     # [:ignore_integrity_errors (Boolean)] if set to true, integrity errors will result in caching failing silently
+    # [:ignore_processing_errors (Boolean)] if set to true, processing errors will result in caching failing silently
     #
     # === Examples
     #
@@ -136,6 +146,18 @@ module CarrierWave
                                                           #
         def #{column}_cache=(cache_name)                  # def image_cache=(cache_name)
           _uploader_set_cache(:#{column}, cache_name)     #   _uploader_set_cache(:image, cache_name)
+        end                                               # end
+                                                          #
+        def remove_#{column}                              # def remove_image
+          _uploader_remove[:#{column}]                    #   _uploader_remove[:image]
+        end                                               # end
+                                                          #
+        def remove_#{column}=(value)                      # def remove_image=(value)
+          _uploader_remove[:#{column}] = value            #   _uploader_remove[:image] = value
+        end                                               # end
+                                                          #
+        def remove_#{column}?                             # def remove_image?
+          _uploader_remove?(:#{column})                   #   _uploader_remove?(:image)
         end                                               # end
                                                           #
         def store_#{column}!                              # def store_image!
@@ -213,9 +235,23 @@ module CarrierWave
 
       def _uploader_store!(column)
         unless _uploader_get(column).blank?
-          _uploader_get(column).store!
-          write_uploader(column, _uploader_get(column).identifier)
+          if _uploader_remove?(column)
+            _uploader_set(column, nil)
+            write_uploader(column, '')
+          else
+            _uploader_get(column).store!
+            write_uploader(column, _uploader_get(column).identifier)
+          end
+
         end
+      end
+
+      def _uploader_remove
+        @_uploader_remove ||= {}
+      end
+
+      def _uploader_remove?(column)
+        !_uploader_remove[column].blank? and _uploader_remove[column] !~ /\A0|false$\z/
       end
 
       def _uploader_integrity_errors

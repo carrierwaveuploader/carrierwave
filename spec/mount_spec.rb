@@ -182,8 +182,53 @@ describe CarrierWave::Mount do
         @instance.store_image!
         @instance.image.current_path.should == public_path('uploads/test.jpg')
       end
+
+      it "should remove an uploaded file when remove_image? returns true" do
+        @instance.image = stub_file('test.jpg')
+        @instance.remove_image = true
+        @instance.store_image!
+        @instance.image.should be_nil
+      end
     end
-    
+
+    describe '#remove_image' do
+      
+      it "should store a value" do
+        @instance.remove_image = true
+        @instance.remove_image.should be_true
+      end
+      
+    end
+
+    describe '#remove_image?' do
+      
+      it "should be true when the value is truthy" do
+        @instance.remove_image = true
+        @instance.remove_image?.should be_true
+      end
+      
+      it "should be false when the value is falsey" do
+        @instance.remove_image = false
+        @instance.remove_image?.should be_false
+      end
+      
+      it "should be false when the value is ''" do
+        @instance.remove_image = ''
+        @instance.remove_image?.should be_false
+      end
+      
+      it "should be false when the value is '0'" do
+        @instance.remove_image = '0'
+        @instance.remove_image?.should be_false
+      end
+
+      it "should be false when the value is 'false'" do
+        @instance.remove_image = 'false'
+        @instance.remove_image?.should be_false
+      end
+      
+    end
+
     describe '#image_integrity_error' do
 
       it "should be nil by default" do
@@ -320,6 +365,5 @@ describe CarrierWave::Mount do
     end
 
   end
-
 
 end

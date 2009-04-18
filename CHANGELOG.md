@@ -1,3 +1,7 @@
+# Version 0.2.1
+
+* [added] A field which allows files to be removed with a checkbox in mount
+
 # Version 0.2
 
 * [changed] The version is no longer stored in the store dir. This will break the paths for files uploaded with 0.1

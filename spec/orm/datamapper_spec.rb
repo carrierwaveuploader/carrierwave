@@ -127,7 +127,17 @@ describe CarrierWave::DataMapper do
       @event.reload
       @event.attribute_get(:image).should == 'test.jpeg'
     end
-    
+
+    it "should remove the image if remove_image? returns true" do
+      @event.image = stub_file('test.jpeg')
+      @event.save
+      @event.remove_image = true
+      @event.save
+      @event.reload
+      @event.image.should be_nil
+      @event.attribute_get(:image).should == ''
+    end
+
   end
   
 end
