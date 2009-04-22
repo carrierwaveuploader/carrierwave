@@ -241,7 +241,7 @@ describe CarrierWave::Uploader do
       @uploader.mounted_as.should == :llama
     end
   end
-  
+
   describe '#url' do
     before do
       CarrierWave::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
@@ -270,25 +270,25 @@ describe CarrierWave::Uploader do
   end
   
   describe '#to_s' do
-      before do
-        CarrierWave::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
-      end
-
-      it "should default to nil" do
-        @uploader.to_s.should be_nil
-      end
-
-      it "should get the directory relative to public, prepending a slash" do
-        @uploader.cache!(File.open(file_path('test.jpg')))
-        @uploader.to_s.should == '/uploads/tmp/20071201-1234-345-2255/test.jpg'
-      end
-
-      it "should return file#url if available" do
-        @uploader.cache!(File.open(file_path('test.jpg')))
-        @uploader.file.stub!(:url).and_return('http://www.example.com/someurl.jpg')
-        @uploader.to_s.should == 'http://www.example.com/someurl.jpg'
-      end
+    before do
+      CarrierWave::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
     end
+
+    it "should default to nil" do
+      @uploader.to_s.should be_nil
+    end
+
+    it "should get the directory relative to public, prepending a slash" do
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      @uploader.to_s.should == '/uploads/tmp/20071201-1234-345-2255/test.jpg'
+    end
+
+    it "should return file#url if available" do
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      @uploader.file.stub!(:url).and_return('http://www.example.com/someurl.jpg')
+      @uploader.to_s.should == 'http://www.example.com/someurl.jpg'
+    end
+  end
   
   describe '#cache!' do
     
@@ -299,6 +299,11 @@ describe CarrierWave::Uploader do
     it "should cache a file" do
       @uploader.cache!(File.open(file_path('test.jpg')))
       @uploader.file.should be_an_instance_of(CarrierWave::SanitizedFile)
+    end
+
+    it "should be cached" do
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      @uploader.should be_cached
     end
     
     it "should store the cache name" do
@@ -379,6 +384,11 @@ describe CarrierWave::Uploader do
     it "should cache a file" do
       @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
       @uploader.file.should be_an_instance_of(CarrierWave::SanitizedFile)
+    end
+
+    it "should be cached" do
+      @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
+      @uploader.should be_cached
     end
     
     it "should set the path to the tmp dir" do
@@ -474,7 +484,12 @@ describe CarrierWave::Uploader do
       @uploader.store!(@file)
       @uploader.current_path.should == '/path/to/somewhere'
     end
-    
+
+    it "should not be cached" do
+      @uploader.store!(@file)
+      @uploader.should_not be_cached
+    end
+
     it "should set the url" do
       @uploader.store!(@file)
       @uploader.url.should == 'http://www.example.com'
@@ -516,6 +531,15 @@ describe CarrierWave::Uploader do
     it "should do nothing when trying to store an empty file" do
       @uploader.store!(nil)
     end
+
+    it "should not re-store a retrieved file" do
+      @stored_file = mock('a stored file')
+      @uploader_class.storage.stub!(:retrieve!).and_return(@stored_file)
+
+      @uploader_class.storage.should_not_receive(:store!)
+      @uploader.retrieve_from_store!('monkey.txt')
+      @uploader.store!
+    end
   end
   
   describe '#retrieve_from_store!' do
@@ -531,6 +555,11 @@ describe CarrierWave::Uploader do
     it "should set the current path" do
       @uploader.retrieve_from_store!('monkey.txt')
       @uploader.current_path.should == '/path/to/somewhere'
+    end
+
+    it "should not be cached" do
+      @uploader.retrieve_from_store!('monkey.txt')
+      @uploader.should_not be_cached
     end
 
     it "should set the url" do

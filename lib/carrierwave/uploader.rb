@@ -357,6 +357,12 @@ module CarrierWave
     ####################
 
     ##
+    #
+    def cached?
+      @cache_id
+    end
+
+    ##
     # Override this in your Uploader to change the directory where files are cached.
     #
     # === Returns
@@ -421,6 +427,7 @@ module CarrierWave
         self.original_filename = new_file.filename
 
         @file = @file.copy_to(cache_path, CarrierWave.config[:permissions])
+
         process!
 
         versions.each do |name, v|
@@ -520,7 +527,7 @@ module CarrierWave
     #
     def store!(new_file=nil)
       cache!(new_file) if new_file
-      if @file
+      if @file and @cache_id
         @file = storage.store!(self, @file)
         @cache_id = nil
         versions.each { |name, v| v.store!(new_file) }

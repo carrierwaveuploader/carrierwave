@@ -242,7 +242,6 @@ module CarrierWave
             _uploader_get(column).store!
             write_uploader(column, _uploader_get(column).identifier)
           end
-
         end
       end
 
