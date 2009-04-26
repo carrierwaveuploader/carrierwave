@@ -321,6 +321,15 @@ describe CarrierWave::Uploader do
       @uploader.file.path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpg')
       @uploader.file.exists?.should be_true
     end
+
+    it "should not move it if cache_to_cache_dir is false" do
+      CarrierWave.config[:cache_to_cache_dir] = false
+      path = file_path('test.jpg')
+      @uploader.cache!(File.open(path))
+      @uploader.current_path.should == path
+      @uploader.file.exists?.should be_true
+      CarrierWave.config[:cache_to_cache_dir] = true
+    end
     
     it "should set the url" do
       @uploader.cache!(File.open(file_path('test.jpg')))

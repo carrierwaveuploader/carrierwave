@@ -64,7 +64,7 @@ module CarrierWave
     # [image_uploader=]         Sets the uploader (be careful!)
     #
     # [remove_image]            An attribute reader that can be used with a checkbox to mark a file for removal
-    # [remove_image=]           An attribute writer can be used with a checkbox to mark a file for removal
+    # [remove_image=]           An attribute writer that can be used with a checkbox to mark a file for removal
     # [remove_image?]           Whether the file should be removed when store_image! is called.
     #
     # [store_image!]            Stores a file that has been assigned with +image=+

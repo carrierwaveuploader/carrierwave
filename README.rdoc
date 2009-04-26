@@ -172,6 +172,8 @@ in the case of images, a small thumbnail would be a good indicator:
       </p>
     <% end %>
 
+NOTE: this feature currently requires write access to your filesystem. If write access is unavailable (e.g. Heroku) you will not be able to upload files. You can prevent CarrierWave from writing to the file system by setting `CarrierWave.config[:cache_to_cache_dir] = false`. This will however break redisplays of forms.
+
 == Using Amazon S3
 
 You'll need to configure a bucket, access id and secret key like this:

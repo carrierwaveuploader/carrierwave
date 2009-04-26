@@ -48,6 +48,7 @@ CarrierWave.config = {
   },
   :store_dir => 'uploads',
   :cache_dir => 'uploads/tmp',
+  :cache_to_cache_dir => true,
   :mount => {
     :ignore_integrity_errors => true,
     :ignore_processing_errors => true,
