@@ -57,6 +57,8 @@ module CarrierWave
     # [image]                   Returns an instance of the uploader only if anything has been uploaded
     # [image=]                  Caches the given file
     #
+    # [image_url]               Returns the url to the uploaded file
+    #
     # [image_cache]             Returns a string that identifies the cache location of the file 
     # [image_cache=]            Retrieves the file from the cache based on the given cache name
     #
@@ -130,6 +132,10 @@ module CarrierWave
                                                           #
         def #{column}_uploader=(uploader)                 # def image_uploader=(uploader)
           _uploader_set(:#{column}, uploader)             #   _uploader_set(:image, uploader)
+        end                                               # end
+                                                          #
+        def #{column}_url(*args)                          # def image_url(*args)
+          _uploader_get_url(:#{column}, *args)            #   _uploader_get_url(:image, *args)
         end                                               # end
                                                           #
         def #{column}                                     # def image
@@ -223,6 +229,11 @@ module CarrierWave
       rescue CarrierWave::ProcessingError => e
         _uploader_processing_errors[column] = e
         raise e unless _uploader_options(column)[:ignore_processing_errors]
+      end
+
+      def _uploader_get_url(column, *args)
+        _uploader_get_column(column)
+        _uploader_get(column).url(*args)
       end
 
       def _uploader_get_cache(column)

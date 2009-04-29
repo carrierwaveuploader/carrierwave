@@ -111,6 +111,36 @@ describe CarrierWave::Mount do
       
     end
 
+    describe '#image_url' do
+      
+      it "should return nil when nothing has been assigned" do
+        @instance.should_receive(:read_uploader).with(:image).and_return(nil)
+        @instance.image_url.should be_nil
+      end
+      
+      it "should return nil when an empty string has been assigned" do
+        @instance.should_receive(:read_uploader).with(:image).and_return('')
+        @instance.image_url.should be_nil
+      end
+      
+      it "should get the url from a retrieved file" do
+        @instance.should_receive(:read_uploader).with(:image).and_return('test.jpg')
+        @instance.image_url.should == '/uploads/test.jpg'
+      end
+
+      it "should get the url from a cached file" do
+        @instance.image = stub_file('test.jpg')
+        @instance.image_url.should =~ %r{uploads/tmp/[\d\-]+/test.jpg}
+      end
+
+      it "should get the url from a cached file's version" do
+        @uploader.version(:thumb)
+        @instance.image = stub_file('test.jpg')
+        @instance.image_url(:thumb).should =~ %r{uploads/tmp/[\d\-]+/thumb_test.jpg}
+      end
+
+    end
+
     describe '#image_cache' do
 
       before do
