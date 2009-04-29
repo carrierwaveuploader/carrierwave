@@ -297,6 +297,17 @@ module CarrierWave
     end
 
     ##
+    # Fetches the size of the currently stored/cached file
+    #
+    # === Returns
+    #
+    # [Integer] size of the file
+    #
+    def size
+      file.respond_to?(:size) ? file.size : 0
+    end
+
+    ##
     # Override this in your Uploader to change the filename.
     #
     # Be careful using record ids as filenames. If the filename is stored in the database

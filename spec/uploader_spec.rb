@@ -200,6 +200,17 @@ describe CarrierWave::Uploader do
       @uploader.read.should == "this is stuff"
     end
   end
+
+  describe '#size' do
+    it "should be zero by default" do
+      @uploader.size.should == 0
+    end
+
+    it "should get the size of a cached file" do
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      @uploader.size.should == 13
+    end
+  end
   
   describe '#store_dir' do
     it "should default to the config option" do
