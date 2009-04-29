@@ -259,11 +259,16 @@ module CarrierWave
     #
     # [String] the location where this file is accessible via a url
     #
-    def url
-      if file.respond_to?(:url) and not file.url.blank?
-        file.url
-      elsif current_path
-        File.expand_path(current_path).gsub(File.expand_path(public), '')
+    def url(*args)
+      if(args.first)
+        # recursively proxy to version
+        versions[args.first.to_sym].url(*args[1..-1])
+      else
+        if file.respond_to?(:url) and not file.url.blank?
+          file.url
+        elsif current_path
+          File.expand_path(current_path).gsub(File.expand_path(public), '')
+        end
       end
     end
 

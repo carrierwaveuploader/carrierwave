@@ -255,7 +255,21 @@ describe CarrierWave::Uploader do
       @uploader.cache!(File.open(file_path('test.jpg')))
       @uploader.url.should == '/uploads/tmp/20071201-1234-345-2255/test.jpg'
     end
-    
+
+    it "should get the directory relative to public for a specific version" do
+      @uploader_class.version(:thumb)
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      @uploader.url(:thumb).should == '/uploads/tmp/20071201-1234-345-2255/thumb_test.jpg'
+    end
+
+    it "should get the directory relative to public for a nested version" do
+      @uploader_class.version(:thumb) do
+        version(:mini)
+      end
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      @uploader.url(:thumb, :mini).should == '/uploads/tmp/20071201-1234-345-2255/thumb_mini_test.jpg'
+    end
+
     it "should return file#url if available" do
       @uploader.cache!(File.open(file_path('test.jpg')))
       @uploader.file.stub!(:url).and_return('http://www.example.com/someurl.jpg')
