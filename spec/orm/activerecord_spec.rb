@@ -25,6 +25,7 @@ class TestMigration < ActiveRecord::Migration
 end
 
 class Event < ActiveRecord::Base; end # setup a basic AR class for testing
+$arclass = 0
 
 describe CarrierWave::ActiveRecord do
   
@@ -35,7 +36,13 @@ describe CarrierWave::ActiveRecord do
     after { Event.delete_all }
     
     before do
-      @class = Class.new(ActiveRecord::Base)
+      # My god, what a horrible, horrible solution, but AR validations don't work
+      # unless the class has a name. This is the best I could come up with :S
+      $arclass += 1
+      eval <<-RUBY
+        class Event#{$arclass} < Event; end
+        @class = Event#{$arclass}
+      RUBY
       @class.table_name = "events"
       @uploader = Class.new do
         include CarrierWave::Uploader
@@ -190,6 +197,43 @@ describe CarrierWave::ActiveRecord do
           @event[:image].should == 'jonas.jpeg'
         end
 
+      end
+
+    end
+    
+    describe 'with validates_presence_of' do
+
+      before do
+        @class.validates_presence_of :image
+        @event.stub!(:name).and_return('jonas')
+      end
+
+      it "should be valid if a file has been cached" do
+        @event.image = stub_file('test.jpeg')
+        @event.should be_valid
+      end
+
+      it "should not be valid if a file has not been cached" do
+        @event.should_not be_valid
+      end
+
+    end
+
+    describe 'with validates_size_of' do
+
+      before do
+        @class.validates_size_of :image, :maximum => 40
+        @event.stub!(:name).and_return('jonas')
+      end
+
+      it "should be valid if a file has been cached that matches the size criteria" do
+        @event.image = stub_file('test.jpeg')
+        @event.should be_valid
+      end
+
+      it "should not be valid if a file has been cached that does not match the size criteria" do
+        @event.image = stub_file('bork.txt')
+        @event.should_not be_valid
       end
 
     end
