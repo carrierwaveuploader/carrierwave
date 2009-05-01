@@ -19,6 +19,24 @@ describe CarrierWave::Mount do
       @class.mount_uploader(:image, @uploader)
       @instance = @class.new
     end
+
+    it "should maintain the ability to super" do
+      pending "I can't make this work with datamapper" do
+        @class.class_eval do
+          def image_uploader
+            super
+          end
+
+          def image=(val)
+            super
+          end
+        end
+
+        @instance.image_uploader.should be_an_instance_of(@uploader)
+        @instance.image = stub_file('test.jpg')
+        @instance.image.should be_an_instance_of(@uploader)
+      end
+    end
     
     describe '#image_uploader' do
       it "should return the uploader" do
