@@ -3,6 +3,9 @@
 * [changed] Url method now optionally takes versions as parameters (like Paperclip)
 * [added] A field which allows files to be removed with a checkbox in mount
 * [added] Mount_on option for Mount, to be able to override the serialization column
+* [added] Added demeter friendly column_url method to Mount
+* [added] Option to not copy files to cache dir, to prevent writes on read only fs systems (this is a workaround and needs a better solution)
+
 
 # Version 0.2
 
