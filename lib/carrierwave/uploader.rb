@@ -187,7 +187,7 @@ module CarrierWave
     # your uploader.
     #
     # If you do not wish to mount your uploaders with the ORM extensions in -more then you
-    # can override this method inside your uploader.
+    # can override this method inside your uploader. Just be sure to call +super+
     #
     # === Parameters
     #
@@ -207,6 +207,10 @@ module CarrierWave
     def initialize(model=nil, mounted_as=nil)
       @model = model
       @mounted_as = mounted_as
+      if default_path
+        @file = CarrierWave::SanitizedFile.new(File.expand_path(default_path, public))
+        def @file.blank?; true; end
+      end
     end
 
     ##
@@ -367,6 +371,8 @@ module CarrierWave
     #     end
     #
     def extension_white_list; end
+
+    def default_path; end
 
     ####################
     ## Cache

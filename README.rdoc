@@ -174,6 +174,18 @@ in the case of images, a small thumbnail would be a good indicator:
 
 NOTE: this feature currently requires write access to your filesystem. If write access is unavailable (e.g. Heroku) you will not be able to upload files. You can prevent CarrierWave from writing to the file system by setting `CarrierWave.config[:cache_to_cache_dir] = false`. This will however break redisplays of forms.
 
+== Providing a default path
+
+In many cases, especially when working with images, it might be a good idea to provide a default path, a fallback in case no file has been uploaded. You can do this easily by overriding the +default_path+ method in your uploader:
+
+    class MyUploader
+      include CarrierWave::Uploader
+
+      def default_path
+        "images/fallback/" + [version_name, "default.png"].compact.join('_')
+      end
+    end
+
 == Using Amazon S3
 
 You'll need to configure a bucket, access id and secret key like this:
