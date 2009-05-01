@@ -213,11 +213,9 @@ module CarrierWave
         return _uploader_get(column) unless _uploader_get(column).blank?
 
         identifier = read_uploader(_uploader_options(column)[:mount_on] || column)
+        _uploader_get(column).retrieve_from_store!(identifier) unless identifier.blank?
 
-        unless identifier.blank?
-          _uploader_get(column).retrieve_from_store!(identifier)
-          _uploader_get(column)
-        end
+        _uploader_get(column)
       end
 
       def _uploader_set_column(column, new_file)

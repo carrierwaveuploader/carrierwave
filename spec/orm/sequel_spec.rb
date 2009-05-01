@@ -38,14 +38,14 @@ describe CarrierWave::Sequel do
     describe '#image' do
       
       it "should return nil when nothing has been assigned" do
-        @event.image.should be_nil
+        @event.image.should be_blank
       end
       
       it "should return nil when an empty string has been assigned" do
         @event[:image] = ''
         @event.save
         @event.reload
-        @event.image.should be_nil
+        @event.image.should be_blank
       end
       
       it "should retrieve a file from the storage if a value is stored in the database" do
@@ -82,12 +82,12 @@ describe CarrierWave::Sequel do
       
       it "should do nothing when nil is assigned" do
         @event.image = nil
-        @event.image.should be_nil
+        @event.image.should be_blank
       end
       
       it "should do nothing when an empty string is assigned" do
         @event.image = ''
-        @event.image.should be_nil
+        @event.image.should be_blank
       end
       
     end
@@ -96,7 +96,7 @@ describe CarrierWave::Sequel do
       
       it "should do nothing when no file has been assigned" do
         @event.save.should be_true
-        @event.image.should be_nil
+        @event.image.should be_blank
       end
       
       it "should copy the file to the upload directory when a file has been assigned" do
@@ -139,7 +139,7 @@ describe CarrierWave::Sequel do
         @event.remove_image = true
         @event.save
         @event.reload
-        @event.image.should be_nil
+        @event.image.should be_blank
         @event[:image].should == ''
       end
     end

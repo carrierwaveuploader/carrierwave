@@ -45,14 +45,16 @@ describe CarrierWave::Mount do
     
     describe '#image' do
       
-      it "should return nil when nothing has been assigned" do
-        @instance.should_receive(:read_uploader).with(:image).and_return(nil)
-        @instance.image.should be_nil
+      it "should return a blank uploader when nothing has been assigned" do
+        @instance.should_receive(:read_uploader).with(:image).twice.and_return(nil)
+        @instance.image.should be_an_instance_of(@uploader)
+        @instance.image.should be_blank
       end
       
-      it "should return nil when an empty string has been assigned" do
-        @instance.should_receive(:read_uploader).with(:image).and_return('')
-        @instance.image.should be_nil
+      it "should return a blank uploader when an empty string has been assigned" do
+        @instance.should_receive(:read_uploader).with(:image).twice.and_return('')
+        @instance.image.should be_an_instance_of(@uploader)
+        @instance.image.should be_blank
       end
       
       it "should retrieve a file from the storage if a value is stored in the database" do
@@ -96,7 +98,7 @@ describe CarrierWave::Mount do
           end
         end
         @instance.image = stub_file('test.jpg')
-        @instance.image.should be_nil   
+        @instance.image.should be_blank
       end
       
       it "should fail silently if the image fails to be processed" do
@@ -175,12 +177,12 @@ describe CarrierWave::Mount do
 
       it "should do nothing when nil is assigned" do
         @instance.image_cache = nil
-        @instance.image.should be_nil
+        @instance.image.should be_blank
       end
 
       it "should do nothing when an empty string is assigned" do
         @instance.image_cache = ''
-        @instance.image.should be_nil
+        @instance.image.should be_blank
       end
 
       it "retrieve from cache when a cache name is assigned" do
@@ -204,7 +206,7 @@ describe CarrierWave::Mount do
 
       it "should do nothing when no file has been uploaded" do
         @instance.store_image!
-        @instance.image.should be_nil
+        @instance.image.should be_blank
       end
 
       it "store an assigned file" do
@@ -223,7 +225,7 @@ describe CarrierWave::Mount do
         @instance.image = stub_file('test.jpg')
         @instance.remove_image = true
         @instance.store_image!
-        @instance.image.should be_nil
+        @instance.image.should be_blank
       end
     end
 

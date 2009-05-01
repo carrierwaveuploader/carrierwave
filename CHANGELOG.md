@@ -1,3 +1,7 @@
+# Version 0.2.2
+
+* [changed] Mount now no longer returns nil if there is no stored file, it returns a blank uploader instead
+
 # Version 0.2.1
 
 * [changed] Url method now optionally takes versions as parameters (like Paperclip)
