@@ -127,62 +127,64 @@ module CarrierWave
       include CarrierWave::Mount::Extension
 
       class_eval <<-RUBY, __FILE__, __LINE__+1
-        def #{column}_uploader                            # def image_uploader
-          _uploader_get(:#{column})                       #   _uploader_get(:image)
-        end                                               # end
-                                                          #
-        def #{column}_uploader=(uploader)                 # def image_uploader=(uploader)
-          _uploader_set(:#{column}, uploader)             #   _uploader_set(:image, uploader)
-        end                                               # end
-                                                          #
-        def #{column}_url(*args)                          # def image_url(*args)
-          _uploader_get_url(:#{column}, *args)            #   _uploader_get_url(:image, *args)
-        end                                               # end
-                                                          #
-        def #{column}                                     # def image
-          _uploader_get_column(:#{column})                #   _uploader_get_column(:image)
-        end                                               # end
-                                                          #
-        def #{column}=(new_file)                          # def image=(new_file)
-          _uploader_set_column(:#{column}, new_file)      #   _uploader_set_column(:image, new_file)
-        end                                               # end
-                                                          #
-        def #{column}?                                    # def image?
-          !_uploader_get_column(:#{column}).blank?        #   !_uploader_get_column(:image).blank?
-        end                                               # end
-                                                          #
-        def #{column}_cache                               # def image_cache
-          _uploader_get_cache(:#{column})                 #   _uploader_get_cache(:image)
-        end                                               # end
-                                                          #
-        def #{column}_cache=(cache_name)                  # def image_cache=(cache_name)
-          _uploader_set_cache(:#{column}, cache_name)     #   _uploader_set_cache(:image, cache_name)
-        end                                               # end
-                                                          #
-        def remove_#{column}                              # def remove_image
-          _uploader_remove[:#{column}]                    #   _uploader_remove[:image]
-        end                                               # end
-                                                          #
-        def remove_#{column}=(value)                      # def remove_image=(value)
-          _uploader_remove[:#{column}] = value            #   _uploader_remove[:image] = value
-        end                                               # end
-                                                          #
-        def remove_#{column}?                             # def remove_image?
-          _uploader_remove?(:#{column})                   #   _uploader_remove?(:image)
-        end                                               # end
-                                                          #
-        def store_#{column}!                              # def store_image!
-          _uploader_store!(:#{column})                    #   _uploader_store!(:image)
-        end                                               # end
-                                                          #
-        def #{column}_integrity_error                     # def image_integrity_error
-          _uploader_integrity_errors[:#{column}]          #   _uploader_integrity_errors[:image]
-        end                                               # end
-                                                          #
-        def #{column}_processing_error                    # def image_processing_error
-          _uploader_processing_errors[:#{column}]         #   _uploader_processing_errors[:image]
-        end                                               # end
+
+        def #{column}
+          _mounter(:#{column}).uploader
+        end
+
+        def #{column}=(new_file)
+          _mounter(:#{column}).cache(new_file)
+        end
+
+        def #{column}?
+          !_mounter(:#{column}).blank?
+        end
+
+        def #{column}_url(*args)
+          _mounter(:#{column}).url(*args)
+        end
+
+        def #{column}_uploader
+          _mounter(:#{column}).uploader
+        end
+
+        def #{column}_uploader=(uploader)
+          _mounter(:#{column}).uploader = uploader
+        end
+
+        def #{column}_cache
+          _mounter(:#{column}).cache_name
+        end
+
+        def #{column}_cache=(cache_name)
+          _mounter(:#{column}).cache_name = cache_name
+        end
+
+        def remove_#{column}
+          _mounter(:#{column}).remove
+        end
+
+        def remove_#{column}=(value)
+          _mounter(:#{column}).remove = value
+        end
+
+        def remove_#{column}?
+          _mounter(:#{column}).remove?
+        end
+
+        def store_#{column}!
+          _mounter(:#{column}).store!
+        end
+
+        def #{column}_integrity_error
+          _mounter(:#{column}).integrity_error
+        end
+
+        def #{column}_processing_error
+          _mounter(:#{column}).processing_error
+        end
       RUBY
+
     end
 
     module Extension
@@ -199,86 +201,87 @@ module CarrierWave
 
     private
 
-      def _uploader_get(column)
-        @_uploaders ||= {}
-        @_uploaders[column] ||= self.class.uploaders[column].new(self, column)
+      def _mounter(column)
+        @_mounters ||= {}
+        @_mounters[column] ||= Mounter.new(self, column, self.class.uploader_options[column])
       end
 
-      def _uploader_set(column, uploader)
-        @_uploaders ||= {}
-        @_uploaders[column] = uploader
+    end # Extension
+
+    # this is an internal class, used by CarrierWave::Mount so that
+    # we don't pollute the model with a lot of methods.
+    class Mounter #:nodoc:
+
+      attr_reader :column, :record, :options
+
+      attr_accessor :uploader, :integrity_error, :processing_error, :remove
+
+      def initialize(record, column, options={})
+        @record = record
+        @column = column
+        @options = options
       end
 
-      def _uploader_options(column)
-        self.class.uploader_options[column]
+      def uploader
+        @uploader ||= record.class.uploaders[column].new(record, column)
+        if @uploader.blank?
+          identifier = record.read_uploader(serialization_column)
+          @uploader.retrieve_from_store!(identifier) unless identifier.blank?
+        end
+        return @uploader
       end
 
-      def _uploader_get_column(column)
-        return _uploader_get(column) unless _uploader_get(column).blank?
-
-        identifier = read_uploader(_uploader_serialization_column_name(column))
-        _uploader_get(column).retrieve_from_store!(identifier) unless identifier.blank?
-
-        _uploader_get(column)
-      end
-
-      def _uploader_set_column(column, new_file)
-        _uploader_get(column).cache!(new_file)
-        _uploader_integrity_errors[column] = nil
-        _uploader_processing_errors[column] = nil
+      def cache(new_file)
+        uploader.cache!(new_file)
+        self.integrity_error = nil
+        self.processing_error = nil
       rescue CarrierWave::IntegrityError => e
-        _uploader_integrity_errors[column] = e
-        raise e unless _uploader_options(column)[:ignore_integrity_errors]
+        self.integrity_error = e
+        raise e unless options[:ignore_integrity_errors]
       rescue CarrierWave::ProcessingError => e
-        _uploader_processing_errors[column] = e
-        raise e unless _uploader_options(column)[:ignore_processing_errors]
+        self.processing_error = e
+        raise e unless options[:ignore_processing_errors]
       end
 
-      def _uploader_get_url(column, *args)
-        _uploader_get_column(column).url(*args)
+      def cache_name
+        uploader.cache_name
       end
 
-      def _uploader_get_cache(column)
-        _uploader_get(column).cache_name
+      def cache_name=(cache_name)
+        uploader.retrieve_from_cache(cache_name)
       end
 
-      def _uploader_set_cache(column, cache_name)
-        _uploader_get(column).retrieve_from_cache(cache_name) unless cache_name.blank?
-      end
-
-      def _uploader_store!(column)
-        unless _uploader_get(column).blank?
-          if _uploader_remove?(column)
-            _uploader_set(column, nil)
-            write_uploader(_uploader_serialization_column_name(column), '')
+      def store!
+        unless uploader.blank?
+          if remove?
+            self.uploader = nil
+            record.write_uploader(serialization_column, '')
           else
-            _uploader_get(column).store!
-            write_uploader(_uploader_serialization_column_name(column), _uploader_get(column).identifier)
+            uploader.store!
+            record.write_uploader(serialization_column, uploader.identifier)
           end
         end
       end
 
-      def _uploader_remove
-        @_uploader_remove ||= {}
+      def url(*args)
+        uploader.url(*args)
       end
 
-      def _uploader_remove?(column)
-        !_uploader_remove[column].blank? and _uploader_remove[column] !~ /\A0|false$\z/
+      def blank?
+        uploader.blank?
       end
 
-      def _uploader_integrity_errors
-        @_uploader_integrity_errors ||= {}
+      def remove?
+        !remove.blank? and remove !~ /\A0|false$\z/
       end
 
-      def _uploader_processing_errors
-        @_uploader_processing_errors ||= {}
+    private
+
+      def serialization_column
+        options[:mount_on] || column
       end
 
-      def _uploader_serialization_column_name(column)
-        _uploader_options(column)[:mount_on] || column
-      end
-
-    end # Extension
+    end # Mounter
 
   end # Mount
 end # CarrierWave
