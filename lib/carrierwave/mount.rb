@@ -83,8 +83,9 @@ module CarrierWave
     #
     # === Options
     # 
-    # [:ignore_integrity_errors (Boolean)] if set to true, integrity errors will result in caching failing silently
-    # [:ignore_processing_errors (Boolean)] if set to true, processing errors will result in caching failing silently
+    # [:mount_on => Symbol] if the name of the column to be serialized to differs you can override it using this option
+    # [:ignore_integrity_errors => Boolean] if set to true, integrity errors will result in caching failing silently
+    # [:ignore_processing_errors => Boolean] if set to true, processing errors will result in caching failing silently
     #
     # === Examples
     #
@@ -211,7 +212,7 @@ module CarrierWave
       def _uploader_get_column(column)
         return _uploader_get(column) unless _uploader_get(column).blank?
 
-        identifier = read_uploader(column)
+        identifier = read_uploader(_uploader_options(column)[:mount_on] || column)
 
         unless identifier.blank?
           _uploader_get(column).retrieve_from_store!(identifier)
@@ -251,7 +252,7 @@ module CarrierWave
             write_uploader(column, '')
           else
             _uploader_get(column).store!
-            write_uploader(column, _uploader_get(column).identifier)
+            write_uploader(_uploader_options(column)[:mount_on] || column, _uploader_get(column).identifier)
           end
         end
       end

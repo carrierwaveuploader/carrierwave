@@ -1,6 +1,8 @@
 # Version 0.2.1
 
+* [changed] Url method now optionally takes versions as parameters (like Paperclip)
 * [added] A field which allows files to be removed with a checkbox in mount
+* [added] Mount_on option for Mount, to be able to override the serialization column
 
 # Version 0.2
 

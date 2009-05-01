@@ -86,9 +86,9 @@ describe CarrierWave::Mount do
       
       it "should do nothing when an empty string is assigned" do
         @instance.should_not_receive(:write_uploader)
-        @instance.image = ''
+        @instance.image = stub_file('test.jpg')
       end
-      
+
       it "should fail silently if the image fails an integrity check" do
         @uploader.class_eval do
           def extension_white_list
@@ -211,6 +211,12 @@ describe CarrierWave::Mount do
         @instance.image = stub_file('test.jpg')
         @instance.store_image!
         @instance.image.current_path.should == public_path('uploads/test.jpg')
+      end
+
+      it "write to the column" do
+        @instance.should_receive(:write_uploader).with(:image, "test.jpg")
+        @instance.image = stub_file('test.jpg')
+        @instance.store_image!
       end
 
       it "should remove an uploaded file when remove_image? returns true" do
@@ -394,6 +400,40 @@ describe CarrierWave::Mount do
       }.should raise_error(CarrierWave::ProcessingError)
     end
 
+  end
+
+  describe '#mount_uploader with :mount_on => :monkey' do
+
+  
+    before do
+      @class = Class.new
+      @class.send(:extend, CarrierWave::Mount)
+
+      @uploader = Class.new do
+        include CarrierWave::Uploader
+      end
+
+      @class.mount_uploader(:image, @uploader, :mount_on => :monkey)
+      @instance = @class.new
+    end
+
+    describe '#image' do
+      
+      it "should retrieve a file from the storage if a value is stored in the database" do
+        @instance.should_receive(:read_uploader).with(:monkey).twice.and_return('test.jpg')
+        @instance.image.should be_an_instance_of(@uploader)
+        @instance.image.current_path.should == public_path('uploads/test.jpg')
+      end
+    
+    end
+
+    describe '#store_image!' do
+      it "should write to the given column" do
+        @instance.should_receive(:write_uploader).with(:monkey, "test.jpg")
+        @instance.image = stub_file('test.jpg')
+        @instance.store_image!
+      end
+    end
   end
 
 end
