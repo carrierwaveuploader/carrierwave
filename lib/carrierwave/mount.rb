@@ -231,8 +231,7 @@ module CarrierWave
       end
 
       def _uploader_get_url(column, *args)
-        _uploader_get_column(column)
-        _uploader_get(column).url(*args)
+        _uploader_get_column(column).url(*args)
       end
 
       def _uploader_get_cache(column)
