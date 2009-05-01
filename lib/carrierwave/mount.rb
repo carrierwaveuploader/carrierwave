@@ -216,7 +216,7 @@ module CarrierWave
       def _uploader_get_column(column)
         return _uploader_get(column) unless _uploader_get(column).blank?
 
-        identifier = read_uploader(_uploader_options(column)[:mount_on] || column)
+        identifier = read_uploader(_uploader_serialization_column_name(column))
         _uploader_get(column).retrieve_from_store!(identifier) unless identifier.blank?
 
         _uploader_get(column)
@@ -250,10 +250,10 @@ module CarrierWave
         unless _uploader_get(column).blank?
           if _uploader_remove?(column)
             _uploader_set(column, nil)
-            write_uploader(column, '')
+            write_uploader(_uploader_serialization_column_name(column), '')
           else
             _uploader_get(column).store!
-            write_uploader(_uploader_options(column)[:mount_on] || column, _uploader_get(column).identifier)
+            write_uploader(_uploader_serialization_column_name(column), _uploader_get(column).identifier)
           end
         end
       end
@@ -272,6 +272,10 @@ module CarrierWave
 
       def _uploader_processing_errors
         @_uploader_processing_errors ||= {}
+      end
+
+      def _uploader_serialization_column_name(column)
+        _uploader_options(column)[:mount_on] || column
       end
 
     end # Extension

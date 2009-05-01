@@ -472,6 +472,14 @@ describe CarrierWave::Mount do
         @instance.image = stub_file('test.jpg')
         @instance.store_image!
       end
+
+      it "should remove from the given column when remove_image is true" do
+        @instance.image = stub_file('test.jpg')
+        @instance.store_image!
+        @instance.remove_image = true
+        @instance.should_receive(:write_uploader).with(:monkey, "")
+        @instance.store_image!
+      end
     end
   end
 
