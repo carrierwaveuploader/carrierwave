@@ -147,6 +147,10 @@ module CarrierWave
           _uploader_set_column(:#{column}, new_file)      #   _uploader_set_column(:image, new_file)
         end                                               # end
                                                           #
+        def #{column}?                                    # def image?
+          !_uploader_get_column(:#{column}).blank?        #   !_uploader_get_column(:image).blank?
+        end                                               # end
+                                                          #
         def #{column}_cache                               # def image_cache
           _uploader_get_cache(:#{column})                 #   _uploader_get_cache(:image)
         end                                               # end

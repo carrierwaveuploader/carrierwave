@@ -131,6 +131,25 @@ describe CarrierWave::Mount do
       
     end
 
+    describe '#image?' do
+      
+      it "should be false when nothing has been assigned" do
+        @instance.should_receive(:read_uploader).with(:image).and_return(nil)
+        @instance.image?.should be_false
+      end
+      
+      it "should be false when an empty string has been assigned" do
+        @instance.should_receive(:read_uploader).with(:image).and_return('')
+        @instance.image?.should be_false
+      end
+
+      it "should be true when a file has been cached" do
+        @instance.image = stub_file('test.jpg')
+        @instance.image?.should be_true
+      end
+    
+    end
+
     describe '#image_url' do
       
       it "should return nil when nothing has been assigned" do
