@@ -242,6 +242,23 @@ ImageScience works the same way as RMagick.
       process :crop_resized => [200, 200]
     end
 
+== Migrating
+
+If you are using Paperclip, you can use the provided compatibility module:
+
+    class AvatarUploader
+      include CarrierWave::Uploader
+      include CarrierWave::Compatibility::Paperclip
+    end
+
+See the documentation for +Paperclip::Compatibility::Paperclip+ for more detaills.
+
+Be sure to use mount_on to specify the correct column:
+
+    mount_uploader :avatar, AvatarUploader, :mount_on => :avatar_file_name
+
+Unfortunately AttachmentFoo differs too much in philosophy for there to be a sensible compatibility mode. Patches for migrating from other solutions will be happily accepted.
+
 == Documentation
 
 Full rdoc documentation is {available at Rubyforge}[http://carrierwave.rubyforge.org/].

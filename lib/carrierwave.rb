@@ -29,6 +29,10 @@ module CarrierWave
     autoload :S3, 'carrierwave/storage/s3'
   end
 
+  module Compatibility
+    autoload :Paperclip, 'carrierwave/compatibility/paperclip'
+  end
+
   module Test
     autoload :Matchers, 'carrierwave/test/matchers'
   end
