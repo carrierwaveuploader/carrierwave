@@ -482,9 +482,9 @@ describe CarrierWave::Uploader do
     end
     
     it "should not overwrite a file that has already been cached" do
-      @uploader.retrieve_from_cache('20071201-1234-345-2255/test.jpeg')
+      @uploader.cache!(File.open(file_path('test.jpg')))
       @uploader.retrieve_from_cache('20071201-1234-345-2255/bork.txt')
-      @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpeg')
+      @uploader.current_path.should =~ /test.jpg$/
     end
 
     it "should do nothing when the cache_id has an invalid format" do
@@ -657,9 +657,9 @@ describe CarrierWave::Uploader do
     end
     
     it "should not overwrite a file that has already been cached" do
-      @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
+      @uploader.cache!(File.open(file_path('test.jpg')))
       @uploader.retrieve_from_store('bork.txt')
-      @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpeg')
+      @uploader.current_path.should =~ /test.jpg$/
     end
   end
   

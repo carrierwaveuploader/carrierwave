@@ -14,6 +14,7 @@ end
 require 'tempfile'
 #require 'ruby-debug'
 require 'spec'
+require 'spec/autorun'
 
 require 'carrierwave'
 

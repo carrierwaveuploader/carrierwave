@@ -418,7 +418,7 @@ module CarrierWave
     # [CarrierWave::FormNotMultipart] if the assigned parameter is a string
     #
     def cache(new_file)
-      cache!(new_file) unless file
+      cache!(new_file) if blank?
     end
 
     ##
@@ -470,7 +470,7 @@ module CarrierWave
     # [cache_name (String)] uniquely identifies a cache file
     #
     def retrieve_from_cache(cache_name)
-      retrieve_from_cache!(cache_name) unless file
+      retrieve_from_cache!(cache_name) if blank?
     rescue CarrierWave::InvalidParameter
     end
 
@@ -537,7 +537,7 @@ module CarrierWave
     # [new_file (File, IOString, Tempfile)] any kind of file object
     #
     def store(new_file)
-      store!(new_file) unless file
+      store!(new_file) if blank?
     end
 
     ##
@@ -567,7 +567,7 @@ module CarrierWave
     # [identifier (String)] uniquely identifies the file to retrieve
     #
     def retrieve_from_store(identifier)
-      retrieve_from_store!(identifier) unless file
+      retrieve_from_store!(identifier) if blank?
     rescue CarrierWave::InvalidParameter
     end
 
