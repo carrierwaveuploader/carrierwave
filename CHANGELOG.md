@@ -1,6 +1,8 @@
 # Version 0.2.2
 
 * [changed] Mount now no longer returns nil if there is no stored file, it returns a blank uploader instead
+* [added] Possibility to specify a default path
+* [added] Paperclip compatibility module
 
 # Version 0.2.1
 
