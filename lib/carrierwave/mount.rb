@@ -248,7 +248,8 @@ module CarrierWave
       end
 
       def cache_name=(cache_name)
-        uploader.retrieve_from_cache(cache_name)
+        uploader.retrieve_from_cache!(cache_name) unless uploader.cached?
+      rescue CarrierWave::InvalidParameter
       end
 
       def store!
