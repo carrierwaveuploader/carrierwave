@@ -203,7 +203,7 @@ module CarrierWave
 
       def _mounter(column)
         @_mounters ||= {}
-        @_mounters[column] ||= Mounter.new(self, column, self.class.uploader_options[column])
+        @_mounters[column] ||= Mounter.new(self, column)
       end
 
     end # Extension
@@ -219,7 +219,7 @@ module CarrierWave
       def initialize(record, column, options={})
         @record = record
         @column = column
-        @options = options
+        @options = record.class.uploader_options[column]
       end
 
       def uploader
