@@ -46,7 +46,7 @@ module CarrierWave
 
       def store_path(for_file=filename)
         path = paperclip_path
-        path ||= File.join([store_dir, paperclip_style.to_s, for_file].compact)
+        path ||= File.join(*[store_dir, paperclip_style.to_s, for_file].compact)
         interpolate_paperclip_path(path, for_file)
       end
 
