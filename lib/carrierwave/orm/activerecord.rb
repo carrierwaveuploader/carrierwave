@@ -17,7 +17,12 @@ module CarrierWave
       validates_integrity_of column if uploader_options[column.to_sym][:validate_integrity]
       validates_processing_of column if uploader_options[column.to_sym][:validate_processing]
 
-      before_save do |record|
+      after_create do |record|
+        record.send("store_#{column}!")
+        record.save
+      end
+
+      before_update do |record|
         record.send("store_#{column}!")
       end
     end
