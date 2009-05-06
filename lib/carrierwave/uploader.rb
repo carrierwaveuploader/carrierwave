@@ -15,9 +15,25 @@ module CarrierWave
   # these are *very* simple (they are only a dozen lines of code), so adding your own should
   # be trivial.
   #
-  class Uploader
+  module Uploader
 
-    class << self
+    def self.append_features(base) #:nodoc:
+      super
+      base.extend(ClassMethods)
+    end
+    
+    ##
+    # Generates a unique cache id for use in the caching system
+    #
+    # === Returns
+    #
+    # [String] a cache id in the format YYYYMMDD-HHMM-PID-RND
+    #
+    def self.generate_cache_id
+      Time.now.strftime('%Y%m%d-%H%M') + '-' + Process.pid.to_s + '-' + ("%04d" % rand(9999))
+    end
+
+    module ClassMethods
 
       ##
       # Lists processor callbacks declared
@@ -42,7 +58,9 @@ module CarrierWave
       #
       # === Examples
       #
-      #     class MyUploader < CarrierWave::Uploader
+      #     class MyUploader
+      #       include CarrierWave::Uploader
+      #
       #       process :sepiatone, :vignette
       #       process :scale => [200, 200]
       #
@@ -115,7 +133,9 @@ module CarrierWave
 
       alias_method :storage=, :storage
 
-      attr_accessor :version_name
+      def version_names
+        @version_names ||= []
+      end
 
       ##
       # Adds a new version to this uploader
@@ -127,15 +147,18 @@ module CarrierWave
       #
       def version(name, &block)
         name = name.to_sym
-        klass = Class.new(self)
-        klass.version_name = name
-        klass.class_eval(&block) if block
-        versions[name] = klass
-        class_eval <<-RUBY
-          def #{name}
-            versions[:#{name}]
-          end
-        RUBY
+        unless versions[name]
+          versions[name] = Class.new(self)
+          versions[name].version_names.push(*version_names)
+          versions[name].version_names.push(name)
+          class_eval <<-RUBY
+            def #{name}
+              versions[:#{name}]
+            end
+          RUBY
+        end
+        versions[name].class_eval(&block) if block
+        versions[name]
       end
 
       ##
@@ -147,24 +170,13 @@ module CarrierWave
         @versions ||= {}
       end
 
-      ##
-      # Generates a unique cache id for use in the caching system
-      #
-      # === Returns
-      #
-      # [String] a cache id in the format YYYYMMDD-HHMM-PID-RND
-      #
-      def generate_cache_id
-        Time.now.strftime('%Y%m%d-%H%M') + '-' + Process.pid.to_s + '-' + ("%04d" % rand(9999))
-      end
-
     private
 
       def get_storage_by_symbol(symbol)
-        CarrierWave.config[:storage_engines][symbol]
+        eval(CarrierWave.config[:storage_engines][symbol])
       end
 
-    end # class << self
+    end # ClassMethods
 
     attr_reader :file, :model, :mounted_as
 
@@ -175,7 +187,7 @@ module CarrierWave
     # your uploader.
     #
     # If you do not wish to mount your uploaders with the ORM extensions in -more then you
-    # can override this method inside your uploader.
+    # can override this method inside your uploader. Just be sure to call +super+
     #
     # === Parameters
     #
@@ -184,7 +196,9 @@ module CarrierWave
     #
     # === Examples
     #
-    #     class MyUploader < CarrierWave::Uploader
+    #     class MyUploader
+    #       include CarrierWave::Uploader
+    #
     #       def store_dir
     #         File.join('public', 'files', mounted_as, model.permalink)
     #       end
@@ -193,6 +207,10 @@ module CarrierWave
     def initialize(model=nil, mounted_as=nil)
       @model = model
       @mounted_as = mounted_as
+      if default_path
+        @file = CarrierWave::SanitizedFile.new(File.expand_path(default_path, public))
+        def @file.blank?; true; end
+      end
     end
 
     ##
@@ -245,11 +263,16 @@ module CarrierWave
     #
     # [String] the location where this file is accessible via a url
     #
-    def url
-      if file.respond_to?(:url) and not file.url.blank?
-        file.url
-      elsif current_path
-        File.expand_path(current_path).gsub(File.expand_path(public), '')
+    def url(*args)
+      if(args.first)
+        # recursively proxy to version
+        versions[args.first.to_sym].url(*args[1..-1])
+      else
+        if file.respond_to?(:url) and not file.url.blank?
+          file.url
+        elsif current_path
+          File.expand_path(current_path).gsub(File.expand_path(public), '')
+        end
       end
     end
 
@@ -264,6 +287,28 @@ module CarrierWave
     #
     def identifier
       file.identifier if file.respond_to?(:identifier)
+    end
+
+    ##
+    # Read the contents of the file
+    #
+    # === Returns
+    #
+    # [String] contents of the file
+    #
+    def read
+      file.read if file.respond_to?(:read)
+    end
+
+    ##
+    # Fetches the size of the currently stored/cached file
+    #
+    # === Returns
+    #
+    # [Integer] size of the file
+    #
+    def size
+      file.respond_to?(:size) ? file.size : 0
     end
 
     ##
@@ -290,7 +335,7 @@ module CarrierWave
     # [String] the name of this version of the uploader
     #
     def version_name
-      self.class.version_name
+      self.class.version_names.join('_').to_sym unless self.class.version_names.blank?
     end
 
     ##
@@ -327,9 +372,17 @@ module CarrierWave
     #
     def extension_white_list; end
 
+    def default_path; end
+
     ####################
     ## Cache
     ####################
+
+    ##
+    #
+    def cached?
+      @cache_id
+    end
 
     ##
     # Override this in your Uploader to change the directory where files are cached.
@@ -365,7 +418,7 @@ module CarrierWave
     # [CarrierWave::FormNotMultipart] if the assigned parameter is a string
     #
     def cache(new_file)
-      cache!(new_file) unless file
+      cache!(new_file) if file.blank?
     end
 
     ##
@@ -395,7 +448,10 @@ module CarrierWave
         @filename = new_file.filename
         self.original_filename = new_file.filename
 
-        @file = @file.copy_to(cache_path, CarrierWave.config[:permissions])
+        if CarrierWave.config[:cache_to_cache_dir]
+          @file = @file.copy_to(cache_path, CarrierWave.config[:permissions])
+        end
+
         process!
 
         versions.each do |name, v|
@@ -414,7 +470,7 @@ module CarrierWave
     # [cache_name (String)] uniquely identifies a cache file
     #
     def retrieve_from_cache(cache_name)
-      retrieve_from_cache!(cache_name) unless file
+      retrieve_from_cache!(cache_name) if file.blank?
     rescue CarrierWave::InvalidParameter
     end
 
@@ -430,7 +486,7 @@ module CarrierWave
     # [CarrierWave::InvalidParameter] if the cache_name is incorrectly formatted.
     #
     def retrieve_from_cache!(cache_name)
-      self.cache_id, self.original_filename = cache_name.split('/', 2)
+      self.cache_id, self.original_filename = cache_name.to_s.split('/', 2)
       @filename = original_filename
       @file = CarrierWave::SanitizedFile.new(cache_path)
       versions.each { |name, v| v.retrieve_from_cache!(cache_name) }
@@ -450,7 +506,23 @@ module CarrierWave
     # [String] a directory
     #
     def store_dir
-      [CarrierWave.config[:store_dir], version_name].compact.join(File::Separator)
+      CarrierWave.config[:store_dir]
+    end
+
+    ##
+    # Calculates the path where the file should be stored. If +for_file+ is given, it will be
+    # used as the filename, otherwise +CarrierWave::Uploader#filename+ is assumed.
+    #
+    # === Parameters
+    #
+    # [for_file (String)] name of the file <optional>
+    #
+    # === Returns
+    #
+    # [String] the store path
+    #
+    def store_path(for_file=filename)
+      File.join(store_dir, [version_name, for_file].compact.join('_'))
     end
 
     ##
@@ -465,7 +537,7 @@ module CarrierWave
     # [new_file (File, IOString, Tempfile)] any kind of file object
     #
     def store(new_file)
-      store!(new_file) unless file
+      store!(new_file) if file.blank?
     end
 
     ##
@@ -479,7 +551,7 @@ module CarrierWave
     #
     def store!(new_file=nil)
       cache!(new_file) if new_file
-      if @file
+      if @file and @cache_id
         @file = storage.store!(self, @file)
         @cache_id = nil
         versions.each { |name, v| v.store!(new_file) }
@@ -495,7 +567,7 @@ module CarrierWave
     # [identifier (String)] uniquely identifies the file to retrieve
     #
     def retrieve_from_store(identifier)
-      retrieve_from_store!(identifier) unless file
+      retrieve_from_store!(identifier) if file.blank?
     rescue CarrierWave::InvalidParameter
     end
 

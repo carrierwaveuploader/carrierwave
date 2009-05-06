@@ -6,10 +6,10 @@ DataMapper.setup(:default, 'sqlite3::memory:')
 
 describe CarrierWave::DataMapper do
   
-  include CarrierWaveSpecHelper
-  
   before do
-    uploader = Class.new(CarrierWave::Uploader)
+    uploader = Class.new do
+      include CarrierWave::Uploader
+    end
     
     @class = Class.new
     @class.class_eval do
@@ -33,14 +33,14 @@ describe CarrierWave::DataMapper do
   describe '#image' do
     
     it "should return nil when nothing has been assigned" do
-      @event.image.should be_nil
+      @event.image.should be_blank
     end
     
     it "should return nil when an empty string has been assigned" do
       repository(:default).adapter.query("INSERT INTO events (image) VALUES ('')")
       @event = @class.first
       
-      @event.image.should be_nil
+      @event.image.should be_blank
     end
     
     it "should retrieve a file from the storage if a value is stored in the database" do
@@ -79,12 +79,12 @@ describe CarrierWave::DataMapper do
     
     it "should do nothing when nil is assigned" do
       @event.image = nil
-      @event.image.should be_nil
+      @event.image.should be_blank
     end
     
     it "should do nothing when an empty string is assigned" do
       @event.image = ''
-      @event.image.should be_nil
+      @event.image.should be_blank
     end
     
   end
@@ -93,7 +93,7 @@ describe CarrierWave::DataMapper do
     
     it "should do nothing when no file has been assigned" do
       @event.save
-      @event.image.should be_nil
+      @event.image.should be_blank
     end
     
     it "should copy the file to the upload directory when a file has been assigned" do
@@ -127,7 +127,17 @@ describe CarrierWave::DataMapper do
       @event.reload
       @event.attribute_get(:image).should == 'test.jpeg'
     end
-    
+
+    it "should remove the image if remove_image? returns true" do
+      @event.image = stub_file('test.jpeg')
+      @event.save
+      @event.remove_image = true
+      @event.save
+      @event.reload
+      @event.image.should be_blank
+      @event.attribute_get(:image).should == ''
+    end
+
   end
   
 end

@@ -2,10 +2,10 @@ require File.dirname(__FILE__) + '/spec_helper'
 
 describe CarrierWave::Uploader do
 
-  include CarrierWaveSpecHelper
-  
   before do
-    @uploader_class = Class.new(CarrierWave::Uploader)
+    @uploader_class = Class.new do
+      include CarrierWave::Uploader
+    end
     @uploader = @uploader_class.new
   end
   
@@ -36,10 +36,10 @@ describe CarrierWave::Uploader do
       @uploader.thumb.version_name.should == :thumb
     end
     
-    it "should set the version name on the class" do
+    it "should set the version names on the class" do
       @uploader_class.version :thumb
-      @uploader.class.version_name.should == nil
-      @uploader.thumb.class.version_name.should == :thumb
+      @uploader.class.version_names.should == []
+      @uploader.thumb.class.version_names.should == [:thumb]
     end
     
     it "should remember mount options" do
@@ -59,6 +59,45 @@ describe CarrierWave::Uploader do
       end
       @uploader.store_dir.should == 'uploads'
       @uploader.thumb.store_dir.should == public_path('monkey/apache')
+    end
+
+    it "should reopen the same class when called multiple times" do
+      @uploader_class.version :thumb do
+        def self.monkey
+          "monkey"
+        end
+      end
+      @uploader_class.version :thumb do
+        def self.llama
+          "llama"
+        end
+      end
+      @uploader_class.version(:thumb).monkey.should == "monkey"
+      @uploader_class.version(:thumb).llama.should == "llama"
+    end
+    
+    describe 'with nested versions' do
+      before do
+        @uploader_class.version :thumb do
+          version :mini
+          version :micro
+        end
+      end
+      
+      it "should add an array of version names" do
+        @uploader.class.version_names.should == []
+        @uploader.thumb.class.version_names.should == [:thumb]
+        @uploader.thumb.mini.class.version_names.should == [:thumb, :mini]
+        @uploader.thumb.micro.class.version_names.should == [:thumb, :micro]
+      end
+
+      it "should set the version name for the instances" do
+        @uploader.version_name.should be_nil
+        @uploader.thumb.version_name.should == :thumb
+        @uploader.thumb.mini.version_name.should == :thumb_mini
+        @uploader.thumb.micro.version_name.should == :thumb_micro
+      end
+
     end
     
   end
@@ -151,6 +190,28 @@ describe CarrierWave::Uploader do
     end
   end
   
+  describe '#read' do
+    it "should be nil by default" do
+      @uploader.read.should be_nil
+    end
+
+    it "should read the contents of a cached file" do
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      @uploader.read.should == "this is stuff"
+    end
+  end
+
+  describe '#size' do
+    it "should be zero by default" do
+      @uploader.size.should == 0
+    end
+
+    it "should get the size of a cached file" do
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      @uploader.size.should == 13
+    end
+  end
+  
   describe '#store_dir' do
     it "should default to the config option" do
       @uploader.store_dir.should == 'uploads'
@@ -191,7 +252,7 @@ describe CarrierWave::Uploader do
       @uploader.mounted_as.should == :llama
     end
   end
-  
+
   describe '#url' do
     before do
       CarrierWave::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
@@ -205,7 +266,21 @@ describe CarrierWave::Uploader do
       @uploader.cache!(File.open(file_path('test.jpg')))
       @uploader.url.should == '/uploads/tmp/20071201-1234-345-2255/test.jpg'
     end
-    
+
+    it "should get the directory relative to public for a specific version" do
+      @uploader_class.version(:thumb)
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      @uploader.url(:thumb).should == '/uploads/tmp/20071201-1234-345-2255/thumb_test.jpg'
+    end
+
+    it "should get the directory relative to public for a nested version" do
+      @uploader_class.version(:thumb) do
+        version(:mini)
+      end
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      @uploader.url(:thumb, :mini).should == '/uploads/tmp/20071201-1234-345-2255/thumb_mini_test.jpg'
+    end
+
     it "should return file#url if available" do
       @uploader.cache!(File.open(file_path('test.jpg')))
       @uploader.file.stub!(:url).and_return('http://www.example.com/someurl.jpg')
@@ -220,25 +295,25 @@ describe CarrierWave::Uploader do
   end
   
   describe '#to_s' do
-      before do
-        CarrierWave::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
-      end
-
-      it "should default to nil" do
-        @uploader.to_s.should be_nil
-      end
-
-      it "should get the directory relative to public, prepending a slash" do
-        @uploader.cache!(File.open(file_path('test.jpg')))
-        @uploader.to_s.should == '/uploads/tmp/20071201-1234-345-2255/test.jpg'
-      end
-
-      it "should return file#url if available" do
-        @uploader.cache!(File.open(file_path('test.jpg')))
-        @uploader.file.stub!(:url).and_return('http://www.example.com/someurl.jpg')
-        @uploader.to_s.should == 'http://www.example.com/someurl.jpg'
-      end
+    before do
+      CarrierWave::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
     end
+
+    it "should default to nil" do
+      @uploader.to_s.should be_nil
+    end
+
+    it "should get the directory relative to public, prepending a slash" do
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      @uploader.to_s.should == '/uploads/tmp/20071201-1234-345-2255/test.jpg'
+    end
+
+    it "should return file#url if available" do
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      @uploader.file.stub!(:url).and_return('http://www.example.com/someurl.jpg')
+      @uploader.to_s.should == 'http://www.example.com/someurl.jpg'
+    end
+  end
   
   describe '#cache!' do
     
@@ -249,6 +324,11 @@ describe CarrierWave::Uploader do
     it "should cache a file" do
       @uploader.cache!(File.open(file_path('test.jpg')))
       @uploader.file.should be_an_instance_of(CarrierWave::SanitizedFile)
+    end
+
+    it "should be cached" do
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      @uploader.should be_cached
     end
     
     it "should store the cache name" do
@@ -265,6 +345,15 @@ describe CarrierWave::Uploader do
       @uploader.cache!(File.open(file_path('test.jpg')))
       @uploader.file.path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpg')
       @uploader.file.exists?.should be_true
+    end
+
+    it "should not move it if cache_to_cache_dir is false" do
+      CarrierWave.config[:cache_to_cache_dir] = false
+      path = file_path('test.jpg')
+      @uploader.cache!(File.open(path))
+      @uploader.current_path.should == path
+      @uploader.file.exists?.should be_true
+      CarrierWave.config[:cache_to_cache_dir] = true
     end
     
     it "should set the url" do
@@ -330,6 +419,11 @@ describe CarrierWave::Uploader do
       @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
       @uploader.file.should be_an_instance_of(CarrierWave::SanitizedFile)
     end
+
+    it "should be cached" do
+      @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
+      @uploader.should be_cached
+    end
     
     it "should set the path to the tmp dir" do
       @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
@@ -388,9 +482,9 @@ describe CarrierWave::Uploader do
     end
     
     it "should not overwrite a file that has already been cached" do
-      @uploader.retrieve_from_cache('20071201-1234-345-2255/test.jpeg')
+      @uploader.cache!(File.open(file_path('test.jpg')))
       @uploader.retrieve_from_cache('20071201-1234-345-2255/bork.txt')
-      @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpeg')
+      @uploader.current_path.should =~ /test.jpg$/
     end
 
     it "should do nothing when the cache_id has an invalid format" do
@@ -424,7 +518,12 @@ describe CarrierWave::Uploader do
       @uploader.store!(@file)
       @uploader.current_path.should == '/path/to/somewhere'
     end
-    
+
+    it "should not be cached" do
+      @uploader.store!(@file)
+      @uploader.should_not be_cached
+    end
+
     it "should set the url" do
       @uploader.store!(@file)
       @uploader.url.should == 'http://www.example.com'
@@ -466,6 +565,15 @@ describe CarrierWave::Uploader do
     it "should do nothing when trying to store an empty file" do
       @uploader.store!(nil)
     end
+
+    it "should not re-store a retrieved file" do
+      @stored_file = mock('a stored file')
+      @uploader_class.storage.stub!(:retrieve!).and_return(@stored_file)
+
+      @uploader_class.storage.should_not_receive(:store!)
+      @uploader.retrieve_from_store!('monkey.txt')
+      @uploader.store!
+    end
   end
   
   describe '#retrieve_from_store!' do
@@ -481,6 +589,11 @@ describe CarrierWave::Uploader do
     it "should set the current path" do
       @uploader.retrieve_from_store!('monkey.txt')
       @uploader.current_path.should == '/path/to/somewhere'
+    end
+
+    it "should not be cached" do
+      @uploader.retrieve_from_store!('monkey.txt')
+      @uploader.should_not be_cached
     end
 
     it "should set the url" do
@@ -512,6 +625,7 @@ describe CarrierWave::Uploader do
       @stored_file.stub!(:path).and_return('/path/to/somewhere')
       @stored_file.stub!(:url).and_return('http://www.example.com')
       @stored_file.stub!(:identifier).and_return('this-is-me')
+      @stored_file.stub!(:read).and_return('here be content')
 
       @uploader_class.storage.stub!(:retrieve!).and_return(@stored_file)
     end
@@ -530,6 +644,11 @@ describe CarrierWave::Uploader do
       @uploader.retrieve_from_store('monkey.txt')
       @uploader.identifier.should == 'this-is-me'
     end
+
+    it "should read out the contents" do
+      @uploader.retrieve_from_store('monkey.txt')
+      @uploader.read.should == 'here be content'
+    end
     
     it "should instruct the storage engine to retrieve the file and store the result" do
       @uploader_class.storage.should_receive(:retrieve!).with(@uploader, 'monkey.txt').and_return(@stored_file)
@@ -538,9 +657,9 @@ describe CarrierWave::Uploader do
     end
     
     it "should not overwrite a file that has already been cached" do
-      @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
+      @uploader.cache!(File.open(file_path('test.jpg')))
       @uploader.retrieve_from_store('bork.txt')
-      @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpeg')
+      @uploader.current_path.should =~ /test.jpg$/
     end
   end
   
@@ -555,10 +674,11 @@ describe CarrierWave::Uploader do
         CarrierWave::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
       end
 
-      it "should suffix the version's store_dir" do
+      it "should set store_path with versions" do
         @uploader.cache!(File.open(file_path('test.jpg')))
-        @uploader.store_dir.should == 'uploads'
-        @uploader.thumb.store_dir.should == 'uploads/thumb'
+        @uploader.store_path.should == 'uploads/test.jpg'
+        @uploader.thumb.store_path.should == 'uploads/thumb_test.jpg'
+        @uploader.thumb.store_path('kebab.png').should == 'uploads/thumb_kebab.png'
       end
       
       it "should move it to the tmp dir with the filename prefixed" do
@@ -577,10 +697,11 @@ describe CarrierWave::Uploader do
         @uploader.thumb.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/thumb_test.jpg')
       end
     
-      it "should suffix the version's store_dir" do
+      it "should set store_path with versions" do
         @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpg')
-        @uploader.store_dir.should == 'uploads'
-        @uploader.thumb.store_dir.should == 'uploads/thumb'
+        @uploader.store_path.should == 'uploads/test.jpg'
+        @uploader.thumb.store_path.should == 'uploads/thumb_test.jpg'
+        @uploader.thumb.store_path('kebab.png').should == 'uploads/thumb_kebab.png'
       end
     end
     
@@ -612,17 +733,11 @@ describe CarrierWave::Uploader do
         @uploader.url.should == 'http://www.example.com'
       end
     
-      it "should, if a file is given as argument, suffix the version's store_dir" do
+      it "should, if a file is given as argument, set the store_path" do
         @uploader.store!(@file)
-        @uploader.store_dir.should == 'uploads'
-        @uploader.thumb.store_dir.should == 'uploads/thumb'
-      end
-    
-      it "should, if a files is given as an argument and use_cache is false, suffix the version's store_dir" do
-        CarrierWave.config[:use_cache] = false
-        @uploader.store!(@file)
-        @uploader.store_dir.should == 'uploads'
-        @uploader.thumb.store_dir.should == 'uploads/thumb'
+        @uploader.store_path.should == 'uploads/test.jpg'
+        @uploader.thumb.store_path.should == 'uploads/thumb_test.jpg'
+        @uploader.thumb.store_path('kebab.png').should == 'uploads/thumb_kebab.png'
       end
     
     end
@@ -768,5 +883,57 @@ describe CarrierWave::Uploader do
     end
     
   end
-  
+
+  describe 'with an overridden, reversing, filename' do
+    before do
+      @uploader_class.class_eval do
+        def default_path
+          file_path('test.jpg')
+        end
+      end
+      @uploader = @uploader_class.new
+    end
+
+    describe '#blank?' do
+      it "should be true by default" do
+        @uploader.should be_blank
+      end
+    end
+
+    describe '#current_path' do
+      it "should return the default path" do
+        @uploader.current_path.should == file_path('test.jpg')
+      end
+    end
+
+    describe '#cache!' do
+
+      before do
+        CarrierWave::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+      end
+
+      it "should cache a file" do
+        @uploader.cache!(File.open(file_path('test.jpg')))
+        @uploader.file.should be_an_instance_of(CarrierWave::SanitizedFile)
+      end
+
+      it "should be cached" do
+        @uploader.cache!(File.open(file_path('test.jpg')))
+        @uploader.should be_cached
+      end
+
+      it "should no longer be blank" do
+        @uploader.cache!(File.open(file_path('test.jpg')))
+        @uploader.should_not be_blank
+      end
+
+      it "should set the current_path" do
+        @uploader.cache!(File.open(file_path('test.jpg')))
+        @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpg')
+      end
+
+    end
+
+  end
+
 end

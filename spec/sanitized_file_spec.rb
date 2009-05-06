@@ -2,8 +2,6 @@ require File.dirname(__FILE__) + '/spec_helper'
 
 describe CarrierWave::SanitizedFile do
   
-  include CarrierWaveSpecHelper
-  
   before do
     unless File.exists?(file_path('llama.jpg'))
       FileUtils.cp(file_path('test.jpg'), file_path('llama.jpg'))

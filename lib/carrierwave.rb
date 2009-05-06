@@ -16,36 +16,53 @@ module CarrierWave
   class InvalidParameter < UploadError; end
   # Should be used by methods used as process callbacks.
   class ProcessingError < UploadError; end
+
+  autoload :SanitizedFile, 'carrierwave/sanitized_file'
+  autoload :Uploader, 'carrierwave/uploader'
+  autoload :Mount, 'carrierwave/mount'
+  autoload :RMagick, 'carrierwave/processing/rmagick'
+  autoload :ImageScience, 'carrierwave/processing/image_science'
+
+  module Storage
+    autoload :Abstract, 'carrierwave/storage/abstract'
+    autoload :File, 'carrierwave/storage/file'
+    autoload :S3, 'carrierwave/storage/s3'
+  end
+
+  module Compatibility
+    autoload :Paperclip, 'carrierwave/compatibility/paperclip'
+  end
+
+  module Test
+    autoload :Matchers, 'carrierwave/test/matchers'
+  end
+
 end
-
-dir = File.join(File.dirname(__FILE__), 'carrierwave')
-
-require File.join(dir, 'sanitized_file')
-require File.join(dir, 'uploader')
-require File.join(dir, 'mount')
-require File.join(dir, 'storage', 'abstract')
-require File.join(dir, 'storage', 'file')
-require File.join(dir, 'storage', 's3')
 
 CarrierWave.config = {
   :permissions => 0644,
   :storage => :file,
   :use_cache => true,
   :storage_engines => {
-    :file => CarrierWave::Storage::File,
-    :s3 => CarrierWave::Storage::S3
+    :file => "CarrierWave::Storage::File",
+    :s3 => "CarrierWave::Storage::S3"
   },
   :s3 => {
     :access => :public_read
   },
   :store_dir => 'uploads',
   :cache_dir => 'uploads/tmp',
+  :cache_to_cache_dir => true,
   :mount => {
-    :ignore_integrity_errors => true
+    :ignore_integrity_errors => true,
+    :ignore_processing_errors => true,
+    :validate_integrity => true,
+    :validate_processing => true
   }
 }
 
 if defined?(Merb)
+
   CarrierWave.config[:root] = Merb.root
   CarrierWave.config[:public] = Merb.dir_for(:public)
 
@@ -55,18 +72,19 @@ if defined?(Merb)
   Merb.push_path(:uploader, Merb.root / "app" / "uploaders")
 
   Merb.add_generators File.dirname(__FILE__) / 'generators' / 'uploader_generator'
-end
 
-if defined?(Rails)
+elsif defined?(Rails)
+
   CarrierWave.config[:root] = Rails.root
   CarrierWave.config[:public] = File.join(Rails.root, 'public')
 
   require File.join(File.dirname(__FILE__), "carrierwave", "orm", 'activerecord')
 
   ActiveSupport::Dependencies.load_paths << File.join(Rails.root, "app", "uploaders")
-end
 
-if defined?(Sinatra)
+elsif defined?(Sinatra)
+
   CarrierWave.config[:root] = Sinatra::Application.root
   CarrierWave.config[:public] = Sinatra::Application.public
+
 end

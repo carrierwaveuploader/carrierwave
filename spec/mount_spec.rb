@@ -2,8 +2,6 @@ require File.dirname(__FILE__) + '/spec_helper'
 
 describe CarrierWave::Mount do
   
-  include CarrierWaveSpecHelper
-  
   after do
     FileUtils.rm_rf(public_path)
   end
@@ -14,10 +12,30 @@ describe CarrierWave::Mount do
       @class = Class.new
       @class.send(:extend, CarrierWave::Mount)
       
-      @uploader = Class.new(CarrierWave::Uploader)
+      @uploader = Class.new do
+        include CarrierWave::Uploader
+      end
 
       @class.mount_uploader(:image, @uploader)
       @instance = @class.new
+    end
+
+    it "should maintain the ability to super" do
+      pending "I can't make this work with datamapper" do
+        @class.class_eval do
+          def image_uploader
+            super
+          end
+
+          def image=(val)
+            super
+          end
+        end
+
+        @instance.image_uploader.should be_an_instance_of(@uploader)
+        @instance.image = stub_file('test.jpg')
+        @instance.image.should be_an_instance_of(@uploader)
+      end
     end
     
     describe '#image_uploader' do
@@ -45,14 +63,16 @@ describe CarrierWave::Mount do
     
     describe '#image' do
       
-      it "should return nil when nothing has been assigned" do
-        @instance.should_receive(:read_uploader).with(:image).and_return(nil)
-        @instance.image.should be_nil
+      it "should return a blank uploader when nothing has been assigned" do
+        @instance.should_receive(:read_uploader).with(:image).twice.and_return(nil)
+        @instance.image.should be_an_instance_of(@uploader)
+        @instance.image.should be_blank
       end
       
-      it "should return nil when an empty string has been assigned" do
-        @instance.should_receive(:read_uploader).with(:image).and_return('')
-        @instance.image.should be_nil
+      it "should return a blank uploader when an empty string has been assigned" do
+        @instance.should_receive(:read_uploader).with(:image).twice.and_return('')
+        @instance.image.should be_an_instance_of(@uploader)
+        @instance.image.should be_blank
       end
       
       it "should retrieve a file from the storage if a value is stored in the database" do
@@ -86,9 +106,9 @@ describe CarrierWave::Mount do
       
       it "should do nothing when an empty string is assigned" do
         @instance.should_not_receive(:write_uploader)
-        @instance.image = ''
+        @instance.image = stub_file('test.jpg')
       end
-      
+
       it "should fail silently if the image fails an integrity check" do
         @uploader.class_eval do
           def extension_white_list
@@ -96,9 +116,68 @@ describe CarrierWave::Mount do
           end
         end
         @instance.image = stub_file('test.jpg')
-        @instance.image.should be_nil   
+        @instance.image.should be_blank
       end
       
+      it "should fail silently if the image fails to be processed" do
+        @uploader.class_eval do
+          process :monkey
+          def monkey
+            raise CarrierWave::ProcessingError, "Ohh noez!"
+          end
+        end
+        @instance.image = stub_file('test.jpg')
+      end
+      
+    end
+
+    describe '#image?' do
+      
+      it "should be false when nothing has been assigned" do
+        @instance.should_receive(:read_uploader).with(:image).and_return(nil)
+        @instance.image?.should be_false
+      end
+      
+      it "should be false when an empty string has been assigned" do
+        @instance.should_receive(:read_uploader).with(:image).and_return('')
+        @instance.image?.should be_false
+      end
+
+      it "should be true when a file has been cached" do
+        @instance.image = stub_file('test.jpg')
+        @instance.image?.should be_true
+      end
+    
+    end
+
+    describe '#image_url' do
+      
+      it "should return nil when nothing has been assigned" do
+        @instance.should_receive(:read_uploader).with(:image).and_return(nil)
+        @instance.image_url.should be_nil
+      end
+      
+      it "should return nil when an empty string has been assigned" do
+        @instance.should_receive(:read_uploader).with(:image).and_return('')
+        @instance.image_url.should be_nil
+      end
+      
+      it "should get the url from a retrieved file" do
+        @instance.should_receive(:read_uploader).with(:image).and_return('test.jpg')
+        @instance.image_url.should == '/uploads/test.jpg'
+      end
+
+      it "should get the url from a cached file" do
+        @instance.image = stub_file('test.jpg')
+        @instance.image_url.should =~ %r{uploads/tmp/[\d\-]+/test.jpg}
+      end
+
+      it "should get the url from a cached file's version" do
+        @uploader.version(:thumb)
+        @instance.image = stub_file('test.jpg')
+        @instance.image_url(:thumb).should =~ %r{uploads/tmp/[\d\-]+/thumb_test.jpg}
+      end
+
     end
 
     describe '#image_cache' do
@@ -135,12 +214,12 @@ describe CarrierWave::Mount do
 
       it "should do nothing when nil is assigned" do
         @instance.image_cache = nil
-        @instance.image.should be_nil
+        @instance.image.should be_blank
       end
 
       it "should do nothing when an empty string is assigned" do
         @instance.image_cache = ''
-        @instance.image.should be_nil
+        @instance.image.should be_blank
       end
 
       it "retrieve from cache when a cache name is assigned" do
@@ -164,7 +243,7 @@ describe CarrierWave::Mount do
 
       it "should do nothing when no file has been uploaded" do
         @instance.store_image!
-        @instance.image.should be_nil
+        @instance.image.should be_blank
       end
 
       it "store an assigned file" do
@@ -172,27 +251,101 @@ describe CarrierWave::Mount do
         @instance.store_image!
         @instance.image.current_path.should == public_path('uploads/test.jpg')
       end
+
+      it "write to the column" do
+        @instance.should_receive(:write_uploader).with(:image, "test.jpg")
+        @instance.image = stub_file('test.jpg')
+        @instance.store_image!
+      end
+
+      it "should remove an uploaded file when remove_image? returns true" do
+        @instance.image = stub_file('test.jpg')
+        @instance.remove_image = true
+        @instance.store_image!
+        @instance.image.should be_blank
+      end
     end
-    
-    describe '#image_integrity_error?' do
+
+    describe '#remove_image' do
+      
+      it "should store a value" do
+        @instance.remove_image = true
+        @instance.remove_image.should be_true
+      end
+      
+    end
+
+    describe '#remove_image?' do
+      
+      it "should be true when the value is truthy" do
+        @instance.remove_image = true
+        @instance.remove_image?.should be_true
+      end
+      
+      it "should be false when the value is falsey" do
+        @instance.remove_image = false
+        @instance.remove_image?.should be_false
+      end
+      
+      it "should be false when the value is ''" do
+        @instance.remove_image = ''
+        @instance.remove_image?.should be_false
+      end
+      
+      it "should be false when the value is '0'" do
+        @instance.remove_image = '0'
+        @instance.remove_image?.should be_false
+      end
+
+      it "should be false when the value is 'false'" do
+        @instance.remove_image = 'false'
+        @instance.remove_image?.should be_false
+      end
+      
+    end
+
+    describe '#image_integrity_error' do
 
       it "should be nil by default" do
-        @instance.image_integrity_error?.should be_nil
+        @instance.image_integrity_error.should be_nil
       end
 
       it "should be nil after a file is cached" do
         @instance.image = stub_file('test.jpg')
-        @instance.image_integrity_error?.should be_nil
+        @instance.image_integrity_error.should be_nil
       end
 
-      it "should be true after an integrity check has failed" do
+      it "should be an error instance after an integrity check has failed" do
         @uploader.class_eval do
           def extension_white_list
             %(txt)
           end
         end
         @instance.image = stub_file('test.jpg')
-        @instance.image_integrity_error?.should be_true
+        @instance.image_integrity_error.should be_an_instance_of(CarrierWave::IntegrityError)
+      end
+    end
+    
+    describe '#image_processing_error' do
+
+      it "should be nil by default" do
+        @instance.image_processing_error.should be_nil
+      end
+
+      it "should be nil after a file is cached" do
+        @instance.image = stub_file('test.jpg')
+        @instance.image_processing_error.should be_nil
+      end
+
+      it "should be an error instance after an integrity check has failed" do
+        @uploader.class_eval do
+          process :monkey
+          def monkey
+            raise CarrierWave::ProcessingError, "Ohh noez!"
+          end
+        end
+        @instance.image = stub_file('test.jpg')
+        @instance.image_processing_error.should be_an_instance_of(CarrierWave::ProcessingError)
       end
     end
 
@@ -239,7 +392,9 @@ describe CarrierWave::Mount do
       @class = Class.new
       @class.send(:extend, CarrierWave::Mount)
       
-      @uploader = Class.new(CarrierWave::Uploader)
+      @uploader = Class.new do
+        include CarrierWave::Uploader
+      end
 
       @class.mount_uploader(:image, @uploader, :ignore_integrity_errors => false)
       @instance = @class.new
@@ -256,6 +411,76 @@ describe CarrierWave::Mount do
       }.should raise_error(CarrierWave::IntegrityError)
     end
 
+  end
+
+  describe '#mount_uploader with :ignore_processing_errors => false' do
+   
+    before do
+      @class = Class.new
+      @class.send(:extend, CarrierWave::Mount)
+      
+      @uploader = Class.new do
+        include CarrierWave::Uploader
+      end
+
+      @class.mount_uploader(:image, @uploader, :ignore_processing_errors => false)
+      @instance = @class.new
+    end
+
+    it "should raise an error if the image fails to be processed" do
+      @uploader.class_eval do
+        process :monkey
+        def monkey
+          raise CarrierWave::ProcessingError, "Ohh noez!"
+        end
+      end
+      running {
+        @instance.image = stub_file('test.jpg')
+      }.should raise_error(CarrierWave::ProcessingError)
+    end
+
+  end
+
+  describe '#mount_uploader with :mount_on => :monkey' do
+
+  
+    before do
+      @class = Class.new
+      @class.send(:extend, CarrierWave::Mount)
+
+      @uploader = Class.new do
+        include CarrierWave::Uploader
+      end
+
+      @class.mount_uploader(:image, @uploader, :mount_on => :monkey)
+      @instance = @class.new
+    end
+
+    describe '#image' do
+      
+      it "should retrieve a file from the storage if a value is stored in the database" do
+        @instance.should_receive(:read_uploader).with(:monkey).twice.and_return('test.jpg')
+        @instance.image.should be_an_instance_of(@uploader)
+        @instance.image.current_path.should == public_path('uploads/test.jpg')
+      end
+    
+    end
+
+    describe '#store_image!' do
+      it "should write to the given column" do
+        @instance.should_receive(:write_uploader).with(:monkey, "test.jpg")
+        @instance.image = stub_file('test.jpg')
+        @instance.store_image!
+      end
+
+      it "should remove from the given column when remove_image is true" do
+        @instance.image = stub_file('test.jpg')
+        @instance.store_image!
+        @instance.remove_image = true
+        @instance.should_receive(:write_uploader).with(:monkey, "")
+        @instance.store_image!
+      end
+    end
   end
 
 end
