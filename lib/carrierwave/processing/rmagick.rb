@@ -1,4 +1,8 @@
-require 'rmagick'
+begin
+  require 'rmagick'
+rescue LoadError
+  require 'RMagick'
+end
 
 module CarrierWave
 
