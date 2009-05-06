@@ -109,20 +109,31 @@ describe CarrierWave::Sequel do
       describe 'with validation' do
 
         before do
-          @class.class_eval do
-            validates_each :image do |object, attribute, value|
-              object.errors[attribute] << 'FAIL!'
+          # Add validations
+          if CarrierWave::Sequel.new_sequel?
+            @class.class_eval do
+              def validate
+                errors.add(:image, 'FAIL!')
+              end
+            end
+          else
+            @class.class_eval do
+              validates_each(:image) do |o,a,v|
+                o.errors.add(a, 'FAIL!')
+              end
             end
           end
+          # Turn off raising the exceptions on save
+          @event.raise_on_save_failure = false
         end
 
         it "should do nothing when a validation fails" do
-          pending "I don't understand how this is supposed to work :S" do
-            @event.image = stub_file('test.jpeg')
-            @event.save.should be_false
-            @event.image.should be_an_instance_of(@uploader)
-            @event.image.current_path.should =~ /^#{public_path('uploads/tmp')}/
-          end
+          @event.image = stub_file('test.jpeg')
+          @event.should_not be_valid
+          @event.save
+          @event.should be_new
+          @event.image.should be_an_instance_of(@uploader)
+          @event.image.current_path.should =~ /^#{public_path('uploads/tmp')}/
         end
       end 
      
