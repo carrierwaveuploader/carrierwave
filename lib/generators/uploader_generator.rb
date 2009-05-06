@@ -10,7 +10,7 @@ module Merb
 
       template :uploader do |t|
         t.source = 'uploader.rb'
-        t.destination = "app/models/#{file_name}_uploader.rb"
+        t.destination = "app/uploaders/#{file_name}_uploader.rb"
       end
     end
 
