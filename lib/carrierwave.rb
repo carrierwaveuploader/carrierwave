@@ -2,7 +2,7 @@ require 'fileutils'
 
 module CarrierWave
   class << self
-    attr_accessor :config
+    attr_accessor :config, :logger
   end
 
   class UploadError < StandardError; end
