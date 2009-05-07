@@ -61,15 +61,18 @@ CarrierWave.config = {
   }
 }
 
-if defined?(Merb)
-
+if defined?(Merb::Plugins)
   CarrierWave.config[:root] = Merb.root
   CarrierWave.config[:public] = Merb.dir_for(:public)
 
+  # Setup path for uploaders and load all of them before classes are loaded
+  Merb::BootLoader.before_app_loads do
+    Merb.push_path(:uploaders, Merb.root / 'app' / 'uploaders', '*.rb')
+    Dir.glob(File.join(Merb.load_paths[:uploaders])).each {|f| require f }
+  end
+  
   orm_path = File.dirname(__FILE__) / 'carrierwave' / 'orm' / Merb.orm
   require orm_path if File.exist?(orm_path + '.rb')
-
-  Merb.push_path(:uploader, Merb.root / "app" / "uploaders")
 
   Merb.add_generators File.dirname(__FILE__) / 'generators' / 'uploader_generator'
 
