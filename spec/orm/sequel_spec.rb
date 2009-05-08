@@ -150,7 +150,7 @@ describe CarrierWave::Sequel do
         @event.remove_image = true
         @event.save
         @event.reload
-        @event.image.should be_blank
+        @event.image.should == nil
         @event[:image].should == ''
       end
     end

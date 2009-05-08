@@ -11,6 +11,19 @@ module CarrierWave
       alias_method :read_uploader, :[]
       alias_method :write_uploader, :[]=
 
+      before_save do
+        send("store_#{column}!") if send("remove_#{column}?") && !self.new?
+      end
+
+      before_create do
+        uploader = send("#{column}")
+        if uploader && !uploader.identifier.to_s.empty?
+          self[column] = uploader.identifier
+        else
+          send("store_#{column}!")
+        end
+      end
+
       after_create do
         send("store_#{column}!")
       end
