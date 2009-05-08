@@ -79,7 +79,12 @@ if defined?(Merb::Plugins)
   Merb.add_generators File.dirname(__FILE__) / 'generators' / 'uploader_generator'
 
 elsif defined?(Rails)
-
+  begin
+    CarrierWave.logger = Rails.logger
+  rescue
+    # Rails < 2.1
+    CarrierWave.logger = RAILS_DEFAULT_LOGGER
+  end
   CarrierWave.config[:root] = Rails.root
   CarrierWave.config[:public] = File.join(Rails.root, 'public')
 
