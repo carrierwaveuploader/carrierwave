@@ -265,6 +265,7 @@ module CarrierWave
     #
     def url(*args)
       if(args.first)
+        raise ArgumentError, "Version #{args.first} doesn't exist!" if versions[args.first.to_sym].nil?
         # recursively proxy to version
         versions[args.first.to_sym].url(*args[1..-1])
       else
