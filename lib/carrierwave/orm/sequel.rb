@@ -14,6 +14,10 @@ module CarrierWave
       after_save do
         send("store_#{column}!")
       end
+
+      before_destroy do
+        send("remove_#{column}!")
+      end
     end
 
     # Determine if we're using Sequel > 2.12

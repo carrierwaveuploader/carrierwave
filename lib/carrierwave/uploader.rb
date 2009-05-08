@@ -584,6 +584,20 @@ module CarrierWave
       versions.each { |name, v| v.retrieve_from_store!(identifier) }
     end
 
+    def remove!
+      CarrierWave.logger.info 'CarrierWave: removing files.....'
+      remove_version_files!(versions)
+      storage.destroy!(self,@file)
+    end
+
+    def remove_version_files!(versions)
+      CarrierWave.logger.info 'CarrierWave: removing version files.....'
+      versions.each {|name,v|
+        remove_version_files!(v.versions) unless v.versions.empty?
+        storage.destroy!(self, v.file)
+      }
+    end
+
   private
 
     def cache_path

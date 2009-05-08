@@ -18,6 +18,21 @@ module CarrierWave
     # to retrieve it later.
     #
     class Abstract
+
+      # Do something to destroy the file
+      #
+      # === Parameters
+      #
+      # [uploader (CarrierWave::Uploader)] an uploader object
+      # [identifier (String)] uniquely identifies the file
+      #
+      # === Returns
+      #
+      # [bool] True if file was remove or false
+      #
+      def self.destroy!(uploader, identifier)
+        false
+      end
       
       ##
       # Do setup specific for this storage engine

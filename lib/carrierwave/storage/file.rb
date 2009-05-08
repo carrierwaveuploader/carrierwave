@@ -13,6 +13,23 @@ module CarrierWave
       end
       
       ##
+      # Delete the file to the uploader's store path.
+      #
+      # === Parameters
+      #
+      # [uploader (CarrierWave::Uploader)] an uploader object
+      # [file (CarrierWave::SanitizedFile)] the file to store
+      #
+      # === Returns
+      #
+      # [bool] True if file was removed or false
+      #
+      def self.destroy!(uploader, file)
+        CarrierWave.logger.info "CarrierWave::Storage::File: removing file #{file.path}"
+        file.delete
+      end
+
+      ##
       # Move the file to the uploader's store path.
       #
       # === Parameters

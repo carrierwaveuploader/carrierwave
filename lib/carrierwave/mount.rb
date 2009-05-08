@@ -164,6 +164,10 @@ module CarrierWave
           _mounter(:#{column}).remove
         end
 
+        def remove_#{column}!
+          _mounter(:#{column}).remove!
+        end
+
         def remove_#{column}=(value)
           _mounter(:#{column}).remove = value
         end
@@ -274,6 +278,10 @@ module CarrierWave
 
       def remove?
         !remove.blank? and remove !~ /\A0|false$\z/
+      end
+
+      def remove!
+        uploader.remove!
       end
 
     private
