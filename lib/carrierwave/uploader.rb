@@ -584,6 +584,9 @@ module CarrierWave
       versions.each { |name, v| v.retrieve_from_store!(identifier) }
     end
 
+    ##
+    # Removes the file and reset it
+    #
     def remove!
       CarrierWave.logger.info 'CarrierWave: removing file'
       storage.destroy!(self, file)
