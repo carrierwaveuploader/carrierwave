@@ -103,7 +103,7 @@ module CarrierWave
       # [String] the store path
       #
       def store_path(for_file=filename)
-        File.join(store_dir, [version_name, for_file].compact.join('_'))
+        File.join(store_dir, full_filename(for_file))
       end
 
       ##
@@ -139,6 +139,10 @@ module CarrierWave
       end
 
     private
+
+      def full_filename(for_file)
+        for_file
+      end
 
       def storage
         self.class.storage

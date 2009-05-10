@@ -106,6 +106,14 @@ module CarrierWave
 
     private
 
+      def full_filename(for_file)
+        [version_name, super(for_file)].compact.join('_')
+      end
+
+      def full_original_filename
+        [version_name, super].compact.join('_')
+      end
+
       def cache_versions!(new_file)
         versions.each do |name, v|
           v.send(:cache_id=, cache_id)

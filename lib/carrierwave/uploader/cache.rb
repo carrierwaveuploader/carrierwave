@@ -35,7 +35,7 @@ module CarrierWave
       # [String] a cache name, in the format YYYYMMDD-HHMM-PID-RND/filename.txt
       #
       def cache_name
-        File.join(cache_id, [version_name, original_filename].compact.join('_')) if cache_id and original_filename
+        File.join(cache_id, full_original_filename) if cache_id and original_filename
       end
 
       ##
@@ -95,6 +95,7 @@ module CarrierWave
       end
 
       attr_reader :cache_id, :original_filename
+      alias_method :full_original_filename, :original_filename
 
       def cache_id=(cache_id)
         raise CarrierWave::InvalidParameter, "invalid cache id" unless cache_id =~ /\A[\d]{8}\-[\d]{4}\-[\d]+\-[\d]{4}\z/
