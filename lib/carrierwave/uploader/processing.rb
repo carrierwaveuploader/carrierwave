@@ -26,8 +26,7 @@ module CarrierWave
         #
         # === Examples
         #
-        #     class MyUploader
-        #       include CarrierWave::Uploader
+        #     class MyUploader < CarrierWave::Uploader::Base
         #
         #       process :sepiatone, :vignette
         #       process :scale => [200, 200]

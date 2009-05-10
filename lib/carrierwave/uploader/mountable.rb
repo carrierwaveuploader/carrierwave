@@ -20,8 +20,7 @@ module CarrierWave
       #
       # === Examples
       #
-      #     class MyUploader
-      #       include CarrierWave::Uploader
+      #     class MyUploader < CarrierWave::Uploader::Base
       #
       #       def store_dir
       #         File.join('public', 'files', mounted_as, model.permalink)

@@ -33,8 +33,7 @@ module CarrierWave
     # does. If you need to override it, you can override the +paperclip_path+ method
     # and provide a Paperclip style path:
     #
-    #     class MyUploader
-    #       include CarrierWave::Uploader
+    #     class MyUploader < CarrierWave::Uploader::Base
     #       include CarrierWave::Compatibility::Paperclip
     #       
     #       def paperclip_path

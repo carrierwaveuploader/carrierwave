@@ -7,9 +7,7 @@ DataMapper.setup(:default, 'sqlite3::memory:')
 describe CarrierWave::DataMapper do
   
   before do
-    uploader = Class.new do
-      include CarrierWave::Uploader
-    end
+    uploader = Class.new(CarrierWave::Uploader::Base)
     
     @class = Class.new
     @class.class_eval do

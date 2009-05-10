@@ -1,6 +1,4 @@
-class <%= class_name %>Uploader
-
-  include CarrierWave::Uploader
+class <%= class_name %>Uploader < CarrierWave::Uploader::Base
 
   # Include RMagick or ImageScience support
   #     include CarrierWave::RMagick

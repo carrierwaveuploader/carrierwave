@@ -3,9 +3,7 @@ require File.dirname(__FILE__) + '/spec_helper'
 describe CarrierWave::Uploader do
 
   before do
-    @uploader_class = Class.new do
-      include CarrierWave::Uploader
-    end
+    @uploader_class = Class.new(CarrierWave::Uploader::Base)
     @uploader = @uploader_class.new
   end
   

@@ -27,23 +27,26 @@ module CarrierWave
   #
   module Uploader
 
-    include CarrierWave::Uploader::Configurable
-    include CarrierWave::Uploader::Proxy
-    include CarrierWave::Uploader::Url
-    include CarrierWave::Uploader::Mountable
-    include CarrierWave::Uploader::Cache
-    include CarrierWave::Uploader::Store
-    include CarrierWave::Uploader::Remove
-    include CarrierWave::Uploader::Processing
-    include CarrierWave::Uploader::Versions
+    class Base
 
-    def self.append_features(base) #:nodoc:
-      super
-      base.extend(CarrierWave::Uploader::Store::ClassMethods)
-      base.extend(CarrierWave::Uploader::Processing::ClassMethods)
-      base.extend(CarrierWave::Uploader::Versions::ClassMethods)
+      include CarrierWave::Uploader::Configurable
+      include CarrierWave::Uploader::Proxy
+      include CarrierWave::Uploader::Url
+      include CarrierWave::Uploader::Mountable
+      include CarrierWave::Uploader::Cache
+      include CarrierWave::Uploader::Store
+      include CarrierWave::Uploader::Remove
+      include CarrierWave::Uploader::Processing
+      include CarrierWave::Uploader::Versions
+
+      extend CarrierWave::Uploader::Store::ClassMethods
+      extend CarrierWave::Uploader::Processing::ClassMethods
+      extend CarrierWave::Uploader::Versions::ClassMethods
+
+      attr_reader :file
+
     end
-    
+
     ##
     # Generates a unique cache id for use in the caching system
     #
@@ -54,8 +57,6 @@ module CarrierWave
     def self.generate_cache_id
       Time.now.strftime('%Y%m%d-%H%M') + '-' + Process.pid.to_s + '-' + ("%04d" % rand(9999))
     end
-
-    attr_reader :file
 
   end # Uploader
 end # CarrierWave

@@ -12,9 +12,7 @@ describe CarrierWave::Mount do
       @class = Class.new
       @class.send(:extend, CarrierWave::Mount)
       
-      @uploader = Class.new do
-        include CarrierWave::Uploader
-      end
+      @uploader = Class.new(CarrierWave::Uploader::Base)
 
       @class.mount_uploader(:image, @uploader)
       @instance = @class.new
@@ -394,8 +392,8 @@ describe CarrierWave::Mount do
         @instance.stub!(:read_uploader).and_return('test.jpg')
       end
       
-      it "should return an instance of a subclass of CarrierWave::Uploader" do
-        @instance.image.should be_a(CarrierWave::Uploader)
+      it "should return an instance of a subclass of CarrierWave::Uploader::Base" do
+        @instance.image.should be_a(CarrierWave::Uploader::Base)
       end
       
       it "should set the path to the store dir" do
@@ -416,9 +414,7 @@ describe CarrierWave::Mount do
       @class = Class.new
       @class.send(:extend, CarrierWave::Mount)
       
-      @uploader = Class.new do
-        include CarrierWave::Uploader
-      end
+      @uploader = Class.new(CarrierWave::Uploader::Base)
 
       @class.mount_uploader(:image, @uploader, :ignore_integrity_errors => false)
       @instance = @class.new
@@ -443,9 +439,7 @@ describe CarrierWave::Mount do
       @class = Class.new
       @class.send(:extend, CarrierWave::Mount)
       
-      @uploader = Class.new do
-        include CarrierWave::Uploader
-      end
+      @uploader = Class.new(CarrierWave::Uploader::Base)
 
       @class.mount_uploader(:image, @uploader, :ignore_processing_errors => false)
       @instance = @class.new
@@ -472,9 +466,7 @@ describe CarrierWave::Mount do
       @class = Class.new
       @class.send(:extend, CarrierWave::Mount)
 
-      @uploader = Class.new do
-        include CarrierWave::Uploader
-      end
+      @uploader = Class.new(CarrierWave::Uploader::Base)
 
       @class.mount_uploader(:image, @uploader, :mount_on => :monkey)
       @instance = @class.new

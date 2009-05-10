@@ -7,9 +7,7 @@ DB = Sequel.sqlite
 describe CarrierWave::Sequel do
 
   def setup_variables_for_class(klass)
-    uploader = Class.new do
-      include CarrierWave::Uploader
-    end
+    uploader = Class.new(CarrierWave::Uploader::Base)
     klass.mount_uploader(:image, uploader)
     model = klass.new
     [klass, uploader, model] 

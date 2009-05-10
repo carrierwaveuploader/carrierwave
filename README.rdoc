@@ -36,9 +36,7 @@ this should give you a file in:
 
 Check out this file for some hints on how you can customize your uploader. It should look something like this:
 
-    class AvatarUploader
-      include CarrierWave::Uploader
-
+    class AvatarUploader < CarrierWave::Uploader::Base
       storage :file
     end
 
@@ -97,9 +95,7 @@ Now you can cache files by assigning them to the attribute, they will automatica
 
 In order to change where uploaded files are put, just override the +store_dir+ method:
 
-    class MyUploader
-      include CarrierWave::Uploader
-
+    class MyUploader < CarrierWave::Uploader::Base
       def store_dir
         'public/my/upload/directory'
       end
@@ -111,10 +107,9 @@ This works for the file storage as well as Amazon S3.
 
 Often you'll want to add different versions of the same file. The classic example is image thumbnails. There is built in support for this:
 
-    class MyUploader
-      include CarrierWave::Uploader
+    class MyUploader < CarrierWave::Uploader::Base
       include CarrierWave::RMagick
-      
+
       process :resize => [800, 800]
 
       version :thumb do
@@ -135,8 +130,7 @@ One important thing to remember is that process is called *before* versions are 
 
 It is possible to nest versions within versions:
 
-    class MyUploader
-      include CarrierWave::Uploader
+    class MyUploader < CarrierWave::Uploader::Base
 
       version :animal do
         version :human
@@ -178,9 +172,7 @@ NOTE: this feature currently requires write access to your filesystem. If write 
 
 In many cases, especially when working with images, it might be a good idea to provide a default path, a fallback in case no file has been uploaded. You can do this easily by overriding the +default_path+ method in your uploader:
 
-    class MyUploader
-      include CarrierWave::Uploader
-
+    class MyUploader < CarrierWave::Uploader::Base
       def default_path
         "images/fallback/" + [version_name, "default.png"].compact.join('_')
       end
@@ -198,9 +190,7 @@ Do this in an initializer in Rails, and in a +before_app_loads+ block in Merb.
 
 And then in your uploader, set the storage to :s3
 
-    class AvatarUploader
-      include CarrierWave::Uploader
-
+    class AvatarUploader < 
       storage :s3
     end
 
@@ -210,15 +200,13 @@ That's it! You can still use the +CarrierWave::Uploader#url+ method to return th
 
 If you're uploading images, you'll probably want to manipulate them in some way, you might want to create thumbnail images for example. CarrierWave comes with a small library to make manipulating images with RMagick easier, you'll need to include it in your Uploader:
 
-    class AvatarUploader
-      include CarrierWave::Uploader
+    class AvatarUploader < CarrierWave::Uploader::Base
       include CarrierWave::RMagick
     end
 
 The RMagick module gives you a few methods, like +CarrierWave::RMagick#crop_resized+ which manipulate the image file in some way. You can set a +process+ callback, which will call that method any time a file is uploaded.
 
-    class AvatarUploader
-      include CarrierWave::Uploader
+    class AvatarUploader < CarrierWave::Uploader::Base
       include CarrierWave::RMagick
       
       process :crop_resized => [200, 200]
@@ -235,8 +223,7 @@ Check out the manipulate! method, which makes it easy for you to write your own 
 
 ImageScience works the same way as RMagick.
 
-    class AvatarUploader
-      include CarrierWave::Uploader
+    class AvatarUploader < CarrierWave::Uploader::Base
       include CarrierWave::ImageScience
       
       process :crop_resized => [200, 200]
@@ -246,8 +233,7 @@ ImageScience works the same way as RMagick.
 
 If you are using Paperclip, you can use the provided compatibility module:
 
-    class AvatarUploader
-      include CarrierWave::Uploader
+    class AvatarUploader < CarrierWave::Uploader::Base
       include CarrierWave::Compatibility::Paperclip
     end
 
