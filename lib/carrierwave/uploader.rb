@@ -31,6 +31,7 @@ module CarrierWave
       use CarrierWave::Uploader::Cache
       use CarrierWave::Uploader::Store
       use CarrierWave::Uploader::Remove
+      use CarrierWave::Uploader::ExtensionWhitelist
       use CarrierWave::Uploader::Processing
       use CarrierWave::Uploader::Versions
     end # Base

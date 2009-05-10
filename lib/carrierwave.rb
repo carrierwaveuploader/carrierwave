@@ -56,6 +56,7 @@ module CarrierWave
     autoload :Versions, 'carrierwave/uploader/versions'
     autoload :Remove, 'carrierwave/uploader/remove'
     autoload :Configurable, 'carrierwave/uploader/configurable'
+    autoload :ExtensionWhitelist, 'carrierwave/uploader/extension_whitelist'
     autoload :Proxy, 'carrierwave/uploader/proxy'
     autoload :Url, 'carrierwave/uploader/url'
     autoload :Mountable, 'carrierwave/uploader/mountable'

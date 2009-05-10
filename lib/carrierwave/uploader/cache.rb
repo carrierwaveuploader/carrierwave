@@ -54,10 +54,6 @@ module CarrierWave
 
         unless new_file.empty?
           with_callbacks(:cache, new_file) do
-            if extension_white_list and not extension_white_list.include?(new_file.extension.to_s)
-              raise CarrierWave::IntegrityError, "You are not allowed to upload #{new_file.extension.inspect} files, allowed types: #{extension_white_list.inspect}"
-            end
-
             self.cache_id = CarrierWave.generate_cache_id unless cache_id
 
             @file = new_file

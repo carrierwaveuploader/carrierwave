@@ -20,22 +20,6 @@ module CarrierWave
         CarrierWave.config[:public]
       end
 
-      ##
-      # Override this method in your uploader to provide a white list of extensions which
-      # are allowed to be uploaded.
-      #
-      # === Returns
-      #
-      # [NilClass, Array[String]] a white list of extensions which are allowed to be uploaded
-      #
-      # === Examples
-      #
-      #     def extension_white_list
-      #       %w(jpg jpeg gif png)
-      #     end
-      #
-      def extension_white_list; end
-
       def default_path; end
 
     end # Configurable
