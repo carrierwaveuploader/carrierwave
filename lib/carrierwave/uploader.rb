@@ -6,6 +6,7 @@ require 'carrierwave/uploader/remove'
 require 'carrierwave/uploader/configurable'
 require 'carrierwave/uploader/proxy'
 require 'carrierwave/uploader/url'
+require 'carrierwave/uploader/mountable'
 
 module CarrierWave
 
@@ -29,6 +30,7 @@ module CarrierWave
     include CarrierWave::Uploader::Configurable
     include CarrierWave::Uploader::Proxy
     include CarrierWave::Uploader::Url
+    include CarrierWave::Uploader::Mountable
     include CarrierWave::Uploader::Cache
     include CarrierWave::Uploader::Store
     include CarrierWave::Uploader::Remove
@@ -53,40 +55,7 @@ module CarrierWave
       Time.now.strftime('%Y%m%d-%H%M') + '-' + Process.pid.to_s + '-' + ("%04d" % rand(9999))
     end
 
-    attr_reader :file, :model, :mounted_as
-
-    ##
-    # If a model is given as the first parameter, it will stored in the uploader, and
-    # available throught +#model+. Likewise, mounted_as stores the name of the column
-    # where this instance of the uploader is mounted. These values can then be used inside
-    # your uploader.
-    #
-    # If you do not wish to mount your uploaders with the ORM extensions in -more then you
-    # can override this method inside your uploader. Just be sure to call +super+
-    #
-    # === Parameters
-    #
-    # [model (Object)] Any kind of model object
-    # [mounted_as (Symbol)] The name of the column where this uploader is mounted
-    #
-    # === Examples
-    #
-    #     class MyUploader
-    #       include CarrierWave::Uploader
-    #
-    #       def store_dir
-    #         File.join('public', 'files', mounted_as, model.permalink)
-    #       end
-    #     end
-    #
-    def initialize(model=nil, mounted_as=nil)
-      @model = model
-      @mounted_as = mounted_as
-      if default_path
-        @file = CarrierWave::SanitizedFile.new(File.expand_path(default_path, public))
-        def @file.blank?; true; end
-      end
-    end
+    attr_reader :file
 
   end # Uploader
 end # CarrierWave
