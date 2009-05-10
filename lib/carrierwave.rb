@@ -3,6 +3,12 @@ require 'fileutils'
 module CarrierWave
   class << self
     attr_accessor :config, :logger
+
+    def logger
+      return @logger if @logger
+      require 'logger'
+      @logger = Logger.new(STDOUT)
+    end
   end
 
   class UploadError < StandardError; end
