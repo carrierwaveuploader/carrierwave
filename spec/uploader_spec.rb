@@ -484,33 +484,6 @@ describe CarrierWave::Uploader do
     end
   end
   
-  describe '#retrieve_from_cache' do
-    it "should cache a file" do
-      @uploader.retrieve_from_cache('20071201-1234-345-2255/test.jpeg')
-      @uploader.file.should be_an_instance_of(CarrierWave::SanitizedFile)
-    end
-    
-    it "should not overwrite a file that has already been cached" do
-      @uploader.cache!(File.open(file_path('test.jpg')))
-      @uploader.retrieve_from_cache('20071201-1234-345-2255/bork.txt')
-      @uploader.current_path.should =~ /test.jpg$/
-    end
-
-    it "should do nothing when the cache_id has an invalid format" do
-      @uploader.retrieve_from_cache('12345/test.jpeg')
-      @uploader.file.should be_nil
-      @uploader.filename.should be_nil
-      @uploader.cache_name.should be_nil
-    end
-    
-    it "should do nothing when the filename contains invalid characters" do
-      @uploader.retrieve_from_cache('20071201-1234-345-2255/te??%st.jpeg')
-      @uploader.file.should be_nil
-      @uploader.filename.should be_nil
-      @uploader.cache_name.should be_nil
-    end
-  end
-  
   describe '#store!' do
     before do
       @file = File.open(file_path('test.jpg'))
@@ -625,50 +598,6 @@ describe CarrierWave::Uploader do
       @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
       @uploader.retrieve_from_store!('bork.txt')
       @uploader.file.should == @stored_file
-    end
-  end
-  
-  describe '#retrieve_from_store' do
-    before do
-      @stored_file = mock('a stored file')
-      @stored_file.stub!(:path).and_return('/path/to/somewhere')
-      @stored_file.stub!(:url).and_return('http://www.example.com')
-      @stored_file.stub!(:identifier).and_return('this-is-me')
-      @stored_file.stub!(:read).and_return('here be content')
-
-      @uploader_class.storage.stub!(:retrieve!).and_return(@stored_file)
-    end
-
-    it "should set the current path" do
-      @uploader.retrieve_from_store('monkey.txt')
-      @uploader.current_path.should == '/path/to/somewhere'
-    end
-
-    it "should set the url" do
-      @uploader.retrieve_from_store('monkey.txt')
-      @uploader.url.should == 'http://www.example.com'
-    end
-
-    it "should set the identifier" do
-      @uploader.retrieve_from_store('monkey.txt')
-      @uploader.identifier.should == 'this-is-me'
-    end
-
-    it "should read out the contents" do
-      @uploader.retrieve_from_store('monkey.txt')
-      @uploader.read.should == 'here be content'
-    end
-    
-    it "should instruct the storage engine to retrieve the file and store the result" do
-      @uploader_class.storage.should_receive(:retrieve!).with(@uploader, 'monkey.txt').and_return(@stored_file)
-      @uploader.retrieve_from_store('monkey.txt')
-      @uploader.file.should == @stored_file
-    end
-    
-    it "should not overwrite a file that has already been cached" do
-      @uploader.cache!(File.open(file_path('test.jpg')))
-      @uploader.retrieve_from_store('bork.txt')
-      @uploader.current_path.should =~ /test.jpg$/
     end
   end
 

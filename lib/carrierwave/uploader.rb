@@ -408,21 +408,6 @@ module CarrierWave
     end
 
     ##
-    # Caches the given file unless a file has already been cached, stored or retrieved.
-    #
-    # === Parameters
-    #
-    # [new_file (File, IOString, Tempfile)] any kind of file object
-    #
-    # === Raises
-    #
-    # [CarrierWave::FormNotMultipart] if the assigned parameter is a string
-    #
-    def cache(new_file)
-      cache!(new_file) if file.blank?
-    end
-
-    ##
     # Caches the given file. Calls process! to trigger any process callbacks.
     #
     # === Parameters
@@ -460,19 +445,6 @@ module CarrierWave
           v.cache!(new_file)
         end
       end
-    end
-
-    ##
-    # Retrieves the file with the given cache_name from the cache, unless a file has
-    # already been cached, stored or retrieved.
-    #
-    # === Parameters
-    #
-    # [cache_name (String)] uniquely identifies a cache file
-    #
-    def retrieve_from_cache(cache_name)
-      retrieve_from_cache!(cache_name) if file.blank?
-    rescue CarrierWave::InvalidParameter
     end
 
     ##
@@ -527,21 +499,6 @@ module CarrierWave
     end
 
     ##
-    # Stores the file by passing it to this Uploader's storage engine, unless a file has
-    # already been cached, stored or retrieved.
-    #
-    # If CarrierWave.config[:use_cache] is true, it will first cache the file
-    # and apply any process callbacks before uploading it.
-    #
-    # === Parameters
-    #
-    # [new_file (File, IOString, Tempfile)] any kind of file object
-    #
-    def store(new_file)
-      store!(new_file) if file.blank?
-    end
-
-    ##
     # Stores the file by passing it to this Uploader's storage engine.
     #
     # If new_file is omitted, a previously cached file will be stored.
@@ -557,19 +514,6 @@ module CarrierWave
         @cache_id = nil
         versions.each { |name, v| v.store!(new_file) }
       end
-    end
-
-    ##
-    # Retrieves the file from the storage, unless a file has
-    # already been cached, stored or retrieved.
-    #
-    # === Parameters
-    #
-    # [identifier (String)] uniquely identifies the file to retrieve
-    #
-    def retrieve_from_store(identifier)
-      retrieve_from_store!(identifier) if file.blank?
-    rescue CarrierWave::InvalidParameter
     end
 
     ##
