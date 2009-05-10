@@ -68,8 +68,6 @@ module CarrierWave
             if CarrierWave.config[:cache_to_cache_dir]
               @file = @file.copy_to(cache_path, CarrierWave.config[:permissions])
             end
-
-            process!
           end
         end
       end

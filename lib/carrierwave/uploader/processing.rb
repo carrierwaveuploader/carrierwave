@@ -1,6 +1,13 @@
 module CarrierWave
   module Uploader
     module Processing
+
+      depends_on CarrierWave::Uploader::Callbacks
+
+      setup do
+        after :cache, :process!
+      end
+
       module ClassMethods
 
         ##
@@ -61,7 +68,7 @@ module CarrierWave
       ##
       # Apply all process callbacks added through CarrierWave.process
       #
-      def process!
+      def process!(new_file=nil)
         self.class.processors.each do |method, args|
           self.send(method, *args)
         end
