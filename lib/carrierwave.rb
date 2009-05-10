@@ -1,9 +1,6 @@
 require 'fileutils'
 require 'carrierwave/core_ext/module_setup'
-require 'carrierwave/core_ext/array_wrap'
-require 'carrierwave/core_ext/object_duplicable'
 require 'carrierwave/core_ext/inheritable_attributes'
-require 'carrierwave/core_ext/callbacks'
 
 module CarrierWave
   class << self
