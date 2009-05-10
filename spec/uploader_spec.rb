@@ -253,7 +253,7 @@ describe CarrierWave::Uploader do
 
   describe '#url' do
     before do
-      CarrierWave::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+      CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
     end
     
     it "should default to nil" do
@@ -303,7 +303,7 @@ describe CarrierWave::Uploader do
   
   describe '#to_s' do
     before do
-      CarrierWave::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+      CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
     end
 
     it "should default to nil" do
@@ -325,7 +325,7 @@ describe CarrierWave::Uploader do
   describe '#cache!' do
     
     before do
-      CarrierWave::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+      CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
     end
     
     it "should cache a file" do
@@ -658,7 +658,7 @@ describe CarrierWave::Uploader do
     describe '#cache!' do
 
       before do
-        CarrierWave::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+        CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
       end
 
       it "should set store_path with versions" do
@@ -834,7 +834,7 @@ describe CarrierWave::Uploader do
     describe '#cache!' do
 
       before do
-        CarrierWave::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+        CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
       end
 
       it "should set the filename to the file's reversed filename" do
@@ -957,7 +957,7 @@ describe CarrierWave::Uploader do
     describe '#cache!' do
 
       before do
-        CarrierWave::Uploader.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+        CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
       end
 
       it "should cache a file" do

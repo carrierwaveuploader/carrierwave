@@ -58,7 +58,7 @@ module CarrierWave
               raise CarrierWave::IntegrityError, "You are not allowed to upload #{new_file.extension.inspect} files, allowed types: #{extension_white_list.inspect}"
             end
 
-            self.cache_id = CarrierWave::Uploader.generate_cache_id unless cache_id
+            self.cache_id = CarrierWave.generate_cache_id unless cache_id
 
             @file = new_file
 

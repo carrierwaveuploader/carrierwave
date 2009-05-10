@@ -11,6 +11,17 @@ module CarrierWave
       require 'logger'
       @logger = Logger.new(STDOUT)
     end
+
+    ##
+    # Generates a unique cache id for use in the caching system
+    #
+    # === Returns
+    #
+    # [String] a cache id in the format YYYYMMDD-HHMM-PID-RND
+    #
+    def generate_cache_id
+      Time.now.strftime('%Y%m%d-%H%M') + '-' + Process.pid.to_s + '-' + ("%04d" % rand(9999))
+    end
   end
 
   class UploadError < StandardError; end
