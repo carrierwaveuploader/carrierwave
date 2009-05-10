@@ -1,5 +1,9 @@
 require 'fileutils'
-require 'active_support/callbacks'
+require 'carrierwave/core_ext/module_setup'
+require 'carrierwave/core_ext/array_wrap'
+require 'carrierwave/core_ext/object_duplicable'
+require 'carrierwave/core_ext/inheritable_attributes'
+require 'carrierwave/core_ext/callbacks'
 
 module CarrierWave
   class << self
@@ -25,7 +29,6 @@ module CarrierWave
   class ProcessingError < UploadError; end
 
   autoload :SanitizedFile, 'carrierwave/sanitized_file'
-  autoload :Uploader, 'carrierwave/uploader'
   autoload :Mount, 'carrierwave/mount'
   autoload :RMagick, 'carrierwave/processing/rmagick'
   autoload :ImageScience, 'carrierwave/processing/image_science'
@@ -34,6 +37,20 @@ module CarrierWave
     autoload :Abstract, 'carrierwave/storage/abstract'
     autoload :File, 'carrierwave/storage/file'
     autoload :S3, 'carrierwave/storage/s3'
+  end
+
+  module Uploader
+    autoload :Base, 'carrierwave/uploader'
+    autoload :Cache, 'carrierwave/uploader/cache'
+    autoload :Store, 'carrierwave/uploader/store'
+    autoload :Callbacks, 'carrierwave/uploader/callbacks'
+    autoload :Processing, 'carrierwave/uploader/processing'
+    autoload :Versions, 'carrierwave/uploader/versions'
+    autoload :Remove, 'carrierwave/uploader/remove'
+    autoload :Configurable, 'carrierwave/uploader/configurable'
+    autoload :Proxy, 'carrierwave/uploader/proxy'
+    autoload :Url, 'carrierwave/uploader/url'
+    autoload :Mountable, 'carrierwave/uploader/mountable'
   end
 
   module Compatibility

@@ -1,14 +1,3 @@
-require 'carrierwave/uploader/cache'
-require 'carrierwave/uploader/store'
-require 'carrierwave/uploader/callbacks'
-require 'carrierwave/uploader/processing'
-require 'carrierwave/uploader/versions'
-require 'carrierwave/uploader/remove'
-require 'carrierwave/uploader/configurable'
-require 'carrierwave/uploader/proxy'
-require 'carrierwave/uploader/url'
-require 'carrierwave/uploader/mountable'
-
 module CarrierWave
 
   ##
@@ -32,21 +21,16 @@ module CarrierWave
 
       attr_reader :file
 
-      include CarrierWave::Uploader::Configurable
-      include CarrierWave::Uploader::Callbacks
-      include CarrierWave::Uploader::Proxy
-      include CarrierWave::Uploader::Url
-      include CarrierWave::Uploader::Mountable
-      include CarrierWave::Uploader::Cache
-      include CarrierWave::Uploader::Store
-      include CarrierWave::Uploader::Remove
-      include CarrierWave::Uploader::Processing
-      include CarrierWave::Uploader::Versions
-
-      extend CarrierWave::Uploader::Store::ClassMethods
-      extend CarrierWave::Uploader::Processing::ClassMethods
-      extend CarrierWave::Uploader::Versions::ClassMethods
-
+      use CarrierWave::Uploader::Configurable
+      use CarrierWave::Uploader::Callbacks
+      use CarrierWave::Uploader::Proxy
+      use CarrierWave::Uploader::Url
+      use CarrierWave::Uploader::Mountable
+      use CarrierWave::Uploader::Cache
+      use CarrierWave::Uploader::Store
+      use CarrierWave::Uploader::Remove
+      use CarrierWave::Uploader::Processing
+      use CarrierWave::Uploader::Versions
     end
 
     ##

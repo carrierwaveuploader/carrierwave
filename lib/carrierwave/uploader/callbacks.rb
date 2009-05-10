@@ -4,8 +4,8 @@ module CarrierWave
 
       def self.append_features(base)
         super
-        base.send(:include, ActiveSupport::Callbacks)
-        base.define_callbacks :before_cache, :after_cache
+        base.send(:include, ActiveSupport::NewCallbacks)
+        base.define_callbacks :cache, :store, :remove
       end # ClassMethods
 
     end # Url

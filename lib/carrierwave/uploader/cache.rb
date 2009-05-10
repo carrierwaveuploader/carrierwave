@@ -2,6 +2,8 @@ module CarrierWave
   module Uploader
     module Cache
 
+      depends_on CarrierWave::Uploader::Callbacks
+
       ##
       # Returns true if the uploader has been cached
       #
