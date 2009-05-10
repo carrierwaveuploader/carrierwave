@@ -8,3 +8,4 @@ more/activerecord/spec/db
 more/activerecord/spec/public
 more/datamapper/spec/public
 *.project
+spec/test.log

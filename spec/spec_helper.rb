@@ -18,6 +18,9 @@ require 'spec/autorun'
 
 require 'carrierwave'
 
+require 'logger'
+CarrierWave.logger = Logger.new(File.join(File.dirname(__FILE__), 'test.log'))
+
 alias :running :lambda
 
 def file_path( *paths )
