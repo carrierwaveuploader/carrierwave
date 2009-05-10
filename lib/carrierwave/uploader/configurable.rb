@@ -20,8 +20,6 @@ module CarrierWave
         CarrierWave.config[:public]
       end
 
-      def default_path; end
-
     end # Configurable
   end # Uploader
 end # CarrierWave

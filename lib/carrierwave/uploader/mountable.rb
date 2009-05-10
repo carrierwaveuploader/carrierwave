@@ -30,10 +30,6 @@ module CarrierWave
       def initialize(model=nil, mounted_as=nil)
         @model = model
         @mounted_as = mounted_as
-        if default_path
-          @file = CarrierWave::SanitizedFile.new(File.expand_path(default_path, public))
-          def @file.blank?; true; end
-        end
       end
 
     end # Mountable
