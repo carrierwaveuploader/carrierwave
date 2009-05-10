@@ -2,18 +2,18 @@ module CarrierWave
   module Uploader
     module Remove
 
+      depends_on CarrierWave::Uploader::Callbacks
+
       ##
       # Removes the file and reset it
       #
       def remove!
-        CarrierWave.logger.info 'CarrierWave: removing file'
-        storage.destroy!(self, file)
-        versions.each do |name, v|
-          CarrierWave.logger.info "CarrierWave: removing file for version #{v.version_name}"
-          v.remove!
+        with_callbacks(:remove) do
+          CarrierWave.logger.info 'CarrierWave: removing file'
+          storage.destroy!(self, file)
+          @file = nil
+          @cache_id = nil
         end
-        @file = nil
-        @cache_id = nil
       end
 
     end # Remove

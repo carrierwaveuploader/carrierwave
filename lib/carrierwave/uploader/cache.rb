@@ -86,10 +86,11 @@ module CarrierWave
       # [CarrierWave::InvalidParameter] if the cache_name is incorrectly formatted.
       #
       def retrieve_from_cache!(cache_name)
-        self.cache_id, self.original_filename = cache_name.to_s.split('/', 2)
-        @filename = original_filename
-        @file = CarrierWave::SanitizedFile.new(cache_path)
-        versions.each { |name, v| v.retrieve_from_cache!(cache_name) }
+        with_callbacks(:retrieve_from_cache, cache_name) do
+          self.cache_id, self.original_filename = cache_name.to_s.split('/', 2)
+          @filename = original_filename
+          @file = CarrierWave::SanitizedFile.new(cache_path)
+        end
       end
 
     private

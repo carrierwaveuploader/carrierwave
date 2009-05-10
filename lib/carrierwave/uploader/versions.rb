@@ -4,6 +4,10 @@ module CarrierWave
 
       setup do
         after :cache, :cache_versions!
+        after :store, :store_versions!
+        after :remove, :remove_versions!
+        after :retrieve_from_cache, :retrieve_versions_from_cache!
+        after :retrieve_from_store, :retrieve_versions_from_store!
       end
 
       module ClassMethods
@@ -101,12 +105,31 @@ module CarrierWave
       end
 
     private
-    
+
       def cache_versions!(new_file)
         versions.each do |name, v|
           v.send(:cache_id=, cache_id)
           v.cache!(new_file)
         end
+      end
+
+      def store_versions!(new_file)
+        versions.each { |name, v| v.store!(new_file) }
+      end
+
+      def remove_versions!
+        versions.each do |name, v|
+          CarrierWave.logger.info "CarrierWave: removing file for version #{v.version_name}"
+          v.remove!
+        end
+      end
+
+      def retrieve_versions_from_cache!(cache_name)
+        versions.each { |name, v| v.retrieve_from_cache!(cache_name) }
+      end
+
+      def retrieve_versions_from_store!(identifier)
+        versions.each { |name, v| v.retrieve_from_store!(identifier) }
       end
 
     end # Versions

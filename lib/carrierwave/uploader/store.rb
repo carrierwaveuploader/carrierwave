@@ -2,6 +2,8 @@ module CarrierWave
   module Uploader
     module Store
 
+      depends_on CarrierWave::Uploader::Callbacks
+
       module ClassMethods
 
         ##
@@ -115,9 +117,10 @@ module CarrierWave
       def store!(new_file=nil)
         cache!(new_file) if new_file
         if @file and @cache_id
-          @file = storage.store!(self, @file)
-          @cache_id = nil
-          versions.each { |name, v| v.store!(new_file) }
+          with_callbacks(:store, new_file) do
+            @file = storage.store!(self, @file)
+            @cache_id = nil
+          end
         end
       end
 
@@ -129,8 +132,9 @@ module CarrierWave
       # [identifier (String)] uniquely identifies the file to retrieve
       #
       def retrieve_from_store!(identifier)
-        @file = storage.retrieve!(self, identifier)
-        versions.each { |name, v| v.retrieve_from_store!(identifier) }
+        with_callbacks(:retrieve_from_store, identifier) do
+          @file = storage.retrieve!(self, identifier)
+        end
       end
 
     private
