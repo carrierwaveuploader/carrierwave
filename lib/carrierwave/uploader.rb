@@ -1,5 +1,6 @@
 require 'carrierwave/uploader/cache'
 require 'carrierwave/uploader/store'
+require 'carrierwave/uploader/callbacks'
 require 'carrierwave/uploader/processing'
 require 'carrierwave/uploader/versions'
 require 'carrierwave/uploader/remove'
@@ -29,7 +30,10 @@ module CarrierWave
 
     class Base
 
+      attr_reader :file
+
       include CarrierWave::Uploader::Configurable
+      include CarrierWave::Uploader::Callbacks
       include CarrierWave::Uploader::Proxy
       include CarrierWave::Uploader::Url
       include CarrierWave::Uploader::Mountable
@@ -42,8 +46,6 @@ module CarrierWave
       extend CarrierWave::Uploader::Store::ClassMethods
       extend CarrierWave::Uploader::Processing::ClassMethods
       extend CarrierWave::Uploader::Versions::ClassMethods
-
-      attr_reader :file
 
     end
 

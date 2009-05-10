@@ -1,4 +1,5 @@
 require 'fileutils'
+require 'active_support/callbacks'
 
 module CarrierWave
   class << self
