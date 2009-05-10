@@ -1,6 +1,11 @@
 module CarrierWave
   module Uploader
     module Versions
+
+      setup do
+        after :cache, :cache_versions!
+      end
+
       module ClassMethods
 
         def version_names
@@ -92,6 +97,15 @@ module CarrierWave
           versions[args.first.to_sym].url(*args[1..-1])
         else
           super()
+        end
+      end
+
+    private
+    
+      def cache_versions!(new_file)
+        versions.each do |name, v|
+          v.send(:cache_id=, cache_id)
+          v.cache!(new_file)
         end
       end
 

@@ -53,26 +53,23 @@ module CarrierWave
         raise CarrierWave::FormNotMultipart if new_file.is_path?
 
         unless new_file.empty?
-          if extension_white_list and not extension_white_list.include?(new_file.extension.to_s)
-            raise CarrierWave::IntegrityError, "You are not allowed to upload #{new_file.extension.inspect} files, allowed types: #{extension_white_list.inspect}"
-          end
+          with_callbacks(:cache, new_file) do
+            if extension_white_list and not extension_white_list.include?(new_file.extension.to_s)
+              raise CarrierWave::IntegrityError, "You are not allowed to upload #{new_file.extension.inspect} files, allowed types: #{extension_white_list.inspect}"
+            end
 
-          self.cache_id = CarrierWave::Uploader.generate_cache_id unless cache_id
+            self.cache_id = CarrierWave::Uploader.generate_cache_id unless cache_id
 
-          @file = new_file
+            @file = new_file
 
-          @filename = new_file.filename
-          self.original_filename = new_file.filename
+            @filename = new_file.filename
+            self.original_filename = new_file.filename
 
-          if CarrierWave.config[:cache_to_cache_dir]
-            @file = @file.copy_to(cache_path, CarrierWave.config[:permissions])
-          end
+            if CarrierWave.config[:cache_to_cache_dir]
+              @file = @file.copy_to(cache_path, CarrierWave.config[:permissions])
+            end
 
-          process!
-
-          versions.each do |name, v|
-            v.send(:cache_id=, cache_id)
-            v.cache!(new_file)
+            process!
           end
         end
       end
