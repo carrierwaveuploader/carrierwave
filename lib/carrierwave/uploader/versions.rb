@@ -67,6 +67,34 @@ module CarrierWave
         self.class.version_names.join('_').to_sym unless self.class.version_names.blank?
       end
 
+      ##
+      # When given a version name as a parameter, will return the url for that version
+      # This also works with nested versions.
+      #
+      # === Example
+      #
+      #     my_uploader.url                 # => /path/to/my/uploader.gif
+      #     my_uploader.url(:thumb)         # => /path/to/my/thumb_uploader.gif
+      #     my_uploader.url(:thumb, :small) # => /path/to/my/thumb_small_uploader.gif
+      #
+      # === Parameters
+      #
+      # [*args (Symbol)] any number of versions
+      #
+      # === Returns
+      #
+      # [String] the location where this file is accessible via a url
+      #
+      def url(*args)
+        if(args.first)
+          raise ArgumentError, "Version #{args.first} doesn't exist!" if versions[args.first.to_sym].nil?
+          # recursively proxy to version
+          versions[args.first.to_sym].url(*args[1..-1])
+        else
+          super()
+        end
+      end
+
     end # Versions
   end # Uploader
 end # CarrierWave
