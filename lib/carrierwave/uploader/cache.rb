@@ -2,6 +2,7 @@ module CarrierWave
   module Uploader
     module Cache
 
+      depends_on CarrierWave::Uploader::Paths
       depends_on CarrierWave::Uploader::Callbacks
 
       ##

@@ -55,7 +55,7 @@ module CarrierWave
     autoload :Processing, 'carrierwave/uploader/processing'
     autoload :Versions, 'carrierwave/uploader/versions'
     autoload :Remove, 'carrierwave/uploader/remove'
-    autoload :Configurable, 'carrierwave/uploader/configurable'
+    autoload :Paths, 'carrierwave/uploader/paths'
     autoload :ExtensionWhitelist, 'carrierwave/uploader/extension_whitelist'
     autoload :DefaultPath, 'carrierwave/uploader/default_path'
     autoload :Proxy, 'carrierwave/uploader/proxy'

@@ -1,6 +1,6 @@
 module CarrierWave
   module Uploader
-    module Configurable
+    module Paths
 
       ##
       # === Returns
@@ -20,6 +20,6 @@ module CarrierWave
         CarrierWave.config[:public]
       end
 
-    end # Configurable
+    end # Paths
   end # Uploader
 end # CarrierWave

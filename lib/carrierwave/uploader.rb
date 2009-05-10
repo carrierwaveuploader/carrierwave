@@ -23,7 +23,7 @@ module CarrierWave
     class Base
       attr_reader :file
 
-      use CarrierWave::Uploader::Configurable
+      use CarrierWave::Uploader::Paths
       use CarrierWave::Uploader::Callbacks
       use CarrierWave::Uploader::Proxy
       use CarrierWave::Uploader::Url
