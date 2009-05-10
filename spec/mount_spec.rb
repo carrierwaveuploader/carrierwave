@@ -259,10 +259,34 @@ describe CarrierWave::Mount do
       end
 
       it "should remove an uploaded file when remove_image? returns true" do
+        @instance.should_receive(:write_uploader).with(:image, "")
         @instance.image = stub_file('test.jpg')
+        path = @instance.image.current_path
         @instance.remove_image = true
         @instance.store_image!
         @instance.image.should be_blank
+        File.exist?(path).should be_false
+      end
+    end
+
+    describe '#remove_image!' do
+
+      before do
+        @instance.stub!(:write_uploader)
+        @instance.stub!(:read_uploader).and_return(nil)
+      end
+
+      it "should do nothing when no file has been uploaded" do
+        @instance.remove_image!
+        @instance.image.should be_blank
+      end
+
+      it "should remove an uploaded file" do
+        @instance.image = stub_file('test.jpg')
+        path = @instance.image.current_path
+        @instance.remove_image!
+        @instance.image.should be_blank
+        File.exist?(path).should be_false
       end
     end
 
