@@ -36,6 +36,14 @@ CarrierWave.config[:root] = File.expand_path(File.dirname(__FILE__))
 
 module CarrierWave
   module Test
+    module MockStorage
+      def mock_storage(kind)
+        storage = mock("storage for #{kind} uploader")
+        storage.stub!(:setup!)
+        storage
+      end
+    end
+    
     module MockFiles
       def stub_merb_tempfile(filename)
         raise "#{path} file does not exist" unless File.exist?(file_path(filename))
@@ -85,4 +93,5 @@ end
 Spec::Runner.configure do |config|
   config.include CarrierWave::Test::Matchers
   config.include CarrierWave::Test::MockFiles
+  config.include CarrierWave::Test::MockStorage
 end

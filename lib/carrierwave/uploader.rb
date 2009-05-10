@@ -585,17 +585,14 @@ module CarrierWave
     end
 
     def remove!
-      CarrierWave.logger.info 'CarrierWave: removing files.....'
-      remove_version_files!(versions)
-      storage.destroy!(self,@file)
-    end
-
-    def remove_version_files!(versions)
-      CarrierWave.logger.info 'CarrierWave: removing version files.....'
-      versions.each {|name,v|
-        remove_version_files!(v.versions) unless v.versions.empty?
-        storage.destroy!(self, v.file)
-      }
+      CarrierWave.logger.info 'CarrierWave: removing file'
+      storage.destroy!(self, file)
+      versions.each do |name, v|
+        CarrierWave.logger.info "CarrierWave: removing file for version #{v.version_name}"
+        v.remove!
+      end
+      @file = nil
+      @cache_id = nil
     end
 
   private
