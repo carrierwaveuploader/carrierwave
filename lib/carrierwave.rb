@@ -1,4 +1,6 @@
 require 'fileutils'
+require 'carrierwave/core_ext/module_setup'
+require 'carrierwave/core_ext/inheritable_attributes'
 
 module CarrierWave
   class << self
@@ -8,6 +10,17 @@ module CarrierWave
       return @logger if @logger
       require 'logger'
       @logger = Logger.new(STDOUT)
+    end
+
+    ##
+    # Generates a unique cache id for use in the caching system
+    #
+    # === Returns
+    #
+    # [String] a cache id in the format YYYYMMDD-HHMM-PID-RND
+    #
+    def generate_cache_id
+      Time.now.strftime('%Y%m%d-%H%M') + '-' + Process.pid.to_s + '-' + ("%04d" % rand(9999))
     end
   end
 
@@ -24,7 +37,6 @@ module CarrierWave
   class ProcessingError < UploadError; end
 
   autoload :SanitizedFile, 'carrierwave/sanitized_file'
-  autoload :Uploader, 'carrierwave/uploader'
   autoload :Mount, 'carrierwave/mount'
   autoload :RMagick, 'carrierwave/processing/rmagick'
   autoload :ImageScience, 'carrierwave/processing/image_science'
@@ -33,6 +45,22 @@ module CarrierWave
     autoload :Abstract, 'carrierwave/storage/abstract'
     autoload :File, 'carrierwave/storage/file'
     autoload :S3, 'carrierwave/storage/s3'
+  end
+
+  module Uploader
+    autoload :Base, 'carrierwave/uploader'
+    autoload :Cache, 'carrierwave/uploader/cache'
+    autoload :Store, 'carrierwave/uploader/store'
+    autoload :Callbacks, 'carrierwave/uploader/callbacks'
+    autoload :Processing, 'carrierwave/uploader/processing'
+    autoload :Versions, 'carrierwave/uploader/versions'
+    autoload :Remove, 'carrierwave/uploader/remove'
+    autoload :Paths, 'carrierwave/uploader/paths'
+    autoload :ExtensionWhitelist, 'carrierwave/uploader/extension_whitelist'
+    autoload :DefaultPath, 'carrierwave/uploader/default_path'
+    autoload :Proxy, 'carrierwave/uploader/proxy'
+    autoload :Url, 'carrierwave/uploader/url'
+    autoload :Mountable, 'carrierwave/uploader/mountable'
   end
 
   module Compatibility

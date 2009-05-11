@@ -5,8 +5,7 @@ require 'carrierwave/orm/activerecord'
 describe CarrierWave::Compatibility::Paperclip do
 
   before do
-    @uploader_class = Class.new do
-      include CarrierWave::Uploader
+    @uploader_class = Class.new(CarrierWave::Uploader::Base) do
       include CarrierWave::Compatibility::Paperclip
     end
     @model = mock('a model')

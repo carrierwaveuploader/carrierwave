@@ -44,9 +44,7 @@ describe CarrierWave::ActiveRecord do
         @class = Event#{$arclass}
       RUBY
       @class.table_name = "events"
-      @uploader = Class.new do
-        include CarrierWave::Uploader
-      end
+      @uploader = Class.new(CarrierWave::Uploader::Base)
       @class.mount_uploader(:image, @uploader)
       @event = @class.new
     end
