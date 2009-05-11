@@ -484,33 +484,6 @@ describe CarrierWave::Uploader do
     end
   end
   
-  describe '#retrieve_from_cache' do
-    it "should cache a file" do
-      @uploader.retrieve_from_cache('20071201-1234-345-2255/test.jpeg')
-      @uploader.file.should be_an_instance_of(CarrierWave::SanitizedFile)
-    end
-    
-    it "should not overwrite a file that has already been cached" do
-      @uploader.cache!(File.open(file_path('test.jpg')))
-      @uploader.retrieve_from_cache('20071201-1234-345-2255/bork.txt')
-      @uploader.current_path.should =~ /test.jpg$/
-    end
-
-    it "should do nothing when the cache_id has an invalid format" do
-      @uploader.retrieve_from_cache('12345/test.jpeg')
-      @uploader.file.should be_nil
-      @uploader.filename.should be_nil
-      @uploader.cache_name.should be_nil
-    end
-    
-    it "should do nothing when the filename contains invalid characters" do
-      @uploader.retrieve_from_cache('20071201-1234-345-2255/te??%st.jpeg')
-      @uploader.file.should be_nil
-      @uploader.filename.should be_nil
-      @uploader.cache_name.should be_nil
-    end
-  end
-  
   describe '#store!' do
     before do
       @file = File.open(file_path('test.jpg'))
@@ -627,51 +600,58 @@ describe CarrierWave::Uploader do
       @uploader.file.should == @stored_file
     end
   end
-  
-  describe '#retrieve_from_store' do
+
+  describe '#remove!' do
     before do
+      @file = File.open(file_path('test.jpg'))
+
       @stored_file = mock('a stored file')
       @stored_file.stub!(:path).and_return('/path/to/somewhere')
       @stored_file.stub!(:url).and_return('http://www.example.com')
       @stored_file.stub!(:identifier).and_return('this-is-me')
-      @stored_file.stub!(:read).and_return('here be content')
-
-      @uploader_class.storage.stub!(:retrieve!).and_return(@stored_file)
+      
+      @uploader_class.storage.stub!(:store!).and_return(@stored_file)
+      @uploader_class.storage.stub!(:destroy!)
+      @uploader.store!(@file)
+    end
+  
+    it "should reset the current path" do
+      @uploader.remove!
+      @uploader.current_path.should be_nil
     end
 
-    it "should set the current path" do
-      @uploader.retrieve_from_store('monkey.txt')
-      @uploader.current_path.should == '/path/to/somewhere'
+    it "should not be cached" do
+      @uploader.remove!
+      @uploader.should_not be_cached
     end
 
-    it "should set the url" do
-      @uploader.retrieve_from_store('monkey.txt')
-      @uploader.url.should == 'http://www.example.com'
-    end
-
-    it "should set the identifier" do
-      @uploader.retrieve_from_store('monkey.txt')
-      @uploader.identifier.should == 'this-is-me'
-    end
-
-    it "should read out the contents" do
-      @uploader.retrieve_from_store('monkey.txt')
-      @uploader.read.should == 'here be content'
+    it "should reset the url" do
+      @uploader.cache!(@file)
+      @uploader.remove!
+      @uploader.url.should be_nil
     end
     
-    it "should instruct the storage engine to retrieve the file and store the result" do
-      @uploader_class.storage.should_receive(:retrieve!).with(@uploader, 'monkey.txt').and_return(@stored_file)
-      @uploader.retrieve_from_store('monkey.txt')
-      @uploader.file.should == @stored_file
+    it "should reset the identifier" do
+      @uploader.remove!
+      @uploader.identifier.should be_nil
     end
     
-    it "should not overwrite a file that has already been cached" do
-      @uploader.cache!(File.open(file_path('test.jpg')))
-      @uploader.retrieve_from_store('bork.txt')
-      @uploader.current_path.should =~ /test.jpg$/
+    it "should instruct the storage engine to remove the file" do
+      @uploader_class.storage.should_receive(:destroy!).with(@uploader, @uploader.file)
+      @uploader.remove!
+    end
+    
+    it "should reset the cache_name" do
+      @uploader.cache!(@file)
+      @uploader.remove!
+      @uploader.cache_name.should be_nil
+    end
+
+    it "should do nothing when trying to remove an empty file" do
+      running { @uploader.remove! }.should_not raise_error
     end
   end
-  
+
   describe 'with a version' do
     before do
       @uploader_class.version(:thumb)
@@ -716,41 +696,102 @@ describe CarrierWave::Uploader do
     
     describe '#store!' do
       before do
+        @uploader_class.storage = mock_storage('base')
+        @uploader_class.version(:thumb).storage = mock_storage('thumb')
+
         @file = File.open(file_path('test.jpg'))
 
-        @stored_file = mock('a stored file')
-        @stored_file.stub!(:path).and_return('/path/to/somewhere')
-        @stored_file.stub!(:url).and_return('http://www.example.com')
+        @base_stored_file = mock('a stored file')
+        @base_stored_file.stub!(:path).and_return('/path/to/somewhere')
+        @base_stored_file.stub!(:url).and_return('http://www.example.com')
 
-        @uploader_class.storage.stub!(:store!).and_return(@stored_file)
+        @thumb_stored_file = mock('a thumb version of a stored file')
+        @thumb_stored_file.stub!(:path).and_return('/path/to/somewhere/thumb')
+        @thumb_stored_file.stub!(:url).and_return('http://www.example.com/thumb')
+
+        @uploader_class.storage.stub!(:store!).and_return(@base_stored_file)
+        @uploader_class.version(:thumb).storage.stub!(:store!).and_return(@thumb_stored_file)
       end
-      
+
       after do
         CarrierWave.config[:use_cache] = true
       end
-      
+
       it "should set the current path for the version" do
-        pending "find a decent way to spec this"
         @uploader.store!(@file)
         @uploader.current_path.should == '/path/to/somewhere'
-        @uploader.thumb.current_path.should == '/path/to/somewhere'
+        @uploader.thumb.current_path.should == '/path/to/somewhere/thumb'
       end
-      
+
       it "should set the url" do
-        pending "find a decent way to spec this"
         @uploader.store!(@file)
         @uploader.url.should == 'http://www.example.com'
+        @uploader.thumb.url.should == 'http://www.example.com/thumb'
       end
-    
+
       it "should, if a file is given as argument, set the store_path" do
         @uploader.store!(@file)
         @uploader.store_path.should == 'uploads/test.jpg'
         @uploader.thumb.store_path.should == 'uploads/thumb_test.jpg'
         @uploader.thumb.store_path('kebab.png').should == 'uploads/thumb_kebab.png'
       end
-    
+
+      it "should instruct the storage engine to store the file and its version" do
+        @uploader.cache!(@file)
+        @uploader_class.storage.should_receive(:store!).with(@uploader, @uploader.file).and_return(:monkey)
+        @uploader_class.version(:thumb).storage.should_receive(:store!).with(@uploader.thumb, @uploader.thumb.file).and_return(:gorilla)
+        @uploader.store!
+      end
+
     end
-    
+
+    describe '#remove!' do
+      before do
+        @uploader_class.storage = mock_storage('base')
+        @uploader_class.version(:thumb).storage = mock_storage('thumb')
+
+        @file = File.open(file_path('test.jpg'))
+
+        @base_stored_file = mock('a stored file')
+        @thumb_stored_file = mock('a thumb version of a stored file')
+
+        @uploader_class.storage.stub!(:store!).and_return(@base_stored_file)
+        @uploader_class.version(:thumb).storage.stub!(:store!).and_return(@thumb_stored_file)
+
+        @uploader_class.storage.stub!(:store!).and_return(@base_stored_file)
+        @uploader_class.version(:thumb).storage.stub!(:store!).and_return(@thumb_stored_file)
+
+        @uploader_class.storage.stub!(:destroy!)
+        @uploader_class.version(:thumb).storage.stub!(:destroy!)
+
+        @uploader.store!(@file)
+      end
+
+      after do
+        CarrierWave.config[:use_cache] = true
+      end
+
+      it "should reset the current path for the version" do
+        @uploader.remove!
+        @uploader.current_path.should be_nil
+        @uploader.thumb.current_path.should be_nil
+      end
+
+      it "should reset the url" do
+        @uploader.remove!
+        @uploader.url.should be_nil
+        @uploader.thumb.url.should be_nil
+      end
+
+      it "should instruct the storage engine to remove the file and its versions" do
+        @uploader_class.storage.should_receive(:destroy!).with(@uploader, @uploader.file)
+        @uploader_class.version(:thumb).storage.should_receive(:destroy!).with(@uploader.thumb, @uploader.thumb.file)
+        @uploader.remove!
+      end
+
+    end
+
+
     describe '#retrieve_from_store!' do
       before do
         @stored_file = mock('a stored file')

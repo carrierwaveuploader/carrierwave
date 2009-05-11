@@ -70,6 +70,7 @@ module CarrierWave
     # [remove_image?]           Whether the file should be removed when store_image! is called.
     #
     # [store_image!]            Stores a file that has been assigned with +image=+
+    # [remove_image!]           Removes the uploaded file from the filesystem.
     #
     # [image_integrity_error]   Returns an error object if the last file to be assigned caused an integrty error
     # [image_processing_error]  Returns an error object if the last file to be assigned caused a processing error
@@ -259,7 +260,7 @@ module CarrierWave
       def store!
         unless uploader.blank?
           if remove?
-            self.uploader = nil
+            uploader.remove!
             record.write_uploader(serialization_column, '')
           else
             uploader.store!

@@ -25,8 +25,10 @@ module CarrierWave
       # [bool] True if file was removed or false
       #
       def self.destroy!(uploader, file)
-        CarrierWave.logger.info "CarrierWave::Storage::File: removing file #{file.path}"
-        file.delete
+        unless file.blank?
+          CarrierWave.logger.info "CarrierWave::Storage::File: removing file #{file.path}"
+          file.delete
+        end
       end
 
       ##
