@@ -35,6 +35,6 @@ module CarrierWave
         end
       end # ClassMethods
 
-    end # Url
+    end # Callbacks
   end # Uploader
 end # CarrierWave
