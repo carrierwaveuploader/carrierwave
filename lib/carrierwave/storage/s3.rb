@@ -95,7 +95,26 @@ module CarrierWave
       def self.retrieve!(uploader, identifier)
         self.new(uploader.store_path(identifier), identifier)
       end
-      
+
+      ##
+      # Delete the file from Amazon S3
+      #
+      # === Parameters
+      #
+      # [uploader (CarrierWave::Uploader)] an uploader object
+      # [file (CarrierWave::SanitizedFile)] the file to delete
+      #
+      # === Returns
+      #
+      # [bool] True if file was removed or false
+      #
+      def self.destroy!(uploader, file)
+        unless uploader.blank?
+          CarrierWave.logger.info "CarrierWave::Storage::S3: removing file #{file.path}"
+          AWS::S3::S3Object.delete(uploader.store_path, bucket)
+        end
+      end
+
       ##
       # Returns the filename on S3
       #
