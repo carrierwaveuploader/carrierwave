@@ -206,11 +206,8 @@ describe CarrierWave::Uploader do
         @uploader_class.storage.stub!(:store!).and_return(@base_stored_file)
         @uploader_class.version(:thumb).storage.stub!(:store!).and_return(@thumb_stored_file)
 
-        @uploader_class.storage.stub!(:store!).and_return(@base_stored_file)
-        @uploader_class.version(:thumb).storage.stub!(:store!).and_return(@thumb_stored_file)
-
-        @uploader_class.storage.stub!(:destroy!)
-        @uploader_class.version(:thumb).storage.stub!(:destroy!)
+        @base_stored_file.stub!(:delete)
+        @thumb_stored_file.stub!(:delete)
 
         @uploader.store!(@file)
       end
@@ -231,9 +228,9 @@ describe CarrierWave::Uploader do
         @uploader.thumb.url.should be_nil
       end
 
-      it "should instruct the storage engine to remove the file and its versions" do
-        @uploader_class.storage.should_receive(:destroy!).with(@uploader, @uploader.file)
-        @uploader_class.version(:thumb).storage.should_receive(:destroy!).with(@uploader.thumb, @uploader.thumb.file)
+      it "should delete all the files" do
+        @base_stored_file.should_receive(:delete)
+        @thumb_stored_file.should_receive(:delete)
         @uploader.remove!
       end
 

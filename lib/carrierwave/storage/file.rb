@@ -7,28 +7,9 @@ module CarrierWave
     # pretty much it.
     #
     class File < Abstract
-      
+
       def initialize(uploader)
         @uploader = uploader
-      end
-      
-      ##
-      # Delete the file to the uploader's store path.
-      #
-      # === Parameters
-      #
-      # [uploader (CarrierWave::Uploader)] an uploader object
-      # [file (CarrierWave::SanitizedFile)] the file to store
-      #
-      # === Returns
-      #
-      # [bool] True if file was removed or false
-      #
-      def self.destroy!(uploader, file)
-        unless file.blank?
-          CarrierWave.logger.info "CarrierWave::Storage::File: removing file #{file.path}"
-          file.delete
-        end
       end
 
       ##
@@ -49,7 +30,7 @@ module CarrierWave
         file.move_to(path, CarrierWave.config[:permissions])
         file
       end
-      
+
       ##
       # Retrieve the file from its store path
       #
@@ -67,7 +48,7 @@ module CarrierWave
         path = ::File.expand_path(path, uploader.public)
         CarrierWave::SanitizedFile.new(path)
       end
-      
+
     end # File
   end # Storage
 end # CarrierWave

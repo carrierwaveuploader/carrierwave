@@ -29,8 +29,8 @@ module CarrierWave
     #
     class S3 < Abstract
       
-      def initialize(store_path, identifier)
-        @store_path = store_path
+      def initialize(path, identifier)
+        @path = path
         @identifier = identifier
       end
       
@@ -97,22 +97,14 @@ module CarrierWave
       end
 
       ##
-      # Delete the file from Amazon S3
-      #
-      # === Parameters
-      #
-      # [uploader (CarrierWave::Uploader)] an uploader object
-      # [file (CarrierWave::SanitizedFile)] the file to delete
+      # Returns the current path of the file on S3
       #
       # === Returns
       #
-      # [bool] True if file was removed or false
+      # [String] A path
       #
-      def self.destroy!(uploader, file)
-        unless uploader.blank?
-          CarrierWave.logger.info "CarrierWave::Storage::S3: removing file #{file.path}"
-          AWS::S3::S3Object.delete(uploader.store_path, bucket)
-        end
+      def path
+        @path
       end
 
       ##
@@ -134,7 +126,14 @@ module CarrierWave
       # [String] contents of the file
       #
       def read
-        S3Object.value @store_path, self.class.bucket
+        AWS::S3::S3Object.value @path, self.class.bucket
+      end
+
+      ##
+      # Remove the file from Amazon S3
+      #
+      def delete
+        AWS::S3::S3Object.delete @path, self.class.bucket
       end
 
       ##
@@ -145,7 +144,7 @@ module CarrierWave
       # [String] file's url
       #
       def url
-        ["http://s3.amazonaws.com", self.class.bucket, @store_path].compact.join('/')
+        ["http://s3.amazonaws.com", self.class.bucket, @path].compact.join('/')
       end
       
     end # S3
