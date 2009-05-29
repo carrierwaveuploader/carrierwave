@@ -4,6 +4,7 @@ module CarrierWave
 
       depends_on CarrierWave::Uploader::Paths
       depends_on CarrierWave::Uploader::Callbacks
+      depends_on CarrierWave::Uploader::Cache
 
       module ClassMethods
 

@@ -8,7 +8,7 @@ module CarrierWave
       # [Boolean] Whether the uploaded file is blank
       #
       def blank?
-        !file or file.blank?
+        file.blank?
       end
 
       ##

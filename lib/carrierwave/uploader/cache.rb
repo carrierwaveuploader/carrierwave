@@ -57,13 +57,13 @@ module CarrierWave
           with_callbacks(:cache, new_file) do
             self.cache_id = CarrierWave.generate_cache_id unless cache_id
 
-            @file = new_file
-
             @filename = new_file.filename
             self.original_filename = new_file.filename
 
             if CarrierWave.config[:cache_to_cache_dir]
-              @file = @file.copy_to(cache_path, CarrierWave.config[:permissions])
+              @file = new_file.copy_to(cache_path, CarrierWave.config[:permissions])
+            else
+              @file = new_file
             end
           end
         end
@@ -95,6 +95,8 @@ module CarrierWave
       end
 
       attr_reader :cache_id, :original_filename
+
+      # We can override the full_original_filename method in other modules
       alias_method :full_original_filename, :original_filename
 
       def cache_id=(cache_id)

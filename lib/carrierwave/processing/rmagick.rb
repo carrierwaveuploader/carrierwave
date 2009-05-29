@@ -89,6 +89,33 @@ module CarrierWave
     end
 
     ##
+    # Resize the image to fit within the specified dimensions while retaining
+    # the original aspect ratio. Will only resize the image if it is larger than the
+    # specified dimensions. The resulting image may be shorter or narrower than specified
+    # in the smaller dimension but will not be larger than the specified values.
+    #
+    # === Parameters
+    #
+    # [width (Integer)] the width to scale the image to
+    # [height (Integer)] the height to scale the image to
+    #
+    # === Yields
+    #
+    # [Magick::Image] additional manipulations to perform
+    #
+    def resize_to_limit(width, height)
+      manipulate! do |img|
+        geometry = Magick::Geometry.new(width, height, 0, 0, Magick::GreaterGeometry)
+        new_img = img.change_geometry(geometry) do |new_width, new_height|
+          img.resize(new_width, new_height)
+        end
+        img.destroy!
+        new_img = yield(new_img) if block_given?
+        new_img
+      end
+    end
+
+    ##
     # From the RMagick documentation: "Resize the image to fit within the
     # specified dimensions while retaining the original aspect ratio. The
     # image may be shorter or narrower than specified in the smaller dimension

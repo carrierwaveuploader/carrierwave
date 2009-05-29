@@ -167,7 +167,25 @@ describe CarrierWave::ActiveRecord do
       end
 
     end
-    
+
+    describe '#destroy' do
+      
+      it "should do nothing when no file has been assigned" do
+        @event.save.should be_true
+        @event.destroy
+      end
+      
+      it "should remove the file from the filesystem" do
+        @event.image = stub_file('test.jpeg')
+        @event.save.should be_true
+        @event.image.should be_an_instance_of(@uploader)
+        @event.image.current_path.should == public_path('uploads/test.jpeg')
+        @event.destroy
+        File.exist?(public_path('uploads/test.jpeg')).should be_false
+      end
+
+    end
+
     describe 'with overriddent filename' do
       
       describe '#save' do

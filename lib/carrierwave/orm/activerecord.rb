@@ -25,6 +25,10 @@ module CarrierWave
       before_update do |record|
         record.send("store_#{column}!")
       end
+
+      after_destroy do |record|
+        record.send("remove_#{column}!")
+      end
     end
 
     ##
