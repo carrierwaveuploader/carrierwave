@@ -63,6 +63,37 @@ module CarrierWave
   #
   module RMagick
 
+    def self.included(base)
+      super
+      base.extend(ClassMethods)
+    end
+
+    module ClassMethods
+      def convert(format)
+        process :resize_to_limit => format
+      end
+
+      def resize_to_limit(width, height)
+        process :resize_to_limit => [width, height]
+      end
+
+      def resize_to_fit(width, height)
+        process :resize_to_fit => [width, height]
+      end
+
+      def resize_to_fill(width, height)
+        process :resize_to_fill => [width, height]
+      end
+
+      def resize_and_pad(width, height)
+        process :resize_to_fit => [width, height]
+      end
+
+      def resize_and_pad(width, height, background=:transparent, gravity=::Magick::CenterGravity)
+        process :resize_and_pad => [width, height, background, gravity]
+      end
+    end
+
     ##
     # Changes the image encoding format to the given format
     #

@@ -1,3 +1,12 @@
+# Version 0.2.5
+
+* [added] Added convenient macro style class methods to rmagick processing
+
+# Version 0.2.4
+
+* [added] `resize_to_limit` method for rmagick
+* [added] Now deletes files from Amazon S3 when record is destroyed
+
 # Version 0.2.2
 
 * [changed] Mount now no longer returns nil if there is no stored file, it returns a blank uploader instead
