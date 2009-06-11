@@ -109,7 +109,7 @@ module CarrierWave
         new_img = img.change_geometry(geometry) do |new_width, new_height|
           img.resize(new_width, new_height)
         end
-        img.destroy!
+        destroy_image(img)
         new_img = yield(new_img) if block_given?
         new_img
       end
@@ -194,9 +194,9 @@ module CarrierWave
         else
           filled = new_img.color_floodfill(1, 1, ::Magick::Pixel.from_color(background))
         end
-        new_img.destroy!
+        destroy_image(new_img)
         filled.composite!(img, gravity, ::Magick::OverCompositeOp)
-        img.destroy!
+        destroy_image(img)
         filled = yield(filled) if block_given?
         filled
       end
@@ -231,14 +231,20 @@ module CarrierWave
           list << yield( frame )
         end
         list.write(current_path)
-        list.destroy!
+        destroy_image(list)
       else
         frame = image.first
         yield( frame ).write(current_path)
-        frame.destroy!
+        destroy_image(frame)
       end
     rescue ::Magick::ImageMagickError => e
       raise CarrierWave::ProcessingError.new("Failed to manipulate with rmagick, maybe it is not an image? Original Error: #{e}")
+    end
+
+  private
+  
+    def destroy_image(image)
+      image.destroy! if image.respond_to?(:destroy!)
     end
 
   end # RMagick
