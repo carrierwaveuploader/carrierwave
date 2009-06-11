@@ -17,6 +17,10 @@ module CarrierWave
       before :save do
         send("store_#{column}!")
       end
+
+      after :destroy do
+        send("remove_#{column}!")
+      end
     end
 
   end # DataMapper

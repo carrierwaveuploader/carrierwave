@@ -10,3 +10,11 @@ end
 When /^I save the active record$/ do
   @instance.save!
 end
+
+When /^I reload the active record$/ do
+  @instance = @instance.class.find(@instance.id)
+end
+
+When /^I delete the active record$/ do
+  @instance.destroy
+end

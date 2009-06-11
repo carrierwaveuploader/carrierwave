@@ -3,6 +3,7 @@ $:.push File.join(File.dirname(__FILE__), '..', 'lib')
 
 require 'rubygems'
 require File.join(File.dirname(__FILE__), 'activerecord')
+require File.join(File.dirname(__FILE__), 'datamapper')
 
 if ENV["AS"]
   puts "--> using ActiveSupport"

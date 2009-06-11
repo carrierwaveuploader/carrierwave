@@ -11,3 +11,7 @@ When /^I retrieve the file later from the cache name for the column '([^\']*)'$/
   new_instance.send("#{column}_cache=", @instance.send("#{column}_cache"))
   @instance = new_instance
 end
+
+Then /^the url for the column '([^\']*)' should be '([^\']*)'$/ do |column, url|
+  @instance.send("#{column}_url").should == url
+end
