@@ -87,7 +87,7 @@ Spec::Rake::SpecTask.new('spec') do |t|
 end
 
 RCov::VerifyTask.new(:verify_coverage => "spec:rcov") do |t|
-  t.threshold = 95.6
+  t.threshold = 95.64
   t.index_html = 'doc/coverage/index.html'
 end
 
@@ -109,7 +109,7 @@ namespace :spec do
 
 end
 
-task :superspec => [:verify_coverage, :features]
+task :superspec => [:spec, :features]
 
 desc 'Default: run unit tests and features.'
 task :default => 'superspec'
