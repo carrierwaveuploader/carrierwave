@@ -2,6 +2,10 @@
 
 This plugin for Merb and Rails provides a simple and extremely flexible way to upload files.
 
+* RDoc Documentation {available at Rubyforge}[http://carrierwave.rubyforge.org/].
+* Source code {hosted at GitHub}[http://github.com/jnicklas/carrierwave]
+* Please {report any issues}[http://github.com/jnicklas/carrierwave/issues] on GitHub
+
 == Getting Started
 
 Install the latest stable release:
@@ -245,9 +249,21 @@ Be sure to use mount_on to specify the correct column:
 
 Unfortunately AttachmentFoo differs too much in philosophy for there to be a sensible compatibility mode. Patches for migrating from other solutions will be happily accepted.
 
-== Documentation
+== i18n
 
-Full rdoc documentation is {available at Rubyforge}[http://carrierwave.rubyforge.org/].
+The activerecord validations use the Rails i18n framework. Add these keys to your translations file:
+
+    carrierwave:
+      errors:
+        integrity: 'Not an image.'
+        processing: 'Cannot resize image.'
+
+== Contributors
+
+These people have contributed their time and effort to CarrierWave:
+
+* Jonas Nicklas
+* Pavel Kunc
 
 == Read the source
 
