@@ -9,6 +9,7 @@ rescue LoadError
 end
 
 require 'spec/rake/spectask'
+require 'spec/rake/verify_rcov'
 require 'cucumber/rake/task'
 
 NAME = "carrierwave"
@@ -85,13 +86,18 @@ Spec::Rake::SpecTask.new('spec') do |t|
   t.spec_files = file_list
 end
 
+RCov::VerifyTask.new(:verify_coverage => "spec:rcov") do |t|
+  t.threshold = 95.6
+  t.index_html = 'doc/coverage/index.html'
+end
+
 namespace :spec do
   desc "Run all examples with RCov"
   Spec::Rake::SpecTask.new('rcov') do |t|
     t.spec_files = file_list
     t.rcov = true
     t.rcov_dir = "doc/coverage"
-    t.rcov_opts = ['--exclude', 'spec']
+    t.rcov_opts = ['--exclude', 'spec,features,lib/generators,gems/*']
   end
   
   desc "Generate an html report"
@@ -103,7 +109,7 @@ namespace :spec do
 
 end
 
-task :superspec => [:spec, :features]
+task :superspec => [:verify_coverage, :features]
 
 desc 'Default: run unit tests and features.'
 task :default => 'superspec'
