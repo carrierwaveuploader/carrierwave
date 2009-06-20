@@ -11,17 +11,9 @@ module CarrierWave
       alias_method :read_uploader, :[]
       alias_method :write_uploader, :[]=
 
-      after_save do
-        send("store_#{column}!")
-      end
-
-      before_save do
-        send("write_#{column}_identifier")
-      end
-
-      before_destroy do
-        send("remove_#{column}!")
-      end
+      after_save "store_#{column}!"
+      before_save "write_#{column}_identifier"
+      before_destroy "remove_#{column}!"
     end
 
     # Determine if we're using Sequel > 2.12
