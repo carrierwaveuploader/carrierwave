@@ -1,3 +1,14 @@
+# Version 0.3
+
+This is a stabilization release. Most features are now working as expected and
+most bugs should be fixed.
+
+* [changed] Reworked how storage engines work, some internal API changes
+* [added] Macro-like methods for RMagick, no need to call #process any more!
+* [added] Ability to super to any Mount method 
+* [fixed] Sequel support should now work as expected
+* [fixed] ActiveRecord no longer saves the record twice 
+
 # Version 0.2.5
 
 * [added] Added convenient macro style class methods to rmagick processing
