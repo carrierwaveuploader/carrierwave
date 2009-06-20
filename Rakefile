@@ -3,7 +3,10 @@ require 'rake/gempackagetask'
 require 'rake/rdoctask'
 gem 'rdoc', '>=2.4.0'
 require 'rdoc'
-require 'sdoc'
+begin
+  require 'sdoc'
+rescue LoadError
+end
 
 require 'spec/rake/spectask'
 require 'cucumber/rake/task'
