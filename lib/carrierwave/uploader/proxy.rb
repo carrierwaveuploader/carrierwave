@@ -30,7 +30,7 @@ module CarrierWave
       # [String] uniquely identifies a file
       #
       def identifier
-        file.identifier if file.respond_to?(:identifier)
+        storage.identifier if storage.respond_to?(:identifier)
       end
 
       ##

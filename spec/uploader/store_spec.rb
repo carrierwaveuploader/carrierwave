@@ -67,10 +67,10 @@ describe CarrierWave::Uploader do
       @stored_file = mock('a stored file')
       @stored_file.stub!(:path).and_return('/path/to/somewhere')
       @stored_file.stub!(:url).and_return('http://www.example.com')
-      @stored_file.stub!(:identifier).and_return('this-is-me')
 
       @storage = mock('a storage engine')
       @storage.stub!(:store!).and_return(@stored_file)
+      @storage.stub!(:identifier).and_return('this-is-me')
 
       @uploader_class.storage.stub!(:new).with(@uploader).and_return(@storage)
     end
@@ -142,10 +142,10 @@ describe CarrierWave::Uploader do
       @stored_file = mock('a stored file')
       @stored_file.stub!(:path).and_return('/path/to/somewhere')
       @stored_file.stub!(:url).and_return('http://www.example.com')
-      @stored_file.stub!(:identifier).and_return('this-is-me')
 
       @storage = mock('a storage engine')
       @storage.stub!(:retrieve!).and_return(@stored_file)
+      @storage.stub!(:identifier).and_return('this-is-me')
 
       @uploader_class.storage.stub!(:new).with(@uploader).and_return(@storage)
     end

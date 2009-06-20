@@ -75,6 +75,8 @@ module CarrierWave
     # [image_integrity_error]   Returns an error object if the last file to be assigned caused an integrty error
     # [image_processing_error]  Returns an error object if the last file to be assigned caused a processing error
     #
+    # [write_image_identifier]  Uses the write_uploader method to set the identifier.
+    #
     # === Parameters
     #
     # [column (Symbol)]                   the attribute to mount this uploader on
@@ -186,6 +188,11 @@ module CarrierWave
         def #{column}_processing_error
           _mounter(:#{column}).processing_error
         end
+
+        def write_#{column}_identifier
+          _mounter(:#{column}).write_identifier
+        end
+
       RUBY
 
     end
@@ -225,11 +232,23 @@ module CarrierWave
         @options = record.class.uploader_options[column]
       end
 
+      def write_identifier
+        if remove?
+          record.write_uploader(serialization_column, '')
+        else
+          record.write_uploader(serialization_column, uploader.identifier)
+        end
+      end
+      
+      def identifier
+        record.read_uploader(serialization_column)
+      end
+
       def uploader
         @uploader ||= record.class.uploaders[column].new(record, column)
-        if @uploader.blank?
-          identifier = record.read_uploader(serialization_column)
-          @uploader.retrieve_from_store!(identifier) unless identifier.blank?
+
+        if @uploader.blank? and not identifier.blank?
+          @uploader.retrieve_from_store!(identifier)
         end
         return @uploader
       end
@@ -259,10 +278,8 @@ module CarrierWave
         unless uploader.blank?
           if remove?
             uploader.remove!
-            record.write_uploader(serialization_column, '')
           else
             uploader.store!
-            record.write_uploader(serialization_column, uploader.identifier)
           end
         end
       end

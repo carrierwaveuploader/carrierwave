@@ -74,12 +74,12 @@ describe CarrierWave::Mount do
       end
       
       it "should retrieve a file from the storage if a value is stored in the database" do
-        @instance.should_receive(:read_uploader).with(:image).and_return('test.jpg')
+        @instance.should_receive(:read_uploader).with(:image).at_least(:once).and_return('test.jpg')
         @instance.image.should be_an_instance_of(@uploader)
       end
       
       it "should set the path to the store dir" do
-        @instance.should_receive(:read_uploader).with(:image).and_return('test.jpg')
+        @instance.should_receive(:read_uploader).with(:image).at_least(:once).and_return('test.jpg')
         @instance.image.current_path.should == public_path('uploads/test.jpg')
       end
     
@@ -161,7 +161,7 @@ describe CarrierWave::Mount do
       end
       
       it "should get the url from a retrieved file" do
-        @instance.should_receive(:read_uploader).with(:image).and_return('test.jpg')
+        @instance.should_receive(:read_uploader).at_least(:once).with(:image).and_return('test.jpg')
         @instance.image_url.should == '/uploads/test.jpg'
       end
 
@@ -250,14 +250,7 @@ describe CarrierWave::Mount do
         @instance.image.current_path.should == public_path('uploads/test.jpg')
       end
 
-      it "write to the column" do
-        @instance.should_receive(:write_uploader).with(:image, "test.jpg")
-        @instance.image = stub_file('test.jpg')
-        @instance.store_image!
-      end
-
       it "should remove an uploaded file when remove_image? returns true" do
-        @instance.should_receive(:write_uploader).with(:image, "")
         @instance.image = stub_file('test.jpg')
         path = @instance.image.current_path
         @instance.remove_image = true
@@ -371,6 +364,22 @@ describe CarrierWave::Mount do
       end
     end
 
+    describe '#write_image_identifier' do
+      it "should write to the column" do
+        @instance.should_receive(:write_uploader).with(:image, "test.jpg")
+        @instance.image = stub_file('test.jpg')
+        @instance.write_image_identifier
+      end
+
+      it "should remove from the column when remove_image is true" do
+        @instance.image = stub_file('test.jpg')
+        @instance.store_image!
+        @instance.remove_image = true
+        @instance.should_receive(:write_uploader).with(:image, "")
+        @instance.write_image_identifier
+      end
+    end
+
   end
   
   describe '#mount_uploader with a block' do
@@ -473,20 +482,18 @@ describe CarrierWave::Mount do
     end
 
     describe '#image' do
-      
       it "should retrieve a file from the storage if a value is stored in the database" do
-        @instance.should_receive(:read_uploader).with(:monkey).twice.and_return('test.jpg')
+        @instance.should_receive(:read_uploader).at_least(:once).with(:monkey).twice.and_return('test.jpg')
         @instance.image.should be_an_instance_of(@uploader)
         @instance.image.current_path.should == public_path('uploads/test.jpg')
       end
-    
     end
 
-    describe '#store_image!' do
+    describe '#write_image_identifier' do
       it "should write to the given column" do
         @instance.should_receive(:write_uploader).with(:monkey, "test.jpg")
         @instance.image = stub_file('test.jpg')
-        @instance.store_image!
+        @instance.write_image_identifier
       end
 
       it "should remove from the given column when remove_image is true" do
@@ -494,7 +501,7 @@ describe CarrierWave::Mount do
         @instance.store_image!
         @instance.remove_image = true
         @instance.should_receive(:write_uploader).with(:monkey, "")
-        @instance.store_image!
+        @instance.write_image_identifier
       end
     end
   end

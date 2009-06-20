@@ -11,8 +11,12 @@ module CarrierWave
       alias_method :read_uploader, :[]
       alias_method :write_uploader, :[]=
 
-      after_create do
+      after_save do
         send("store_#{column}!")
+      end
+
+      before_save do
+        send("write_#{column}_identifier")
       end
 
       before_destroy do
