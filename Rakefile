@@ -102,3 +102,5 @@ end
 
 desc 'Default: run unit tests.'
 task :default => 'spec'
+
+task :superspec => [:spec, :features]
