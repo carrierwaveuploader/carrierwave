@@ -100,7 +100,7 @@ namespace :spec do
 
 end
 
-desc 'Default: run unit tests.'
-task :default => 'spec'
-
 task :superspec => [:spec, :features]
+
+desc 'Default: run unit tests and features.'
+task :default => 'superspec'
