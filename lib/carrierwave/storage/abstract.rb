@@ -19,10 +19,10 @@ module CarrierWave
         uploader.filename
       end
       
-      def store!
+      def store!(file)
       end
       
-      def retrieve!
+      def retrieve!(identifier)
       end
       
     end # Abstract
