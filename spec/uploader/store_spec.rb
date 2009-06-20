@@ -69,7 +69,10 @@ describe CarrierWave::Uploader do
       @stored_file.stub!(:url).and_return('http://www.example.com')
       @stored_file.stub!(:identifier).and_return('this-is-me')
 
-      @uploader_class.storage.stub!(:store!).and_return(@stored_file)
+      @storage = mock('a storage engine')
+      @storage.stub!(:store!).and_return(@stored_file)
+
+      @uploader_class.storage.stub!(:new).with(@uploader).and_return(@storage)
     end
 
     it "should set the current path" do
@@ -105,7 +108,7 @@ describe CarrierWave::Uploader do
 
     it "should instruct the storage engine to store the file" do
       @uploader.cache!(@file)
-      @uploader_class.storage.should_receive(:store!).with(@uploader, @uploader.file).and_return(:monkey)
+      @storage.should_receive(:store!).with(@uploader.file).and_return(:monkey)
       @uploader.store!
     end
 
@@ -126,7 +129,7 @@ describe CarrierWave::Uploader do
 
     it "should not re-store a retrieved file" do
       @stored_file = mock('a stored file')
-      @uploader_class.storage.stub!(:retrieve!).and_return(@stored_file)
+      @storage.stub!(:retrieve!).and_return(@stored_file)
 
       @uploader_class.storage.should_not_receive(:store!)
       @uploader.retrieve_from_store!('monkey.txt')
@@ -141,7 +144,10 @@ describe CarrierWave::Uploader do
       @stored_file.stub!(:url).and_return('http://www.example.com')
       @stored_file.stub!(:identifier).and_return('this-is-me')
 
-      @uploader_class.storage.stub!(:retrieve!).and_return(@stored_file)
+      @storage = mock('a storage engine')
+      @storage.stub!(:retrieve!).and_return(@stored_file)
+
+      @uploader_class.storage.stub!(:new).with(@uploader).and_return(@storage)
     end
 
     it "should set the current path" do
@@ -165,7 +171,7 @@ describe CarrierWave::Uploader do
     end
 
     it "should instruct the storage engine to retrieve the file and store the result" do
-      @uploader_class.storage.should_receive(:retrieve!).with(@uploader, 'monkey.txt').and_return(@stored_file)
+      @storage.should_receive(:retrieve!).with('monkey.txt').and_return(@stored_file)
       @uploader.retrieve_from_store!('monkey.txt')
       @uploader.file.should == @stored_file
     end
@@ -194,7 +200,10 @@ describe CarrierWave::Uploader do
         @stored_file.stub!(:path).and_return('/path/to/somewhere')
         @stored_file.stub!(:url).and_return('http://www.example.com')
 
-        @uploader_class.storage.stub!(:store!).and_return(@stored_file)
+        @storage = mock('a storage engine')
+        @storage.stub!(:store!).and_return(@stored_file)
+
+        @uploader_class.storage.stub!(:new).with(@uploader).and_return(@storage)
       end
 
       after do
@@ -230,7 +239,10 @@ describe CarrierWave::Uploader do
         @stored_file.stub!(:path).and_return('/path/to/somewhere')
         @stored_file.stub!(:url).and_return('http://www.example.com')
 
-        @uploader_class.storage.stub!(:retrieve!).and_return(@stored_file)
+        @storage = mock('a storage engine')
+        @storage.stub!(:retrieve!).and_return(@stored_file)
+
+        @uploader_class.storage.stub!(:new).with(@uploader).and_return(@storage)
       end
 
       it "should set the current path" do
@@ -244,7 +256,7 @@ describe CarrierWave::Uploader do
       end
 
       it "should pass the identifier to the storage engine" do
-        @uploader_class.storage.should_receive(:retrieve!).with(@uploader, 'monkey.txt').and_return(@stored_file)
+        @storage.should_receive(:retrieve!).with('monkey.txt').and_return(@stored_file)
         @uploader.retrieve_from_store!('monkey.txt')
         @uploader.file.should == @stored_file
       end

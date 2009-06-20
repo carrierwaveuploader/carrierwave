@@ -28,12 +28,95 @@ module CarrierWave
     # The default is :public_read, it should work in most cases.
     #
     class S3 < Abstract
-      
-      def initialize(path, identifier)
-        @path = path
-        @identifier = identifier
+
+      class File
+
+        def initialize(path, identifier)
+          @path = path
+          @identifier = identifier
+        end
+
+        ##
+        # Returns the current path of the file on S3
+        #
+        # === Returns
+        #
+        # [String] A path
+        #
+        def path
+          @path
+        end
+
+        ##
+        # Returns the filename on S3
+        #
+        # === Returns
+        #
+        # [String] path to the file
+        #
+        def identifier
+          @identifier
+        end
+
+        ##
+        # Reads the contents of the file from S3
+        #
+        # === Returns
+        #
+        # [String] contents of the file
+        #
+        def read
+          AWS::S3::S3Object.value @path, bucket
+        end
+
+        ##
+        # Remove the file from Amazon S3
+        #
+        def delete
+          AWS::S3::S3Object.delete @path, bucket
+        end
+
+        ##
+        # Returns the url on Amazon's S3 service
+        #
+        # === Returns
+        #
+        # [String] file's url
+        #
+        def url
+          ["http://s3.amazonaws.com", bucket, @path].compact.join('/')
+        end
+
+      private
+
+        def bucket
+          CarrierWave::Storage::S3.bucket
+        end
+
+        def access
+          CarrierWave::Storage::S3.access
+        end
+
       end
-      
+
+      ##
+      # === Returns
+      #
+      # [String] the bucket set in the config options
+      #
+      def self.bucket
+        CarrierWave.config[:s3][:bucket]
+      end
+
+      ##
+      # === Returns
+      #
+      # [Symbol] the access priviliges the uploaded files should have
+      #
+      def self.access
+        CarrierWave.config[:s3][:access]
+      end
+
       ##
       # Connect to Amazon S3
       #
@@ -44,109 +127,38 @@ module CarrierWave
           :secret_access_key => CarrierWave.config[:s3][:secret_access_key]
         )
       end
-      
-      ##
-      # === Returns
-      #
-      # [String] the bucket set in the config options
-      # 
-      def self.bucket
-        CarrierWave.config[:s3][:bucket]
-      end
-      
-      ##
-      # === Returns
-      #
-      # [Symbol] the access priviliges the uploaded files should have
-      #
-      def self.access
-        CarrierWave.config[:s3][:access]
-      end
-      
+
       ##
       # Store the file on S3
       #
       # === Parameters
       #
-      # [uploader (CarrierWave::Uploader)] an uploader object
-      # [file (CarrierWave::SanitizedFile)] the file to store
+      # [file (CarrierWave::Storage::S3::File)] the file to store
       #
       # === Returns
       #
       # [CarrierWave::Storage::S3] the stored file
       #
-      def self.store!(uploader, file)
-        AWS::S3::S3Object.store(::File.join(uploader.store_path), file.read, bucket, :access => access)
-        self.new(uploader.store_dir, uploader.filename)
+      def store!(file)
+        AWS::S3::S3Object.store(::File.join(uploader.store_path), file.read, self.class.bucket, :access => self.class.access)
+        CarrierWave::Storage::S3::File.new(uploader.store_dir, uploader.filename)
       end
-      
+
       # Do something to retrieve the file
       #
       # @param [CarrierWave::Uploader] uploader an uploader object
       # @param [String] identifier uniquely identifies the file
       #
-      # [uploader (CarrierWave::Uploader)] an uploader object
       # [identifier (String)] uniquely identifies the file
       #
       # === Returns
       #
-      # [CarrierWave::Storage::S3] the stored file
+      # [CarrierWave::Storage::S3::File] the stored file
       #
-      def self.retrieve!(uploader, identifier)
-        self.new(uploader.store_path(identifier), identifier)
+      def retrieve!(identifier)
+        CarrierWave::Storage::S3::File.new(uploader.store_path(identifier), identifier)
       end
 
-      ##
-      # Returns the current path of the file on S3
-      #
-      # === Returns
-      #
-      # [String] A path
-      #
-      def path
-        @path
-      end
-
-      ##
-      # Returns the filename on S3
-      #
-      # === Returns
-      #
-      # [String] path to the file
-      #
-      def identifier
-        @identifier
-      end
-
-      ##
-      # Reads the contents of the file from S3
-      #
-      # === Returns
-      #
-      # [String] contents of the file
-      #
-      def read
-        AWS::S3::S3Object.value @path, self.class.bucket
-      end
-
-      ##
-      # Remove the file from Amazon S3
-      #
-      def delete
-        AWS::S3::S3Object.delete @path, self.class.bucket
-      end
-
-      ##
-      # Returns the url on Amazon's S3 service
-      #
-      # === Returns
-      #
-      # [String] file's url
-      #
-      def url
-        ["http://s3.amazonaws.com", self.class.bucket, @path].compact.join('/')
-      end
-      
     end # S3
   end # Storage
 end # CarrierWave

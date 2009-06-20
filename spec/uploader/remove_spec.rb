@@ -21,7 +21,10 @@ describe CarrierWave::Uploader do
       @stored_file.stub!(:identifier).and_return('this-is-me')
       @stored_file.stub!(:delete)
 
-      @uploader_class.storage.stub!(:store!).and_return(@stored_file)
+      @storage = mock('a storage engine')
+      @storage.stub!(:store!).and_return(@stored_file)
+
+      @uploader_class.storage.stub!(:new).and_return(@storage)
       @uploader.store!(@file)
     end
 

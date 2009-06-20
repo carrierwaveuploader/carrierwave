@@ -8,23 +8,18 @@ module CarrierWave
     #
     class File < Abstract
 
-      def initialize(uploader)
-        @uploader = uploader
-      end
-
       ##
       # Move the file to the uploader's store path.
       #
       # === Parameters
       #
-      # [uploader (CarrierWave::Uploader)] an uploader object
       # [file (CarrierWave::SanitizedFile)] the file to store
       #
       # === Returns
       #
       # [CarrierWave::SanitizedFile] a sanitized file
       #
-      def self.store!(uploader, file)
+      def store!(file)
         path = ::File.join(uploader.store_path)
         path = ::File.expand_path(path, uploader.public)
         file.move_to(path, CarrierWave.config[:permissions])
@@ -36,14 +31,13 @@ module CarrierWave
       #
       # === Parameters
       #
-      # [uploader (CarrierWave::Uploader)] an uploader object
       # [identifier (String)] the filename of the file
       #
       # === Returns
       #
       # [CarrierWave::SanitizedFile] a sanitized file
       #
-      def self.retrieve!(uploader, identifier)
+      def retrieve!(identifier)
         path = ::File.join(uploader.store_path(identifier))
         path = ::File.expand_path(path, uploader.public)
         CarrierWave::SanitizedFile.new(path)
