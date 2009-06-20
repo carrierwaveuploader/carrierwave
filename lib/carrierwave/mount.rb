@@ -127,7 +127,19 @@ module CarrierWave
 
       include CarrierWave::Mount::Extension
 
+      # Make sure to write over accessors directly defined on the class.
+      # Simply super to the included module below.
       class_eval <<-RUBY, __FILE__, __LINE__+1
+        def #{column}; super; end
+        def #{column}=(new_file); super; end
+      RUBY
+
+      # Mixing this in as a Module instead of class_evaling directly, so we
+      # can maintain the ability to super to any of these methods from within
+      # the class.
+      mod = Module.new
+      include mod
+      mod.class_eval <<-RUBY, __FILE__, __LINE__+1
 
         def #{column}
           _mounter(:#{column}).uploader
