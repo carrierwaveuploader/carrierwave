@@ -34,6 +34,14 @@ describe CarrierWave::Mount do
       @instance.image.should be_an_instance_of(@uploader)
     end
     
+    it "should inherit uploaders to subclasses" do
+      @subclass = Class.new(@class)
+      @subclass_instance = @subclass.new
+      @subclass_instance.image_uploader.should be_an_instance_of(@uploader)
+      @subclass_instance.image = stub_file('test.jpg')
+      @subclass_instance.image.should be_an_instance_of(@uploader)
+    end
+    
     describe '#image_uploader' do
       it "should return the uploader" do
         @instance.image_uploader.should be_an_instance_of(@uploader)
