@@ -19,11 +19,9 @@ module CarrierWave
     #
     def uploaders
       @uploaders ||= {}
-      begin
-        @uploaders = superclass.uploaders.merge(@uploaders)
-      rescue NoMethodError
-        @uploaders
-      end
+      @uploaders = superclass.uploaders.merge(@uploaders)
+    rescue NoMethodError
+      @uploaders
     end
 
     ##
@@ -33,11 +31,9 @@ module CarrierWave
     #
     def uploader_options
       @uploader_options ||= {}
-      begin
-        @uploader_options = superclass.uploader_options.merge(@uploader_options)
-      rescue NoMethodError
-        @uploader_options
-      end
+      @uploader_options = superclass.uploader_options.merge(@uploader_options)
+    rescue NoMethodError
+      @uploader_options
     end
 
     ##
