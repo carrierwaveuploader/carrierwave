@@ -87,7 +87,19 @@ module CarrierWave
           ["http://s3.amazonaws.com", bucket, @path].compact.join('/')
         end
 
+        def respond_to?(*args)
+          super || s3_object.respond_to?(*args)
+        end
+
       private
+
+        def method_missing(*args, &block)
+          s3_object.send(*args, &block)
+        end
+
+        def s3_object
+          @s3_object ||= AWS::S3::S3Object.find(@path, bucket)
+        end
 
         def bucket
           CarrierWave::Storage::S3.bucket
