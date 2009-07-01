@@ -141,7 +141,7 @@ module CarrierWave
       #
       def store!(file)
         AWS::S3::S3Object.store(::File.join(uploader.store_path), file.read, self.class.bucket, :access => self.class.access)
-        CarrierWave::Storage::S3::File.new(uploader.store_dir, uploader.filename)
+        CarrierWave::Storage::S3::File.new(uploader.store_path, uploader.filename)
       end
 
       # Do something to retrieve the file
