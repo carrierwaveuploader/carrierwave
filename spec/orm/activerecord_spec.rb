@@ -16,6 +16,7 @@ class TestMigration < ActiveRecord::Migration
     create_table :events, :force => true do |t|
       t.column :image, :string
       t.column :textfile, :string
+      t.column :foo, :string
     end
   end
 
@@ -153,6 +154,15 @@ describe CarrierWave::ActiveRecord do
         @event.image = stub_file('test.jpeg')
         @event.save.should be_true
         @event.reload
+        @event[:image].should == 'test.jpeg'
+      end
+      
+      it "should preserve the image when nothing is assigned" do
+        @event.image = stub_file('test.jpeg')
+        @event.save.should be_true
+        @event = @class.find(@event.id)
+        @event.foo = "bar"
+        @event.save.should be_true
         @event[:image].should == 'test.jpeg'
       end
       
