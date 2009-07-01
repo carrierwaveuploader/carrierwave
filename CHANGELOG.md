@@ -1,3 +1,11 @@
+# Version 0.3.1
+
+A bugfix release. Drop in compatible with 0.3.0.
+
+* [fixed] Saving a record with a mounted Uploader no longer removes uploaded file
+* [fixed] The file returned by S3 storage now has the path set to the full store path
+* [added] File returned by S3 storage now responds to S3 specific methods 
+
 # Version 0.3
 
 This is a stabilization release. Most features are now working as expected and
