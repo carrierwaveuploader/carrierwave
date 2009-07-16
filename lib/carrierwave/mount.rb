@@ -19,6 +19,9 @@ module CarrierWave
     #
     def uploaders
       @uploaders ||= {}
+      @uploaders = superclass.uploaders.merge(@uploaders)
+    rescue NoMethodError
+      @uploaders
     end
 
     ##
@@ -28,6 +31,9 @@ module CarrierWave
     #
     def uploader_options
       @uploader_options ||= {}
+      @uploader_options = superclass.uploader_options.merge(@uploader_options)
+    rescue NoMethodError
+      @uploader_options
     end
 
     ##
@@ -74,6 +80,8 @@ module CarrierWave
     #
     # [image_integrity_error]   Returns an error object if the last file to be assigned caused an integrty error
     # [image_processing_error]  Returns an error object if the last file to be assigned caused a processing error
+    #
+    # [write_image_identifier]  Uses the write_uploader method to set the identifier.
     #
     # === Parameters
     #
@@ -125,7 +133,19 @@ module CarrierWave
 
       include CarrierWave::Mount::Extension
 
+      # Make sure to write over accessors directly defined on the class.
+      # Simply super to the included module below.
       class_eval <<-RUBY, __FILE__, __LINE__+1
+        def #{column}; super; end
+        def #{column}=(new_file); super; end
+      RUBY
+
+      # Mixing this in as a Module instead of class_evaling directly, so we
+      # can maintain the ability to super to any of these methods from within
+      # the class.
+      mod = Module.new
+      include mod
+      mod.class_eval <<-RUBY, __FILE__, __LINE__+1
 
         def #{column}
           _mounter(:#{column}).uploader
@@ -186,6 +206,11 @@ module CarrierWave
         def #{column}_processing_error
           _mounter(:#{column}).processing_error
         end
+
+        def write_#{column}_identifier
+          _mounter(:#{column}).write_identifier
+        end
+
       RUBY
 
     end
@@ -225,11 +250,23 @@ module CarrierWave
         @options = record.class.uploader_options[column]
       end
 
+      def write_identifier
+        if remove?
+          record.write_uploader(serialization_column, '')
+        elsif not uploader.identifier.blank?
+          record.write_uploader(serialization_column, uploader.identifier)
+        end
+      end
+      
+      def identifier
+        record.read_uploader(serialization_column)
+      end
+
       def uploader
         @uploader ||= record.class.uploaders[column].new(record, column)
-        if @uploader.blank?
-          identifier = record.read_uploader(serialization_column)
-          @uploader.retrieve_from_store!(identifier) unless identifier.blank?
+
+        if @uploader.blank? and not identifier.blank?
+          @uploader.retrieve_from_store!(identifier)
         end
         return @uploader
       end
@@ -259,10 +296,8 @@ module CarrierWave
         unless uploader.blank?
           if remove?
             uploader.remove!
-            record.write_uploader(serialization_column, '')
           else
             uploader.store!
-            record.write_uploader(serialization_column, uploader.identifier)
           end
         end
       end

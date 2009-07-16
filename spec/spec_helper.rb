@@ -19,7 +19,7 @@ require 'spec/autorun'
 require 'carrierwave'
 
 require 'logger'
-CarrierWave.logger = Logger.new(File.join(File.dirname(__FILE__), 'test.log'))
+CarrierWave.logger = Logger.new(nil)
 
 alias :running :lambda
 

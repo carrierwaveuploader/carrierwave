@@ -21,12 +21,12 @@ describe CarrierWave::Uploader do
     end
 
     it "should raise ArgumentError when version doesn't exist" do
-      lambda { @uploader.url(:thumb) }.should raise_error ArgumentError
+      lambda { @uploader.url(:thumb) }.should raise_error(ArgumentError)
     end
 
     it "should not raise ArgumentError when versions version exists" do
       @uploader_class.version(:thumb)
-      lambda { @uploader.url(:thumb) }.should_not raise_error ArgumentError
+      lambda { @uploader.url(:thumb) }.should_not raise_error(ArgumentError)
     end
 
     it "should get the directory relative to public, prepending a slash" do

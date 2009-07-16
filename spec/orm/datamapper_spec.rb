@@ -101,14 +101,14 @@ describe CarrierWave::DataMapper do
       @event.image.current_path.should == public_path('uploads/test.jpeg')
     end
     
-    it "should do nothing when a validation fails" do
-      pending "how do we test with and without dm-validations?"
-      @class.validate { |r| r.errors.add :textfile, "FAIL!" }
-      @event.image = stub_file('test.jpeg')
-      @event.save
-      @event.image.should be_an_instance_of(@uploader)
-      @event.image.current_path.should =~ /^#{public_path('uploads/tmp')}/
-    end
+    # it "should do nothing when a validation fails" do
+    #   pending "how do we test with and without dm-validations?"
+    #   @class.validate { |r| r.errors.add :textfile, "FAIL!" }
+    #   @event.image = stub_file('test.jpeg')
+    #   @event.save
+    #   @event.image.should be_an_instance_of(@uploader)
+    #   @event.image.current_path.should =~ /^#{public_path('uploads/tmp')}/
+    # end
     
     it "should assign the filename to the database" do
       @event.image = stub_file('test.jpeg')
@@ -117,14 +117,14 @@ describe CarrierWave::DataMapper do
       @event.attribute_get(:image).should == 'test.jpeg'
     end
     
-    it "should assign the filename before validation" do
-      pending "how do we test with and without dm-validations?"
-      @class.validate { |r| r.errors.add_to_base "FAIL!" if r[:image].nil? }
-      @event.image = stub_file('test.jpeg')
-      @event.save
-      @event.reload
-      @event.attribute_get(:image).should == 'test.jpeg'
-    end
+    # it "should assign the filename before validation" do
+    #   pending "how do we test with and without dm-validations?"
+    #   @class.validate { |r| r.errors.add_to_base "FAIL!" if r[:image].nil? }
+    #   @event.image = stub_file('test.jpeg')
+    #   @event.save
+    #   @event.reload
+    #   @event.attribute_get(:image).should == 'test.jpeg'
+    # end
 
     it "should remove the image if remove_image? returns true" do
       @event.image = stub_file('test.jpeg')
@@ -134,6 +134,24 @@ describe CarrierWave::DataMapper do
       @event.reload
       @event.image.should be_blank
       @event.attribute_get(:image).should == ''
+    end
+
+  end
+
+  describe '#destroy' do
+    
+    it "should do nothing when no file has been assigned" do
+      @event.destroy
+    end
+    
+    it "should remove the file from the filesystem" do
+      @event.image = stub_file('test.jpeg')
+      @event.save.should be_true
+      File.exist?(public_path('uploads/test.jpeg')).should be_true
+      @event.image.should be_an_instance_of(@uploader)
+      @event.image.current_path.should == public_path('uploads/test.jpeg')
+      @event.destroy
+      File.exist?(public_path('uploads/test.jpeg')).should be_false
     end
 
   end

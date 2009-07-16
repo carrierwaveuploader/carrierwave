@@ -136,24 +136,20 @@ describe CarrierWave::Sequel do
       end 
      
       it "should assign the filename to the database" do
-        pending "Sequel support is currently broken" do
-          @event.image = stub_file('test.jpeg')
-          @event.save.should be_true
-          @event.reload
-          @event[:image].should == 'test.jpeg'
-        end
+        @event.image = stub_file('test.jpeg')
+        @event.save.should be_true
+        @event.reload
+        @event[:image].should == 'test.jpeg'
       end
 
       it "should remove the image if remove_image? returns true" do
-        pending "Sequel support is currently broken" do
-          @event.image = stub_file('test.jpeg')
-          @event.save
-          @event.remove_image = true
-          @event.save
-          @event.reload
-          @event.image.should be_blank
-          @event[:image].should == ''
-        end
+        @event.image = stub_file('test.jpeg')
+        @event.save
+        @event.remove_image = true
+        @event.save
+        @event.reload
+        @event.image.should be_blank
+        @event[:image].should == ''
       end
     end
     
@@ -178,12 +174,10 @@ describe CarrierWave::Sequel do
         end
 
         it "should assign an overridden filename to the database" do
-          pending "Sequel support is currently broken" do
-            @event.image = stub_file('test.jpeg')
-            @event.save.should be_true
-            @event.reload
-            @event[:image].should == 'jonas.jpeg'
-          end
+          @event.image = stub_file('test.jpeg')
+          @event.save.should be_true
+          @event.reload
+          @event[:image].should == 'jonas.jpeg'
         end
 
       end

@@ -14,9 +14,9 @@ module CarrierWave
       alias_method :read_uploader, :attribute_get
       alias_method :write_uploader, :attribute_set
 
-      before :save do
-        send("store_#{column}!")
-      end
+      after :save, "store_#{column}!".to_sym
+      before :save, "write_#{column}_identifier".to_sym
+      after :destroy, "remove_#{column}!".to_sym
     end
 
   end # DataMapper

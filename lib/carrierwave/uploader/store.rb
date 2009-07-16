@@ -120,7 +120,7 @@ module CarrierWave
         cache!(new_file) if new_file
         if @file and @cache_id
           with_callbacks(:store, new_file) do
-            @file = storage.store!(self, @file)
+            @file = storage.store!(@file)
             @cache_id = nil
           end
         end
@@ -135,7 +135,7 @@ module CarrierWave
       #
       def retrieve_from_store!(identifier)
         with_callbacks(:retrieve_from_store, identifier) do
-          @file = storage.retrieve!(self, identifier)
+          @file = storage.retrieve!(identifier)
         end
       end
 
@@ -146,7 +146,7 @@ module CarrierWave
       end
 
       def storage
-        self.class.storage
+        @storage ||= self.class.storage.new(self)
       end
 
     end # Store

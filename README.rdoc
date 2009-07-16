@@ -1,6 +1,11 @@
 = CarrierWave
 
-This plugin for Merb and Rails provides a simple and extremely flexible way to upload files.
+This plugin for Merb and Rails provides a simple and extremely flexible way to
+upload files.
+
+* RDoc Documentation {available at Rubyforge}[http://carrierwave.rubyforge.org/].
+* Source code {hosted at GitHub}[http://github.com/jnicklas/carrierwave]
+* Please {report any issues}[http://github.com/jnicklas/carrierwave/issues] on GitHub
 
 == Getting Started
 
@@ -34,7 +39,8 @@ this should give you a file in:
 
     app/uploaders/avatar_uploader.rb
 
-Check out this file for some hints on how you can customize your uploader. It should look something like this:
+Check out this file for some hints on how you can customize your uploader. It
+should look something like this:
 
     class AvatarUploader < CarrierWave::Uploader::Base
       storage :file
@@ -48,19 +54,22 @@ You can use your uploader class to store and retrieve files like this:
     
     uploader.retrieve_from_store!('my_file.png')
 
-CarrierWave gives you a +store+ for permanent storage, and a +cache+ for temporary storage. You can use different stores, at the moment a filesystem store and an Amazon S3 store are bundled.
+CarrierWave gives you a +store+ for permanent storage, and a +cache+ for
+temporary storage. You can use different stores, at the moment a filesystem
+store and an Amazon S3 store are bundled.
 
-Most of the time you are going to want to use CarrierWave together with an ORM. It is quite simple to mount uploaders on columns in your model, so you can simply assign files and get going:
+Most of the time you are going to want to use CarrierWave together with an ORM.
+It is quite simple to mount uploaders on columns in your model, so you can
+simply assign files and get going:
 
 === ActiveRecord, DataMapper, Sequel
 
-First require the relevant extension:
+If you are *not* using Merb or Rails you'll need to require the relevant ORM
+extension.
 
     require 'carrierwave/orm/activerecord'
     require 'carrierwave/orm/datamapper'
     require 'carrierwave/orm/sequel'
-
-You don't need to do this if you are using Merb or Rails.
 
 Open your model file, for ActiveRecord do something like:
 
@@ -82,7 +91,8 @@ Or for Sequel
       mount_uploader :avatar, AvatarUploader
     end
 
-Now you can cache files by assigning them to the attribute, they will automatically be stored when the record is saved.
+Now you can cache files by assigning them to the attribute, they will
+automatically be stored when the record is saved.
 
     u = User.new
     u.avatar = params[:file]
@@ -93,7 +103,8 @@ Now you can cache files by assigning them to the attribute, they will automatica
 
 == Changing the storage directory
 
-In order to change where uploaded files are put, just override the +store_dir+ method:
+In order to change where uploaded files are put, just override the +store_dir+
+method:
 
     class MyUploader < CarrierWave::Uploader::Base
       def store_dir
@@ -105,7 +116,8 @@ This works for the file storage as well as Amazon S3.
 
 == Adding versions
 
-Often you'll want to add different versions of the same file. The classic example is image thumbnails. There is built in support for this:
+Often you'll want to add different versions of the same file. The classic
+example is image thumbnails. There is built in support for this:
 
     class MyUploader < CarrierWave::Uploader::Base
       include CarrierWave::RMagick
@@ -118,7 +130,9 @@ Often you'll want to add different versions of the same file. The classic exampl
       
     end
 
-When this uploader is used, an uploaded image would be scaled to be no larger than 800 by 800 pixels. A version called thumb is then created, which is scaled and cropped to exactly 200 by 200 pixels. The uploader could be used like this:
+When this uploader is used, an uploaded image would be scaled to be no larger
+than 800 by 800 pixels. A version called thumb is then created, which is scaled
+and cropped to exactly 200 by 200 pixels. The uploader could be used like this:
 
     uploader = AvatarUploader.new
     uploader.store!(my_file)                              # size: 1024x768
@@ -126,7 +140,8 @@ When this uploader is used, an uploaded image would be scaled to be no larger th
     uploader.url # => '/url/to/my_file.png'               # size: 800x600
     uploader.thumb.url # => '/url/to/thumb_my_file.png'   # size: 200x200
 
-One important thing to remember is that process is called *before* versions are created. This can cut down on processing cost.
+One important thing to remember is that process is called *before* versions are
+created. This can cut down on processing cost.
 
 It is possible to nest versions within versions:
 
@@ -141,10 +156,11 @@ It is possible to nest versions within versions:
 
 == Making uploads work across form redisplays
 
-Often you'll notice that uploaded files disappear when a validation
-fails. CarrierWave has a feature that makes it easy to remember the
-uploaded file even in that case. Suppose your +user+ model has an uploader mounted on +avatar+ file, just add a hidden field called +avatar_cache+.
-In Rails, this would look like this:
+Often you'll notice that uploaded files disappear when a validation fails.
+CarrierWave has a feature that makes it easy to remember the uploaded file even
+in that case. Suppose your +user+ model has an uploader mounted on +avatar+
+file, just add a hidden field called +avatar_cache+. In Rails, this would look
+like this:
 
     <% form_for @user do |f| %>
       <p>
@@ -154,8 +170,8 @@ In Rails, this would look like this:
       </p>
     <% end %>
 
-It might be a good idea to show th user that a file has been uploaded,
-in the case of images, a small thumbnail would be a good indicator:
+It might be a good idea to show th user that a file has been uploaded, in the
+case of images, a small thumbnail would be a good indicator:
 
     <% form_for @user do |f| %>
       <p>
@@ -166,11 +182,17 @@ in the case of images, a small thumbnail would be a good indicator:
       </p>
     <% end %>
 
-NOTE: this feature currently requires write access to your filesystem. If write access is unavailable (e.g. Heroku) you will not be able to upload files. You can prevent CarrierWave from writing to the file system by setting `CarrierWave.config[:cache_to_cache_dir] = false`. This will however break redisplays of forms.
+NOTE: this feature currently requires write access to your filesystem. If write
+access is unavailable you will not be able to upload files. You can prevent
+CarrierWave from writing to the file system by setting
+`CarrierWave.config[:cache_to_cache_dir] = false`. This will however break
+redisplays of forms.
 
 == Providing a default path
 
-In many cases, especially when working with images, it might be a good idea to provide a default path, a fallback in case no file has been uploaded. You can do this easily by overriding the +default_path+ method in your uploader:
+In many cases, especially when working with images, it might be a good idea to
+provide a default path, a fallback in case no file has been uploaded. You can do
+this easily by overriding the +default_path+ method in your uploader:
 
     class MyUploader < CarrierWave::Uploader::Base
       def default_path
@@ -194,17 +216,24 @@ And then in your uploader, set the storage to :s3
       storage :s3
     end
 
-That's it! You can still use the +CarrierWave::Uploader#url+ method to return the url to the file on Amazon S3
+That's it! You can still use the +CarrierWave::Uploader#url+ method to return
+the url to the file on Amazon S3
 
 == Using RMagick
 
-If you're uploading images, you'll probably want to manipulate them in some way, you might want to create thumbnail images for example. CarrierWave comes with a small library to make manipulating images with RMagick easier, you'll need to include it in your Uploader:
+If you're uploading images, you'll probably want to manipulate them in some way,
+you might want to create thumbnail images for example. CarrierWave comes with a
+small library to make manipulating images with RMagick easier, you'll need to
+include it in your Uploader:
 
     class AvatarUploader < CarrierWave::Uploader::Base
       include CarrierWave::RMagick
     end
 
-The RMagick module gives you a few methods, like +CarrierWave::RMagick#crop_resized+ which manipulate the image file in some way. You can set a +process+ callback, which will call that method any time a file is uploaded.
+The RMagick module gives you a few methods, like
++CarrierWave::RMagick#crop_resized+ which manipulate the image file in some way.
+You can set a +process+ callback, which will call that method any time a file is
+uploaded.
 
     class AvatarUploader < CarrierWave::Uploader::Base
       include CarrierWave::RMagick
@@ -217,7 +246,8 @@ The RMagick module gives you a few methods, like +CarrierWave::RMagick#crop_resi
       end
     end
 
-Check out the manipulate! method, which makes it easy for you to write your own manipulation methods.
+Check out the manipulate! method, which makes it easy for you to write your own
+manipulation methods.
 
 == Using ImageScience
 
@@ -237,18 +267,41 @@ If you are using Paperclip, you can use the provided compatibility module:
       include CarrierWave::Compatibility::Paperclip
     end
 
-See the documentation for +Paperclip::Compatibility::Paperclip+ for more detaills.
+See the documentation for +Paperclip::Compatibility::Paperclip+ for more
+detaills.
 
 Be sure to use mount_on to specify the correct column:
 
     mount_uploader :avatar, AvatarUploader, :mount_on => :avatar_file_name
 
-Unfortunately AttachmentFoo differs too much in philosophy for there to be a sensible compatibility mode. Patches for migrating from other solutions will be happily accepted.
+Unfortunately AttachmentFoo differs too much in philosophy for there to be a
+sensible compatibility mode. Patches for migrating from other solutions will be
+happily accepted.
 
-== Documentation
+== i18n
 
-Full rdoc documentation is {available at Rubyforge}[http://carrierwave.rubyforge.org/].
+The activerecord validations use the Rails i18n framework. Add these keys to
+your translations file:
+
+    carrierwave:
+      errors:
+        integrity: 'Not an image.'
+        processing: 'Cannot resize image.'
+
+== Contributors
+
+These people have contributed their time and effort to CarrierWave:
+
+* Jonas Nicklas
+* Pavel Kunc
+
+== License
+
+MIT-License, see the separate LICENSE file in the source distribution.
 
 == Read the source
 
-CarrierWave is still young, but most of it is pretty well documented. It is also extensively specced, and there are cucumber features for some common use cases. Just dig in and look at the source for more in-depth explanation of what things are doing.
+CarrierWave is still young, but most of it is pretty well documented. It is also
+extensively specced, and there are cucumber features for some common use cases.
+Just dig in and look at the source for more in-depth explanation of what things
+are doing.

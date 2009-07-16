@@ -38,7 +38,7 @@ module CarrierWave
     # ==== Returns
     # Bool:: True if Sequel 2.12 or higher False otherwise
     def self.new_sequel?
-      !!(/^(2.12|3)/ =~ ::Sequel.version)
+      ::Sequel::Model.respond_to?(:plugin)
     end
 
   end # Sequel

@@ -1,3 +1,31 @@
+# Version 0.3.1
+
+A bugfix release. Drop in compatible with 0.3.0.
+
+* [fixed] Saving a record with a mounted Uploader no longer removes uploaded file
+* [fixed] The file returned by S3 storage now has the path set to the full store path
+* [added] File returned by S3 storage now responds to S3 specific methods 
+
+# Version 0.3
+
+This is a stabilization release. Most features are now working as expected and
+most bugs should be fixed.
+
+* [changed] Reworked how storage engines work, some internal API changes
+* [added] Macro-like methods for RMagick, no need to call #process any more!
+* [added] Ability to super to any Mount method 
+* [fixed] Sequel support should now work as expected
+* [fixed] ActiveRecord no longer saves the record twice 
+
+# Version 0.2.5
+
+* [added] Added convenient macro style class methods to rmagick processing
+
+# Version 0.2.4
+
+* [added] `resize_to_limit` method for rmagick
+* [added] Now deletes files from Amazon S3 when record is destroyed
+
 # Version 0.2.2
 
 * [changed] Mount now no longer returns nil if there is no stored file, it returns a blank uploader instead

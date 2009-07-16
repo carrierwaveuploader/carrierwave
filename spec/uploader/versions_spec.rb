@@ -157,8 +157,14 @@ describe CarrierWave::Uploader do
         @thumb_stored_file.stub!(:path).and_return('/path/to/somewhere/thumb')
         @thumb_stored_file.stub!(:url).and_return('http://www.example.com/thumb')
 
-        @uploader_class.storage.stub!(:store!).and_return(@base_stored_file)
-        @uploader_class.version(:thumb).storage.stub!(:store!).and_return(@thumb_stored_file)
+        @storage = mock('a storage engine')
+        @storage.stub!(:store!).and_return(@base_stored_file)
+
+        @thumb_storage = mock('a storage engine for thumbnails')
+        @thumb_storage.stub!(:store!).and_return(@thumb_stored_file)
+
+        @uploader_class.storage.stub!(:new).with(@uploader).and_return(@storage)
+        @uploader_class.version(:thumb).storage.stub!(:new).with(@uploader.thumb).and_return(@thumb_storage)
       end
 
       after do
@@ -186,8 +192,8 @@ describe CarrierWave::Uploader do
 
       it "should instruct the storage engine to store the file and its version" do
         @uploader.cache!(@file)
-        @uploader_class.storage.should_receive(:store!).with(@uploader, @uploader.file).and_return(:monkey)
-        @uploader_class.version(:thumb).storage.should_receive(:store!).with(@uploader.thumb, @uploader.thumb.file).and_return(:gorilla)
+        @storage.should_receive(:store!).with(@uploader.file).and_return(:monkey)
+        @thumb_storage.should_receive(:store!).with(@uploader.thumb.file).and_return(:gorilla)
         @uploader.store!
       end
 
@@ -203,8 +209,14 @@ describe CarrierWave::Uploader do
         @base_stored_file = mock('a stored file')
         @thumb_stored_file = mock('a thumb version of a stored file')
 
-        @uploader_class.storage.stub!(:store!).and_return(@base_stored_file)
-        @uploader_class.version(:thumb).storage.stub!(:store!).and_return(@thumb_stored_file)
+        @storage = mock('a storage engine')
+        @storage.stub!(:store!).and_return(@base_stored_file)
+
+        @thumb_storage = mock('a storage engine for thumbnails')
+        @thumb_storage.stub!(:store!).and_return(@thumb_stored_file)
+
+        @uploader_class.storage.stub!(:new).with(@uploader).and_return(@storage)
+        @uploader_class.version(:thumb).storage.stub!(:new).with(@uploader.thumb).and_return(@thumb_storage)
 
         @base_stored_file.stub!(:delete)
         @thumb_stored_file.stub!(:delete)
@@ -239,27 +251,47 @@ describe CarrierWave::Uploader do
 
     describe '#retrieve_from_store!' do
       before do
-        @stored_file = mock('a stored file')
-        @stored_file.stub!(:path).and_return('/path/to/somewhere')
-        @stored_file.stub!(:url).and_return('http://www.example.com')
+        @uploader_class.storage = mock_storage('base')
+        @uploader_class.version(:thumb).storage = mock_storage('thumb')
 
-        @uploader_class.storage.stub!(:retrieve!).and_return(@stored_file)
+        @file = File.open(file_path('test.jpg'))
+
+        @base_stored_file = mock('a stored file')
+        @base_stored_file.stub!(:path).and_return('/path/to/somewhere')
+        @base_stored_file.stub!(:url).and_return('http://www.example.com')
+
+        @thumb_stored_file = mock('a thumb version of a stored file')
+        @thumb_stored_file.stub!(:path).and_return('/path/to/somewhere/thumb')
+        @thumb_stored_file.stub!(:url).and_return('http://www.example.com/thumb')
+
+        @storage = mock('a storage engine')
+        @storage.stub!(:retrieve!).and_return(@base_stored_file)
+
+        @thumb_storage = mock('a storage engine for thumbnails')
+        @thumb_storage.stub!(:retrieve!).and_return(@thumb_stored_file)
+
+        @uploader_class.storage.stub!(:new).with(@uploader).and_return(@storage)
+        @uploader_class.version(:thumb).storage.stub!(:new).with(@uploader.thumb).and_return(@thumb_storage)
       end
 
       it "should set the current path" do
         @uploader.retrieve_from_store!('monkey.txt')
         @uploader.current_path.should == '/path/to/somewhere'
+        @uploader.thumb.current_path.should == '/path/to/somewhere/thumb'
       end
 
       it "should set the url" do
         @uploader.retrieve_from_store!('monkey.txt')
         @uploader.url.should == 'http://www.example.com'
+        @uploader.thumb.url.should == 'http://www.example.com/thumb'
       end
 
       it "should pass the identifier to the storage engine" do
-        @uploader_class.storage.should_receive(:retrieve!).with(@uploader, 'monkey.txt').and_return(@stored_file)
+        @storage.should_receive(:retrieve!).with('monkey.txt').and_return(@base_stored_file)
+        @thumb_storage.should_receive(:retrieve!).with('monkey.txt').and_return(@thumb_stored_file)
         @uploader.retrieve_from_store!('monkey.txt')
-        @uploader.file.should == @stored_file
+        @uploader.file.should == @base_stored_file
+        @uploader.thumb.file.should == @thumb_stored_file
       end
 
       it "should not set the filename" do
