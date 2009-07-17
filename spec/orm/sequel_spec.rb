@@ -27,7 +27,7 @@ describe CarrierWave::Sequel do
       DB.drop_table :events
     end
     
-    before do
+    before(:each) do
       @class = Class.new(Sequel::Model)
       @class.set_dataset :events
       @class, @uploader, @event = setup_variables_for_class(@class)
