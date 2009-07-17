@@ -1,3 +1,5 @@
+require 'pathname'
+
 module CarrierWave
 
   ##

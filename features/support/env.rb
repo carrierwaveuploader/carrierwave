@@ -8,7 +8,7 @@ require File.join(File.dirname(__FILE__), 'datamapper')
 if ENV["AS"]
   puts "--> using ActiveSupport"
   require 'activesupport'
-else
+elsif ENV["EXTLIB"]
   puts "--> using Extlib"
   require 'extlib'
 end
