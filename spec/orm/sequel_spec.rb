@@ -38,7 +38,7 @@ describe CarrierWave::Sequel do
     describe '#image' do
       
       it "should return nil when nothing has been assigned" do
-        @event.image.should be_blank
+        @event.image.should be_nil
       end
       
       it "should return nil when an empty string has been assigned" do
