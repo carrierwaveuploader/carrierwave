@@ -37,11 +37,11 @@ describe CarrierWave::Sequel do
     
     describe '#image' do
       
-      it "should return nil when nothing has been assigned" do
-        @event.image.should be_nil
+      it "should return blank uploader when nothing has been assigned" do
+        @event.image.should be_blank
       end
       
-      it "should return nil when an empty string has been assigned" do
+      it "should return blank uploader when an empty string has been assigned" do
         @event[:image] = ''
         @event.save
         @event.reload
@@ -89,7 +89,7 @@ describe CarrierWave::Sequel do
         @event.image = ''
         @event.image.should be_blank
       end
-      
+
     end
     
     describe '#save' do

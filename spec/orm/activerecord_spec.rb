@@ -52,11 +52,11 @@ describe CarrierWave::ActiveRecord do
     
     describe '#image' do
       
-      it "should return nil when nothing has been assigned" do
+      it "should return blank uploader when nothing has been assigned" do
         @event.image.should be_blank
       end
       
-      it "should return nil when an empty string has been assigned" do
+      it "should return blank uploader when an empty string has been assigned" do
         @event[:image] = ''
         @event.save
         @event.reload
