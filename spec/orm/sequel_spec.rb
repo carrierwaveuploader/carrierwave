@@ -32,6 +32,8 @@ describe CarrierWave::Sequel do
       @class.set_dataset :events
       @class, @uploader, @event = setup_variables_for_class(@class)
     end
+
+    after(:each) { @class.delete }
     
     describe '#image' do
       
