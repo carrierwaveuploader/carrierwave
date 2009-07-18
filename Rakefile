@@ -13,7 +13,7 @@ require 'spec/rake/verify_rcov'
 require 'cucumber/rake/task'
 
 NAME = "carrierwave"
-GEM_VERSION = "0.3.1"
+GEM_VERSION = "0.3.2"
 AUTHOR = "Jonas Nicklas"
 EMAIL = "jonas.nicklas@gmail.com"
 HOMEPAGE = "http://www.example.com"
