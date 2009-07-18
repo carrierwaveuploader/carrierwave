@@ -2,6 +2,7 @@
 
 Incremental upgrade
 
+* [added] Ruby 1.9 compatibility
 * [changed] Added Object#blank? implementation into CarrierWave, which removes any dpendencies on external libraries (extlib/activesupport)
 * [fixed] Performance issues with S3 support
 * [fixed] Sequel support for newer verions of Sequel (thanks Pavel!)
