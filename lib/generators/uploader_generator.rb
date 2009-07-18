@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 module Merb
   module Generators
     class UploaderGenerator < NamedGenerator

@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 Given /^the file '(.*?)' is cached file at '(.*?)'$/ do |file, cached|
   FileUtils.mkdir_p(File.dirname(file_path(cached)))
   FileUtils.cp(file_path(file), file_path(cached))

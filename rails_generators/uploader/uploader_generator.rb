@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 class UploaderGenerator < Rails::Generator::NamedBase
 
   def manifest

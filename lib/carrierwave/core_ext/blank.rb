@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 unless "".respond_to?(:blank?)
   # blank? methods for several different class types
   class Object

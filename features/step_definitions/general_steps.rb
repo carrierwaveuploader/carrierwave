@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 Given /^an uploader class that uses the 'file' storage$/ do
   @klass = Class.new(CarrierWave::Uploader::Base)
 end

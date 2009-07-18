@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require 'fileutils'
 require 'carrierwave/core_ext/blank'
 require 'carrierwave/core_ext/module_setup'

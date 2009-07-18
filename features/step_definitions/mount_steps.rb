@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 When /^I assign the file '([^\']*)' to the '([^\']*)' column$/ do |path, column|
   @instance.send("#{column}=", File.open(file_path(path)))
 end

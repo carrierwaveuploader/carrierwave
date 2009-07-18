@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require "image_science"
 
 module CarrierWave

@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require 'activerecord'
 require 'carrierwave/mount'
 require 'carrierwave/orm/activerecord'

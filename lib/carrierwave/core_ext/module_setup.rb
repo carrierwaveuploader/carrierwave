@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 # Stolen from Rails 3
 
 # Copyright (c) 2005-2009 David Heinemeier Hansson
