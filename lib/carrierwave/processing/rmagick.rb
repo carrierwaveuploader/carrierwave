@@ -1,9 +1,11 @@
 # encoding: utf-8
 
-begin
-  require 'rmagick'
-rescue LoadError
-  require 'RMagick'
+unless Module.const_defined?('Magick')
+  begin
+    require 'rmagick'
+  rescue LoadError
+    require 'RMagick'
+  end
 end
 
 module CarrierWave
