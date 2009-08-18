@@ -6,6 +6,9 @@ require 'carrierwave/core_ext/module_setup'
 require 'carrierwave/core_ext/inheritable_attributes'
 
 module CarrierWave
+
+  VERSION = "0.3.2"
+
   class << self
     attr_accessor :config, :logger
 

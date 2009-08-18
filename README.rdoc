@@ -1,7 +1,13 @@
 = CarrierWave
 
+http://carrierwave.rubyforge.org
+
+== Summary
+
 This plugin for Merb and Rails provides a simple and extremely flexible way to
 upload files.
+
+== Description
 
 * RDoc Documentation {available at Rubyforge}[http://carrierwave.rubyforge.org/].
 * Source code {hosted at GitHub}[http://github.com/jnicklas/carrierwave]

@@ -1,4 +1,4 @@
-# Version 0.3.2
+=== Version 0.3.2 2009-07-18
 
 Incremental upgrade
 
@@ -7,7 +7,7 @@ Incremental upgrade
 * [fixed] Performance issues with S3 support
 * [fixed] Sequel support for newer verions of Sequel (thanks Pavel!)
 
-# Version 0.3.1
+=== Version 0.3.1 2009-07-01
 
 A bugfix release. Drop in compatible with 0.3.0.
 
@@ -15,7 +15,7 @@ A bugfix release. Drop in compatible with 0.3.0.
 * [fixed] The file returned by S3 storage now has the path set to the full store path
 * [added] File returned by S3 storage now responds to S3 specific methods 
 
-# Version 0.3
+=== 0.3 2009-06-20
 
 This is a stabilization release. Most features are now working as expected and
 most bugs should be fixed.
@@ -25,23 +25,20 @@ most bugs should be fixed.
 * [added] Ability to super to any Mount method 
 * [fixed] Sequel support should now work as expected
 * [fixed] ActiveRecord no longer saves the record twice 
-
-# Version 0.2.5
-
 * [added] Added convenient macro style class methods to rmagick processing
 
-# Version 0.2.4
+=== 0.2.4 2009-06-11
 
 * [added] `resize_to_limit` method for rmagick
 * [added] Now deletes files from Amazon S3 when record is destroyed
 
-# Version 0.2.2
+=== 0.2.3 2009-05-13
 
 * [changed] Mount now no longer returns nil if there is no stored file, it returns a blank uploader instead
 * [added] Possibility to specify a default path
 * [added] Paperclip compatibility module
 
-# Version 0.2.1
+=== 0.2.1 2009-05-01
 
 * [changed] Url method now optionally takes versions as parameters (like Paperclip)
 * [added] A field which allows files to be removed with a checkbox in mount
@@ -50,7 +47,7 @@ most bugs should be fixed.
 * [added] Option to not copy files to cache dir, to prevent writes on read only fs systems (this is a workaround and needs a better solution)
 
 
-# Version 0.2
+=== 0.2 2009-04-15
 
 * [changed] The version is no longer stored in the store dir. This will break the paths for files uploaded with 0.1
 * [changed] CarrierWave::Uploader is now a module, not a class, so you need to include it, not inherit from it.
@@ -61,6 +58,6 @@ most bugs should be fixed.
 * [added] Support for Sequel
 * [added] CarrierWave::Uploader#read to read the contents of the uploaded files
 
-# Version 0.1
+=== 0.1 2009-03-12
 
 This is a very experimental release that has not been well tested. All of the major features are in place though. Please note that there currently is a bug with load paths in Merb, which means you need to manually require uploaders.
