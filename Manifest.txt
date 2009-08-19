@@ -1,6 +1,5 @@
 Generators
 History.txt
-LICENSE
 Manifest.txt
 README.rdoc
 Rakefile
