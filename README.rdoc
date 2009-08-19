@@ -301,6 +301,7 @@ These people have contributed their time and effort to CarrierWave:
 
 * Jonas Nicklas
 * Pavel Kunc
+* Andrew Timberlake
 
 == License
 
