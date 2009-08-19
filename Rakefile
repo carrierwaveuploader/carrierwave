@@ -19,6 +19,7 @@ $hoe = Hoe.spec 'carrierwave' do
   self.extra_dev_deps << ['dm-core', '>=0.9.11']
   self.extra_dev_deps << ['sequel', '>=3.2.0']
   self.extra_dev_deps << ['rmagick', '>=2.10.0']
+  self.extra_dev_deps << ['jnunemaker-mongomapper', '>=0.3.3']
   self.extra_rdoc_files << 'README.rdoc'
   self.extra_rdoc_files << 'LICENSE'
 end
