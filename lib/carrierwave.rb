@@ -135,3 +135,8 @@ elsif defined?(Sinatra)
   CarrierWave.config[:public] = Sinatra::Application.public
 
 end
+
+# MongoMapper is framework agnostic so we could need this in any environment.
+if defined?(MongoMapper)
+  require File.join(File.dirname(__FILE__), "carrierwave", "orm", "mongomapper")
+end
