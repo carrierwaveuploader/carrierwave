@@ -29,6 +29,18 @@ module CarrierWave
     #
     # The default is :public_read, it should work in most cases.
     #
+    # You can change the generated url to a cnamed domain by setting the cnamed config:
+    #
+    #     CarrierWave.config[:s3][:cnamed] = true
+    #
+    # No the resulting url will be
+    #     
+    #     http://bucket_name.domain.tld/path/to/file
+    #
+    # instead of
+    #
+    #     http://s3.amazonaws.com/bucket_name.domain.tld/path/to/file
+    #
     class S3 < Abstract
 
       class File
@@ -86,7 +98,11 @@ module CarrierWave
         # [String] file's url
         #
         def url
-          ["http://s3.amazonaws.com", bucket, @path].compact.join('/')
+          if CarrierWave::config[:s3][:cnamed]
+            ["http://", bucket, @path].compact.join('/')
+          else
+            ["http://s3.amazonaws.com", bucket, @path].compact.join('/')
+          end
         end
 
         def about
