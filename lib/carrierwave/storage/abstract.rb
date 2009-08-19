@@ -14,19 +14,19 @@ module CarrierWave
       def initialize(uploader)
         @uploader = uploader
       end
-      
+
       def self.setup!; end
-      
+
       def identifier
         uploader.filename
       end
-      
+
       def store!(file)
       end
-      
+
       def retrieve!(identifier)
       end
-      
+
     end # Abstract
   end # Storage
 end # CarrierWave

@@ -1,11 +1,18 @@
 = CarrierWave
 
+http://carrierwave.rubyforge.org
+
+== Summary
+
 This plugin for Merb and Rails provides a simple and extremely flexible way to
 upload files.
+
+== Description
 
 * RDoc Documentation {available at Rubyforge}[http://carrierwave.rubyforge.org/].
 * Source code {hosted at GitHub}[http://github.com/jnicklas/carrierwave]
 * Please {report any issues}[http://github.com/jnicklas/carrierwave/issues] on GitHub
+* Please direct any questions at the {mailing list}[http://groups.google.com/group/carrierwave]
 
 == Getting Started
 
@@ -294,14 +301,41 @@ These people have contributed their time and effort to CarrierWave:
 
 * Jonas Nicklas
 * Pavel Kunc
+* Andrew Timberlake
 
 == License
 
-MIT-License, see the separate LICENSE file in the source distribution.
+Copyright (c) 2008 Jonas Nicklas
 
-== Read the source
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+== Development
+
+If you want to run the tests (and you should) it might be convenient to install
+the development dependencies, you can do that with:
+
+    sudo gem install carrierwave --development
 
 CarrierWave is still young, but most of it is pretty well documented. It is also
 extensively specced, and there are cucumber features for some common use cases.
 Just dig in and look at the source for more in-depth explanation of what things
 are doing.
+
+Issues are reported on GitHub, pull requests are very welcome!
