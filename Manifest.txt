@@ -36,6 +36,7 @@ lib/carrierwave/core_ext/module_setup.rb
 lib/carrierwave/mount.rb
 lib/carrierwave/orm/activerecord.rb
 lib/carrierwave/orm/datamapper.rb
+lib/carrierwave/orm/mongomapper.rb
 lib/carrierwave/orm/sequel.rb
 lib/carrierwave/processing/image_science.rb
 lib/carrierwave/processing/rmagick.rb
@@ -71,6 +72,7 @@ spec/fixtures/test.jpg
 spec/mount_spec.rb
 spec/orm/activerecord_spec.rb
 spec/orm/datamapper_spec.rb
+spec/orm/mongomapper_spec.rb
 spec/orm/sequel_spec.rb
 spec/sanitized_file_spec.rb
 spec/spec_helper.rb
