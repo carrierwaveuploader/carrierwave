@@ -2,7 +2,8 @@ require 'rubygems'
 gem 'hoe', '>= 2.1.0'
 require 'hoe'
 require 'fileutils'
-require './lib/carrierwave'
+$:.unshift File.join(File.dirname(__FILE__), 'lib')
+require 'carrierwave'
 
 Hoe.plugin :newgem
 # Hoe.plugin :website
@@ -16,12 +17,13 @@ $hoe = Hoe.spec 'carrierwave' do
   self.extra_dev_deps << ['rspec', '>=1.2.8']
   self.extra_dev_deps << ['cucumber', '>=0.3.96']
   self.extra_dev_deps << ['activerecord', '>=2.3.3']
+  self.extra_dev_deps << ['sqlite3-ruby', '>=2.3.3']
   self.extra_dev_deps << ['dm-core', '>=0.9.11']
+  self.extra_dev_deps << ['do_sqlite3', '>=0.9.11']
   self.extra_dev_deps << ['sequel', '>=3.2.0']
   self.extra_dev_deps << ['rmagick', '>=2.10.0']
   self.extra_dev_deps << ['jnunemaker-mongomapper', '>=0.3.3']
   self.extra_rdoc_files << 'README.rdoc'
-  self.extra_rdoc_files << 'LICENSE'
 end
 
 require 'newgem/tasks'
