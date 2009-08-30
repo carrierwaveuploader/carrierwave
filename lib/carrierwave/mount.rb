@@ -232,6 +232,8 @@ module CarrierWave
     private
 
       def _mounter(column)
+        # We cannot memoize in frozen objects :(
+        return Mounter.new(self, column) if frozen?
         @_mounters ||= {}
         @_mounters[column] ||= Mounter.new(self, column)
       end

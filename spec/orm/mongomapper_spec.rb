@@ -164,7 +164,7 @@ describe CarrierWave::MongoMapper do
       @doc = @class.new
     end
     
-    context "when file assigned" do
+    describe "when file assigned" do
     
       it "removes the file from the filesystem" do
         @doc.image = stub_file('test.jpeg')
@@ -178,7 +178,7 @@ describe CarrierWave::MongoMapper do
       
     end
     
-    context "when file is not assigned" do
+    describe "when file is not assigned" do
       
       it "deletes the instance of @class after save" do
         @doc.save
