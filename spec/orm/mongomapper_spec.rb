@@ -178,6 +178,24 @@ describe CarrierWave::MongoMapper do
       
     end
     
+    context "when file is not assigned" do
+      
+      it "deletes the instance of @class after save" do
+        @doc.save
+        @class.count.should eql(1)
+        @doc.destroy
+      end
+      
+      it "deletes the instance of @class after save and then re-looking up the instance" do
+        # this fails with TypeError in 'CarrierWave::MongoMapper#destroy when file is not assigned deletes the instance of @class' can't modify frozen object
+        @doc.save
+        @class.count.should eql(1)
+        @doc = @class.first
+        @doc.destroy
+      end
+      
+    end
+    
   end
   
   
