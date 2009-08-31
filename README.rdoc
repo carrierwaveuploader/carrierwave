@@ -20,10 +20,6 @@ Install the latest stable release:
 
     [sudo] gem install carrierwave
 
-Or the cutting edge development version:
-
-    [sudo] gem install jnicklas-carrierwave --source http://gems.github.com
-
 In Merb, add it as a dependency to your config/dependencies.rb:
     
     dependency 'carrierwave'
