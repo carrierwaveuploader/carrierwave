@@ -128,7 +128,11 @@ elsif defined?(Rails)
   CarrierWave.config[:root] = Rails.root
   CarrierWave.config[:public] = File.join(Rails.root, 'public')
 
-  require File.join(File.dirname(__FILE__), "carrierwave", "orm", 'activerecord')
+  if defined?(ActiveRecord)
+    require File.join(File.dirname(__FILE__), "carrierwave", "orm", 'activerecord')
+  elsif defined?(DataMapper)
+    require File.join(File.dirname(__FILE__), "carrierwave", "orm", 'datamapper')
+  end
 
   ActiveSupport::Dependencies.load_paths << File.join(Rails.root, "app", "uploaders")
 
