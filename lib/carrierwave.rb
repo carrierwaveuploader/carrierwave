@@ -58,7 +58,6 @@ end
 CarrierWave.config = {
   :permissions => 0644,
   :storage => :file,
-  :use_cache => true,
   :storage_engines => {
     :file => "CarrierWave::Storage::File",
     :s3 => "CarrierWave::Storage::S3"
@@ -68,7 +67,6 @@ CarrierWave.config = {
   },
   :store_dir => 'uploads',
   :cache_dir => 'uploads/tmp',
-  :cache_to_cache_dir => true,
   :mount => {
     :ignore_integrity_errors => true,
     :ignore_processing_errors => true,
