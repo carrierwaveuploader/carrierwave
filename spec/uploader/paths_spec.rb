@@ -15,7 +15,7 @@ describe CarrierWave::Uploader do
 
   describe '#root' do
     it "should default to the config option" do
-      @uploader.root.should == public_path('..')
+      @uploader.root.should == public_path
     end
   end
 

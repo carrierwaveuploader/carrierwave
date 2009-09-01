@@ -78,7 +78,7 @@ module CarrierWave
 
       def mappings
         {
-          :rails_root   => lambda{|u, f| CarrierWave.config[:root] },
+          :rails_root   => lambda{|u, f| Rails.root },
           :rails_env    => lambda{|u, f| CarrierWave.config[:env] },
           :class        => lambda{|u, f| u.model.class.name.underscore.pluralize},
           :id           => lambda{|u, f| u.model.id },

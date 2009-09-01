@@ -89,7 +89,7 @@ module CarrierWave
     private
 
       def cache_path
-        File.expand_path(File.join(cache_dir, cache_name), public)
+        File.expand_path(File.join(cache_dir, cache_name), root)
       end
 
       attr_reader :cache_id, :original_filename

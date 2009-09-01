@@ -23,7 +23,7 @@ module CarrierWave
       #
       def store!(file)
         path = ::File.join(uploader.store_path)
-        path = ::File.expand_path(path, uploader.public)
+        path = ::File.expand_path(path, uploader.root)
         file.move_to(path, CarrierWave.config[:permissions])
         file
       end
@@ -41,7 +41,7 @@ module CarrierWave
       #
       def retrieve!(identifier)
         path = ::File.join(uploader.store_path(identifier))
-        path = ::File.expand_path(path, uploader.public)
+        path = ::File.expand_path(path, uploader.root)
         CarrierWave::SanitizedFile.new(path)
       end
 
