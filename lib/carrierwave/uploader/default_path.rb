@@ -7,6 +7,7 @@ module CarrierWave
       def initialize(*args)
         super
         if default_path
+          puts "WARNING: Default Path is deprecated and will be removed in CarrierWave 0.4. Please use default_url instead!"
           @file = CarrierWave::SanitizedFile.new(File.expand_path(default_path, public))
           def @file.blank?; true; end
         end

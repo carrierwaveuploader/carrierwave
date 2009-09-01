@@ -37,6 +37,7 @@ module CarrierWave
       use CarrierWave::Uploader::DefaultPath
       use CarrierWave::Uploader::Processing
       use CarrierWave::Uploader::Versions
+      use CarrierWave::Uploader::DefaultUrl
     end # Base
 
   end # Uploader

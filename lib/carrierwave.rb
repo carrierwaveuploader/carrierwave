@@ -64,6 +64,7 @@ module CarrierWave
     autoload :Paths, 'carrierwave/uploader/paths'
     autoload :ExtensionWhitelist, 'carrierwave/uploader/extension_whitelist'
     autoload :DefaultPath, 'carrierwave/uploader/default_path'
+    autoload :DefaultUrl, 'carrierwave/uploader/default_url'
     autoload :Proxy, 'carrierwave/uploader/proxy'
     autoload :Url, 'carrierwave/uploader/url'
     autoload :Mountable, 'carrierwave/uploader/mountable'
