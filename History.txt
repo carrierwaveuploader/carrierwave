@@ -1,3 +1,12 @@
+=== Version 0.3.4 2009-09-01
+
+* [added] `default_url` as a replacement for `default_path`
+* [deprecated] `default_path` is deprecated
+
+=== Version 0.3.4 2009-08-31
+
+* [fixed] Deleting no longer causes TypeError in MongoMapper
+
 === Version 0.3.3 2009-08-29
 
 * [added] Support for MongoMapper

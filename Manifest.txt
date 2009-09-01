@@ -49,6 +49,7 @@ lib/carrierwave/uploader.rb
 lib/carrierwave/uploader/cache.rb
 lib/carrierwave/uploader/callbacks.rb
 lib/carrierwave/uploader/default_path.rb
+lib/carrierwave/uploader/default_url.rb
 lib/carrierwave/uploader/extension_whitelist.rb
 lib/carrierwave/uploader/mountable.rb
 lib/carrierwave/uploader/paths.rb
@@ -78,6 +79,7 @@ spec/sanitized_file_spec.rb
 spec/spec_helper.rb
 spec/uploader/cache_spec.rb
 spec/uploader/default_path_spec.rb
+spec/uploader/default_url_spec.rb
 spec/uploader/extension_whitelist_spec.rb
 spec/uploader/mountable_spec.rb
 spec/uploader/paths_spec.rb
