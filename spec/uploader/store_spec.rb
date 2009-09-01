@@ -208,10 +208,6 @@ describe CarrierWave::Uploader do
         @uploader_class.storage.stub!(:new).with(@uploader).and_return(@storage)
       end
 
-      after do
-        CarrierWave.config[:use_cache] = true
-      end
-
       it "should set the current path" do
         @uploader.store!(@file)
         @uploader.current_path.should == '/path/to/somewhere'
@@ -223,12 +219,6 @@ describe CarrierWave::Uploader do
       end
 
       it "should, if a file is given as argument, reverse the filename" do
-        @uploader.store!(@file)
-        @uploader.filename.should == 'gpj.tset'
-      end
-
-      it "should, if a files is given as an argument and use_cache is false, reverse the filename" do
-        CarrierWave.config[:use_cache] = false
         @uploader.store!(@file)
         @uploader.filename.should == 'gpj.tset'
       end

@@ -169,10 +169,6 @@ describe CarrierWave::Uploader do
         @uploader_class.version(:thumb).storage.stub!(:new).with(@uploader.thumb).and_return(@thumb_storage)
       end
 
-      after do
-        CarrierWave.config[:use_cache] = true
-      end
-
       it "should set the current path for the version" do
         @uploader.store!(@file)
         @uploader.current_path.should == '/path/to/somewhere'
@@ -224,10 +220,6 @@ describe CarrierWave::Uploader do
         @thumb_stored_file.stub!(:delete)
 
         @uploader.store!(@file)
-      end
-
-      after do
-        CarrierWave.config[:use_cache] = true
       end
 
       it "should reset the current path for the version" do
