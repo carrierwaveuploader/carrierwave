@@ -171,7 +171,7 @@ like this:
       </p>
     <% end %>
 
-It might be a good idea to show th user that a file has been uploaded, in the
+It might be a good idea to show the user that a file has been uploaded, in the
 case of images, a small thumbnail would be a good indicator:
 
     <% form_for @user do |f| %>
@@ -182,12 +182,6 @@ case of images, a small thumbnail would be a good indicator:
         <%= f.hidden_field :avatar_cache %>
       </p>
     <% end %>
-
-NOTE: this feature currently requires write access to your filesystem. If write
-access is unavailable you will not be able to upload files. You can prevent
-CarrierWave from writing to the file system by setting
-`CarrierWave.config[:cache_to_cache_dir] = false`. This will however break
-redisplays of forms.
 
 == Providing a default URL
 

@@ -62,11 +62,7 @@ module CarrierWave
             @filename = new_file.filename
             self.original_filename = new_file.filename
 
-            if CarrierWave.config[:cache_to_cache_dir]
-              @file = new_file.copy_to(cache_path, CarrierWave.config[:permissions])
-            else
-              @file = new_file
-            end
+            @file = new_file.copy_to(cache_path, CarrierWave.config[:permissions])
           end
         end
       end
