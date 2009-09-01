@@ -101,26 +101,20 @@ CarrierWave.config = {
   }
 }
 
-if defined?(Merb::Plugins)
+if defined?(Merb)
+  CarrierWave.logger = Merb.logger
   CarrierWave.config[:root] = Merb.root
   CarrierWave.config[:public] = Merb.dir_for(:public)
+  Merb.add_generators File.dirname(__FILE__) / 'generators' / 'uploader_generator'
 
   Merb::BootLoader.before_app_loads do
-    # Set logger
-    CarrierWave.logger ||= Merb.logger
     # Setup path for uploaders and load all of them before classes are loaded
     Merb.push_path(:uploaders, Merb.root / 'app' / 'uploaders', '*.rb')
     Dir.glob(File.join(Merb.load_paths[:uploaders])).each {|f| require f }
   end
-  Merb.add_generators File.dirname(__FILE__) / 'generators' / 'uploader_generator'
 
 elsif defined?(Rails)
-  begin
-    CarrierWave.logger = Rails.logger
-  rescue
-    # Rails < 2.1
-    CarrierWave.logger = RAILS_DEFAULT_LOGGER
-  end
+  CarrierWave.logger = Rails.logger
   CarrierWave.config[:root] = Rails.root
   CarrierWave.config[:public] = File.join(Rails.root, 'public')
 
