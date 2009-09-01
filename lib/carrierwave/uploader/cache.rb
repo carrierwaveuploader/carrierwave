@@ -1,6 +1,24 @@
 # encoding: utf-8
 
 module CarrierWave
+
+  class FormNotMultipart < UploadError
+    def message
+      "You tried to assign a String or a Pathname to an uploader, for security reasons, this is not allowed.\n\n If this is a file upload, please check that your upload form is multipart encoded."
+    end
+  end
+  
+  ##
+  # Generates a unique cache id for use in the caching system
+  #
+  # === Returns
+  #
+  # [String] a cache id in the format YYYYMMDD-HHMM-PID-RND
+  #
+  def self.generate_cache_id
+    Time.now.strftime('%Y%m%d-%H%M') + '-' + Process.pid.to_s + '-' + ("%04d" % rand(9999))
+  end
+
   module Uploader
     module Cache
 

@@ -11,29 +11,11 @@ module CarrierWave
 
   class << self
     attr_accessor :config
-
-    ##
-    # Generates a unique cache id for use in the caching system
-    #
-    # === Returns
-    #
-    # [String] a cache id in the format YYYYMMDD-HHMM-PID-RND
-    #
-    def generate_cache_id
-      Time.now.strftime('%Y%m%d-%H%M') + '-' + Process.pid.to_s + '-' + ("%04d" % rand(9999))
-    end
   end
 
   class UploadError < StandardError; end
-  class NoFileError < UploadError; end
-  class FormNotMultipart < UploadError
-    def message
-      "You tried to assign a String or a Pathname to an uploader, for security reasons, this is not allowed.\n\n If this is a file upload, please check that your upload form is multipart encoded."
-    end
-  end
   class IntegrityError < UploadError; end
   class InvalidParameter < UploadError; end
-  # Should be used by methods used as process callbacks.
   class ProcessingError < UploadError; end
 
   autoload :SanitizedFile, 'carrierwave/sanitized_file'
