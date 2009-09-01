@@ -21,7 +21,6 @@ require 'spec/autorun'
 require 'carrierwave'
 
 require 'logger'
-CarrierWave.logger = Logger.new(nil)
 
 alias :running :lambda
 

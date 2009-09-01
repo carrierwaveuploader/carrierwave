@@ -128,10 +128,7 @@ module CarrierWave
       end
 
       def remove_versions!
-        versions.each do |name, v|
-          CarrierWave.logger.info "CarrierWave: removing file for version #{v.version_name}"
-          v.remove!
-        end
+        versions.each { |name, v| v.remove! }
       end
 
       def retrieve_versions_from_cache!(cache_name)

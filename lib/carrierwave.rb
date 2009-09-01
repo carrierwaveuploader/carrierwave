@@ -10,13 +10,7 @@ module CarrierWave
   VERSION = "0.3.5"
 
   class << self
-    attr_accessor :config, :logger
-
-    def logger
-      return @logger if @logger
-      require 'logger'
-      @logger = Logger.new(STDOUT)
-    end
+    attr_accessor :config
 
     ##
     # Generates a unique cache id for use in the caching system
@@ -102,7 +96,6 @@ CarrierWave.config = {
 }
 
 if defined?(Merb)
-  CarrierWave.logger = Merb.logger
   CarrierWave.config[:root] = Merb.root
   CarrierWave.config[:public] = Merb.dir_for(:public)
   Merb.add_generators File.dirname(__FILE__) / 'generators' / 'uploader_generator'
@@ -114,7 +107,6 @@ if defined?(Merb)
   end
 
 elsif defined?(Rails)
-  CarrierWave.logger = Rails.logger
   CarrierWave.config[:root] = Rails.root
   CarrierWave.config[:public] = File.join(Rails.root, 'public')
 

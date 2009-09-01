@@ -11,7 +11,6 @@ module CarrierWave
       #
       def remove!
         with_callbacks(:remove) do
-          CarrierWave.logger.info 'CarrierWave: removing file'
           @file.delete if @file
           @file = nil
           @cache_id = nil
