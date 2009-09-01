@@ -97,23 +97,16 @@ CarrierWave.config = {
 
 if defined?(Merb)
   CarrierWave.config[:root] = Merb.dir_for(:public)
-  Merb.add_generators File.dirname(__FILE__) / 'generators' / 'uploader_generator'
-
   Merb::BootLoader.before_app_loads do
     # Setup path for uploaders and load all of them before classes are loaded
     Merb.push_path(:uploaders, Merb.root / 'app' / 'uploaders', '*.rb')
     Dir.glob(File.join(Merb.load_paths[:uploaders])).each {|f| require f }
   end
-
 elsif defined?(Rails)
   CarrierWave.config[:root] = File.join(Rails.root, 'public')
-
   ActiveSupport::Dependencies.load_paths << File.join(Rails.root, "app", "uploaders")
-
 elsif defined?(Sinatra)
-
   CarrierWave.config[:root] = Sinatra::Application.public
-
 end
 
 
