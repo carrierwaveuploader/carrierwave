@@ -112,10 +112,6 @@ if defined?(Merb::Plugins)
     Merb.push_path(:uploaders, Merb.root / 'app' / 'uploaders', '*.rb')
     Dir.glob(File.join(Merb.load_paths[:uploaders])).each {|f| require f }
   end
-
-  orm_path = File.dirname(__FILE__) / 'carrierwave' / 'orm' / Merb.orm
-  require orm_path if File.exist?(orm_path + '.rb')
-
   Merb.add_generators File.dirname(__FILE__) / 'generators' / 'uploader_generator'
 
 elsif defined?(Rails)
@@ -128,12 +124,6 @@ elsif defined?(Rails)
   CarrierWave.config[:root] = Rails.root
   CarrierWave.config[:public] = File.join(Rails.root, 'public')
 
-  if defined?(ActiveRecord)
-    require File.join(File.dirname(__FILE__), "carrierwave", "orm", 'activerecord')
-  elsif defined?(DataMapper)
-    require File.join(File.dirname(__FILE__), "carrierwave", "orm", 'datamapper')
-  end
-
   ActiveSupport::Dependencies.load_paths << File.join(Rails.root, "app", "uploaders")
 
 elsif defined?(Sinatra)
@@ -143,7 +133,8 @@ elsif defined?(Sinatra)
 
 end
 
-# MongoMapper is framework agnostic so we could need this in any environment.
-if defined?(MongoMapper)
-  require File.join(File.dirname(__FILE__), "carrierwave", "orm", "mongomapper")
-end
+
+require File.join(File.dirname(__FILE__), "carrierwave", "orm", 'activerecord') if defined?(ActiveRecord)
+require File.join(File.dirname(__FILE__), "carrierwave", "orm", 'datamapper') if defined?(DataMapper)
+require File.join(File.dirname(__FILE__), "carrierwave", "orm", 'sequel') if defined?(Sequel)
+require File.join(File.dirname(__FILE__), "carrierwave", "orm", "mongomapper") if defined?(MongoMapper)

@@ -67,15 +67,12 @@ simply assign files and get going:
 
 === ActiveRecord, DataMapper, Sequel, MongoMapper
 
-If you are *not* using Merb or Rails you'll need to require the relevant ORM
-extension.
+Make sure you are loading CarrierWave after loading your ORM, otherwise you'll
+need to require the relevant extension manually, e.g.:
 
     require 'carrierwave/orm/activerecord'
-    require 'carrierwave/orm/datamapper'
-    require 'carrierwave/orm/sequel'
-    require 'carrierwave/orm/mongomapper'
 
-Open your model file, for ActiveRecord do something like:
+Open your model file. For ActiveRecord do something like:
 
     class User < ActiveRecord::Base
       mount_uploader :avatar, AvatarUploader
