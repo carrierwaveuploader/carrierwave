@@ -16,9 +16,9 @@ class <%= class_name %>Uploader < CarrierWave::Uploader::Base
     "uploads/#{model.class.to_s.underscore}/#{mounted_as}/#{model.id}"
   end
 
-  # Provide a default path as a default if there hasn't been a file uploaded
-  #     def default_path
-  #       "images/fallback/" + [version_name, "default.png"].compact.join('_')
+  # Provide a default URL as a default if there hasn't been a file uploaded
+  #     def default_url
+  #       "/images/fallback/" + [version_name, "default.png"].compact.join('_')
   #     end
 
   # Process files as they are uploaded.
