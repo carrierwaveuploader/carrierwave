@@ -17,7 +17,7 @@ describe CarrierWave::DataMapper do
 
       storage_names[:default] = 'events'
       
-      property :id, Integer, :key => true
+      property :id, DataMapper::Types::Serial
       property :image, String
       
       mount_uploader :image, uploader
