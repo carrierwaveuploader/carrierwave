@@ -195,7 +195,7 @@ module CarrierWave
     #
     def resize_to_fill(width, height)
       manipulate! do |img|
-        img.resize_to_fill!(width, height)
+        img.crop_resized!(width, height)
         img = yield(img) if block_given?
         img
       end
