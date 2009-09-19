@@ -207,12 +207,30 @@ Do this in an initializer in Rails, and in a +before_app_loads+ block in Merb.
 
 And then in your uploader, set the storage to :s3
 
-    class AvatarUploader < 
+    class AvatarUploader < CarrierWave::Uploader::Base
       storage :s3
     end
 
 That's it! You can still use the +CarrierWave::Uploader#url+ method to return
 the url to the file on Amazon S3
+
+== Using MongoDB's GridFS store
+
+You'll need to configure the database and host to use:
+
+    CarrierWave.config[:grid_fs_database] = 'my_mongo_database'
+    CarrierWave.config[:grid_fs_host] = 'mongo.example.com'
+
+The defaults are 'carrierwave' and 'localhost'.
+
+And then in your uploader, set the storage to +:grid_fs+:
+
+    class AvatarUploader < CarrierWave::Uploader::Base
+      storage :grid_fs
+    end
+
+Since GridFS doesn't make the files available via HTTP, you'll need to stream
+them yourself. In Rails for example, you could use the +send_data+ method.
 
 == Using RMagick
 
