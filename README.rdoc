@@ -59,7 +59,7 @@ You can use your uploader class to store and retrieve files like this:
 
 CarrierWave gives you a +store+ for permanent storage, and a +cache+ for
 temporary storage. You can use different stores, at the moment a filesystem
-store and an Amazon S3 store are bundled.
+store, an Amazon S3 store and a store for MongoDB's GridFS are bundled.
 
 Most of the time you are going to want to use CarrierWave together with an ORM.
 It is quite simple to mount uploaders on columns in your model, so you can

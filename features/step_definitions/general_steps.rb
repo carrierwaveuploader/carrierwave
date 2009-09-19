@@ -1,11 +1,16 @@
 # encoding: utf-8
 
-Given /^an uploader class that uses the 'file' storage$/ do
+Given /^an uploader class that uses the '(.*?)' storage$/ do |kind|
   @klass = Class.new(CarrierWave::Uploader::Base)
+  @klass.storage = kind.to_sym
 end
 
 Given /^an instance of that class$/ do
   @uploader = @klass.new
+end
+
+Then /^the contents of the file should be '(.*?)'$/ do |contents|
+  @uploader.read.chomp.should == contents
 end
 
 Given /^that the uploader reverses the filename$/ do

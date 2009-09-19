@@ -27,6 +27,7 @@ module CarrierWave
     autoload :Abstract, 'carrierwave/storage/abstract'
     autoload :File, 'carrierwave/storage/file'
     autoload :S3, 'carrierwave/storage/s3'
+    autoload :GridFS, 'carrierwave/storage/grid_fs'
   end
 
   module Uploader
@@ -60,11 +61,14 @@ CarrierWave.config = {
   :storage => :file,
   :storage_engines => {
     :file => "CarrierWave::Storage::File",
-    :s3 => "CarrierWave::Storage::S3"
+    :s3 => "CarrierWave::Storage::S3",
+    :grid_fs => "CarrierWave::Storage::GridFS"
   },
   :s3 => {
     :access => :public_read
   },
+  :grid_fs_database => 'carrierwave',
+  :grid_fs_host => 'localhost',
   :store_dir => 'uploads',
   :cache_dir => 'uploads/tmp',
   :mount => {
