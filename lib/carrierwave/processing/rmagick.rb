@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-unless Module.const_defined?('Magick')
+unless defined? Magick 
   begin
     require 'rmagick'
   rescue LoadError
