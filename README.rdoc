@@ -238,7 +238,11 @@ And then in your uploader, set the storage to +:grid_fs+:
     end
 
 Since GridFS doesn't make the files available via HTTP, you'll need to stream
-them yourself. In Rails for example, you could use the +send_data+ method.
+them yourself. In Rails for example, you could use the +send_data+ method. You
+can tell CarrierWave the URL you will serve your images from, allowing it to
+generate the correct URL, by setting eg:
+
+    CarrierWave.config[:grid_fs_access_url] = "/image/show"
 
 == Using RMagick
 

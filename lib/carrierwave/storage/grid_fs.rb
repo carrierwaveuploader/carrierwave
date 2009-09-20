@@ -21,7 +21,11 @@ module CarrierWave
         end
 
         def url
-          nil
+          unless CarrierWave.config[:grid_fs_access_url]
+            nil
+          else
+            [CarrierWave.config[:grid_fs_access_url], @path].join("/")
+          end
         end
 
         def read

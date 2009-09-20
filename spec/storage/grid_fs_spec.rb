@@ -55,8 +55,13 @@ describe CarrierWave::Storage::GridFS do
       @grid_fs_file.path.should be_nil
     end
     
-    it "should not have a URL" do
+    it "should not have a URL unless set" do
       @grid_fs_file.url.should be_nil
+    end
+    
+    it "should return a URL if configured" do
+      CarrierWave.config[:grid_fs_access_url] = "/image/show"
+      @grid_fs_file.url.should == "/image/show/uploads/bar.txt"
     end
     
     it "should be deletable" do
