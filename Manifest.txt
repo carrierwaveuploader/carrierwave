@@ -43,6 +43,7 @@ lib/carrierwave/processing/rmagick.rb
 lib/carrierwave/sanitized_file.rb
 lib/carrierwave/storage/abstract.rb
 lib/carrierwave/storage/file.rb
+lib/carrierwave/storage/grid_fs.rb
 lib/carrierwave/storage/s3.rb
 lib/carrierwave/test/matchers.rb
 lib/carrierwave/uploader.rb
