@@ -86,7 +86,15 @@ Or for DataMapper:
       mount_uploader :avatar, AvatarUploader
     end
 
-Or for Sequel
+Or for MongoMapper:
+
+    class User
+      include MongoMapper::Document
+
+      mount_uploader :avatar, AvatarUploader
+    end
+
+Or for Sequel:
 
     class User < Sequel::Model
       mount_uploader :avatar, AvatarUploader
