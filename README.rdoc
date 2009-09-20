@@ -322,6 +322,7 @@ These people have contributed their time and effort to CarrierWave:
 * Andrew Timberlake
 * Durran Jordan
 * Scott Motte
+* Sho Fukamachi
 
 == License
 
