@@ -12,6 +12,7 @@ features/file_storage_overridden_store_dir.feature
 features/file_storage_reversing_processor.feature
 features/fixtures/bork.txt
 features/fixtures/monkey.txt
+features/grid_fs_storage.feature
 features/mount_activerecord.feature
 features/mount_datamapper.feature
 features/step_definitions/activerecord_steps.rb
@@ -77,6 +78,7 @@ spec/orm/mongomapper_spec.rb
 spec/orm/sequel_spec.rb
 spec/sanitized_file_spec.rb
 spec/spec_helper.rb
+spec/storage/grid_fs_spec.rb
 spec/uploader/cache_spec.rb
 spec/uploader/default_url_spec.rb
 spec/uploader/extension_whitelist_spec.rb
