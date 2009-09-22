@@ -131,7 +131,7 @@ module CarrierWave
       end
 
       uploaders[column.to_sym] = uploader
-      uploader_options[column.to_sym] = CarrierWave.config[:mount].merge(options)
+      uploader_options[column.to_sym] = options
 
       include CarrierWave::Mount::Extension
 

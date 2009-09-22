@@ -4,8 +4,8 @@ module CarrierWave
   module Uploader
     module Store
 
-      depends_on CarrierWave::Uploader::Paths
       depends_on CarrierWave::Uploader::Callbacks
+      depends_on CarrierWave::Uploader::Configuration
       depends_on CarrierWave::Uploader::Cache
 
       module ClassMethods
@@ -44,11 +44,6 @@ module CarrierWave
             # Get the storage from the superclass if there is one
             @storage = superclass.storage rescue nil
           end
-          if @storage.nil?
-            # If we were not able to find a store any other way, setup the default store
-            @storage ||= get_storage_by_symbol(CarrierWave.config[:storage])
-            @storage.setup!
-          end
           return @storage
         end
 
@@ -57,7 +52,7 @@ module CarrierWave
       private
 
         def get_storage_by_symbol(symbol)
-          eval(CarrierWave.config[:storage_engines][symbol])
+          eval(storage_engines[symbol])
         end
 
       end
@@ -78,19 +73,6 @@ module CarrierWave
       #
       def filename
         @filename
-      end
-
-      ##
-      # Override this in your Uploader to change the directory where the file backend stores files.
-      #
-      # Other backends may or may not use this method, depending on their specific needs.
-      #
-      # === Returns
-      #
-      # [String] a directory
-      #
-      def store_dir
-        CarrierWave.config[:store_dir]
       end
 
       ##

@@ -79,7 +79,7 @@ module CarrierWave
       def mappings
         {
           :rails_root   => lambda{|u, f| Rails.root },
-          :rails_env    => lambda{|u, f| CarrierWave.config[:env] },
+          :rails_env    => lambda{|u, f| Rails.env },
           :class        => lambda{|u, f| u.model.class.name.underscore.pluralize},
           :id           => lambda{|u, f| u.model.id },
           :id_partition => lambda{|u, f| ("%09d" % u.model.id).scan(/\d{3}/).join("/")},

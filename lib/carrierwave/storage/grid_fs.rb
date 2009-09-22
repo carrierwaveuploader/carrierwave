@@ -11,9 +11,10 @@ module CarrierWave
 
       class File
 
-        def initialize(database, path)
+        def initialize(uploader, database, path)
           @database = database
           @path = path
+          @uploader = uploader
         end
 
         def path
@@ -21,10 +22,10 @@ module CarrierWave
         end
 
         def url
-          unless CarrierWave.config[:grid_fs_access_url]
+          unless @uploader.grid_fs_access_url
             nil
           else
-            [CarrierWave.config[:grid_fs_access_url], @path].join("/")
+            [@uploader.grid_fs_access_url, @path].join("/")
           end
         end
 
@@ -40,8 +41,8 @@ module CarrierWave
 
       def database
         @connection ||= begin
-          host = CarrierWave.config[:grid_fs_host]
-          database = CarrierWave.config[:grid_fs_database]
+          host = uploader.grid_fs_host
+          database = uploader.grid_fs_database
           Mongo::Connection.new(host).db(database)
         end
       end
@@ -61,7 +62,7 @@ module CarrierWave
         ::GridFS::GridStore.open(database, uploader.store_path, 'w') do |f|
           f.write file.read
         end
-        CarrierWave::Storage::GridFS::File.new(database, uploader.store_path)
+        CarrierWave::Storage::GridFS::File.new(uploader, database, uploader.store_path)
       end
 
       ##
@@ -76,7 +77,7 @@ module CarrierWave
       # [CarrierWave::Storage::GridFS::File] a sanitized file
       #
       def retrieve!(identifier)
-        CarrierWave::Storage::GridFS::File.new(database, uploader.store_path(identifier))
+        CarrierWave::Storage::GridFS::File.new(uploader, database, uploader.store_path(identifier))
       end
 
     end # File

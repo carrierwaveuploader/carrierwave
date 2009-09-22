@@ -22,8 +22,8 @@ module CarrierWave
   module Uploader
     module Cache
 
-      depends_on CarrierWave::Uploader::Paths
       depends_on CarrierWave::Uploader::Callbacks
+      depends_on CarrierWave::Uploader::Configuration
 
       ##
       # Returns true if the uploader has been cached
@@ -34,17 +34,6 @@ module CarrierWave
       #
       def cached?
         @cache_id
-      end
-
-      ##
-      # Override this in your Uploader to change the directory where files are cached.
-      #
-      # === Returns
-      #
-      # [String] a directory
-      #
-      def cache_dir
-        CarrierWave.config[:cache_dir]
       end
 
       ##
@@ -80,7 +69,7 @@ module CarrierWave
             @filename = new_file.filename
             self.original_filename = new_file.filename
 
-            @file = new_file.copy_to(cache_path, CarrierWave.config[:permissions])
+            @file = new_file.copy_to(cache_path, permissions)
           end
         end
       end

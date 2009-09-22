@@ -73,13 +73,10 @@ describe CarrierWave::Uploader do
     end
 
     it "should set permissions if options are given" do
-      old_permissions = CarrierWave.config[:permissions]
-      CarrierWave.config[:permissions] = 0777
+      @uploader_class.permissions = 0777
 
       @uploader.cache!(File.open(file_path('test.jpg')))
       @uploader.should have_permissions(0777)
-
-      CarrierWave.config[:permissions] = old_permissions
     end
   end
 

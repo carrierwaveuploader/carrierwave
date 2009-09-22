@@ -5,9 +5,12 @@ require File.dirname(__FILE__) + '/../spec_helper'
 describe CarrierWave::Storage::GridFS do
 
   before do
-    CarrierWave.config[:grid_fs_database] = "carrierwave_test"
     @database = Mongo::Connection.new('localhost').db('carrierwave_test')
     @uploader = mock('an uploader')
+    @uploader.stub!(:grid_fs_database).and_return("carrierwave_test")
+    @uploader.stub!(:grid_fs_host).and_return("localhost")
+    @uploader.stub!(:grid_fs_access_url).and_return(nil)
+
     @storage = CarrierWave::Storage::GridFS.new(@uploader)
     @file = CarrierWave::SanitizedFile.new(file_path('test.jpg'))
   end
@@ -60,7 +63,7 @@ describe CarrierWave::Storage::GridFS do
     end
     
     it "should return a URL if configured" do
-      CarrierWave.config[:grid_fs_access_url] = "/image/show"
+      @uploader.stub!(:grid_fs_access_url).and_return("/image/show")
       @grid_fs_file.url.should == "/image/show/uploads/bar.txt"
     end
     

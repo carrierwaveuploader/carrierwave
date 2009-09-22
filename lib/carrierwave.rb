@@ -11,6 +11,10 @@ module CarrierWave
 
   class << self
     attr_accessor :config
+    
+    def configure(&block)
+      CarrierWave::Uploader::Base.configure(&block)
+    end
   end
 
   class UploadError < StandardError; end
@@ -38,12 +42,12 @@ module CarrierWave
     autoload :Processing, 'carrierwave/uploader/processing'
     autoload :Versions, 'carrierwave/uploader/versions'
     autoload :Remove, 'carrierwave/uploader/remove'
-    autoload :Paths, 'carrierwave/uploader/paths'
     autoload :ExtensionWhitelist, 'carrierwave/uploader/extension_whitelist'
     autoload :DefaultUrl, 'carrierwave/uploader/default_url'
     autoload :Proxy, 'carrierwave/uploader/proxy'
     autoload :Url, 'carrierwave/uploader/url'
     autoload :Mountable, 'carrierwave/uploader/mountable'
+    autoload :Configuration, 'carrierwave/uploader/configuration'
   end
 
   module Compatibility
@@ -56,41 +60,43 @@ module CarrierWave
 
 end
 
-CarrierWave.config = {
-  :permissions => 0644,
-  :storage => :file,
-  :storage_engines => {
+CarrierWave.configure do |config|
+  config.permissions = 0644
+  config.storage_engines = {
     :file => "CarrierWave::Storage::File",
     :s3 => "CarrierWave::Storage::S3",
     :grid_fs => "CarrierWave::Storage::GridFS"
-  },
-  :s3 => {
-    :access => :public_read
-  },
-  :grid_fs_database => 'carrierwave',
-  :grid_fs_host => 'localhost',
-  :store_dir => 'uploads',
-  :cache_dir => 'uploads/tmp',
-  :mount => {
-    :ignore_integrity_errors => true,
-    :ignore_processing_errors => true,
-    :validate_integrity => true,
-    :validate_processing => true
   }
-}
+  config.storage = :file
+  config.s3_access = :public_read
+  config.grid_fs_database = 'carrierwave'
+  config.grid_fs_host = 'localhost'
+  config.store_dir = 'uploads'
+  config.cache_dir = 'uploads/tmp'
+  config.ignore_integrity_errors = true
+  config.ignore_processing_errors = true
+  config.validate_integrity = true
+  config.validate_processing = true
+end
 
 if defined?(Merb)
-  CarrierWave.config[:root] = Merb.dir_for(:public)
+  CarrierWave.configure do |config|
+    config.root = Merb.dir_for(:public)
+  end
   Merb::BootLoader.before_app_loads do
     # Setup path for uploaders and load all of them before classes are loaded
     Merb.push_path(:uploaders, Merb.root / 'app' / 'uploaders', '*.rb')
     Dir.glob(File.join(Merb.load_paths[:uploaders])).each {|f| require f }
   end
 elsif defined?(Rails)
-  CarrierWave.config[:root] = File.join(Rails.root, 'public')
+  CarrierWave.configure do |config|
+    config.root = File.join(Rails.root, 'public')
+  end
   ActiveSupport::Dependencies.load_paths << File.join(Rails.root, "app", "uploaders")
 elsif defined?(Sinatra)
-  CarrierWave.config[:root] = Sinatra::Application.public
+  CarrierWave.configure do |config|
+    config.root = Sinatra::Application.public
+  end
 end
 
 

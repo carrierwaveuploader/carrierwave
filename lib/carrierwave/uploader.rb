@@ -25,7 +25,6 @@ module CarrierWave
     class Base
       attr_reader :file
 
-      use CarrierWave::Uploader::Paths
       use CarrierWave::Uploader::Callbacks
       use CarrierWave::Uploader::Proxy
       use CarrierWave::Uploader::Url
@@ -37,6 +36,7 @@ module CarrierWave
       use CarrierWave::Uploader::Processing
       use CarrierWave::Uploader::Versions
       use CarrierWave::Uploader::DefaultUrl
+      use CarrierWave::Uploader::Configuration
     end # Base
 
   end # Uploader

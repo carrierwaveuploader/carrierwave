@@ -8,6 +8,9 @@ module Rails
   def self.root
     File.expand_path(File.join('..'), File.dirname(__FILE__))
   end
+  def self.env
+    "test"
+  end
 end unless defined?(Rails)
 
 describe CarrierWave::Compatibility::Paperclip do
@@ -27,7 +30,7 @@ describe CarrierWave::Compatibility::Paperclip do
 
   describe '#store_path' do
     it "should mimics paperclip default" do
-      @uploader.store_path("monkey.png").should == CarrierWave.config[:root] + "/system/monkeys/23/original/monkey.png"
+      @uploader.store_path("monkey.png").should == CarrierWave::Uploader::Base.root + "/system/monkeys/23/original/monkey.png"
     end
 
     it "should interpolate the root path" do

@@ -15,7 +15,9 @@ def file_path( *paths )
   File.expand_path(File.join('..', *paths), File.dirname(__FILE__))
 end
 
-CarrierWave.config[:root] = file_path('public')
+CarrierWave.configure do |config|
+  config.root = file_path('public')
+end
 
 After do
   FileUtils.rm_rf(file_path("public"))
