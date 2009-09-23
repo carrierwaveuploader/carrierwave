@@ -26,16 +26,31 @@ module CarrierWave
       @uploaders
     end
 
-    ##
-    # === Returns
-    #
-    # [Hash{Symbol => Hash}] options for mounted uploaders
-    #
     def uploader_options
       @uploader_options ||= {}
       @uploader_options = superclass.uploader_options.merge(@uploader_options)
     rescue NoMethodError
       @uploader_options
+    end
+
+    ##
+    # Return a particular option for a particular uploader
+    #
+    # === Parameters
+    #
+    # [column (Symbol)] The column the uploader is mounted at
+    # [option (Symbol)] The option, e.g. validate_integrity
+    #
+    # === Returns
+    #
+    # [Object] The option value
+    #
+    def uploader_option(column, option)
+      if uploader_options[column].has_key?(option)
+        uploader_options[column][option]
+      else
+        uploaders[column].send(option)
+      end
     end
 
     ##
@@ -244,7 +259,7 @@ module CarrierWave
     # we don't pollute the model with a lot of methods.
     class Mounter #:nodoc:
 
-      attr_reader :column, :record, :options
+      attr_reader :column, :record
 
       attr_accessor :uploader, :integrity_error, :processing_error, :remove
 
@@ -281,10 +296,10 @@ module CarrierWave
         self.processing_error = nil
       rescue CarrierWave::IntegrityError => e
         self.integrity_error = e
-        raise e unless options[:ignore_integrity_errors]
+        raise e unless option(:ignore_integrity_errors)
       rescue CarrierWave::ProcessingError => e
         self.processing_error = e
-        raise e unless options[:ignore_processing_errors]
+        raise e unless option(:ignore_processing_errors)
       end
 
       def cache_name
@@ -323,9 +338,13 @@ module CarrierWave
       end
 
     private
+      
+      def option(name)
+        record.class.uploader_option(column, name)
+      end
 
       def serialization_column
-        options[:mount_on] || column
+        option(:mount_on) || column
       end
 
     end # Mounter
