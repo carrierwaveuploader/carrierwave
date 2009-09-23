@@ -248,7 +248,7 @@ module CarrierWave
     # we don't pollute the model with a lot of methods.
     class Mounter #:nodoc:
 
-      attr_reader :column, :record, :uploader, :integrity_error, :processing_error
+      attr_reader :column, :record, :integrity_error, :processing_error
       attr_accessor :remove
 
       def initialize(record, column, options={})
