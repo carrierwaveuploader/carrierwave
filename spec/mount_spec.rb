@@ -31,7 +31,6 @@ describe CarrierWave::Mount do
         end
       end
 
-      @instance.image_uploader.should be_an_instance_of(@uploader)
       @instance.image = stub_file('test.jpg')
       @instance.image.should be_an_instance_of(@uploader)
     end
@@ -39,32 +38,8 @@ describe CarrierWave::Mount do
     it "should inherit uploaders to subclasses" do
       @subclass = Class.new(@class)
       @subclass_instance = @subclass.new
-      @subclass_instance.image_uploader.should be_an_instance_of(@uploader)
       @subclass_instance.image = stub_file('test.jpg')
       @subclass_instance.image.should be_an_instance_of(@uploader)
-    end
-    
-    describe '#image_uploader' do
-      it "should return the uploader" do
-        @instance.image_uploader.should be_an_instance_of(@uploader)
-      end
-    end
-    
-    describe '#image_uploader=' do
-      it "should set the uploader" do
-        @my_uploader = @uploader.new
-        @instance.image_uploader = @my_uploader
-        @instance.image_uploader.should == @my_uploader
-      end
-
-      it "should use the set uploader" do
-        @my_uploader = @uploader.new
-        @my_uploader.store!(stub_file('test.jpg'))
-        @instance.image_uploader = @my_uploader
-        @instance.image_uploader.should == @my_uploader
-        @instance.image.should == @my_uploader
-        @instance.image.current_path.should == public_path('uploads/test.jpg')
-      end
     end
     
     describe '#image' do

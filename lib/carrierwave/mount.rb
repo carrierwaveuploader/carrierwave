@@ -85,9 +85,6 @@ module CarrierWave
     # [image_cache]             Returns a string that identifies the cache location of the file 
     # [image_cache=]            Retrieves the file from the cache based on the given cache name
     #
-    # [image_uploader]          Returns an instance of the uploader
-    # [image_uploader=]         Sets the uploader (be careful!)
-    #
     # [remove_image]            An attribute reader that can be used with a checkbox to mark a file for removal
     # [remove_image=]           An attribute writer that can be used with a checkbox to mark a file for removal
     # [remove_image?]           Whether the file should be removed when store_image! is called.
@@ -180,14 +177,6 @@ module CarrierWave
           _mounter(:#{column}).url(*args)
         end
 
-        def #{column}_uploader
-          _mounter(:#{column}).uploader
-        end
-
-        def #{column}_uploader=(uploader)
-          _mounter(:#{column}).uploader = uploader
-        end
-
         def #{column}_cache
           _mounter(:#{column}).cache_name
         end
@@ -259,9 +248,8 @@ module CarrierWave
     # we don't pollute the model with a lot of methods.
     class Mounter #:nodoc:
 
-      attr_reader :column, :record
-
-      attr_accessor :uploader, :integrity_error, :processing_error, :remove
+      attr_reader :column, :record, :uploader, :integrity_error, :processing_error
+      attr_accessor :remove
 
       def initialize(record, column, options={})
         @record = record
@@ -292,13 +280,13 @@ module CarrierWave
 
       def cache(new_file)
         uploader.cache!(new_file)
-        self.integrity_error = nil
-        self.processing_error = nil
+        @integrity_error = nil
+        @processing_error = nil
       rescue CarrierWave::IntegrityError => e
-        self.integrity_error = e
+        @integrity_error = e
         raise e unless option(:ignore_integrity_errors)
       rescue CarrierWave::ProcessingError => e
-        self.processing_error = e
+        @processing_error = e
         raise e unless option(:ignore_processing_errors)
       end
 
