@@ -19,6 +19,7 @@ $hoe = Hoe.spec 'carrierwave' do
   self.extra_dev_deps << ['activerecord', '>=2.3.3']
   self.extra_dev_deps << ['sqlite3-ruby', '>=1.2.5']
   self.extra_dev_deps << ['dm-core', '>=0.9.11']
+  self.extra_dev_deps << ['data_objects', '>=0.9.12']
   self.extra_dev_deps << ['do_sqlite3', '>=0.9.11']
   self.extra_dev_deps << ['sequel', '>=3.2.0']
   self.extra_dev_deps << ['rmagick', '>=2.10.0']
