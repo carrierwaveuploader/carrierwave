@@ -136,13 +136,6 @@ module CarrierWave
 
       end
 
-      def connect!(uploader)
-        AWS::S3::Base.establish_connection!(
-          :access_key_id     => uploader.s3_access_key_id,
-          :secret_access_key => uploader.s3_secret_access_key
-        )
-      end
-
       ##
       # Store the file on S3
       #
@@ -174,6 +167,15 @@ module CarrierWave
       def retrieve!(identifier)
         connect!(uploader)
         CarrierWave::Storage::S3::File.new(uploader, uploader.store_path(identifier))
+      end
+
+    private
+
+      def connect!(uploader)
+        AWS::S3::Base.establish_connection!(
+          :access_key_id     => uploader.s3_access_key_id,
+          :secret_access_key => uploader.s3_secret_access_key
+        )
       end
 
     end # S3

@@ -39,14 +39,6 @@ module CarrierWave
 
       end
 
-      def database
-        @connection ||= begin
-          host = uploader.grid_fs_host
-          database = uploader.grid_fs_database
-          Mongo::Connection.new(host).db(database)
-        end
-      end
-
       ##
       # Store the file in MongoDB's GridFS GridStore
       #
@@ -78,6 +70,16 @@ module CarrierWave
       #
       def retrieve!(identifier)
         CarrierWave::Storage::GridFS::File.new(uploader, database, uploader.store_path(identifier))
+      end
+
+    private
+
+      def database
+        @connection ||= begin
+          host = uploader.grid_fs_host
+          database = uploader.grid_fs_database
+          Mongo::Connection.new(host).db(database)
+        end
       end
 
     end # File
