@@ -95,7 +95,7 @@ module CarrierWave
         #
         def url
           if @uploader.s3_cnamed 
-            ["http://", @uploader.bucket, @path].compact.join('/')
+            ["http://", @uploader.s3_bucket, @path].compact.join('/')
           else
             ["http://s3.amazonaws.com", @uploader.s3_bucket, @path].compact.join('/')
           end
@@ -133,35 +133,6 @@ module CarrierWave
           @s3_object ||= AWS::S3::S3Object.find(@path, bucket)
         end
 
-
-      private
-
-        def bucket
-          CarrierWave::Storage::S3.bucket
-        end
-
-        def access
-          CarrierWave::Storage::S3.access
-        end
-
-      end
-
-      ##
-      # === Returns
-      #
-      # [String] the bucket set in the config options
-      #
-      def self.bucket
-        CarrierWave.config[:s3][:bucket]
-      end
-
-      ##
-      # === Returns
-      #
-      # [Symbol] the access priviliges the uploaded files should have
-      #
-      def self.access
-        CarrierWave.config[:s3][:access]
       end
 
       ##

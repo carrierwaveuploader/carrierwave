@@ -10,8 +10,6 @@ module CarrierWave
   VERSION = "0.3.5"
 
   class << self
-    attr_accessor :config
-    
     def configure(&block)
       CarrierWave::Uploader::Base.configure(&block)
     end
