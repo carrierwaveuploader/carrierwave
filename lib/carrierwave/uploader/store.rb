@@ -36,10 +36,8 @@ module CarrierWave
         def storage(storage = nil)
           if storage.is_a?(Symbol)
             @storage = get_storage_by_symbol(storage)
-            @storage.setup!
           elsif storage
             @storage = storage
-            @storage.setup!
           elsif @storage.nil?
             # Get the storage from the superclass if there is one
             @storage = superclass.storage rescue nil

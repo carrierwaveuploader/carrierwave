@@ -15,8 +15,6 @@ module CarrierWave
         @uploader = uploader
       end
 
-      def self.setup!; end
-
       def identifier
         uploader.filename
       end

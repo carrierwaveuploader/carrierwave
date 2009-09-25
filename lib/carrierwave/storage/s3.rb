@@ -1,4 +1,5 @@
 # encoding: utf-8
+require 'aws/s3'
 
 module CarrierWave
   module Storage
@@ -135,14 +136,7 @@ module CarrierWave
 
       end
 
-      ##
-      # Connect to Amazon S3
-      #
-      def self.setup!
-      end
-
       def connect!(uploader)
-        require 'aws/s3'
         AWS::S3::Base.establish_connection!(
           :access_key_id     => uploader.s3_access_key_id,
           :secret_access_key => uploader.s3_secret_access_key

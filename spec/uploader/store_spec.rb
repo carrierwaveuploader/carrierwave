@@ -14,14 +14,8 @@ describe CarrierWave::Uploader do
   end
 
   describe ".storage" do
-    before do
-      CarrierWave::Storage::File.stub!(:setup!)
-      CarrierWave::Storage::S3.stub!(:setup!)
-    end
-
     it "should set the storage if an argument is given" do
       storage = mock('some kind of storage')
-      storage.should_receive(:setup!)
       @uploader_class.storage storage
       @uploader_class.storage.should == storage
     end
