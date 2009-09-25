@@ -8,13 +8,17 @@ module CarrierWave
     # CarrierWave to connect to Amazon S3, you'll need to specify an access key id, secret key
     # and bucket
     #
-    #     CarrierWave.config[:s3][:access_key_id] = "xxxxxx"
-    #     CarrierWave.config[:s3][:secret_access_key] = "xxxxxx"
-    #     CarrierWave.config[:s3][:bucket] = "my_bucket_name"
+    #     CarrierWave.configure do |config|
+    #       config.s3_access_key_id = "xxxxxx"
+    #       config.s3_secret_access_key = "xxxxxx"
+    #       config.s3_bucket = "my_bucket_name"
+    #     end
     #
     # You can also set the access policy for the uploaded files:
     #
-    #     CarrierWave.config[:s3][:access] = :public_read
+    #     CarrierWave.configure do |config|
+    #       config.s3_access = :public
+    #     end
     #
     # Possible values are the 'canned access control policies' provided in the aws/s3 gem,
     # they are:
@@ -31,23 +35,26 @@ module CarrierWave
     #
     # You can change the generated url to a cnamed domain by setting the cnamed config:
     #
-    #     CarrierWave.config[:s3][:cnamed] = true
+    #     CarrierWave.configure do |config|
+    #       config.s3_cnamed = true
+    #       config.s3_bucket = 'bucketname.domain.tld'
+    #     end
     #
-    # No the resulting url will be
+    # Now the resulting url will be
     #     
-    #     http://bucket_name.domain.tld/path/to/file
+    #     http://bucketname.domain.tld/path/to/file
     #
     # instead of
     #
-    #     http://s3.amazonaws.com/bucket_name.domain.tld/path/to/file
+    #     http://s3.amazonaws.com/bucketname.domain.tld/path/to/file
     #
     class S3 < Abstract
 
       class File
 
-        def initialize(path, identifier)
+        def initialize(uploader, path)
+          @uploader = uploader
           @path = path
-          @identifier = identifier
         end
 
         ##
@@ -62,17 +69,6 @@ module CarrierWave
         end
 
         ##
-        # Returns the filename on S3
-        #
-        # === Returns
-        #
-        # [String] path to the file
-        #
-        def identifier
-          @identifier
-        end
-
-        ##
         # Reads the contents of the file from S3
         #
         # === Returns
@@ -80,14 +76,14 @@ module CarrierWave
         # [String] contents of the file
         #
         def read
-          AWS::S3::S3Object.value @path, bucket
+          AWS::S3::S3Object.value @path, @uploader.s3_bucket
         end
 
         ##
         # Remove the file from Amazon S3
         #
         def delete
-          AWS::S3::S3Object.delete @path, bucket
+          AWS::S3::S3Object.delete @path, @uploader.s3_bucket
         end
 
         ##
@@ -98,10 +94,10 @@ module CarrierWave
         # [String] file's url
         #
         def url
-          if CarrierWave::config[:s3][:cnamed]
-            ["http://", bucket, @path].compact.join('/')
+          if @uploader.s3_cnamed 
+            ["http://", @uploader.bucket, @path].compact.join('/')
           else
-            ["http://s3.amazonaws.com", bucket, @path].compact.join('/')
+            ["http://s3.amazonaws.com", @uploader.s3_bucket, @path].compact.join('/')
           end
         end
 
@@ -172,10 +168,13 @@ module CarrierWave
       # Connect to Amazon S3
       #
       def self.setup!
+      end
+
+      def connect!(uploader)
         require 'aws/s3'
         AWS::S3::Base.establish_connection!(
-          :access_key_id     => CarrierWave.config[:s3][:access_key_id],
-          :secret_access_key => CarrierWave.config[:s3][:secret_access_key]
+          :access_key_id     => uploader.s3_access_key_id,
+          :secret_access_key => uploader.s3_secret_access_key
         )
       end
 
@@ -191,8 +190,9 @@ module CarrierWave
       # [CarrierWave::Storage::S3] the stored file
       #
       def store!(file)
-        AWS::S3::S3Object.store(::File.join(uploader.store_path), file.read, self.class.bucket, :access => self.class.access)
-        CarrierWave::Storage::S3::File.new(uploader.store_path, uploader.filename)
+        connect!(uploader)
+        AWS::S3::S3Object.store(uploader.store_path, file.read, uploader.s3_bucket, :access => uploader.s3_access)
+        CarrierWave::Storage::S3::File.new(uploader, uploader.store_path)
       end
 
       # Do something to retrieve the file
@@ -207,7 +207,8 @@ module CarrierWave
       # [CarrierWave::Storage::S3::File] the stored file
       #
       def retrieve!(identifier)
-        CarrierWave::Storage::S3::File.new(uploader.store_path(identifier), identifier)
+        connect!(uploader)
+        CarrierWave::Storage::S3::File.new(uploader, uploader.store_path(identifier))
       end
 
     end # S3
