@@ -323,6 +323,7 @@ These people have contributed their time and effort to CarrierWave:
 * Durran Jordan
 * Scott Motte
 * Sho Fukamachi
+* Sam Lown
 
 == License
 
