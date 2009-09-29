@@ -28,7 +28,7 @@ module CarrierWave
 
       module ClassMethods
 
-        def add_config(name, options={})
+        def add_config(name)
           class_eval <<-RUBY, __FILE__, __LINE__ + 1
             def self.#{name}(value=nil)
               @#{name} = value if value
