@@ -50,10 +50,10 @@ lib/carrierwave/test/matchers.rb
 lib/carrierwave/uploader.rb
 lib/carrierwave/uploader/cache.rb
 lib/carrierwave/uploader/callbacks.rb
+lib/carrierwave/uploader/configuration.rb
 lib/carrierwave/uploader/default_url.rb
 lib/carrierwave/uploader/extension_whitelist.rb
 lib/carrierwave/uploader/mountable.rb
-lib/carrierwave/uploader/paths.rb
 lib/carrierwave/uploader/processing.rb
 lib/carrierwave/uploader/proxy.rb
 lib/carrierwave/uploader/remove.rb
@@ -79,7 +79,9 @@ spec/orm/sequel_spec.rb
 spec/sanitized_file_spec.rb
 spec/spec_helper.rb
 spec/storage/grid_fs_spec.rb
+spec/storage/s3_spec.rb
 spec/uploader/cache_spec.rb
+spec/uploader/configuration_spec.rb
 spec/uploader/default_url_spec.rb
 spec/uploader/extension_whitelist_spec.rb
 spec/uploader/mountable_spec.rb
