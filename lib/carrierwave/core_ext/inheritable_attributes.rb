@@ -58,7 +58,7 @@ class Class
         RUBY
       end
     end
-  end
+  end unless Class.respond_to?(:extlib_inheritable_reader)
 
   # Defines class-level inheritable attribute writer. Attributes are available to subclasses,
   # each subclass has a copy of parent's attribute.
@@ -86,7 +86,7 @@ class Class
         RUBY
       end
     end
-  end
+  end unless Class.respond_to?(:extlib_inheritable_writer)
 
   # Defines class-level inheritable attribute accessor. Attributes are available to subclasses,
   # each subclass has a copy of parent's attribute.
@@ -100,5 +100,5 @@ class Class
   def extlib_inheritable_accessor(*syms)
     extlib_inheritable_reader(*syms)
     extlib_inheritable_writer(*syms)
-  end
+  end unless Class.respond_to?(:extlib_inheritable_accessor)
 end
