@@ -14,6 +14,7 @@ $hoe = Hoe.spec 'carrierwave' do
   self.rubyforge_name = self.name
   self.readme_file = 'README.rdoc'
   self.version = CarrierWave::VERSION
+  self.extra_dev_deps << ['newgem', '>=1.5.2']
   self.extra_dev_deps << ['rspec', '>=1.2.8']
   self.extra_dev_deps << ['cucumber', '>=0.3.96']
   self.extra_dev_deps << ['activerecord', '>=2.3.3']
@@ -24,6 +25,7 @@ $hoe = Hoe.spec 'carrierwave' do
   self.extra_dev_deps << ['sequel', '>=3.2.0']
   self.extra_dev_deps << ['rmagick', '>=2.10.0']
   self.extra_dev_deps << ['jnunemaker-mongomapper', '>=0.3.3']
+  self.extra_dev_deps << ['aws-s3', '>=0.6.2']
   self.extra_rdoc_files << 'README.rdoc'
 end
 
