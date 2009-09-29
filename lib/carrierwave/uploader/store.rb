@@ -14,7 +14,7 @@ module CarrierWave
         # Sets the storage engine to be used when storing files with this uploader.
         # Can be any class that implements a #store!(CarrierWave::SanitizedFile) and a #retrieve!
         # method. See lib/carrierwave/storage/file.rb for an example. Storage engines should
-        # be added to CarrierWave.config[:storage_engines] so they can be referred
+        # be added to CarrierWave::Uploader::Base.storage_engines so they can be referred
         # to by a symbol, which should be more convenient
         #
         # If no argument is given, it will simply return the currently used storage engine.

@@ -72,33 +72,13 @@ need to require the relevant extension manually, e.g.:
 
     require 'carrierwave/orm/activerecord'
 
-Open your model file. For ActiveRecord do something like:
-
-    class User < ActiveRecord::Base
-      mount_uploader :avatar, AvatarUploader
-    end
-
-Or for DataMapper:
+Open your model file and mount the uploader:
 
     class User
-      include DataMapper::Resource
-
       mount_uploader :avatar, AvatarUploader
     end
 
-Or for MongoMapper:
-
-    class User
-      include MongoMapper::Document
-
-      mount_uploader :avatar, AvatarUploader
-    end
-
-Or for Sequel:
-
-    class User < Sequel::Model
-      mount_uploader :avatar, AvatarUploader
-    end
+This works the same with all supported ORMs.
 
 Now you can cache files by assigning them to the attribute, they will
 automatically be stored when the record is saved.
@@ -122,6 +102,18 @@ method:
     end
 
 This works for the file storage as well as Amazon S3.
+
+== Securing uploads
+
+Certain file might be dangerous if uploaded to the wrong location, such as php files or other script files. CarrierWave allows you to specify a white-list of allowed extensions.
+
+If you're mounting the uploader, uploading a file with the wrong extension will make the record invalid instead. Otherwise, an error is raised.
+
+    class MyUploader < CarrierWave::Uploader::Base
+      def extension_white_list
+        %w(jpg jpeg gif png)
+      end
+    end
 
 == Adding versions
 
@@ -203,13 +195,30 @@ this easily by overriding the +default_url+ method in your uploader:
       end
     end
 
+== Configuring CarrierWave
+
+CarrierWave has a broad range of configuration options, which you can configure, both globally and on a per-uploader basis:
+
+    CarrierWave.configure do |config|
+      config.permissions = 0666
+      config.storage = :s3
+    end
+
+Or alternatively:
+
+    class AvatarUploader < CarrierWave::Uploader::Base
+      permissions 0777
+    end
+
 == Using Amazon S3
 
 You'll need to configure a bucket, access id and secret key like this:
 
-    CarrierWave.config[:s3][:access_key_id] = 'xxxxxx'
-    CarrierWave.config[:s3][:secret_access_key] = 'xxxxxx'
-    CarrierWave.config[:s3][:bucket] = 'name_of_bucket'
+    CarrierWave.configure do |config|
+      config.s3_access_key_id = 'xxxxxx'
+      config.s3_secret_access_key = 'xxxxxx'
+      config.s3_bucket = 'name_of_bucket'
+    end
 
 Do this in an initializer in Rails, and in a +before_app_loads+ block in Merb.
 
@@ -226,8 +235,10 @@ the url to the file on Amazon S3
 
 You'll need to configure the database and host to use:
 
-    CarrierWave.config[:grid_fs_database] = 'my_mongo_database'
-    CarrierWave.config[:grid_fs_host] = 'mongo.example.com'
+    CarrierWave.configure do |config|
+      config.grid_fs_database = 'my_mongo_database'
+      config.grid_fs_host = 'mongo.example.com'
+    end
 
 The defaults are 'carrierwave' and 'localhost'.
 
@@ -242,7 +253,9 @@ them yourself. In Rails for example, you could use the +send_data+ method. You
 can tell CarrierWave the URL you will serve your images from, allowing it to
 generate the correct URL, by setting eg:
 
-    CarrierWave.config[:grid_fs_access_url] = "/image/show"
+    CarrierWave.configure do |config|
+      config.grid_fs_access_url = "/image/show"
+    end
 
 == Using RMagick
 
