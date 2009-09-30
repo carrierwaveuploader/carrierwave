@@ -35,7 +35,7 @@ module CarrierWave
         #
         def storage(storage = nil)
           if storage.is_a?(Symbol)
-            @storage = get_storage_by_symbol(storage)
+            @storage = eval(storage_engines[symbol])
           elsif storage
             @storage = storage
           elsif @storage.nil?
@@ -44,14 +44,7 @@ module CarrierWave
           end
           return @storage
         end
-
         alias_method :storage=, :storage
-
-      private
-
-        def get_storage_by_symbol(symbol)
-          eval(storage_engines[symbol])
-        end
 
       end
 
