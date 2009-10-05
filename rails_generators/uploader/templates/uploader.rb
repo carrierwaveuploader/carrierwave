@@ -41,7 +41,7 @@ class <%= class_name %>Uploader < CarrierWave::Uploader::Base
 
   # Override the filename of the uploaded files
   #     def filename
-  #       "something.jpg"
+  #       "something.jpg" if original_filename
   #     end
 
 end
