@@ -1,5 +1,5 @@
 # encoding: utf-8
-require 'mongomapper'
+require 'mongo_mapper'
 
 module CarrierWave
   module MongoMapper
