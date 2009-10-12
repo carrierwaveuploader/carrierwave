@@ -7,7 +7,7 @@ require 'carrierwave/core_ext/inheritable_attributes'
 
 module CarrierWave
 
-  VERSION = "0.3.5.1"
+  VERSION = "0.3.5.2"
 
   class << self
     attr_accessor :config, :logger

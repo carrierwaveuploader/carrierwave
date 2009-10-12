@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{carrierwave}
-  s.version = "0.3.5"
+  s.version = "0.3.5.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jonas Nicklas"]
-  s.date = %q{2009-09-01}
+  s.date = %q{2009-10-12}
   s.description = %q{* RDoc Documentation {available at Rubyforge}[http://carrierwave.rubyforge.org/rdoc].
 * Source code {hosted at GitHub}[http://github.com/jnicklas/carrierwave]
 * Please {report any issues}[http://github.com/jnicklas/carrierwave/issues] on GitHub
@@ -35,7 +35,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<sequel>, [">= 3.2.0"])
       s.add_development_dependency(%q<rmagick>, [">= 2.10.0"])
       s.add_development_dependency(%q<jnunemaker-mongomapper>, [">= 0.3.3"])
-      s.add_development_dependency(%q<hoe>, [">= 2.3.3"])
+      s.add_development_dependency(%q<hoe>, [">= 2.3.2"])
     else
       s.add_dependency(%q<rspec>, [">= 1.2.8"])
       s.add_dependency(%q<cucumber>, [">= 0.3.96"])
@@ -46,7 +46,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<sequel>, [">= 3.2.0"])
       s.add_dependency(%q<rmagick>, [">= 2.10.0"])
       s.add_dependency(%q<jnunemaker-mongomapper>, [">= 0.3.3"])
-      s.add_dependency(%q<hoe>, [">= 2.3.3"])
+      s.add_dependency(%q<hoe>, [">= 2.3.2"])
     end
   else
     s.add_dependency(%q<rspec>, [">= 1.2.8"])
@@ -58,6 +58,6 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<sequel>, [">= 3.2.0"])
     s.add_dependency(%q<rmagick>, [">= 2.10.0"])
     s.add_dependency(%q<jnunemaker-mongomapper>, [">= 0.3.3"])
-    s.add_dependency(%q<hoe>, [">= 2.3.3"])
+    s.add_dependency(%q<hoe>, [">= 2.3.2"])
   end
 end
