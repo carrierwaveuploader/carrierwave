@@ -1,4 +1,4 @@
-=== Version 0.4.0 2009-09
+=== Version 0.4.0 2009-10-12
 
 * [changed] the `public` option has been renamed `root` and the old `root` option was removed. No more ambiguity.
 * [changed] Major *breaking* changes to the configuration syntax.
