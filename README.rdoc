@@ -20,6 +20,8 @@ Install the latest stable release:
 
     [sudo] gem install carrierwave
 
+CarrierWave is hosted *only* on {Gemcutter}[http://gemcutter.org] as of version 0.4.0.
+
 In Merb, add it as a dependency to your config/dependencies.rb:
     
     dependency 'carrierwave'
