@@ -3,7 +3,6 @@ History.txt
 Manifest.txt
 README.rdoc
 Rakefile
-carrierwave.gemspec
 cucumber.yml
 features/caching.feature
 features/file_storage.feature
