@@ -35,7 +35,7 @@ module CarrierWave
         #
         def storage(storage = nil)
           if storage.is_a?(Symbol)
-            @storage = eval(storage_engines[symbol])
+            @storage = eval(storage_engines[storage])
           elsif storage
             @storage = storage
           elsif @storage.nil?
