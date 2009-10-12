@@ -7,7 +7,7 @@ require 'carrierwave/core_ext/inheritable_attributes'
 
 module CarrierWave
 
-  VERSION = "0.3.5"
+  VERSION = "0.4.0"
 
   class << self
     def configure(&block)
