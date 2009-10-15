@@ -61,19 +61,18 @@ module CarrierWave
         def matches?(actual)
           @actual = actual
           # Satisfy expectation here. Return false or raise an error if it's not met.
-          require 'RMagick'
-          img = ::Magick::Image.read(@actual.path).first
+          img = ::Magick::Image.read(@actual.current_path).first
           @actual_width = img.columns
           @actual_height = img.rows
           @actual_width <= @width && @actual_height <= @height
         end
 
         def failure_message
-          "expected #{@actual.inspect} to be no larger than #{@width} by #{@height}, but it was #{@actual_height} by #{@actual_width}."
+          "expected #{@actual.current_path.inspect} to be no larger than #{@width} by #{@height}, but it was #{@actual_width} by #{@actual_height}."
         end
 
         def negative_failure_message
-          "expected #{@actual.inspect} to be larger than #{@width} by #{@height}, but it wasn't."
+          "expected #{@actual.current_path.inspect} to be larger than #{@width} by #{@height}, but it wasn't."
         end
       end
 
@@ -89,19 +88,18 @@ module CarrierWave
         def matches?(actual)
           @actual = actual
           # Satisfy expectation here. Return false or raise an error if it's not met.
-          require 'RMagick'
-          img = ::Magick::Image.read(@actual.path).first
+          img = ::Magick::Image.read(@actual.current_path).first
           @actual_width = img.columns
           @actual_height = img.rows
           @actual_width == @width && @actual_height == @height
         end
 
         def failure_message
-          "expected #{@actual.inspect} to have an exact size of #{@width} by #{@height}, but it was #{@actual_height} by #{@actual_width}."
+          "expected #{@actual.current_path.inspect} to have an exact size of #{@width} by #{@height}, but it was #{@actual_width} by #{@actual_height}."
         end
 
         def negative_failure_message
-          "expected #{@actual.inspect} not to have an exact size of #{@width} by #{@height}, but it did."
+          "expected #{@actual.current_path.inspect} not to have an exact size of #{@width} by #{@height}, but it did."
         end
       end
 

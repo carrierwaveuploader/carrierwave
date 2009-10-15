@@ -5,6 +5,8 @@ unless defined? Magick
     require 'rmagick'
   rescue LoadError
     require 'RMagick'
+  rescue LoadError
+    puts "WARNING: Failed to require rmagick, image processing may fail!"
   end
 end
 
