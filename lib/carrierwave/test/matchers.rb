@@ -77,6 +77,7 @@ module CarrierWave
       end
 
       def be_no_larger_than(width, height)
+        load_rmagick
         BeNoLargerThan.new(width, height)
       end
 
@@ -104,7 +105,22 @@ module CarrierWave
       end
 
       def have_dimensions(width, height)
+        load_rmagick
         HaveDimensions.new(width, height)
+      end
+
+    private
+    
+      def load_rmagick
+        unless defined? Magick 
+          begin
+            require 'rmagick'
+          rescue LoadError
+            require 'RMagick'
+          rescue LoadError
+            puts "WARNING: Failed to require rmagick, image processing may fail!"
+          end
+        end
       end
       
     end # SpecHelper

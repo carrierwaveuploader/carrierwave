@@ -1,6 +1,10 @@
 === Version 0.4.1
 
+* [changed] Major changes to the ImageScience module, it actually works now!
+
 * [removed] Support for Sequel < 2.12
+
+
 
 === Version 0.4.0 2009-10-12
 
