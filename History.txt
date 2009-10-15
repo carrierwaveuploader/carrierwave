@@ -3,8 +3,7 @@
 * [changed] Major changes to the ImageScience module, it actually works now!
 
 * [removed] Support for Sequel < 2.12
-
-
+* [removed] `crop_resized` and `resize` aliases in RMagick, use `resize_to_fill` and `resize_to_fit` respectively
 
 === Version 0.4.0 2009-10-12
 
