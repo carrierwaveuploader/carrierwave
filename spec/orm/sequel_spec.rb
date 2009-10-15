@@ -111,18 +111,9 @@ describe CarrierWave::Sequel do
       describe 'with validation' do
 
         before do
-          # Add validations
-          if CarrierWave::Sequel.new_sequel?
-            @class.class_eval do
-              def validate
-                errors.add(:image, 'FAIL!')
-              end
-            end
-          else
-            @class.class_eval do
-              validates_each(:image) do |o,a,v|
-                o.errors.add(a, 'FAIL!')
-              end
+          @class.class_eval do
+            def validate
+              errors.add(:image, 'FAIL!')
             end
           end
           # Turn off raising the exceptions on save

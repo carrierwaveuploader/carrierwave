@@ -12,22 +12,8 @@ module CarrierWave
       alias_method :read_uploader, :[]
       alias_method :write_uploader, :[]=
  
-      if CarrierWave::Sequel.new_sequel?
-        include CarrierWave::Sequel::Hooks
-        include CarrierWave::Sequel::Validations
-      else
-        after_save "store_#{column}!"
-        before_save "write_#{column}_identifier"
-        before_destroy "remove_#{column}!"
-      end
-    end
- 
-    # Determine if we're using Sequel > 2.12
-    #
-    # ==== Returns
-    # Bool:: True if Sequel 2.12 or higher False otherwise
-    def self.new_sequel?
-      ::Sequel::Model.respond_to?(:plugin)
+      include CarrierWave::Sequel::Hooks
+      include CarrierWave::Sequel::Validations
     end
   end # Sequel
 end # CarrierWave
