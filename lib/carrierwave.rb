@@ -24,6 +24,7 @@ module CarrierWave
   autoload :Mount, 'carrierwave/mount'
   autoload :RMagick, 'carrierwave/processing/rmagick'
   autoload :ImageScience, 'carrierwave/processing/image_science'
+  autoload :MiniMagick, 'carrierwave/processing/mini_magick'
 
   module Storage
     autoload :Abstract, 'carrierwave/storage/abstract'
