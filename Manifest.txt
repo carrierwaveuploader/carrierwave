@@ -40,6 +40,7 @@ lib/carrierwave/orm/mongomapper.rb
 lib/carrierwave/orm/sequel.rb
 lib/carrierwave/processing/image_science.rb
 lib/carrierwave/processing/rmagick.rb
+lib/carrierwave/processing/mini_magick.rb
 lib/carrierwave/sanitized_file.rb
 lib/carrierwave/storage/abstract.rb
 lib/carrierwave/storage/file.rb
