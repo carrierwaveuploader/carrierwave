@@ -1,5 +1,6 @@
 # encoding: utf-8
 require 'mongo'
+require 'mongo/gridfs'
 
 module CarrierWave
   module Storage

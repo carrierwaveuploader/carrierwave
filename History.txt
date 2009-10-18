@@ -1,8 +1,20 @@
-=== Version 0.4.0 2009-09
+=== Version 0.4.1
 
-* [changed] the `public` option has been renamed `root` and the old `root` option was removed
+* [changed] Major changes to the ImageScience module, it actually works now!
+
+* [removed] Support for Sequel < 2.12
+* [removed] `crop_resized` and `resize` aliases in RMagick, use `resize_to_fill` and `resize_to_fit` respectively
+
+=== Version 0.4.0 2009-10-12
+
+* [changed] the `public` option has been renamed `root` and the old `root` option was removed. No more ambiguity.
+* [changed] Major *breaking* changes to the configuration syntax.
+
 * [removed] support for `default_path`
 * [removed] the `cache_to_cache_dir` option
+* [removed] storage no longer calls `setup!` on storage engines
+
+* [added] Support for MongoDB's GridFS store
 
 === Version 0.3.4 2009-09-01
 

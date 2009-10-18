@@ -5,6 +5,8 @@ unless defined? Magick
     require 'rmagick'
   rescue LoadError
     require 'RMagick'
+  rescue LoadError
+    puts "WARNING: Failed to require rmagick, image processing may fail!"
   end
 end
 
@@ -175,8 +177,6 @@ module CarrierWave
       end
     end
 
-    alias_method :resize, :resize_to_fit
-
     ##
     # From the RMagick documentation: "Resize the image to fit within the
     # specified dimensions while retaining the aspect ratio of the original
@@ -200,8 +200,6 @@ module CarrierWave
         img
       end
     end
-
-    alias_method :crop_resized, :resize_to_fill
 
     ##
     # Resize the image to fit within the specified dimensions while retaining

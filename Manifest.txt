@@ -3,7 +3,6 @@ History.txt
 Manifest.txt
 README.rdoc
 Rakefile
-carrierwave.gemspec
 cucumber.yml
 features/caching.feature
 features/file_storage.feature
@@ -60,7 +59,7 @@ lib/carrierwave/uploader/remove.rb
 lib/carrierwave/uploader/store.rb
 lib/carrierwave/uploader/url.rb
 lib/carrierwave/uploader/versions.rb
-lib/generators/uploader_generator.rb
+merb_generators/uploader_generator.rb
 rails_generators/uploader/USAGE
 rails_generators/uploader/templates/uploader.rb
 rails_generators/uploader/uploader_generator.rb

@@ -14,7 +14,7 @@ module CarrierWave
         add_config :s3_cnamed
         add_config :grid_fs_database
         add_config :grid_fs_host
-        add_config :grid_fs_host
+        add_config :grid_fs_access_url
         add_config :store_dir
         add_config :cache_dir
 
@@ -28,7 +28,7 @@ module CarrierWave
 
       module ClassMethods
 
-        def add_config(name, options={})
+        def add_config(name)
           class_eval <<-RUBY, __FILE__, __LINE__ + 1
             def self.#{name}(value=nil)
               @#{name} = value if value

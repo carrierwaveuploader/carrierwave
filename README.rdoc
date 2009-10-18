@@ -20,6 +20,8 @@ Install the latest stable release:
 
     [sudo] gem install carrierwave
 
+CarrierWave is hosted *only* on {Gemcutter}[http://gemcutter.org] as of version 0.4.0.
+
 In Merb, add it as a dependency to your config/dependencies.rb:
     
     dependency 'carrierwave'
@@ -126,7 +128,7 @@ example is image thumbnails. There is built in support for this:
       process :resize => [800, 800]
 
       version :thumb do
-        process :crop_resized => [200,200]
+        process :resize_to_fill => [200,200]
       end
       
     end
@@ -269,14 +271,14 @@ include it in your Uploader:
     end
 
 The RMagick module gives you a few methods, like
-+CarrierWave::RMagick#crop_resized+ which manipulate the image file in some way.
-You can set a +process+ callback, which will call that method any time a file is
-uploaded.
++CarrierWave::RMagick#resize_to_fill+ which manipulate the image file in some
+way. You can set a +process+ callback, which will call that method any time a
+file is uploaded.
 
     class AvatarUploader < CarrierWave::Uploader::Base
       include CarrierWave::RMagick
       
-      process :crop_resized => [200, 200]
+      process :resize_to_fill => [200, 200]
       process :convert => 'png'
       
       def filename
@@ -294,7 +296,7 @@ ImageScience works the same way as RMagick.
     class AvatarUploader < CarrierWave::Uploader::Base
       include CarrierWave::ImageScience
       
-      process :crop_resized => [200, 200]
+      process :resize_to_fill => [200, 200]
     end
 
 == Migrating

@@ -5,27 +5,44 @@ require "image_science"
 module CarrierWave
   module ImageScience
 
-    # Resize the image so that it will not exceed the dimensions passed
-    # via geometry, geometry should be a string, formatted like '200x100' where
-    # the first number is the height and the second is the width
-    def resize!( geometry )
+    ##
+    # Resize the image to fit within the specified dimensions while retaining
+    # the original aspect ratio. The image may be shorter or narrower than
+    # specified in the smaller dimension but will not be larger than the
+    # specified values.
+    #
+    # See even http://www.imagemagick.org/RMagick/doc/image3.html#resize_to_fit
+    #
+    # === Parameters
+    #
+    # [width (Integer)] the width to scale the image to
+    # [height (Integer)] the height to scale the image to
+    #
+    def resize_to_fit(new_width, new_height)
       ::ImageScience.with_image(self.current_path) do |img|
-        width, height = extract_dimensions(img.width, img.height, geometry)
+        width, height = extract_dimensions(img.width, img.height, new_width, new_height)
         img.resize( width, height ) do |file|
           file.save( self.current_path )
         end
       end
     end
 
-    # Resize and crop the image so that it will have the exact dimensions passed
-    # via geometry, geometry should be a string, formatted like '200x100' where
-    # the first number is the height and the second is the width
-    def crop_resized!( geometry )
+    ##
+    # Resize the image to fit within the specified dimensions while retaining
+    # the aspect ratio of the original image. If necessary, crop the image in
+    # the larger dimension.
+    #
+    # See even http://www.imagemagick.org/RMagick/doc/image3.html#resize_to_fill
+    #
+    # === Parameters
+    #
+    # [width (Integer)] the width to scale the image to
+    # [height (Integer)] the height to scale the image to
+    #
+    def resize_to_fill(new_width, new_height)
       ::ImageScience.with_image(self.current_path) do |img|
-        new_width, new_height = geometry.split('x').map{|i| i.to_i }
-
-        width, height = extract_dimensions_for_crop(img.width, img.height, geometry)
-        x_offset, y_offset = extract_placement_for_crop(width, height, geometry)
+        width, height = extract_dimensions_for_crop(img.width, img.height, new_width, new_height)
+        x_offset, y_offset = extract_placement_for_crop(width, height, new_width, new_height)
 
         img.resize( width, height ) do |i2|
 
@@ -35,12 +52,29 @@ module CarrierWave
         end
       end
     end
+    
+    ##
+    # Resize the image to fit within the specified dimensions while retaining
+    # the original aspect ratio. Will only resize the image if it is larger than the
+    # specified dimensions. The resulting image may be shorter or narrower than specified
+    # in the smaller dimension but will not be larger than the specified values.
+    #
+    # === Parameters
+    #
+    # [width (Integer)] the width to scale the image to
+    # [height (Integer)] the height to scale the image to
+    #
+    def resize_to_limit(new_width, new_height)
+      ::ImageScience.with_image(self.current_path) do |img|
+        if img.width > new_width or img.height > new_height
+          resize_to_fit(new_width, new_height)
+        end
+      end
+    end
 
-    private
+  private
 
-    def extract_dimensions(width, height, new_geometry, type = :resize)
-      new_width, new_height = convert_geometry(new_geometry)
-
+    def extract_dimensions(width, height, new_width, new_height, type = :resize)
       aspect_ratio = width.to_f / height.to_f
       new_aspect_ratio = new_width / new_height
 
@@ -53,19 +87,14 @@ module CarrierWave
       [new_width, new_height].collect! { |v| v.round }
     end
 
-    def extract_dimensions_for_crop(width, height, new_geometry)
-      extract_dimensions(width, height, new_geometry, :crop)
+    def extract_dimensions_for_crop(width, height, new_width, new_height)
+      extract_dimensions(width, height, new_width, new_height, :crop)
     end
 
-    def extract_placement_for_crop(width, height, new_geometry)
-      new_width, new_height = convert_geometry(new_geometry)
+    def extract_placement_for_crop(width, height, new_width, new_height)
       x_offset = (width / 2.0) - (new_width / 2.0)
       y_offset = (height / 2.0) - (new_height / 2.0)
       [x_offset, y_offset].collect! { |v| v.round }
-    end
-
-    def convert_geometry(geometry)
-      geometry.split('x').map{|i| i.to_f }
     end
 
   end # ImageScience
