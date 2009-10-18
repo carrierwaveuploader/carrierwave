@@ -299,6 +299,29 @@ ImageScience works the same way as RMagick.
       process :resize_to_fill => [200, 200]
     end
 
+== Using MiniMagick
+
+MiniMagick is similar to RMagick but performs all the operations using the 'mogrify'
+command which is part of the standard ImageMagick kit. This allows you to have the power
+of ImageMagick without having to worry about installing all the RMagick libraries.
+
+See the MiniMagick site for more details:
+
+http://github.com/probablycorey/mini_magick
+
+And the ImageMagick command line options for more for whats on offer:
+
+http://www.imagemagick.org/script/command-line-options.php
+
+Currently, the MiniMagick carrierwave processor provides exactly the same methods as
+for the RMagick processor.
+
+    class AvatarUploader < CarrierWave::Uploader::Base
+      include CarrierWave::MiniMagick
+      
+      process :resize_to_fill => [200, 200]
+    end
+
 == Migrating
 
 If you are using Paperclip, you can use the provided compatibility module:
