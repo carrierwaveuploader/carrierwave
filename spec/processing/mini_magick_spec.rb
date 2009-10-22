@@ -17,6 +17,14 @@ describe CarrierWave::MiniMagick do
     FileUtils.rm(file_path('landscape_copy.jpg'))
   end
 
+  describe "#convert" do
+    it "should convert from one format to another" do
+      @instance.convert('png')
+      type = `file #{@instance.current_path}`
+      type.should =~ /PNG/
+    end
+  end
+
   describe '#resize_to_fill' do
     it "should resize the image to exactly the given dimensions" do
       @instance.resize_to_fill(200, 200)
