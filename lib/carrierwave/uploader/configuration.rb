@@ -2,7 +2,6 @@ module CarrierWave
 
   module Uploader
     module Configuration
-
       setup do
         add_config :root
         add_config :permissions
@@ -24,9 +23,65 @@ module CarrierWave
         add_config :validate_integrity
         add_config :validate_processing
         add_config :mount_on
+        
+        configure do |config|
+          config.permissions = 0644
+          config.storage_engines = {
+            :file => "CarrierWave::Storage::File",
+            :s3 => "CarrierWave::Storage::S3",
+            :grid_fs => "CarrierWave::Storage::GridFS"
+          }
+          config.storage = :file
+          config.s3_access = :public_read
+          config.grid_fs_database = 'carrierwave'
+          config.grid_fs_host = 'localhost'
+          config.store_dir = 'uploads'
+          config.cache_dir = 'uploads/tmp'
+          config.ignore_integrity_errors = true
+          config.ignore_processing_errors = true
+          config.validate_integrity = true
+          config.validate_processing = true
+        end
       end
 
       module ClassMethods
+
+        ##
+        # Sets the storage engine to be used when storing files with this uploader.
+        # Can be any class that implements a #store!(CarrierWave::SanitizedFile) and a #retrieve!
+        # method. See lib/carrierwave/storage/file.rb for an example. Storage engines should
+        # be added to CarrierWave::Uploader::Base.storage_engines so they can be referred
+        # to by a symbol, which should be more convenient
+        #
+        # If no argument is given, it will simply return the currently used storage engine.
+        #
+        # === Parameters
+        #
+        # [storage (Symbol, Class)] The storage engine to use for this uploader
+        #
+        # === Returns
+        #
+        # [Class] the storage engine to be used with this uploader
+        #
+        # === Examples
+        #
+        #     storage :file
+        #     storage CarrierWave::Storage::File
+        #     storage MyCustomStorageEngine
+        #
+        def storage(storage = nil)
+          if storage.is_a?(Symbol)
+            @storage = eval(storage_engines[storage])
+          elsif storage
+            @storage = storage
+          elsif @storage.nil?
+            # Get the storage from the superclass if there is one
+            @storage = superclass.storage rescue nil
+          end
+          return @storage
+        end
+        alias_method :storage=, :storage
+
 
         def add_config(name)
           class_eval <<-RUBY, __FILE__, __LINE__ + 1
