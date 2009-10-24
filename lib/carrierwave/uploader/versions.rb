@@ -4,6 +4,8 @@ module CarrierWave
   module Uploader
     module Versions
 
+      depends_on CarrierWave::Uploader::Callbacks
+
       setup do
         after :cache, :cache_versions!
         after :store, :store_versions!
