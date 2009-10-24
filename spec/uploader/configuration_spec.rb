@@ -41,20 +41,22 @@ describe CarrierWave::Uploader::Base do
       @uploader_class.foo_bar.should == 'foo'
     end
     
-    it "should be inheritable" do
-      @child_class = Class.new(@uploader_class)
-      @uploader_class.add_config :foo_bar
+    ['foo', :foo, 45, ['foo', :bar]].each do |val|
+      it "should be inheritable for a #{val.class}" do
+        @uploader_class.add_config :foo_bar
+        @child_class = Class.new(@uploader_class)
 
-      @uploader_class.foo_bar = 'foo'
-      @uploader_class.foo_bar.should == 'foo'
+        @uploader_class.foo_bar = val
+        @uploader_class.foo_bar.should == val
+        @child_class.foo_bar.should == val
 
-      #@child_class.foo_bar.should == 'foo'
+        @child_class.foo_bar = "bar"
+        @child_class.foo_bar.should == "bar"
 
-      @child_class.foo_bar = 'bar'
-      @child_class.foo_bar.should == 'bar'
-
-      @uploader_class.foo_bar.should == 'foo'
+        @uploader_class.foo_bar.should == val
+      end
     end
+    
     
     it "should add an instance level accessor" do
       @uploader_class.add_config :foo_bar
