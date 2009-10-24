@@ -41,6 +41,7 @@ module CarrierWave
           config.ignore_processing_errors = true
           config.validate_integrity = true
           config.validate_processing = true
+          config.root = CarrierWave.root
         end
       end
 

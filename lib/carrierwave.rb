@@ -10,6 +10,8 @@ module CarrierWave
   VERSION = "0.4.0"
 
   class << self
+    attr_accessor :root
+
     def configure(&block)
       CarrierWave::Uploader::Base.configure(&block)
     end
@@ -60,23 +62,23 @@ module CarrierWave
 end
 
 if defined?(Merb)
-  CarrierWave.configure do |config|
-    config.root = Merb.dir_for(:public)
-  end
+
+  CarrierWave.root = Merb.dir_for(:public)
   Merb::BootLoader.before_app_loads do
     # Setup path for uploaders and load all of them before classes are loaded
     Merb.push_path(:uploaders, Merb.root / 'app' / 'uploaders', '*.rb')
     Dir.glob(File.join(Merb.load_paths[:uploaders])).each {|f| require f }
   end
+
 elsif defined?(Rails)
-  CarrierWave.configure do |config|
-    config.root = File.join(Rails.root, 'public')
-  end
+
+  CarrierWave.root = File.join(Rails.root, 'public')
   ActiveSupport::Dependencies.load_paths << File.join(Rails.root, "app", "uploaders")
+
 elsif defined?(Sinatra)
-  CarrierWave.configure do |config|
-    config.root = Sinatra::Application.public
-  end
+
+  CarrierWave.root = Sinatra::Application.public
+
 end
 
 

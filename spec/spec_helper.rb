@@ -32,9 +32,7 @@ def public_path( *paths )
   File.expand_path(File.join(File.dirname(__FILE__), 'public', *paths))
 end
 
-CarrierWave.configure do |config|
-  config.root = public_path
-end 
+CarrierWave.root = public_path
 
 module CarrierWave
   module Test
