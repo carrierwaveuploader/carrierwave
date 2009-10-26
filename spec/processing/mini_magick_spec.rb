@@ -1,6 +1,11 @@
 # encoding: utf-8
 
 require File.dirname(__FILE__) + '/../spec_helper'
+begin
+  require 'rmagick'
+rescue LoadError
+  require 'RMagick'
+end
 
 describe CarrierWave::MiniMagick do
 
@@ -20,8 +25,8 @@ describe CarrierWave::MiniMagick do
   describe "#convert" do
     it "should convert from one format to another" do
       @instance.convert('png')
-      type = `file #{@instance.current_path}`
-      type.should =~ /PNG/
+      img = ::Magick::Image.read(@instance.current_path).first
+      img.format.should =~ /PNG/
     end
   end
 
