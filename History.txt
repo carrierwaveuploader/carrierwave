@@ -1,6 +1,7 @@
 === Version 0.4.1
 
 * [changed] Major changes to the ImageScience module, it actually works now!
+* [fixed] Bug in configuration where it complais that it can't dup Symbol
 
 * [removed] Support for Sequel < 2.12
 * [removed] `crop_resized` and `resize` aliases in RMagick, use `resize_to_fill` and `resize_to_fit` respectively

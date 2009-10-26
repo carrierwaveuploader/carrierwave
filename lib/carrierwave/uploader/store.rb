@@ -8,46 +8,6 @@ module CarrierWave
       depends_on CarrierWave::Uploader::Configuration
       depends_on CarrierWave::Uploader::Cache
 
-      module ClassMethods
-
-        ##
-        # Sets the storage engine to be used when storing files with this uploader.
-        # Can be any class that implements a #store!(CarrierWave::SanitizedFile) and a #retrieve!
-        # method. See lib/carrierwave/storage/file.rb for an example. Storage engines should
-        # be added to CarrierWave::Uploader::Base.storage_engines so they can be referred
-        # to by a symbol, which should be more convenient
-        #
-        # If no argument is given, it will simply return the currently used storage engine.
-        #
-        # === Parameters
-        #
-        # [storage (Symbol, Class)] The storage engine to use for this uploader
-        #
-        # === Returns
-        #
-        # [Class] the storage engine to be used with this uploader
-        #
-        # === Examples
-        #
-        #     storage :file
-        #     storage CarrierWave::Storage::File
-        #     storage MyCustomStorageEngine
-        #
-        def storage(storage = nil)
-          if storage.is_a?(Symbol)
-            @storage = eval(storage_engines[storage])
-          elsif storage
-            @storage = storage
-          elsif @storage.nil?
-            # Get the storage from the superclass if there is one
-            @storage = superclass.storage rescue nil
-          end
-          return @storage
-        end
-        alias_method :storage=, :storage
-
-      end
-
       ##
       # Override this in your Uploader to change the filename.
       #

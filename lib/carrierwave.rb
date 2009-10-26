@@ -7,9 +7,11 @@ require 'carrierwave/core_ext/inheritable_attributes'
 
 module CarrierWave
 
-  VERSION = "0.4.0"
+  VERSION = "0.4.1"
 
   class << self
+    attr_accessor :root
+
     def configure(&block)
       CarrierWave::Uploader::Base.configure(&block)
     end
@@ -59,43 +61,24 @@ module CarrierWave
 
 end
 
-CarrierWave.configure do |config|
-  config.permissions = 0644
-  config.storage_engines = {
-    :file => "CarrierWave::Storage::File",
-    :s3 => "CarrierWave::Storage::S3",
-    :grid_fs => "CarrierWave::Storage::GridFS"
-  }
-  config.storage = :file
-  config.s3_access = :public_read
-  config.grid_fs_database = 'carrierwave'
-  config.grid_fs_host = 'localhost'
-  config.store_dir = 'uploads'
-  config.cache_dir = 'uploads/tmp'
-  config.ignore_integrity_errors = true
-  config.ignore_processing_errors = true
-  config.validate_integrity = true
-  config.validate_processing = true
-end
-
 if defined?(Merb)
-  CarrierWave.configure do |config|
-    config.root = Merb.dir_for(:public)
-  end
+
+  CarrierWave.root = Merb.dir_for(:public)
   Merb::BootLoader.before_app_loads do
     # Setup path for uploaders and load all of them before classes are loaded
     Merb.push_path(:uploaders, Merb.root / 'app' / 'uploaders', '*.rb')
     Dir.glob(File.join(Merb.load_paths[:uploaders])).each {|f| require f }
   end
+
 elsif defined?(Rails)
-  CarrierWave.configure do |config|
-    config.root = File.join(Rails.root, 'public')
-  end
+
+  CarrierWave.root = File.join(Rails.root, 'public')
   ActiveSupport::Dependencies.load_paths << File.join(Rails.root, "app", "uploaders")
+
 elsif defined?(Sinatra)
-  CarrierWave.configure do |config|
-    config.root = Sinatra::Application.public
-  end
+
+  CarrierWave.root = Sinatra::Application.public
+
 end
 
 

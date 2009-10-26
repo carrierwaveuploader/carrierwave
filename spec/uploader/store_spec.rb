@@ -13,37 +13,6 @@ describe CarrierWave::Uploader do
     FileUtils.rm_rf(public_path)
   end
 
-  describe ".storage" do
-    it "should set the storage if an argument is given" do
-      storage = mock('some kind of storage')
-      @uploader_class.storage storage
-      @uploader_class.storage.should == storage
-    end
-
-    it "should default to file" do
-      @uploader_class.storage.should == CarrierWave::Storage::File
-    end
-
-    it "should set the storage from the configured shortcuts if a symbol is given" do
-      @uploader_class.storage :file
-      @uploader_class.storage.should == CarrierWave::Storage::File
-    end
-
-    it "should remember the storage when inherited" do
-      @uploader_class.storage :s3
-      subclass = Class.new(@uploader_class)
-      subclass.storage.should == CarrierWave::Storage::S3
-    end
-
-    it "should be changeable when inherited" do
-      @uploader_class.storage :s3
-      subclass = Class.new(@uploader_class)
-      subclass.storage.should == CarrierWave::Storage::S3
-      subclass.storage :file
-      subclass.storage.should == CarrierWave::Storage::File
-    end
-  end
-
   describe '#store_dir' do
     it "should default to the config option" do
       @uploader.store_dir.should == 'uploads'
