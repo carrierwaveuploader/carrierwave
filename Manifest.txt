@@ -37,6 +37,7 @@ lib/carrierwave/mount.rb
 lib/carrierwave/orm/activerecord.rb
 lib/carrierwave/orm/datamapper.rb
 lib/carrierwave/orm/mongomapper.rb
+lib/carrierwave/orm/mongoid.rb
 lib/carrierwave/orm/sequel.rb
 lib/carrierwave/processing/image_science.rb
 lib/carrierwave/processing/rmagick.rb
