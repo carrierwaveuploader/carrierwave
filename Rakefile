@@ -26,7 +26,7 @@ $hoe = Hoe.spec 'carrierwave' do
   self.extra_dev_deps << ['rmagick', '>=2.10.0']
   self.extra_dev_deps << ['mini_magick', '>=1.2.5']
   self.extra_dev_deps << ['mongo_mapper', '>=0.5.4']
-  self.extra_dev_deps << ['mongoid', '>=0.5.2']
+  self.extra_dev_deps << ['mongoid', '>=0.5.4']
   self.extra_dev_deps << ['aws-s3', '>=0.6.2']
   self.extra_rdoc_files << 'README.rdoc'
 end
