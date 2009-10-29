@@ -1,5 +1,4 @@
 # encoding: utf-8
-gem "mongoid", "0.5.2"
 require 'mongoid'
 
 module CarrierWave
