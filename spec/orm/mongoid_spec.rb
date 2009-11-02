@@ -185,13 +185,13 @@ describe CarrierWave::Mongoid do
 
       it "deletes the instance of @class after save" do
         @doc.save
-        @class.count.should eql(1)
+        @class.count(:all, {}).should eql(1)
         @doc.destroy
       end
 
       it "deletes the instance of @class after save and then re-looking up the instance" do
         @doc.save
-        @class.count.should eql(1)
+        @class.count(:all, {}).should eql(1)
         @doc = @class.first
         @doc.destroy
       end
