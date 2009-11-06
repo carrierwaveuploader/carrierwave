@@ -46,6 +46,7 @@ lib/carrierwave/storage/abstract.rb
 lib/carrierwave/storage/file.rb
 lib/carrierwave/storage/grid_fs.rb
 lib/carrierwave/storage/s3.rb
+lib/carrierwave/storage/right_s3.rb
 lib/carrierwave/test/matchers.rb
 lib/carrierwave/uploader.rb
 lib/carrierwave/uploader/cache.rb
