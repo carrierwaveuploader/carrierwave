@@ -373,6 +373,7 @@ These people have contributed their time and effort to CarrierWave:
 * Scott Motte
 * Sho Fukamachi
 * Sam Lown
+* Dave Ott
 
 == License
 
