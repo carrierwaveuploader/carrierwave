@@ -363,6 +363,7 @@ These people have contributed their time and effort to CarrierWave:
 * Sho Fukamachi
 * Sam Lown
 * Dave Ott
+* Quin Hoxie
 
 == License
 
