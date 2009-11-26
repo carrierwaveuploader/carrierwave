@@ -6,7 +6,7 @@ require 'right_aws'
 if ENV['S3_SPEC']
   describe CarrierWave::Storage::RightS3 do
     before do
-      @bucket = 'carrierwave-euro-test'
+      @bucket = ENV['CARRIERWAVE_TEST_BUCKET']
       @uploader = mock('an uploader')
       @uploader.stub!(:s3_access_key_id).and_return(ENV["S3_ACCESS_KEY_ID"])
       @uploader.stub!(:s3_secret_access_key).and_return(ENV["S3_SECRET_ACCESS_KEY"])

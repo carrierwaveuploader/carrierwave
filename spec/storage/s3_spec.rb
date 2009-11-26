@@ -9,7 +9,7 @@ if ENV['S3_SPEC']
       @uploader = mock('an uploader')
       @uploader.stub!(:s3_access_key_id).and_return(ENV["S3_ACCESS_KEY_ID"])
       @uploader.stub!(:s3_secret_access_key).and_return(ENV["S3_SECRET_ACCESS_KEY"])
-      @uploader.stub!(:s3_bucket).and_return('carrierwave_test')
+      @uploader.stub!(:s3_bucket).and_return(ENV['CARRIERWAVE_TEST_BUCKET'])
       @uploader.stub!(:s3_access).and_return(:public_read)
       @uploader.stub!(:s3_cnamed).and_return(false)
 
