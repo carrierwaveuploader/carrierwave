@@ -38,6 +38,14 @@ if ENV['S3_SPEC']
       it "should have an Amazon URL" do
         @s3_file.url.should == 'http://s3.amazonaws.com/carrierwave_test/uploads/bar.txt'
       end
+      
+      context "with cnamed bucket" do
+        it "should have a CNAMED URL" do
+          @uploader.stub!(:s3_cnamed).and_return(true)
+          @uploader.stub!(:s3_bucket).and_return('foo.bar')
+          @s3_file.url.should == 'http://foo.bar/uploads/bar.txt'
+        end
+      end
     
       it "should be deletable" do
         @s3_file.delete
