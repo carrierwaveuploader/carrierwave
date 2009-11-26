@@ -46,6 +46,17 @@ describe CarrierWave::Uploader do
       @uploader.should_receive(:format).with('png')
       @uploader.process!
     end
+    
+    context "with 'enable_processing' set to false" do
+      it "should not do any processing" do
+        @uploader_class.enable_processing = false
+        @uploader_class.process :sepiatone, :desaturate, :invert
+        @uploader.should_not_receive(:sepiatone)
+        @uploader.should_not_receive(:desaturate)
+        @uploader.should_not_receive(:invert)
+        @uploader.process!
+      end
+    end
   end
 
   describe '#cache!' do

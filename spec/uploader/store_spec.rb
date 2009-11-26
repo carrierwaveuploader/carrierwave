@@ -147,6 +147,27 @@ describe CarrierWave::Uploader do
       @uploader.file.should == @stored_file
     end
   end
+  
+  describe 'with an overridden filename' do
+    before do
+      @uploader_class.class_eval do
+        def filename; "foo.jpg"; end
+      end
+    end
+
+    it "should create new files if there is a file" do
+      @file = File.open(file_path('test.jpg'))
+      @uploader.store!(@file)
+      @path = ::File.expand_path(@uploader.store_path, @uploader.root)
+      File.exist?(@path).should be_true
+    end
+    
+    it "should not create new files if there is no file" do
+      @uploader.store!(nil)
+      @path = ::File.expand_path(@uploader.store_path, @uploader.root)
+      File.exist?(@path).should be_false
+    end
+  end
 
   describe 'with an overridden, reversing, filename' do
     before do

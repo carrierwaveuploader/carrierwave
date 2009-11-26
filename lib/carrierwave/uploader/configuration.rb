@@ -17,6 +17,7 @@ module CarrierWave
         add_config :grid_fs_access_url
         add_config :store_dir
         add_config :cache_dir
+        add_config :enable_processing
 
         # Mounting
         add_config :ignore_integrity_errors
@@ -45,6 +46,7 @@ module CarrierWave
           config.validate_integrity = true
           config.validate_processing = true
           config.root = CarrierWave.root
+          config.enable_processing = true
         end
       end
 
