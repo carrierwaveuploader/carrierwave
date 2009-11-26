@@ -33,6 +33,7 @@ module CarrierWave
     autoload :File, 'carrierwave/storage/file'
     autoload :S3, 'carrierwave/storage/s3'
     autoload :GridFS, 'carrierwave/storage/grid_fs'
+    autoload :RightS3, 'carrierwave/storage/right_s3'
   end
 
   module Uploader

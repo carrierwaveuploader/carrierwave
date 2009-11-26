@@ -6,7 +6,8 @@ module CarrierWave
         add_config :root
         add_config :permissions
         add_config :storage_engines
-        add_config :s3_access
+        add_config :s3_access # for aws/s3
+        add_config :s3_access_policy # for right_aws
         add_config :s3_bucket
         add_config :s3_access_key_id
         add_config :s3_secret_access_key
@@ -29,10 +30,12 @@ module CarrierWave
           config.storage_engines = {
             :file => "CarrierWave::Storage::File",
             :s3 => "CarrierWave::Storage::S3",
-            :grid_fs => "CarrierWave::Storage::GridFS"
+            :grid_fs => "CarrierWave::Storage::GridFS",
+            :right_s3 => "CarrierWave::Storage::RightS3"
           }
           config.storage = :file
           config.s3_access = :public_read
+          config.s3_access_policy = 'public-read'
           config.grid_fs_database = 'carrierwave'
           config.grid_fs_host = 'localhost'
           config.store_dir = 'uploads'
