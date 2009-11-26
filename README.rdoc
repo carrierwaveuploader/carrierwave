@@ -199,7 +199,8 @@ this easily by overriding the +default_url+ method in your uploader:
 
 == Configuring CarrierWave
 
-CarrierWave has a broad range of configuration options, which you can configure, both globally and on a per-uploader basis:
+CarrierWave has a broad range of configuration options, which you can configure,
+both globally and on a per-uploader basis:
 
     CarrierWave.configure do |config|
       config.permissions = 0666
@@ -210,6 +211,54 @@ Or alternatively:
 
     class AvatarUploader < CarrierWave::Uploader::Base
       permissions 0777
+    end
+
+== Testing CarrierWave
+
+It's a good idea to test you uploaders in isolation. In order to speed up your
+tests, it's recommended to switch off processing in your tests, and to use the
+file storage. In Rails you could do that by adding an initializer with:
+
+    if Rails.env.test?
+      Carrierwave.configure do |config|
+        config.storage = :file
+        config.enable_processing = false
+      end
+    end
+
+If you need to test your processing, you should test it in isolation, and enable
+processing only for those tests that need it.
+
+CarrierWave comes with some RSpec matchers which you may find useful:
+
+    require 'carrierwave/test/matchers'
+
+    describe MyUploader do
+      before do
+        MyUploader.enable_processing = true
+        @uploader = MyUploader.new(@user, :avatar)
+        @uploader.store!(File.open(path_to_file))
+      end
+
+      after do
+        MyUploader.enable_processing = false
+      end
+
+      context 'the thumb version' do
+        it "should scale down a landscape image to be exactly 64 by 64 pixels" do
+          @uploader.thumb.should have_dimensions(200, 200)
+        end
+      end
+
+      context 'the small version' do
+        it "should scale down a landscape image to fit within 200 by 200 pixels" do
+          @uploader.small.should be_no_larger_than(200, 200)
+        end
+      end
+
+      it "should make the image readable only to the owner and not executable" do
+        @uploader.should have_premissions(0600)
+      end
     end
 
 == Using Amazon S3
