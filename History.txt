@@ -1,4 +1,11 @@
-=== Version 0.4.1
+=== Version 0.4.2 2009-11-26
+
+* [added] RightAWS as an alternative S3 implementation
+* [added] An option to enable/disable processing for tests
+* [added] Mongoid ORM support
+* [fixed] DataMapper now works both with and without dm-validations
+
+=== Version 0.4.1 2009-10-26
 
 * [changed] Major changes to the ImageScience module, it actually works now!
 * [fixed] Bug in configuration where it complais that it can't dup Symbol
