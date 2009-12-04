@@ -74,19 +74,29 @@ describe CarrierWave::SanitizedFile do
       @sanitized_file.basename.should == "complex"
     end
   end
-  
+
   describe '#extension' do
     it "should return the extension for complicated extensions" do
       @sanitized_file = CarrierWave::SanitizedFile.new(file_path('complex.filename.tar.gz'))
       @sanitized_file.extension.should == "tar.gz"
     end
-    
+
+    it "should return the extension for real-world user file names" do
+      @sanitized_file = CarrierWave::SanitizedFile.new(file_path('Photo on 2009-12-01 at 11.12.jpg'))
+      @sanitized_file.extension.should == "jpg"
+    end
+
+    it "should return the extension for basic filenames" do
+      @sanitized_file = CarrierWave::SanitizedFile.new(file_path('something.png'))
+      @sanitized_file.extension.should == "png"
+    end
+
     it "should be an empty string if the file has no extension" do
       @sanitized_file = CarrierWave::SanitizedFile.new(file_path('complex'))
       @sanitized_file.extension.should == ""
     end
   end
-  
+
   describe '#filename' do
     
     before do

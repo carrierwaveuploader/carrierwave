@@ -254,18 +254,18 @@ module CarrierWave
       return name.downcase
     end
 
-    def split_extension(fn)
+    def split_extension(filename)
       # regular expressions to try for identifying extensions
       ext_regexps = [
-        /\A(.+)\.([^\.]{1,3}\.[^\.]{1,4})\z/, # matches "something.tar.gz"
+        /\A(.+)\.(tar\.gz)\z/, # matches "something.tar.gz"
         /\A(.+)\.([^\.]+)\z/ # matches "something.jpg"
       ]
       ext_regexps.each do |regexp|
-        if fn =~ regexp
+        if filename =~ regexp
           return $1, $2
         end
       end
-      return fn, "" # In case we weren't able to split the extension
+      return filename, "" # In case we weren't able to split the extension
     end
 
   end # SanitizedFile
