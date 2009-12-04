@@ -256,11 +256,12 @@ module CarrierWave
 
     def split_extension(filename)
       # regular expressions to try for identifying extensions
-      ext_regexps = [
+      extension_matchers = [
         /\A(.+)\.(tar\.gz)\z/, # matches "something.tar.gz"
         /\A(.+)\.([^\.]+)\z/ # matches "something.jpg"
       ]
-      ext_regexps.each do |regexp|
+
+      extension_matchers.each do |regexp|
         if filename =~ regexp
           return $1, $2
         end
