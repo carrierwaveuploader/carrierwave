@@ -23,7 +23,7 @@ Install the latest stable release:
 CarrierWave is hosted *only* on {Gemcutter}[http://gemcutter.org] as of version 0.4.0.
 
 In Merb, add it as a dependency to your config/dependencies.rb:
-    
+
     dependency 'carrierwave'
 
 In Rails, add it to your environment.rb:
@@ -54,9 +54,9 @@ should look something like this:
 You can use your uploader class to store and retrieve files like this:
 
     uploader = AvatarUploader.new
-    
+
     uploader.store!(my_file)
-    
+
     uploader.retrieve_from_store!('my_file.png')
 
 CarrierWave gives you a +store+ for permanent storage, and a +cache+ for
@@ -73,6 +73,10 @@ Make sure you are loading CarrierWave after loading your ORM, otherwise you'll
 need to require the relevant extension manually, e.g.:
 
     require 'carrierwave/orm/activerecord'
+
+Add a string column to the model you want to mount the uploader on:
+
+    add_column :user, :avatar, :string
 
 Open your model file and mount the uploader:
 
@@ -125,12 +129,12 @@ example is image thumbnails. There is built in support for this:
     class MyUploader < CarrierWave::Uploader::Base
       include CarrierWave::RMagick
 
-      process :resize => [800, 800]
+      process :resize_to_fit => [800, 800]
 
       version :thumb do
         process :resize_to_fill => [200,200]
       end
-      
+
     end
 
 When this uploader is used, an uploaded image would be scaled to be no larger
@@ -139,7 +143,7 @@ and cropped to exactly 200 by 200 pixels. The uploader could be used like this:
 
     uploader = AvatarUploader.new
     uploader.store!(my_file)                              # size: 1024x768
-    
+
     uploader.url # => '/url/to/my_file.png'               # size: 800x600
     uploader.thumb.url # => '/url/to/thumb_my_file.png'   # size: 200x200
 
@@ -282,7 +286,7 @@ And then in your uploader, set the storage to :s3
 That's it! You can still use the +CarrierWave::Uploader#url+ method to return
 the url to the file on Amazon S3.
 
-Alternatively, and especially if your bucket is located in Europe, you can use the 
+Alternatively, and especially if your bucket is located in Europe, you can use the
 RightAWS library by setting the storage to :right_s3
 
     class AvatarUploader < CarrierWave::Uploader::Base
@@ -337,10 +341,10 @@ file is uploaded.
 
     class AvatarUploader < CarrierWave::Uploader::Base
       include CarrierWave::RMagick
-      
+
       process :resize_to_fill => [200, 200]
       process :convert => 'png'
-      
+
       def filename
         super + '.png'
       end
@@ -355,7 +359,7 @@ ImageScience works the same way as RMagick.
 
     class AvatarUploader < CarrierWave::Uploader::Base
       include CarrierWave::ImageScience
-      
+
       process :resize_to_fill => [200, 200]
     end
 
@@ -378,7 +382,7 @@ for the RMagick processor.
 
     class AvatarUploader < CarrierWave::Uploader::Base
       include CarrierWave::MiniMagick
-      
+
       process :resize_to_fill => [200, 200]
     end
 
