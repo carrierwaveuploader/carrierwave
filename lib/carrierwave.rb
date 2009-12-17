@@ -34,6 +34,7 @@ module CarrierWave
     autoload :S3, 'carrierwave/storage/s3'
     autoload :GridFS, 'carrierwave/storage/grid_fs'
     autoload :RightS3, 'carrierwave/storage/right_s3'
+    autoload :CloudFiles, 'carrierwave/storage/cloud_files'
   end
 
   module Uploader

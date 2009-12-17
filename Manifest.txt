@@ -44,6 +44,7 @@ lib/carrierwave/processing/mini_magick.rb
 lib/carrierwave/processing/rmagick.rb
 lib/carrierwave/sanitized_file.rb
 lib/carrierwave/storage/abstract.rb
+lib/carrierwave/storage/cloud_files.rb
 lib/carrierwave/storage/file.rb
 lib/carrierwave/storage/grid_fs.rb
 lib/carrierwave/storage/right_s3.rb

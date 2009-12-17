@@ -12,6 +12,9 @@ module CarrierWave
         add_config :s3_access_key_id
         add_config :s3_secret_access_key
         add_config :s3_cnamed
+        add_config :cloud_files_username
+        add_config :cloud_files_api_key
+        add_config :cloud_files_container
         add_config :grid_fs_database
         add_config :grid_fs_host
         add_config :grid_fs_username
@@ -34,7 +37,8 @@ module CarrierWave
             :file => "CarrierWave::Storage::File",
             :s3 => "CarrierWave::Storage::S3",
             :grid_fs => "CarrierWave::Storage::GridFS",
-            :right_s3 => "CarrierWave::Storage::RightS3"
+            :right_s3 => "CarrierWave::Storage::RightS3",
+            :cloud_files => "CarrierWave::Storage::CloudFiles"
           }
           config.storage = :file
           config.s3_access = :public_read
