@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require 'activerecord'
+require 'active_record'
 require 'carrierwave/mount'
 require 'carrierwave/orm/activerecord'
 
