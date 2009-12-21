@@ -14,6 +14,8 @@ module CarrierWave
         add_config :s3_cnamed
         add_config :grid_fs_database
         add_config :grid_fs_host
+        add_config :grid_fs_username
+        add_config :grid_fs_password
         add_config :grid_fs_access_url
         add_config :store_dir
         add_config :cache_dir
