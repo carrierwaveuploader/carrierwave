@@ -10,6 +10,8 @@ describe CarrierWave::Storage::GridFS do
     @uploader.stub!(:grid_fs_database).and_return("carrierwave_test")
     @uploader.stub!(:grid_fs_host).and_return("localhost")
     @uploader.stub!(:grid_fs_access_url).and_return(nil)
+    @uploader.stub!(:grid_fs_username).and_return(nil)
+    @uploader.stub!(:grid_fs_password).and_return(nil)
 
     @storage = CarrierWave::Storage::GridFS.new(@uploader)
     @file = CarrierWave::SanitizedFile.new(file_path('test.jpg'))
