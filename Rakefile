@@ -9,7 +9,7 @@ Hoe.plugin :newgem
 # Hoe.plugin :website
 Hoe.plugin :cucumberfeatures
 
-$hoe = Hoe.spec 'carrierwave' do
+$hoe = Hoe.spec 'durran-carrierwave' do
   self.developer 'Jonas Nicklas', 'jonas.nicklas@gmail.com'
   self.rubyforge_name = self.name
   self.readme_file = 'README.rdoc'
@@ -26,7 +26,7 @@ $hoe = Hoe.spec 'carrierwave' do
   self.extra_dev_deps << ['rmagick', '>=2.10.0']
   self.extra_dev_deps << ['mini_magick', '>=1.2.5']
   self.extra_dev_deps << ['mongo_mapper', '>=0.6.8']
-  self.extra_dev_deps << ['mongoid', '>=0.9.9']
+  self.extra_dev_deps << ['mongoid', '>=0.10.4']
   self.extra_dev_deps << ['aws-s3', '>=0.6.2']
   self.extra_rdoc_files << 'README.rdoc'
 end

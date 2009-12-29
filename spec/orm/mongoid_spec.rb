@@ -10,12 +10,13 @@ describe CarrierWave::Mongoid do
 
   before do
     uploader = Class.new(CarrierWave::Uploader::Base)
-
-    @class = Mongoid::Document
+    
+    @class = Class.new
     @class.class_eval do
+      include Mongoid::Document
       mount_uploader :image, uploader
     end
-
+    
     @uploader = uploader
   end
 

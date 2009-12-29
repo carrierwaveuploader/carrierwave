@@ -20,4 +20,4 @@ module CarrierWave
   end # Mongoid
 end # CarrierWave
 
-Mongoid::Document.send(:extend, CarrierWave::Mongoid)
+Mongoid::Document::ClassMethods.send(:include, CarrierWave::Mongoid)
