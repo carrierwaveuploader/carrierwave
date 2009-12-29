@@ -9,7 +9,7 @@ Hoe.plugin :newgem
 # Hoe.plugin :website
 Hoe.plugin :cucumberfeatures
 
-$hoe = Hoe.spec 'durran-carrierwave' do
+$hoe = Hoe.spec 'carrierwave' do
   self.developer 'Jonas Nicklas', 'jonas.nicklas@gmail.com'
   self.rubyforge_name = self.name
   self.readme_file = 'README.rdoc'
