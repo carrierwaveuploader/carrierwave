@@ -14,7 +14,7 @@ describe CarrierWave::Storage::GridFS do
     @uploader.stub!(:grid_fs_password).and_return(nil)
 
     @storage = CarrierWave::Storage::GridFS.new(@uploader)
-    @file = CarrierWave::SanitizedFile.new(file_path('test.jpg'))
+    @file = stub_tempfile('test.jpg', 'application/xml')
   end
   
   after do
@@ -42,6 +42,10 @@ describe CarrierWave::Storage::GridFS do
     it "should be deletable" do
       @grid_fs_file.delete
       GridFS::GridStore.read(@database, 'uploads/bar.txt').should == ''
+    end
+    
+    it "should store the content type on GridFS" do
+      @grid_fs_file.content_type.should == 'application/xml'
     end
   end
   

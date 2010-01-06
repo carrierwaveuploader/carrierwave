@@ -38,6 +38,10 @@ module CarrierWave
           ::GridFS::GridStore.unlink(@database, @path)
         end
 
+        def content_type
+          ::GridFS::GridStore.open(@database, @path, 'r') { |f| return f.content_type }
+        end
+
       end
 
       ##
@@ -52,7 +56,7 @@ module CarrierWave
       # [CarrierWave::SanitizedFile] a sanitized file
       #
       def store!(file)
-        ::GridFS::GridStore.open(database, uploader.store_path, 'w') do |f|
+        ::GridFS::GridStore.open(database, uploader.store_path, 'w', :content_type => file.content_type) do |f|
           f.write file.read
         end
         CarrierWave::Storage::GridFS::File.new(uploader, database, uploader.store_path)
