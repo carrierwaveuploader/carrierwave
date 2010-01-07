@@ -224,7 +224,7 @@ tests, it's recommended to switch off processing in your tests, and to use the
 file storage. In Rails you could do that by adding an initializer with:
 
     if Rails.env.test?
-      Carrierwave.configure do |config|
+      CarrierWave.configure do |config|
         config.storage = :file
         config.enable_processing = false
       end
