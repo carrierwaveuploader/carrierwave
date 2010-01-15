@@ -244,7 +244,7 @@ tests, it's recommended to switch off processing in your tests, and to use the
 file storage. In Rails you could do that by adding an initializer with:
 
     if Rails.env.test?
-      Carrierwave.configure do |config|
+      CarrierWave.configure do |config|
         config.storage = :file
         config.enable_processing = false
       end
@@ -303,7 +303,7 @@ And then in your uploader, set the storage to :s3
       storage :s3
     end
 
-That's it! You can still use the +CarrierWave::Uploader#url+ method to return
+That's it! You can still use the <code>CarrierWave::Uploader#url</code> method to return
 the url to the file on Amazon S3.
 
 Alternatively, and especially if your bucket is located in Europe, you can use the
@@ -328,7 +328,7 @@ You'll need to configure the database and host to use:
 
 The defaults are 'carrierwave' and 'localhost'.
 
-And then in your uploader, set the storage to +:grid_fs+:
+And then in your uploader, set the storage to <code>:grid_fs</code>:
 
     class AvatarUploader < CarrierWave::Uploader::Base
       storage :grid_fs
@@ -355,7 +355,7 @@ include it in your Uploader:
     end
 
 The RMagick module gives you a few methods, like
-+CarrierWave::RMagick#resize_to_fill+ which manipulate the image file in some
+<code>CarrierWave::RMagick#resize_to_fill</code> which manipulate the image file in some
 way. You can set a +process+ callback, which will call that method any time a
 file is uploaded.
 
@@ -414,7 +414,7 @@ If you are using Paperclip, you can use the provided compatibility module:
       include CarrierWave::Compatibility::Paperclip
     end
 
-See the documentation for +Paperclip::Compatibility::Paperclip+ for more
+See the documentation for <code>Paperclip::Compatibility::Paperclip</code> for more
 detaills.
 
 Be sure to use mount_on to specify the correct column:
