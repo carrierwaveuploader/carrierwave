@@ -14,7 +14,7 @@ if ENV['S3_SPEC']
       @uploader.stub!(:s3_cnamed).and_return(false)
 
       @storage = CarrierWave::Storage::S3.new(@uploader)
-      @file = CarrierWave::SanitizedFile.new(file_path('test.jpg'))
+      @file = stub_tempfile('test.jpg', 'application/xml')
     end
   
     after do
@@ -50,6 +50,10 @@ if ENV['S3_SPEC']
       it "should be deletable" do
         @s3_file.delete
         AWS::S3::S3Object.exists?('uploads/bar.txt', 'carrierwave_test').should be_false
+      end
+      
+      it "should store the content type on S3" do
+        @s3_file.content_type.should == 'application/xml'
       end
     end
   

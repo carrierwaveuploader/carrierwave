@@ -131,7 +131,7 @@ module CarrierWave
         end
 
         def s3_object
-          @s3_object ||= AWS::S3::S3Object.find(@path, bucket)
+          @s3_object ||= AWS::S3::S3Object.find(@path, @uploader.s3_bucket)
         end
 
       end
@@ -149,7 +149,10 @@ module CarrierWave
       #
       def store!(file)
         connect!(uploader)
-        AWS::S3::S3Object.store(uploader.store_path, file.read, uploader.s3_bucket, :access => uploader.s3_access)
+        AWS::S3::S3Object.store(uploader.store_path, file.read, uploader.s3_bucket,
+          :access => uploader.s3_access,
+          :content_type => file.content_type
+        )
         CarrierWave::Storage::S3::File.new(uploader, uploader.store_path)
       end
 

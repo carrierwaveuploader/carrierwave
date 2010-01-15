@@ -73,7 +73,7 @@ module CarrierWave
         #
         def read
           result = connection.get(bucket, @path)
-          headers["content-type"] = result[:headers]["content-type"]
+          @headers = result[:headers]
           result[:object]
         end
 
@@ -99,47 +99,34 @@ module CarrierWave
           end
         end
 
-        #def about
-        #  s3_object.about
-        #end
-
-        #def metadata
-        #  s3_object.metadata
-        #end
-
         def content_type
           headers["content-type"]
-        end
-
-        def content_type=(new_content_type)
-          headers["content-type"] = new_content_type
         end
 
         #def content_disposition
         #  s3_object.content_disposition
         #end
 
-        #def content_disposition=(new_disposition)
-        #  s3_object.content_disposition = new_disposition
-        #end
-
-        def store(data)
-          connection.put(bucket, @path, data, headers)
+        def store(file)
+          connection.put(bucket, @path, file.read,
+            'x-amz-acl' => @uploader.s3_access_policy,
+            'content-type' => file.content_type
+          )
         end
 
-        private
+      private
+      
+        def headers
+          @headers ||= {}
+        end
 
-          def headers
-            @headers ||= { 'x-amz-acl' => @uploader.s3_access_policy }
-          end
+        def bucket
+          @uploader.s3_bucket
+        end
 
-          def bucket
-            @uploader.s3_bucket
-          end
-
-          def connection
-            @base.connection
-          end
+        def connection
+          @base.connection
+        end
 
       end
 
@@ -156,7 +143,7 @@ module CarrierWave
       #
       def store!(file)
         f = CarrierWave::Storage::RightS3::File.new(uploader, self, uploader.store_path)
-        f.store(file.read)
+        f.store(file)
         f
       end
 
