@@ -187,6 +187,28 @@ case of images, a small thumbnail would be a good indicator:
       </p>
     <% end %>
 
+== Removing uploaded files
+
+If you want to remove a previously uploaded file on a mounted uploader, you can
+easily add a checkbox to the form which will remove the file when checked.
+
+    <% form_for @user do |f| %>
+      <p>
+        <label>My Avatar</label>
+        <%= image_tag(@user.avatar.url) if @user.avatar %>
+        <%= f.file_field :avatar %>
+      </p>
+
+      <p>
+        <label>
+          <%= f.check_box :remove_avatar %>
+          Remove avatar
+        </label>
+      </p>
+    <% end %>
+
+If you want to remove the file manually, you can call <code>remove_avatar!</code>.
+
 == Providing a default URL
 
 In many cases, especially when working with images, it might be a good idea to
