@@ -18,7 +18,7 @@ if ENV['S3_SPEC']
     end
   
     after do
-      AWS::S3::S3Object.delete('uploads/bar.txt', 'carrierwave_test')
+      AWS::S3::S3Object.delete('uploads/bar.txt', @uploader.s3_bucket)
     end
 
     describe '#store!' do
@@ -28,7 +28,7 @@ if ENV['S3_SPEC']
       end
     
       it "should upload the file to s3" do
-        AWS::S3::S3Object.value('uploads/bar.txt', 'carrierwave_test').should == 'this is stuff'
+        AWS::S3::S3Object.value('uploads/bar.txt', @uploader.s3_bucket).should == 'this is stuff'
       end
     
       it "should have a path" do
@@ -36,7 +36,7 @@ if ENV['S3_SPEC']
       end
     
       it "should have an Amazon URL" do
-        @s3_file.url.should == 'http://s3.amazonaws.com/carrierwave_test/uploads/bar.txt'
+        @s3_file.url.should == "http://s3.amazonaws.com/#{@uploader.s3_bucket}/uploads/bar.txt"
       end
       
       context "with cnamed bucket" do
@@ -49,7 +49,7 @@ if ENV['S3_SPEC']
     
       it "should be deletable" do
         @s3_file.delete
-        AWS::S3::S3Object.exists?('uploads/bar.txt', 'carrierwave_test').should be_false
+        AWS::S3::S3Object.exists?('uploads/bar.txt', @uploader.s3_bucket).should be_false
       end
       
       it "should store the content type on S3" do
@@ -59,7 +59,7 @@ if ENV['S3_SPEC']
   
     describe '#retrieve!' do
       before do
-        AWS::S3::S3Object.store('uploads/bar.txt', "A test, 1234", 'carrierwave_test')
+        AWS::S3::S3Object.store('uploads/bar.txt', "A test, 1234", @uploader.s3_bucket)
   
         @uploader.stub!(:store_path).with('bar.txt').and_return('uploads/bar.txt')
         @s3_file = @storage.retrieve!('bar.txt')
@@ -74,12 +74,12 @@ if ENV['S3_SPEC']
       end
     
       it "should have an Amazon URL" do
-        @s3_file.url.should == 'http://s3.amazonaws.com/carrierwave_test/uploads/bar.txt'
+        @s3_file.url.should == "http://s3.amazonaws.com/#{@uploader.s3_bucket}/uploads/bar.txt"
       end
     
       it "should be deletable" do
         @s3_file.delete
-        AWS::S3::S3Object.exists?('uploads/bar.txt', 'carrierwave_test').should be_false
+        AWS::S3::S3Object.exists?('uploads/bar.txt', @uploader.s3_bucket).should be_false
       end
     end
 
