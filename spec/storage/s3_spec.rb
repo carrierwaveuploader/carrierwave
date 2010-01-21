@@ -2,6 +2,7 @@
 
 require File.dirname(__FILE__) + '/../spec_helper'
 require 'aws/s3'
+require 'net/http'
 
 if ENV['S3_SPEC']
   describe CarrierWave::Storage::S3 do
@@ -12,6 +13,7 @@ if ENV['S3_SPEC']
       @uploader.stub!(:s3_bucket).and_return(ENV['CARRIERWAVE_TEST_BUCKET'])
       @uploader.stub!(:s3_access).and_return(:public_read)
       @uploader.stub!(:s3_cnamed).and_return(false)
+      @uploader.stub!(:s3_headers).and_return({'Expires' => 'Fri, 21 Jan 2021 16:51:06 GMT'})
 
       @storage = CarrierWave::Storage::S3.new(@uploader)
       @file = stub_tempfile('test.jpg', 'application/xml')
@@ -54,6 +56,12 @@ if ENV['S3_SPEC']
       
       it "should store the content type on S3" do
         @s3_file.content_type.should == 'application/xml'
+      end
+
+      it "should set headers" do
+        client = Net::HTTP.new("s3.amazonaws.com")
+        headers = client.request_head(URI.parse(@s3_file.url).path)
+        headers['Expires'].should == 'Fri, 21 Jan 2021 16:51:06 GMT'
       end
     end
   
