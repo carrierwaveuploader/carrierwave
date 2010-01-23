@@ -181,7 +181,7 @@ case of images, a small thumbnail would be a good indicator:
     <% form_for @user do |f| %>
       <p>
         <label>My Avatar</label>
-        <%= image_tag(@user.avatar.url) if @user.avatar %>
+        <%= image_tag(@user.avatar.url) if @user.avatar? %>
         <%= f.file_field :avatar %>
         <%= f.hidden_field :avatar_cache %>
       </p>
