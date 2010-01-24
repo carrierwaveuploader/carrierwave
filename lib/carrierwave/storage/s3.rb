@@ -37,7 +37,15 @@ module CarrierWave
     # You can assign HTTP headers to be used when S3 serves your files:
     #
     #     CarrierWave.configure do |config|
-    #       config.s3_headers = {"Expires" => 1.year.from_now.httpdate}
+    #       config.s3_headers = {"Content-Disposition" => "attachment; filename=foo.jpg;"}
+    #     end
+    #
+    # You can also set the headers dynamically by overriding the s3_headers method:
+    #
+    #     class MyUploader < CarrierWave::Uploader::Base
+    #       def s3_headers
+    #         { "Expires" => 1.year.from_how.httpdate }
+    #       end
     #     end
     #
     # You can change the generated url to a cnamed domain by setting the cnamed config:
