@@ -7,7 +7,7 @@ module CarrierWave
     ##
     # Uploads things to Amazon S3 webservices. It requies the aws/s3 gem. In order for
     # CarrierWave to connect to Amazon S3, you'll need to specify an access key id, secret key
-    # and bucket
+    # and bucket:
     #
     #     CarrierWave.configure do |config|
     #       config.s3_access_key_id = "xxxxxx"
@@ -33,6 +33,12 @@ module CarrierWave
     #                         is granted READ access.
     #
     # The default is :public_read, it should work in most cases.
+    #
+    # You can assign HTTP headers to be used when S3 serves your files:
+    #
+    #     CarrierWave.configure do |config|
+    #       config.s3_headers = {"Expires" => 1.year.from_now.httpdate}
+    #     end
     #
     # You can change the generated url to a cnamed domain by setting the cnamed config:
     #
@@ -149,10 +155,9 @@ module CarrierWave
       #
       def store!(file)
         connect!(uploader)
-        AWS::S3::S3Object.store(uploader.store_path, file.read, uploader.s3_bucket,
-          :access => uploader.s3_access,
-          :content_type => file.content_type
-        )
+        s3_options = {:access => uploader.s3_access, :content_type => file.content_type}
+        s3_options.merge!(uploader.s3_headers)
+        AWS::S3::S3Object.store(uploader.store_path, file.read, uploader.s3_bucket, s3_options)
         CarrierWave::Storage::S3::File.new(uploader, uploader.store_path)
       end
 
