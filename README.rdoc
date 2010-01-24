@@ -195,7 +195,7 @@ easily add a checkbox to the form which will remove the file when checked.
     <% form_for @user do |f| %>
       <p>
         <label>My Avatar</label>
-        <%= image_tag(@user.avatar.url) if @user.avatar %>
+        <%= image_tag(@user.avatar_url) if @user.avatar? %>
         <%= f.file_field :avatar %>
       </p>
 
@@ -208,6 +208,20 @@ easily add a checkbox to the form which will remove the file when checked.
     <% end %>
 
 If you want to remove the file manually, you can call <code>remove_avatar!</code>.
+
+== Uploading files from a remote location
+
+Your users may find it convenient to upload a file from a location on the Internet
+via a URL. CarrierWave makes this simple, just add the appropriate column to your
+form and you're good to go:
+
+    <% form_for @user do |f| %>
+      <p>
+        <label>My Avatar URL:</label>
+        <%= image_tag(@user.avatar_url) if @user.avatar? %>
+        <%= f.text_field :remote_avatar_url %>
+      </p>
+    <% end %>
 
 == Providing a default URL
 
