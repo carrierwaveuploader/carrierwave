@@ -85,6 +85,9 @@ module CarrierWave
     # [image_cache]             Returns a string that identifies the cache location of the file 
     # [image_cache=]            Retrieves the file from the cache based on the given cache name
     #
+    # [remote_image_url]        Returns nil
+    # [remote_image_url=]       Retrieve the file from the remote url
+    #
     # [remove_image]            An attribute reader that can be used with a checkbox to mark a file for removal
     # [remove_image=]           An attribute writer that can be used with a checkbox to mark a file for removal
     # [remove_image?]           Whether the file should be removed when store_image! is called.
@@ -92,7 +95,7 @@ module CarrierWave
     # [store_image!]            Stores a file that has been assigned with +image=+
     # [remove_image!]           Removes the uploaded file from the filesystem.
     #
-    # [image_integrity_error]   Returns an error object if the last file to be assigned caused an integrty error
+    # [image_integrity_error]   Returns an error object if the last file to be assigned caused an integrity error
     # [image_processing_error]  Returns an error object if the last file to be assigned caused a processing error
     #
     # [write_image_identifier]  Uses the write_uploader method to set the identifier.
@@ -183,6 +186,13 @@ module CarrierWave
 
         def #{column}_cache=(cache_name)
           _mounter(:#{column}).cache_name = cache_name
+        end
+
+        def remote_#{column}_url
+        end
+
+        def remote_#{column}_url=(url)
+          _mounter(:#{column}).remote_url = url
         end
 
         def remove_#{column}
@@ -297,6 +307,10 @@ module CarrierWave
       def cache_name=(cache_name)
         uploader.retrieve_from_cache!(cache_name) unless uploader.cached?
       rescue CarrierWave::InvalidParameter
+      end
+
+      def remote_url=(url)
+        uploader.download!(url) unless uploader.cached?
       end
 
       def store!

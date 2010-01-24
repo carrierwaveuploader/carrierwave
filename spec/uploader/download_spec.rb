@@ -67,7 +67,6 @@ describe CarrierWave::Uploader::Download do
     it "should raise an error when trying to download a local file" do
       running {
         @uploader.download!('/etc/passwd')
-        p @uploader.read
       }.should raise_error(CarrierWave::DownloadError)
     end
   end
