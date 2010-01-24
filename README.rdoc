@@ -13,6 +13,7 @@ upload files.
 * Source code {hosted at GitHub}[http://github.com/jnicklas/carrierwave]
 * Please {report any issues}[http://github.com/jnicklas/carrierwave/issues] on GitHub
 * Please direct any questions at the {mailing list}[http://groups.google.com/group/carrierwave]
+* Check out the {example app}[http://github.com/jnicklas/carrierwave-example-app]
 
 == Getting Started
 
