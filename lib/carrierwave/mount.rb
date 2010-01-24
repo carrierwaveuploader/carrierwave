@@ -85,7 +85,7 @@ module CarrierWave
     # [image_cache]             Returns a string that identifies the cache location of the file 
     # [image_cache=]            Retrieves the file from the cache based on the given cache name
     #
-    # [remote_image_url]        Returns nil
+    # [remote_image_url]        Returns previously cached remote url
     # [remote_image_url=]       Retrieve the file from the remote url
     #
     # [remove_image]            An attribute reader that can be used with a checkbox to mark a file for removal
@@ -189,6 +189,7 @@ module CarrierWave
         end
 
         def remote_#{column}_url
+          _mounter(:#{column}).remote_url
         end
 
         def remote_#{column}_url=(url)
@@ -258,7 +259,7 @@ module CarrierWave
     # we don't pollute the model with a lot of methods.
     class Mounter #:nodoc:
 
-      attr_reader :column, :record, :integrity_error, :processing_error
+      attr_reader :column, :record, :remote_url, :integrity_error, :processing_error
       attr_accessor :remove
 
       def initialize(record, column, options={})
@@ -310,7 +311,10 @@ module CarrierWave
       end
 
       def remote_url=(url)
-        uploader.download!(url) unless uploader.cached?
+        unless uploader.cached?
+          @remote_url = url
+          uploader.download!(url) 
+        end
       end
 
       def store!

@@ -216,8 +216,19 @@ describe CarrierWave::Mount do
     end
 
     describe '#remote_image_url' do
+      before do
+        response = mock('HTTP Response')
+        response.stub!(:body).and_return('Response Body')
+        Net::HTTP.stub!(:get_response).and_return(response)
+      end
+
       it "should return nil" do
         @instance.remote_image_url.should be_nil
+      end
+
+      it "should return previously cached URL" do
+        @instance.remote_image_url = 'http://www.example.com/funky/monkey.png'
+        @instance.remote_image_url.should == 'http://www.example.com/funky/monkey.png'
       end
     end
 
