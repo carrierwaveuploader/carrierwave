@@ -35,6 +35,17 @@ Then /^the file called '(.*?)' in a subdirectory of '(.*?)' should not be identi
 end
 
 ###
+# CONTENT
+
+Then /^the file called '([^']+)' in a subdirectory of '([^']+)' should contain '([^']+)'$/ do |file, directory, content|
+  File.read(Dir.glob(File.join(file_path(directory), '**', file)).first).should include(content)
+end
+
+Then /^the file at '([^']+)' should contain '([^']+)'$/ do |path, content|
+  File.read(file_path(path)).should include(content)
+end
+
+###
 # REVERSING
 
 Then /^the file at '(.*?)' should be the reverse of the file at '(.*?)'$/ do |one, two|

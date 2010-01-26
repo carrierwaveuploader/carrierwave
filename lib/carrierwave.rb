@@ -21,6 +21,7 @@ module CarrierWave
   class IntegrityError < UploadError; end
   class InvalidParameter < UploadError; end
   class ProcessingError < UploadError; end
+  class DownloadError < UploadError; end
 
   autoload :SanitizedFile, 'carrierwave/sanitized_file'
   autoload :Mount, 'carrierwave/mount'
@@ -41,6 +42,7 @@ module CarrierWave
     autoload :Base, 'carrierwave/uploader'
     autoload :Cache, 'carrierwave/uploader/cache'
     autoload :Store, 'carrierwave/uploader/store'
+    autoload :Download, 'carrierwave/uploader/download'
     autoload :Callbacks, 'carrierwave/uploader/callbacks'
     autoload :Processing, 'carrierwave/uploader/processing'
     autoload :Versions, 'carrierwave/uploader/versions'
