@@ -28,6 +28,7 @@ $hoe = Hoe.spec 'carrierwave' do
   self.extra_dev_deps << ['mongo_mapper', '>=0.6.8']
   self.extra_dev_deps << ['mongoid', '>=0.10.4']
   self.extra_dev_deps << ['aws-s3', '>=0.6.2']
+  self.extra_dev_deps << ['timecop', '>=0.3.4']
   self.extra_rdoc_files << 'README.rdoc'
 end
 

@@ -15,6 +15,10 @@ module CarrierWave
     def configure(&block)
       CarrierWave::Uploader::Base.configure(&block)
     end
+
+    def clean_cached_files!
+      CarrierWave::Uploader::Base.clean_cached_files!
+    end
   end
 
   class UploadError < StandardError; end
