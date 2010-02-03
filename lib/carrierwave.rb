@@ -7,13 +7,17 @@ require 'carrierwave/core_ext/inheritable_attributes'
 
 module CarrierWave
 
-  VERSION = "0.4.3"
+  VERSION = "0.4.4"
 
   class << self
     attr_accessor :root
 
     def configure(&block)
       CarrierWave::Uploader::Base.configure(&block)
+    end
+
+    def clean_cached_files!
+      CarrierWave::Uploader::Base.clean_cached_files!
     end
   end
 
