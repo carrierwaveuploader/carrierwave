@@ -66,9 +66,10 @@ lib/carrierwave/uploader/remove.rb
 lib/carrierwave/uploader/store.rb
 lib/carrierwave/uploader/url.rb
 lib/carrierwave/uploader/versions.rb
+lib/generators/templates/uploader.rb
+lib/generators/uploader.rb
 merb_generators/uploader_generator.rb
 rails_generators/uploader/USAGE
-rails_generators/uploader/templates/uploader.rb
 rails_generators/uploader/uploader_generator.rb
 script/console
 script/destroy
