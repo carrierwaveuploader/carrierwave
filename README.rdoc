@@ -60,7 +60,7 @@ You can use your uploader class to store and retrieve files like this:
 
 CarrierWave gives you a +store+ for permanent storage, and a +cache+ for
 temporary storage. You can use different stores, at the moment a filesystem
-store, an Amazon S3 store and a store for MongoDB's GridFS are bundled.
+store, an Amazon S3 store, a Rackspace Cloud Files store, and a store for MongoDB's GridFS are bundled.
 
 Most of the time you are going to want to use CarrierWave together with an ORM.
 It is quite simple to mount uploaders on columns in your model, so you can
@@ -106,7 +106,7 @@ method:
       end
     end
 
-This works for the file storage as well as Amazon S3.
+This works for the file storage as well as Amazon S3 and Rackspace Cloud Files.
 
 == Securing uploads
 
@@ -331,6 +331,27 @@ RightAWS library by setting the storage to :right_s3
 CarrierWave uses the RightAWS S3 Interface directly, meaning that the performance issues
 mentioned by Jonathan Yurek for paperclip do not apply: http://groups.google.com/group/paperclip-plugin/browse_thread/thread/d4dc166a9a5f0df4#
 
+== Using Rackspace Cloud Files
+
+Cloud Files support requires a {Rackspace Cloud}[http://rackspacecloud.com] username and API key.
+You must also create a container for Carrierwave to use, and mark it public (publish it to the CDN)
+
+    CarrierWave.configure do |config|
+      config.cloud_files_user_name = 'xxxxxx'
+      config.cloud_files_api_key = 'xxxxxxxxxxxxxxxxxxxxx'
+      config.cloud_files_container = 'name_of_bucket'
+    end
+
+Do this in an initializer in Rails, and in a +before_app_loads+ block in Merb.
+
+And then in your uploader, set the storage to :cloud_files
+
+    class AvatarUploader < CarrierWave::Uploader::Base
+      storage :cloud_files
+    end
+
+That's it! You can still use the <code>CarrierWave::Uploader#url</code> method to return
+the url to the file on the Cloud Files CDN.
 
 == Using MongoDB's GridFS store
 
