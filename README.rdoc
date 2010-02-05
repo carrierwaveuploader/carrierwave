@@ -463,6 +463,7 @@ These people have contributed their time and effort to CarrierWave:
 * Sam Lown
 * Dave Ott
 * Quin Hoxie
+* H. Wade Minter
 
 == License
 
