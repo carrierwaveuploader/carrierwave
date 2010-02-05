@@ -53,7 +53,7 @@ module CarrierWave
         #
         def read
           object = cf_container.object(@path)
-          headers["content-type"] = result[:headers]["content-type"]
+          @content_type = object.content_type
           object.data
         end
 
@@ -81,7 +81,7 @@ module CarrierWave
         #end
 
         def content_type
-          headers["content-type"]
+          cf_container.object(@path).content_type
         end
 
         def content_type=(new_content_type)
@@ -95,9 +95,9 @@ module CarrierWave
         #
         # boolean
         #
-        def store(data)
+        def store(data,headers={})
           object = cf_container.create_object(@path)
-          object.write(data)
+          object.write(data,headers)
         end
 
         private
@@ -143,8 +143,9 @@ module CarrierWave
       # [CarrierWave::Storage::RightS3::File] the stored file
       #
       def store!(file)
+        cloud_files_options = {'Content-Type' => file.content_type}
         f = CarrierWave::Storage::CloudFiles::File.new(uploader, self, uploader.store_path)
-        f.store(file.read)
+        f.store(file.read,cloud_files_options)
         f
       end
 
