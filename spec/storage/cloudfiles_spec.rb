@@ -1,10 +1,11 @@
 # encoding: utf-8
 
 require File.dirname(__FILE__) + '/../spec_helper'
-require 'cloudfiles'
-require 'net/http'
 
 if ENV['CLOUDFILES_SPEC']
+  require 'cloudfiles'
+  require 'net/http'
+
   describe CarrierWave::Storage::CloudFiles do
     before do
       @uploader = mock('an uploader')
