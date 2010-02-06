@@ -56,11 +56,7 @@ module CarrierWave
   #
   #
   module MiniMagick
-
-    def self.included(base)
-      super
-      base.extend(ClassMethods)
-    end
+    extend ActiveSupport::Concern
 
     module ClassMethods
       def convert(format)
