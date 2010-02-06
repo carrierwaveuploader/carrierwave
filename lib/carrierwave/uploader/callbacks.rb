@@ -5,7 +5,7 @@ module CarrierWave
     module Callbacks
 
       setup do
-        extlib_inheritable_accessor :_before_callbacks, :_after_callbacks
+        class_inheritable_accessor :_before_callbacks, :_after_callbacks
       end
 
       def with_callbacks(kind, *args)
