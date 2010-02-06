@@ -5,10 +5,11 @@ require 'net/http'
 module CarrierWave
   module Uploader
     module Download
+      extend ActiveSupport::Concern
 
-      depends_on CarrierWave::Uploader::Callbacks
-      depends_on CarrierWave::Uploader::Configuration
-      depends_on CarrierWave::Uploader::Cache
+      include CarrierWave::Uploader::Callbacks
+      include CarrierWave::Uploader::Configuration
+      include CarrierWave::Uploader::Cache
 
       class RemoteFile
         def initialize(uri)

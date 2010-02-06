@@ -3,8 +3,9 @@
 module CarrierWave
   module Uploader
     module Callbacks
+      extend ActiveSupport::Concern
 
-      setup do
+      included do
         class_inheritable_accessor :_before_callbacks, :_after_callbacks
       end
 

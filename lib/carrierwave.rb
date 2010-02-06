@@ -1,10 +1,10 @@
 # encoding: utf-8
 
 require 'fileutils'
-require 'carrierwave/core_ext/module_setup'
 require 'carrierwave/core_ext/file'
 require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/class/inheritable_attributes'
+require 'active_support/concern'
 
 module CarrierWave
 

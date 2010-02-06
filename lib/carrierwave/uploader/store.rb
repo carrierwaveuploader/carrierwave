@@ -3,10 +3,11 @@
 module CarrierWave
   module Uploader
     module Store
+      extend ActiveSupport::Concern
 
-      depends_on CarrierWave::Uploader::Callbacks
-      depends_on CarrierWave::Uploader::Configuration
-      depends_on CarrierWave::Uploader::Cache
+      include CarrierWave::Uploader::Callbacks
+      include CarrierWave::Uploader::Configuration
+      include CarrierWave::Uploader::Cache
 
       ##
       # Override this in your Uploader to change the filename.

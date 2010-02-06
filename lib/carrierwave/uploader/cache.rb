@@ -21,9 +21,10 @@ module CarrierWave
 
   module Uploader
     module Cache
+      extend ActiveSupport::Concern
 
-      depends_on CarrierWave::Uploader::Callbacks
-      depends_on CarrierWave::Uploader::Configuration
+      include CarrierWave::Uploader::Callbacks
+      include CarrierWave::Uploader::Configuration
 
       module ClassMethods
 

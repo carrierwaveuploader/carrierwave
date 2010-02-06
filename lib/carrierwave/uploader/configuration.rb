@@ -2,7 +2,9 @@ module CarrierWave
 
   module Uploader
     module Configuration
-      setup do
+      extend ActiveSupport::Concern
+
+      included do
         add_config :root
         add_config :permissions
         add_config :storage_engines

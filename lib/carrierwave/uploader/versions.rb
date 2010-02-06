@@ -3,10 +3,11 @@
 module CarrierWave
   module Uploader
     module Versions
+      extend ActiveSupport::Concern
 
-      depends_on CarrierWave::Uploader::Callbacks
+      include CarrierWave::Uploader::Callbacks
 
-      setup do
+      included do
         after :cache, :cache_versions!
         after :store, :store_versions!
         after :remove, :remove_versions!
