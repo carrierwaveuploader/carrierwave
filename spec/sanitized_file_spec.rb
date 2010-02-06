@@ -35,9 +35,10 @@ describe CarrierWave::SanitizedFile do
     end
 
     it "should be empty for a file with a zero size" do
-      empty_file = mock('emptyfile')
-      empty_file.should_receive(:size).at_least(:once).and_return(0)
-      @sanitized_file = CarrierWave::SanitizedFile.new(empty_file)
+      FileUtils.rm file_path('llama.jpg')
+      FileUtils.touch file_path('llama.jpg')
+
+      @sanitized_file = CarrierWave::SanitizedFile.new(File.open(file_path('llama.jpg')))
       @sanitized_file.should be_empty
     end
 
