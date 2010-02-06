@@ -5,14 +5,6 @@ $:.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 
 require 'rubygems'
 
-if ENV["AS"]
-  puts "--> using ActiveSupport"
-  require 'activesupport'
-elsif ENV["EXTLIB"]
-  puts "--> using Extlib"
-  require 'extlib'
-end
-
 require 'tempfile'
 #require 'ruby-debug'
 require 'spec'

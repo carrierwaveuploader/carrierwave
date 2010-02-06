@@ -44,14 +44,14 @@ describe CarrierWave::DataMapper do
     end
 
     it "should return blank uploader when an empty string has been assigned" do
-      repository(:default).adapter.query("INSERT INTO events (image) VALUES ('')")
+      repository(:default).adapter.execute("INSERT INTO events (image) VALUES ('')")
       @event = @class.first
 
       @event.image.should be_blank
     end
 
     it "should retrieve a file from the storage if a value is stored in the database" do
-      repository(:default).adapter.query("INSERT INTO events (image) VALUES ('test.jpg')")
+      repository(:default).adapter.execute("INSERT INTO events (image) VALUES ('test.jpg')")
       @event = @class.first
 
       @event.save

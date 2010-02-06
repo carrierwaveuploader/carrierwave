@@ -12,6 +12,7 @@ module CarrierWave
         add_config :s3_access_key_id
         add_config :s3_secret_access_key
         add_config :s3_cnamed
+        add_config :s3_headers
         add_config :cloud_files_username
         add_config :cloud_files_api_key
         add_config :cloud_files_container
@@ -43,6 +44,7 @@ module CarrierWave
           config.storage = :file
           config.s3_access = :public_read
           config.s3_access_policy = 'public-read'
+          config.s3_headers = {}
           config.grid_fs_database = 'carrierwave'
           config.grid_fs_host = 'localhost'
           config.store_dir = 'uploads'
