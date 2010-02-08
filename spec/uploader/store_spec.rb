@@ -169,6 +169,22 @@ describe CarrierWave::Uploader do
     end
   end
 
+  describe 'without a store dir' do
+    before do
+      @uploader_class.class_eval do
+        def store_dir; nil; end
+      end
+    end
+
+    it "should create a new file with a valid path and url" do
+      @file = File.open(file_path('test.jpg'))
+      @uploader.store!(@file)
+      @path = ::File.expand_path(@uploader.store_path, @uploader.root)
+      File.exist?(@path).should be_true
+      @uploader.url.should == '/test.jpg'
+    end
+  end
+
   describe 'with an overridden, reversing, filename' do
     before do
       @uploader_class.class_eval do
