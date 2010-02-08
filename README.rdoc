@@ -107,6 +107,7 @@ method:
     end
 
 This works for the file storage as well as Amazon S3 and Rackspace Cloud Files.
+Define +store_dir+ as +nil+ if you'd like to store files at the root level.
 
 == Securing uploads
 
