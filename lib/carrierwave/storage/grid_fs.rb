@@ -82,10 +82,11 @@ module CarrierWave
       def database
         @connection ||= begin
           host = uploader.grid_fs_host
+          port = uploader.grid_fs_port
           database = uploader.grid_fs_database
           username = uploader.grid_fs_username
           password = uploader.grid_fs_password
-          db = Mongo::Connection.new(host).db(database)
+          db = Mongo::Connection.new(host, port).db(database)
           db.authenticate(username, password) if username && password
           db
         end
