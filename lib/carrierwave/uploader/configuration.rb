@@ -20,6 +20,7 @@ module CarrierWave
         add_config :cloud_files_container
         add_config :grid_fs_database
         add_config :grid_fs_host
+        add_config :grid_fs_port
         add_config :grid_fs_username
         add_config :grid_fs_password
         add_config :grid_fs_access_url
@@ -49,6 +50,7 @@ module CarrierWave
           config.s3_headers = {}
           config.grid_fs_database = 'carrierwave'
           config.grid_fs_host = 'localhost'
+          config.grid_fs_host = 27017
           config.store_dir = 'uploads'
           config.cache_dir = 'uploads/tmp'
           config.ignore_integrity_errors = true
