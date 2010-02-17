@@ -259,7 +259,7 @@ It's a good idea to test you uploaders in isolation. In order to speed up your
 tests, it's recommended to switch off processing in your tests, and to use the
 file storage. In Rails you could do that by adding an initializer with:
 
-    if Rails.env.test?
+    if Rails.env.test? or Rails.env.cucumber?
       CarrierWave.configure do |config|
         config.storage = :file
         config.enable_processing = false
@@ -286,7 +286,7 @@ CarrierWave comes with some RSpec matchers which you may find useful:
 
       context 'the thumb version' do
         it "should scale down a landscape image to be exactly 64 by 64 pixels" do
-          @uploader.thumb.should have_dimensions(200, 200)
+          @uploader.thumb.should have_dimensions(64, 64)
         end
       end
 
@@ -297,7 +297,7 @@ CarrierWave comes with some RSpec matchers which you may find useful:
       end
 
       it "should make the image readable only to the owner and not executable" do
-        @uploader.should have_premissions(0600)
+        @uploader.should have_permissions(0600)
       end
     end
 
