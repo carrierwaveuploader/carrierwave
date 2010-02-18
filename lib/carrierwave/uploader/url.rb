@@ -19,6 +19,15 @@ module CarrierWave
 
       alias_method :to_s, :url
 
+      ##
+      # === Returns
+      #
+      # [String] A JSON serializtion containing this uploader's URL
+      #
+      def to_json
+        { 'url' => url }.to_json
+      end
+
     end # Url
   end # Uploader
 end # CarrierWave

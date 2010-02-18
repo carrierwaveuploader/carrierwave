@@ -13,6 +13,7 @@ require 'spec/autorun'
 require 'carrierwave'
 require 'timecop'
 require 'time'
+require 'json'
 
 require 'logger'
 
