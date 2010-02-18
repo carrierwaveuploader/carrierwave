@@ -488,6 +488,7 @@ These people have contributed their time and effort to CarrierWave:
 * H. Wade Minter
 * Trevor Turk
 * Nicklas Ramhöj
+* Matt Hooks
 
 == License
 
