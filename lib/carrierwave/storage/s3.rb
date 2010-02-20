@@ -44,7 +44,7 @@ module CarrierWave
     #
     #     class MyUploader < CarrierWave::Uploader::Base
     #       def s3_headers
-    #         { "Expires" => 1.year.from_how.httpdate }
+    #         { "Expires" => 1.year.from_now.httpdate }
     #       end
     #     end
     #
