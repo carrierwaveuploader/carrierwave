@@ -3,6 +3,7 @@ History.txt
 Manifest.txt
 README.rdoc
 Rakefile
+carrierwave.gemspec
 cucumber.yml
 features/caching.feature
 features/download.feature
@@ -33,6 +34,7 @@ features/versions_overriden_store_dir.feature
 lib/carrierwave.rb
 lib/carrierwave/compatibility/paperclip.rb
 lib/carrierwave/core_ext/blank.rb
+lib/carrierwave/core_ext/file.rb
 lib/carrierwave/core_ext/inheritable_attributes.rb
 lib/carrierwave/core_ext/module_setup.rb
 lib/carrierwave/mount.rb
@@ -91,6 +93,7 @@ spec/processing/mini_magick_spec.rb
 spec/processing/rmagick_spec.rb
 spec/sanitized_file_spec.rb
 spec/spec_helper.rb
+spec/storage/cloudfiles_spec.rb
 spec/storage/grid_fs_spec.rb
 spec/storage/right_s3_spec.rb
 spec/storage/s3_spec.rb

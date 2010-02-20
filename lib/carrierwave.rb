@@ -8,7 +8,7 @@ require 'active_support/concern'
 
 module CarrierWave
 
-  VERSION = "0.4.4"
+  VERSION = "0.4.5"
 
   class << self
     attr_accessor :root

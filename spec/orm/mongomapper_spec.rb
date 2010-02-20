@@ -41,7 +41,7 @@ describe CarrierWave::MongoMapper do
       end
       
       it "returns a blank uploader" do
-        @saved_doc = @class.find(:first)
+        @saved_doc = @class.first
         @saved_doc.image.should be_blank
       end
       
@@ -52,7 +52,7 @@ describe CarrierWave::MongoMapper do
       before do
         @document = @class.new(:image_filename => "test.jpg")
         @document.save
-        @doc = @class.find(:first)
+        @doc = @class.first
       end
       
       it "returns an uploader" do
