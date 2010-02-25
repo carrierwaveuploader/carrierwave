@@ -72,7 +72,7 @@ module CarrierWave
 
       def interpolate_paperclip_path(path, filename)
         mappings.inject(path) do |agg, pair|
-          agg.gsub(":#{pair[0]}", pair[1].call(self, filename).to_s)
+          agg.gsub(":#{pair[0]}") { pair[1].call(self, filename).to_s }
         end
       end
 
