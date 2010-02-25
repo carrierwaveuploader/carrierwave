@@ -3,9 +3,10 @@
 module CarrierWave
   module Uploader
     module Callbacks
+      extend ActiveSupport::Concern
 
-      setup do
-        extlib_inheritable_accessor :_before_callbacks, :_after_callbacks
+      included do
+        class_inheritable_accessor :_before_callbacks, :_after_callbacks
       end
 
       def with_callbacks(kind, *args)

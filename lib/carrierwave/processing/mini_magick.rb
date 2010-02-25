@@ -56,15 +56,11 @@ module CarrierWave
   #
   #
   module MiniMagick
-
-    def self.included(base)
-      super
-      base.extend(ClassMethods)
-    end
+    extend ActiveSupport::Concern
 
     module ClassMethods
       def convert(format)
-        process :resize_to_limit => format
+        process :convert => format
       end
 
       def resize_to_limit(width, height)
@@ -77,10 +73,6 @@ module CarrierWave
 
       def resize_to_fill(width, height)
         process :resize_to_fill => [width, height]
-      end
-
-      def resize_and_pad(width, height)
-        process :resize_to_fit => [width, height]
       end
 
       def resize_and_pad(width, height, background=:transparent, gravity=::Magick::CenterGravity)

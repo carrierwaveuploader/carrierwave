@@ -2,7 +2,9 @@ module CarrierWave
 
   module Uploader
     module Configuration
-      setup do
+      extend ActiveSupport::Concern
+
+      included do
         add_config :root
         add_config :permissions
         add_config :storage_engines
@@ -12,8 +14,13 @@ module CarrierWave
         add_config :s3_access_key_id
         add_config :s3_secret_access_key
         add_config :s3_cnamed
+        add_config :s3_headers
+        add_config :cloud_files_username
+        add_config :cloud_files_api_key
+        add_config :cloud_files_container
         add_config :grid_fs_database
         add_config :grid_fs_host
+        add_config :grid_fs_port
         add_config :grid_fs_username
         add_config :grid_fs_password
         add_config :grid_fs_access_url
@@ -34,13 +41,16 @@ module CarrierWave
             :file => "CarrierWave::Storage::File",
             :s3 => "CarrierWave::Storage::S3",
             :grid_fs => "CarrierWave::Storage::GridFS",
-            :right_s3 => "CarrierWave::Storage::RightS3"
+            :right_s3 => "CarrierWave::Storage::RightS3",
+            :cloud_files => "CarrierWave::Storage::CloudFiles"
           }
           config.storage = :file
           config.s3_access = :public_read
           config.s3_access_policy = 'public-read'
+          config.s3_headers = {}
           config.grid_fs_database = 'carrierwave'
           config.grid_fs_host = 'localhost'
+          config.grid_fs_host = 27017
           config.store_dir = 'uploads'
           config.cache_dir = 'uploads/tmp'
           config.ignore_integrity_errors = true

@@ -3,8 +3,9 @@
 module CarrierWave
   module Uploader
     module Remove
+      extend ActiveSupport::Concern
 
-      depends_on CarrierWave::Uploader::Callbacks
+      include CarrierWave::Uploader::Callbacks
 
       ##
       # Removes the file and reset it

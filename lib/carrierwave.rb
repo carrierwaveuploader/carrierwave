@@ -1,13 +1,14 @@
 # encoding: utf-8
 
 require 'fileutils'
-require 'carrierwave/core_ext/blank'
-require 'carrierwave/core_ext/module_setup'
-require 'carrierwave/core_ext/inheritable_attributes'
+require 'carrierwave/core_ext/file'
+require 'active_support/core_ext/object/blank'
+require 'active_support/core_ext/class/inheritable_attributes'
+require 'active_support/concern'
 
 module CarrierWave
 
-  VERSION = "0.4.3"
+  VERSION = "0.4.5"
 
   class << self
     attr_accessor :root
@@ -15,12 +16,17 @@ module CarrierWave
     def configure(&block)
       CarrierWave::Uploader::Base.configure(&block)
     end
+
+    def clean_cached_files!
+      CarrierWave::Uploader::Base.clean_cached_files!
+    end
   end
 
   class UploadError < StandardError; end
   class IntegrityError < UploadError; end
   class InvalidParameter < UploadError; end
   class ProcessingError < UploadError; end
+  class DownloadError < UploadError; end
 
   autoload :SanitizedFile, 'carrierwave/sanitized_file'
   autoload :Mount, 'carrierwave/mount'
@@ -34,12 +40,14 @@ module CarrierWave
     autoload :S3, 'carrierwave/storage/s3'
     autoload :GridFS, 'carrierwave/storage/grid_fs'
     autoload :RightS3, 'carrierwave/storage/right_s3'
+    autoload :CloudFiles, 'carrierwave/storage/cloud_files'
   end
 
   module Uploader
     autoload :Base, 'carrierwave/uploader'
     autoload :Cache, 'carrierwave/uploader/cache'
     autoload :Store, 'carrierwave/uploader/store'
+    autoload :Download, 'carrierwave/uploader/download'
     autoload :Callbacks, 'carrierwave/uploader/callbacks'
     autoload :Processing, 'carrierwave/uploader/processing'
     autoload :Versions, 'carrierwave/uploader/versions'
@@ -73,8 +81,15 @@ if defined?(Merb)
 
 elsif defined?(Rails)
 
-  CarrierWave.root = File.join(Rails.root, 'public')
-  ActiveSupport::Dependencies.load_paths << File.join(Rails.root, "app", "uploaders")
+  module CarrierWave
+    class Railtie < Rails::Railtie
+      railtie_name :carrierwave
+
+      initializer "carrierwave.setup_paths" do
+        CarrierWave.root = Rails.root.join(Rails.public_path)
+      end
+    end
+  end
 
 elsif defined?(Sinatra)
 

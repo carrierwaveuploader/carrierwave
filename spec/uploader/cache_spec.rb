@@ -13,6 +13,31 @@ describe CarrierWave::Uploader do
     FileUtils.rm_rf(public_path)
   end
 
+  describe '.clean_cached_files!' do
+    before do
+      @cache_dir = File.expand_path(@uploader_class.cache_dir, CarrierWave.root)
+      FileUtils.mkdir_p File.expand_path('20071201-1234-234-2213', @cache_dir)
+      FileUtils.mkdir_p File.expand_path('20071203-1234-234-2213', @cache_dir)
+      FileUtils.mkdir_p File.expand_path('20071205-1234-234-2213', @cache_dir)
+    end
+
+    after { FileUtils.rm_rf(@cache_dir) }
+
+    it "should clear all files older than 24 hours in the default cache directory" do
+      Timecop.freeze(Time.parse('2007-12-06 10:12')) do
+        @uploader_class.clean_cached_files!
+      end
+      Dir.glob("#{@cache_dir}/*").should have(1).element
+    end
+
+    it "should be aliased on the CarrierWave module" do
+      Timecop.freeze(Time.parse('2007-12-06 10:12')) do
+        CarrierWave.clean_cached_files!
+      end
+      Dir.glob("#{@cache_dir}/*").should have(1).element
+    end
+  end
+
   describe '#cache_dir' do
     it "should default to the config option" do
       @uploader.cache_dir.should == 'uploads/tmp'

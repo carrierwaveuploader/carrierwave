@@ -4,6 +4,21 @@ require "image_science"
 
 module CarrierWave
   module ImageScience
+    extend ActiveSupport::Concern
+
+    module ClassMethods
+      def resize_to_limit(width, height)
+        process :resize_to_limit => [width, height]
+      end
+
+      def resize_to_fit(width, height)
+        process :resize_to_fit => [width, height]
+      end
+
+      def resize_to_fill(width, height)
+        process :resize_to_fill => [width, height]
+      end
+    end
 
     ##
     # Resize the image to fit within the specified dimensions while retaining

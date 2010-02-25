@@ -13,14 +13,13 @@ upload files.
 * Source code {hosted at GitHub}[http://github.com/jnicklas/carrierwave]
 * Please {report any issues}[http://github.com/jnicklas/carrierwave/issues] on GitHub
 * Please direct any questions at the {mailing list}[http://groups.google.com/group/carrierwave]
+* Check out the {example app}[http://github.com/jnicklas/carrierwave-example-app]
 
 == Getting Started
 
 Install the latest stable release:
 
     [sudo] gem install carrierwave
-
-CarrierWave is hosted *only* on {Gemcutter}[http://gemcutter.org] as of version 0.4.0.
 
 In Merb, add it as a dependency to your config/dependencies.rb:
 
@@ -61,7 +60,7 @@ You can use your uploader class to store and retrieve files like this:
 
 CarrierWave gives you a +store+ for permanent storage, and a +cache+ for
 temporary storage. You can use different stores, at the moment a filesystem
-store, an Amazon S3 store and a store for MongoDB's GridFS are bundled.
+store, an Amazon S3 store, a Rackspace Cloud Files store, and a store for MongoDB's GridFS are bundled.
 
 Most of the time you are going to want to use CarrierWave together with an ORM.
 It is quite simple to mount uploaders on columns in your model, so you can
@@ -107,7 +106,8 @@ method:
       end
     end
 
-This works for the file storage as well as Amazon S3.
+This works for the file storage as well as Amazon S3 and Rackspace Cloud Files.
+Define +store_dir+ as +nil+ if you'd like to store files at the root level.
 
 == Securing uploads
 
@@ -183,9 +183,45 @@ case of images, a small thumbnail would be a good indicator:
     <% form_for @user do |f| %>
       <p>
         <label>My Avatar</label>
-        <%= image_tag(@user.avatar.url) if @user.avatar %>
+        <%= image_tag(@user.avatar_url) if @user.avatar? %>
         <%= f.file_field :avatar %>
         <%= f.hidden_field :avatar_cache %>
+      </p>
+    <% end %>
+
+== Removing uploaded files
+
+If you want to remove a previously uploaded file on a mounted uploader, you can
+easily add a checkbox to the form which will remove the file when checked.
+
+    <% form_for @user do |f| %>
+      <p>
+        <label>My Avatar</label>
+        <%= image_tag(@user.avatar_url) if @user.avatar? %>
+        <%= f.file_field :avatar %>
+      </p>
+
+      <p>
+        <label>
+          <%= f.check_box :remove_avatar %>
+          Remove avatar
+        </label>
+      </p>
+    <% end %>
+
+If you want to remove the file manually, you can call <code>remove_avatar!</code>.
+
+== Uploading files from a remote location
+
+Your users may find it convenient to upload a file from a location on the Internet
+via a URL. CarrierWave makes this simple, just add the appropriate column to your
+form and you're good to go:
+
+    <% form_for @user do |f| %>
+      <p>
+        <label>My Avatar URL:</label>
+        <%= image_tag(@user.avatar_url) if @user.avatar? %>
+        <%= f.text_field :remote_avatar_url %>
       </p>
     <% end %>
 
@@ -223,7 +259,7 @@ It's a good idea to test you uploaders in isolation. In order to speed up your
 tests, it's recommended to switch off processing in your tests, and to use the
 file storage. In Rails you could do that by adding an initializer with:
 
-    if Rails.env.test?
+    if Rails.env.test? or Rails.env.cucumber?
       CarrierWave.configure do |config|
         config.storage = :file
         config.enable_processing = false
@@ -250,7 +286,7 @@ CarrierWave comes with some RSpec matchers which you may find useful:
 
       context 'the thumb version' do
         it "should scale down a landscape image to be exactly 64 by 64 pixels" do
-          @uploader.thumb.should have_dimensions(200, 200)
+          @uploader.thumb.should have_dimensions(64, 64)
         end
       end
 
@@ -261,7 +297,7 @@ CarrierWave comes with some RSpec matchers which you may find useful:
       end
 
       it "should make the image readable only to the owner and not executable" do
-        @uploader.should have_premissions(0600)
+        @uploader.should have_permissions(0600)
       end
     end
 
@@ -296,6 +332,27 @@ RightAWS library by setting the storage to :right_s3
 CarrierWave uses the RightAWS S3 Interface directly, meaning that the performance issues
 mentioned by Jonathan Yurek for paperclip do not apply: http://groups.google.com/group/paperclip-plugin/browse_thread/thread/d4dc166a9a5f0df4#
 
+== Using Rackspace Cloud Files
+
+Cloud Files support requires a {Rackspace Cloud}[http://rackspacecloud.com] username and API key.
+You must also create a container for Carrierwave to use, and mark it public (publish it to the CDN)
+
+    CarrierWave.configure do |config|
+      config.cloud_files_user_name = 'xxxxxx'
+      config.cloud_files_api_key = 'xxxxxxxxxxxxxxxxxxxxx'
+      config.cloud_files_container = 'name_of_bucket'
+    end
+
+Do this in an initializer in Rails, and in a +before_app_loads+ block in Merb.
+
+And then in your uploader, set the storage to :cloud_files
+
+    class AvatarUploader < CarrierWave::Uploader::Base
+      storage :cloud_files
+    end
+
+That's it! You can still use the <code>CarrierWave::Uploader#url</code> method to return
+the url to the file on the Cloud Files CDN.
 
 == Using MongoDB's GridFS store
 
@@ -428,6 +485,10 @@ These people have contributed their time and effort to CarrierWave:
 * Sam Lown
 * Dave Ott
 * Quin Hoxie
+* H. Wade Minter
+* Trevor Turk
+* Nicklas Ramhöj
+* Matt Hooks
 
 == License
 

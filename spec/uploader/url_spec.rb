@@ -63,6 +63,21 @@ describe CarrierWave::Uploader do
     end
   end
 
+  describe '#to_json' do
+    before do
+      CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+    end
+
+    it "should return a hash with a blank URL" do
+      JSON.parse(@uploader.to_json)['url'].should be_nil
+    end
+
+    it "should return a hash including a cached URL" do
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      JSON.parse(@uploader.to_json)['url'].should == '/uploads/tmp/20071201-1234-345-2255/test.jpg'
+    end
+  end
+
   describe '#to_s' do
     before do
       CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')

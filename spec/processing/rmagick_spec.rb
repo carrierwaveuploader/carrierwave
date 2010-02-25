@@ -17,6 +17,13 @@ describe CarrierWave::RMagick do
     FileUtils.rm(file_path('landscape_copy.jpg'))
   end
 
+  describe '#convert' do
+    it "should convert the image to the given format" do
+      # TODO: find some way to spec this
+      @instance.convert(:png)
+    end
+  end
+
   describe '#resize_to_fill' do
     it "should resize the image to exactly the given dimensions" do
       @instance.resize_to_fill(200, 200)

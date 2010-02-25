@@ -3,10 +3,11 @@
 module CarrierWave
   module Uploader
     module Store
+      extend ActiveSupport::Concern
 
-      depends_on CarrierWave::Uploader::Callbacks
-      depends_on CarrierWave::Uploader::Configuration
-      depends_on CarrierWave::Uploader::Cache
+      include CarrierWave::Uploader::Callbacks
+      include CarrierWave::Uploader::Configuration
+      include CarrierWave::Uploader::Cache
 
       ##
       # Override this in your Uploader to change the filename.
@@ -39,7 +40,7 @@ module CarrierWave
       # [String] the store path
       #
       def store_path(for_file=filename)
-        File.join(store_dir, full_filename(for_file))
+        File.join([store_dir, full_filename(for_file)].compact)
       end
 
       ##

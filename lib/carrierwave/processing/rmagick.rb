@@ -68,15 +68,11 @@ module CarrierWave
   # http://rubyforge.org/forum/forum.php?thread_id=1374&forum_id=1618
   #
   module RMagick
-
-    def self.included(base)
-      super
-      base.extend(ClassMethods)
-    end
+    extend ActiveSupport::Concern
 
     module ClassMethods
       def convert(format)
-        process :resize_to_limit => format
+        process :convert => format
       end
 
       def resize_to_limit(width, height)
@@ -89,10 +85,6 @@ module CarrierWave
 
       def resize_to_fill(width, height)
         process :resize_to_fill => [width, height]
-      end
-
-      def resize_and_pad(width, height)
-        process :resize_to_fit => [width, height]
       end
 
       def resize_and_pad(width, height, background=:transparent, gravity=::Magick::CenterGravity)
@@ -118,11 +110,7 @@ module CarrierWave
     #     image.convert(:png)
     #
     def convert(format)
-      manipulate! do |img|
-        img.format = format.to_s.upcase
-        img = yield(img) if block_given?
-        img
-      end
+      manipulate!(:format => format)
     end
 
     ##
@@ -255,21 +243,27 @@ module CarrierWave
     #
     # [CarrierWave::ProcessingError] if manipulation failed.
     #
-    def manipulate!
+    def manipulate!(options={})
       image = ::Magick::Image.read(current_path)
 
-      if image.size > 1
+      frames = if image.size > 1
         list = ::Magick::ImageList.new
         image.each do |frame|
           list << yield( frame )
         end
-        list.write(current_path)
-        destroy_image(list)
+        list
       else
         frame = image.first
-        yield( frame ).write(current_path)
-        destroy_image(frame)
+        frame = yield( frame ) if block_given?
+        frame
       end
+
+      if options[:format]
+        frames.write("#{options[:format]}:#{current_path}")
+      else
+        frames.write(current_path)
+      end
+      destroy_image(frames)
     rescue ::Magick::ImageMagickError => e
       raise CarrierWave::ProcessingError.new("Failed to manipulate with rmagick, maybe it is not an image? Original Error: #{e}")
     end

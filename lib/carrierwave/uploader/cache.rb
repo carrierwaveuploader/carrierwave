@@ -21,9 +21,36 @@ module CarrierWave
 
   module Uploader
     module Cache
+      extend ActiveSupport::Concern
 
-      depends_on CarrierWave::Uploader::Callbacks
-      depends_on CarrierWave::Uploader::Configuration
+      include CarrierWave::Uploader::Callbacks
+      include CarrierWave::Uploader::Configuration
+
+      module ClassMethods
+
+        ##
+        # Removes cached files which are older than one day. You could call this method
+        # from a rake task to clean out old cached files.
+        #
+        # You can call this method directly on the module like this:
+        #
+        #   CarrierWave.clean_cached_files!
+        #
+        # === Note
+        # 
+        # This only works as long as you haven't done anything funky with your cache_dir.
+        # It's recommended that you keep cache files in one place only.
+        #
+        def clean_cached_files!
+          Dir.glob(File.expand_path(File.join(cache_dir, '*'), CarrierWave.root)).each do |dir|
+            time = dir.scan(/(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})/).first.map { |t| t.to_i }
+            time = Time.utc(*time)
+            if time < (Time.now - (60*60*24))
+              FileUtils.rm_rf(dir)
+            end
+          end
+        end
+      end
 
       ##
       # Returns true if the uploader has been cached

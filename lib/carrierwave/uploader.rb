@@ -25,18 +25,19 @@ module CarrierWave
     class Base
       attr_reader :file
 
-      use CarrierWave::Uploader::Callbacks
-      use CarrierWave::Uploader::Proxy
-      use CarrierWave::Uploader::Url
-      use CarrierWave::Uploader::Mountable
-      use CarrierWave::Uploader::Cache
-      use CarrierWave::Uploader::Store
-      use CarrierWave::Uploader::Remove
-      use CarrierWave::Uploader::ExtensionWhitelist
-      use CarrierWave::Uploader::Processing
-      use CarrierWave::Uploader::Versions
-      use CarrierWave::Uploader::DefaultUrl
-      use CarrierWave::Uploader::Configuration
+      include CarrierWave::Uploader::Callbacks
+      include CarrierWave::Uploader::Proxy
+      include CarrierWave::Uploader::Url
+      include CarrierWave::Uploader::Mountable
+      include CarrierWave::Uploader::Cache
+      include CarrierWave::Uploader::Store
+      include CarrierWave::Uploader::Download
+      include CarrierWave::Uploader::Remove
+      include CarrierWave::Uploader::ExtensionWhitelist
+      include CarrierWave::Uploader::Processing
+      include CarrierWave::Uploader::Versions
+      include CarrierWave::Uploader::DefaultUrl
+      include CarrierWave::Uploader::Configuration
     end # Base
 
   end # Uploader

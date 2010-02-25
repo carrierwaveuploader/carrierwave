@@ -1,3 +1,25 @@
+=== Version 0.4.5 2010-02-20
+
+* [added] Support for Rackspace Cloudfiles
+* [added] GridFS now accepts a port
+* [fixed] s3_headers is now properly initialized
+* [fixed] work around DataMapper's patching of core method
+
+=== Version 0.4.4 2010-01-31
+
+* [added] Support for downloading remote files
+* [added] CarrierWave.clean_cached_files! to remove old cached files
+* [added] Option to set headers for S3
+* [added] GridStore now has authentication
+* [fixed] Rmagick convert method now does what it says 
+* [fixed] Content type is stored on GridStore and Amazon S3
+* [fixed] Metadata is no longer broken for S3
+
+=== Version 0.4.3 2009-12-19
+
+* [fixed] cnamed URLs on S3 no longer have a third slash after http
+* [fixed] fixed deprecation warnings on Rails 2.3.5
+
 === Version 0.4.2 2009-11-26
 
 * [added] RightAWS as an alternative S3 implementation
