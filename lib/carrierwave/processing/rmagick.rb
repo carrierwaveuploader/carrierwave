@@ -83,8 +83,8 @@ module CarrierWave
         process :resize_to_fit => [width, height]
       end
 
-      def resize_to_fill(width, height)
-        process :resize_to_fill => [width, height]
+      def resize_to_fill(width, height, gravity=::Magick::CenterGravity)
+        process :resize_to_fill => [width, height, gravity]
       end
 
       def resize_and_pad(width, height, background=:transparent, gravity=::Magick::CenterGravity)
@@ -181,9 +181,9 @@ module CarrierWave
     #
     # [Magick::Image] additional manipulations to perform
     #
-    def resize_to_fill(width, height)
+    def resize_to_fill(width, height, gravity=::Magick::CenterGravity)
       manipulate! do |img|
-        img.crop_resized!(width, height)
+        img.crop_resized!(width, height, gravity)
         img = yield(img) if block_given?
         img
       end
