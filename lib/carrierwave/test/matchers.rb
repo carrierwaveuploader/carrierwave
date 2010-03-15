@@ -61,9 +61,9 @@ module CarrierWave
         def matches?(actual)
           @actual = actual
           # Satisfy expectation here. Return false or raise an error if it's not met.
-          img = ::Magick::Image.read(@actual.current_path).first
-          @actual_width = img.columns
-          @actual_height = img.rows
+          image = ImageLoader.load_image(@actual.current_path)
+          @actual_width = image.width
+          @actual_height = image.height
           @actual_width <= @width && @actual_height <= @height
         end
 
@@ -74,10 +74,10 @@ module CarrierWave
         def negative_failure_message
           "expected #{@actual.current_path.inspect} to be larger than #{@width} by #{@height}, but it wasn't."
         end
+
       end
 
       def be_no_larger_than(width, height)
-        load_rmagick
         BeNoLargerThan.new(width, height)
       end
 
@@ -89,9 +89,9 @@ module CarrierWave
         def matches?(actual)
           @actual = actual
           # Satisfy expectation here. Return false or raise an error if it's not met.
-          img = ::Magick::Image.read(@actual.current_path).first
-          @actual_width = img.columns
-          @actual_height = img.rows
+          image = ImageLoader.load_image(@actual.current_path)
+          @actual_width = image.width
+          @actual_height = image.height
           @actual_width == @width && @actual_height == @height
         end
 
@@ -102,27 +102,63 @@ module CarrierWave
         def negative_failure_message
           "expected #{@actual.current_path.inspect} not to have an exact size of #{@width} by #{@height}, but it did."
         end
+
       end
 
       def have_dimensions(width, height)
-        load_rmagick
         HaveDimensions.new(width, height)
       end
 
-    private
-    
-      def load_rmagick
-        unless defined? Magick 
-          begin
-            require 'rmagick'
-          rescue LoadError
-            require 'RMagick'
-          rescue LoadError
-            puts "WARNING: Failed to require rmagick, image processing may fail!"
+      class ImageLoader # :nodoc:
+        def self.load_image(filename)
+          if defined? MiniMagick
+            MiniMagickWrapper.new(filename)
+          else
+            unless defined? Magick
+              begin
+                require 'rmagick'
+              rescue LoadError
+                require 'RMagick'
+              rescue LoadError
+                puts "WARNING: Failed to require rmagick, image processing may fail!"
+              end
+            end
+            MagickWrapper.new(filename)
           end
         end
       end
-      
-    end # SpecHelper
+
+      class MagickWrapper # :nodoc:
+        attr_reader :image
+        def width
+          image.columns
+        end
+
+        def height
+          image.rows
+        end
+
+        def initialize(filename)
+          @image = ::Magick::Image.read(filename).first
+        end
+      end
+
+      class MiniMagickWrapper # :nodoc:
+        attr_reader :image
+        def width
+          image[:width]
+        end
+
+        def height
+          image[:height]
+        end
+
+        def initialize(filename)
+          @image = ::MiniMagick::Image.from_file(filename)
+        end
+      end
+
+    end # Matchers
   end # Test
 end # CarrierWave
+
