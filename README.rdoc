@@ -169,7 +169,7 @@ in that case. Suppose your +user+ model has an uploader mounted on +avatar+
 file, just add a hidden field called +avatar_cache+. In Rails, this would look
 like this:
 
-    <% form_for @user do |f| %>
+    <% form_for @user, :html => {:multipart => true} do |f| %>
       <p>
         <label>My Avatar</label>
         <%= f.file_field :avatar %>
@@ -180,7 +180,7 @@ like this:
 It might be a good idea to show the user that a file has been uploaded, in the
 case of images, a small thumbnail would be a good indicator:
 
-    <% form_for @user do |f| %>
+    <% form_for @user, :html => {:multipart => true} do |f| %>
       <p>
         <label>My Avatar</label>
         <%= image_tag(@user.avatar_url) if @user.avatar? %>
@@ -194,7 +194,7 @@ case of images, a small thumbnail would be a good indicator:
 If you want to remove a previously uploaded file on a mounted uploader, you can
 easily add a checkbox to the form which will remove the file when checked.
 
-    <% form_for @user do |f| %>
+    <% form_for @user, :html => {:multipart => true} do |f| %>
       <p>
         <label>My Avatar</label>
         <%= image_tag(@user.avatar_url) if @user.avatar? %>
@@ -217,7 +217,7 @@ Your users may find it convenient to upload a file from a location on the Intern
 via a URL. CarrierWave makes this simple, just add the appropriate column to your
 form and you're good to go:
 
-    <% form_for @user do |f| %>
+    <% form_for @user, :html => {:multipart => true} do |f| %>
       <p>
         <label>My Avatar URL:</label>
         <%= image_tag(@user.avatar_url) if @user.avatar? %>
