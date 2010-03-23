@@ -50,7 +50,7 @@ module CarrierWave
           config.s3_headers = {}
           config.grid_fs_database = 'carrierwave'
           config.grid_fs_host = 'localhost'
-          config.grid_fs_host = 27017
+          config.grid_fs_port = 27017
           config.store_dir = 'uploads'
           config.cache_dir = 'uploads/tmp'
           config.ignore_integrity_errors = true
