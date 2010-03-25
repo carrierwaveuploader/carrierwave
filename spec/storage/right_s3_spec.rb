@@ -35,9 +35,13 @@ if ENV['S3_SPEC']
       it "should have a path" do
         @s3_file.path.should == 'uploads/bar.txt'
       end
-    
-      it "should have an Amazon URL" do
-        @s3_file.url.should == "http://#{@bucket}.s3.amazonaws.com/uploads/bar.txt"
+   
+      context "without cnamed bucket" do
+        it "should have a Euro supported Amazon URL" do
+          @uploader.stub!(:s3_cnamed).and_return(false)
+          @uploader.stub!(:s3_bucket).and_return('foo.bar')
+          @s3_file.url.should == "http://foo.bar.s3.amazonaws.com/uploads/bar.txt"
+        end
       end
       
       context "with cnamed bucket" do
