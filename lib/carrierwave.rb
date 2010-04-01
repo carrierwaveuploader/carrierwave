@@ -83,10 +83,8 @@ elsif defined?(Rails)
 
   module CarrierWave
     class Railtie < Rails::Railtie
-      railtie_name :carrierwave
-
       initializer "carrierwave.setup_paths" do
-        CarrierWave.root = Rails.root.join(Rails.public_path)
+        CarrierWave.root = Rails.root.join(Rails.public_path).to_s
       end
     end
   end
