@@ -323,14 +323,19 @@ That's it! You can still use the <code>CarrierWave::Uploader#url</code> method t
 the url to the file on Amazon S3.
 
 Alternatively, and especially if your bucket is located in Europe, you can use the
-RightAWS library by setting the storage to :right_s3
+{Aws}[http://github.com/appoxy/aws] or older RightAws library by setting the storage to :right_s3
 
     class AvatarUploader < CarrierWave::Uploader::Base
       storage :right_s3
     end
 
-CarrierWave uses the RightAWS S3 Interface directly, meaning that the performance issues
-mentioned by Jonathan Yurek for paperclip do not apply: http://groups.google.com/group/paperclip-plugin/browse_thread/thread/d4dc166a9a5f0df4#
+The newer {Aws}[http://github.com/appoxy/aws] is a fork of the older RightAws library with
+support for Ruby 1.9, and better handling of threads. Ensure you have it installed:
+
+    gem install aws
+
+If the gem is not available, Carrierwave will try loading the original right_aws gem.
+
 
 == Using Rackspace Cloud Files
 
