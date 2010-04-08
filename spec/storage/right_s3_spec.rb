@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 require File.dirname(__FILE__) + '/../spec_helper'
-require 'right_aws'
+require 'aws'
 
 if ENV['S3_SPEC']
   describe CarrierWave::Storage::RightS3 do
@@ -54,7 +54,7 @@ if ENV['S3_SPEC']
       
       it "should be deletable" do
         @s3_file.delete
-        lambda {@storage.connection.head(@bucket, 'uploads/bar.txt')}.should raise_error(RightAws::AwsError)
+        lambda {@storage.connection.head(@bucket, 'uploads/bar.txt')}.should raise_error(Aws::AwsError)
       end
     end
   
@@ -79,7 +79,7 @@ if ENV['S3_SPEC']
     
       it "should be deletable" do
         @s3_file.delete
-        lambda {@storage.connection.head(@bucket, 'uploads/bar.txt')}.should raise_error(RightAws::AwsError)
+        lambda {@storage.connection.head(@bucket, 'uploads/bar.txt')}.should raise_error(Aws::AwsError)
       end
     end
 
