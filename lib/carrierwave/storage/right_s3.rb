@@ -1,5 +1,10 @@
 # encoding: utf-8
-require 'right_aws'
+begin
+  require 'aws'
+rescue LoadError
+  puts "WARNING: using right_aws library, you might want to install the more up to date 'aws' gem"
+  require 'right_aws'
+end
 
 module CarrierWave
   module Storage
@@ -162,7 +167,11 @@ module CarrierWave
       end
 
       def connection
-        @connection ||= RightAws::S3Interface.new(uploader.s3_access_key_id, uploader.s3_secret_access_key)
+        if defined?(Aws)
+          @connection ||= Aws::S3Interface.new(uploader.s3_access_key_id, uploader.s3_secret_access_key, :multi_thread => true)
+        else
+          @connection ||= RightAws::S3Interface.new(uploader.s3_access_key_id, uploader.s3_secret_access_key)
+        end
       end
 
     end # RightS3
