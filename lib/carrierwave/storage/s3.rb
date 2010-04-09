@@ -1,13 +1,17 @@
 # encoding: utf-8
-require 'aws/s3'
+begin
+  require 'aws'
+rescue LoadError
+  raise "You don't have the 'aws' gem installed. 'aws-s3' and 'right_aws' are no longer supported."
+end
 
 module CarrierWave
   module Storage
 
     ##
-    # Uploads things to Amazon S3 webservices. It requies the aws/s3 gem. In order for
-    # CarrierWave to connect to Amazon S3, you'll need to specify an access key id, secret key
-    # and bucket:
+    # Uploads things to Amazon S3 webservices using the RightAWS libraries (right_aws gem). 
+    # In order for CarrierWave to connect to Amazon S3, you'll need to specify an access key id, secret key
+    # and bucket
     #
     #     CarrierWave.configure do |config|
     #       config.s3_access_key_id = "xxxxxx"
@@ -15,14 +19,21 @@ module CarrierWave
     #       config.s3_bucket = "my_bucket_name"
     #     end
     #
-    # You can also set the access policy for the uploaded files:
+    # The AWS::S3Interface is used directly as opposed to the normal AWS::S3::Bucket et.al. classes.
+    # This gives much improved performance and avoids unnecessary requests.
+    #
+    # You can set the access policy for the uploaded files:
     #
     #     CarrierWave.configure do |config|
-    #       config.s3_access = :public
+    #       config.s3_access_policy = 'public-read'
     #     end
     #
-    # Possible values are the 'canned access control policies' provided in the aws/s3 gem,
-    # they are:
+    # The default is 'public-read'. For more options see:
+    #
+    # http://docs.amazonwebservices.com/AmazonS3/latest/RESTAccessPolicy.html#RESTCannedAccessPolicies
+    #
+    # For backwards compatability with the original aws-s3 library, if the old +config.s3_access+ is set it
+    # will be converted to the appropriate access policy:
     #
     # [:private]              No one else has any access rights.
     # [:public_read]          The anonymous principal is granted READ access.
@@ -31,22 +42,6 @@ module CarrierWave
     # [:public_read_write]    The anonymous principal is granted READ and WRITE access.
     # [:authenticated_read]   Any principal authenticated as a registered Amazon S3 user
     #                         is granted READ access.
-    #
-    # The default is :public_read, it should work in most cases.
-    #
-    # You can assign HTTP headers to be used when S3 serves your files:
-    #
-    #     CarrierWave.configure do |config|
-    #       config.s3_headers = {"Content-Disposition" => "attachment; filename=foo.jpg;"}
-    #     end
-    #
-    # You can also set the headers dynamically by overriding the s3_headers method:
-    #
-    #     class MyUploader < CarrierWave::Uploader::Base
-    #       def s3_headers
-    #         { "Expires" => 1.year.from_now.httpdate }
-    #       end
-    #     end
     #
     # You can change the generated url to a cnamed domain by setting the cnamed config:
     #
@@ -61,15 +56,16 @@ module CarrierWave
     #
     # instead of
     #
-    #     http://s3.amazonaws.com/bucketname.domain.tld/path/to/file
+    #     http://bucketname.domain.tld.s3.amazonaws.com/path/to/file
     #
     class S3 < Abstract
 
       class File
 
-        def initialize(uploader, path)
+        def initialize(uploader, base, path)
           @uploader = uploader
           @path = path
+          @base = base
         end
 
         ##
@@ -91,14 +87,16 @@ module CarrierWave
         # [String] contents of the file
         #
         def read
-          AWS::S3::S3Object.value @path, @uploader.s3_bucket
+          result = connection.get(bucket, @path)
+          @headers = result[:headers]
+          result[:object]
         end
 
         ##
         # Remove the file from Amazon S3
         #
         def delete
-          AWS::S3::S3Object.delete @path, @uploader.s3_bucket
+          connection.delete(bucket, @path)
         end
 
         ##
@@ -109,43 +107,58 @@ module CarrierWave
         # [String] file's url
         #
         def url
-          if @uploader.s3_cnamed 
-            ["http://", @uploader.s3_bucket, "/", @path].compact.join
+          if @uploader.s3_cnamed
+            ["http://#{@uploader.s3_bucket}", @path].compact.join('/')
           else
-            ["http://s3.amazonaws.com/", @uploader.s3_bucket, "/", @path].compact.join
+            ["http://#{@uploader.s3_bucket}.s3.amazonaws.com", @path].compact.join('/')
           end
         end
 
-        def about
-          s3_object.about
+        def store(file)
+          content_type ||= file.content_type # this might cause problems if content type changes between read and upload (unlikely)
+          connection.put(bucket, @path, file.read,
+            {
+              'x-amz-acl' => access_policy,
+              'content-type' => content_type
+            }.merge(@uploader.s3_headers)
+          )
         end
 
-        def metadata
-          s3_object.metadata
+        # The Amazon S3 Access policy ready to send in storage request headers.
+        def access_policy
+          return @access_policy unless @access_policy.blank?
+          if @uploader.s3_access_policy.blank? 
+            if !@uploader.s3_access.blank?
+              @access_policy = @uploader.s3_access.to_s.gsub(/_/, '-')
+            else
+              @access_policy = 'public-read'
+            end
+          else
+            @access_policy = @uploader.s3_access_policy
+          end
         end
 
         def content_type
-          s3_object.content_type
+          headers["content-type"]
         end
 
-        def content_type=(new_content_type)
-          s3_object.content_type = new_content_type
+        def content_type=(type)
+          headers["content-type"] = type
         end
 
-        def content_disposition
-          s3_object.content_disposition
+        # Headers returned from file retrieval
+        def headers
+          @headers ||= {}
+        end
+ 
+      private
+    
+        def bucket
+          @uploader.s3_bucket
         end
 
-        def content_disposition=(new_disposition)
-          s3_object.content_disposition = new_disposition
-        end
-
-        def store
-          s3_object.store
-        end
-
-        def s3_object
-          @s3_object ||= AWS::S3::S3Object.find(@path, @uploader.s3_bucket)
+        def connection
+          @base.connection
         end
 
       end
@@ -155,42 +168,36 @@ module CarrierWave
       #
       # === Parameters
       #
-      # [file (CarrierWave::Storage::S3::File)] the file to store
+      # [file (CarrierWave::SanitizedFile)] the file to store
       #
       # === Returns
       #
-      # [CarrierWave::Storage::S3] the stored file
+      # [CarrierWave::Storage::RightS3::File] the stored file
       #
       def store!(file)
-        connect!(uploader)
-        s3_options = {:access => uploader.s3_access, :content_type => file.content_type}
-        s3_options.merge!(uploader.s3_headers)
-        AWS::S3::S3Object.store(uploader.store_path, file.read, uploader.s3_bucket, s3_options)
-        CarrierWave::Storage::S3::File.new(uploader, uploader.store_path)
+        f = CarrierWave::Storage::S3::File.new(uploader, self, uploader.store_path)
+        f.store(file)
+        f
       end
 
       # Do something to retrieve the file
       #
-      # @param [CarrierWave::Uploader] uploader an uploader object
       # @param [String] identifier uniquely identifies the file
       #
       # [identifier (String)] uniquely identifies the file
       #
       # === Returns
       #
-      # [CarrierWave::Storage::S3::File] the stored file
+      # [CarrierWave::Storage::RightS3::File] the stored file
       #
       def retrieve!(identifier)
-        connect!(uploader)
-        CarrierWave::Storage::S3::File.new(uploader, uploader.store_path(identifier))
+        CarrierWave::Storage::S3::File.new(uploader, self, uploader.store_path(identifier))
       end
 
-    private
-
-      def connect!(uploader)
-        AWS::S3::Base.establish_connection!(
-          :access_key_id     => uploader.s3_access_key_id,
-          :secret_access_key => uploader.s3_secret_access_key
+      def connection
+        @connection ||= Aws::S3Interface.new(
+          uploader.s3_access_key_id, uploader.s3_secret_access_key,
+          :multi_thread => uploader.s3_multi_thread
         )
       end
 
