@@ -303,6 +303,11 @@ CarrierWave comes with some RSpec matchers which you may find useful:
 
 == Using Amazon S3
 
+Older versions of CarrierWave used the +aws-s3+ and +right_aws+ libraries. The Aws[http://github.com/appoxy/aws]
+is now used meaning european buckets are supported out the box. Ensure you have it installed:
+
+    gem install aws
+
 You'll need to configure a bucket, access id and secret key like this:
 
     CarrierWave.configure do |config|
@@ -321,20 +326,6 @@ And then in your uploader, set the storage to :s3
 
 That's it! You can still use the <code>CarrierWave::Uploader#url</code> method to return
 the url to the file on Amazon S3.
-
-Alternatively, and especially if your bucket is located in Europe, you can use the
-{Aws}[http://github.com/appoxy/aws] or older RightAws library by setting the storage to :right_s3
-
-    class AvatarUploader < CarrierWave::Uploader::Base
-      storage :right_s3
-    end
-
-The newer {Aws}[http://github.com/appoxy/aws] is a fork of the older RightAws library with
-support for Ruby 1.9, and better handling of threads. Ensure you have it installed:
-
-    gem install aws
-
-If the gem is not available, Carrierwave will try loading the original right_aws gem.
 
 
 == Using Rackspace Cloud Files
