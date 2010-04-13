@@ -486,6 +486,8 @@ These people have contributed their time and effort to CarrierWave:
 * Nicklas Ramhöj
 * Matt Hooks
 * Andreas Haller
+* Lars Pind
+* Ramon Soares
 
 == License
 
