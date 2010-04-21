@@ -338,7 +338,7 @@ Cloud Files support requires a {Rackspace Cloud}[http://rackspacecloud.com] user
 You must also create a container for Carrierwave to use, and mark it public (publish it to the CDN)
 
     CarrierWave.configure do |config|
-      config.cloud_files_user_name = 'xxxxxx'
+      config.cloud_files_username = 'xxxxxx'
       config.cloud_files_api_key = 'xxxxxxxxxxxxxxxxxxxxx'
       config.cloud_files_container = 'name_of_bucket'
     end
