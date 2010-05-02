@@ -1,6 +1,6 @@
 # encoding: utf-8
 require 'mongo'
-require 'mongo/gridfs'
+include Mongo
 
 module CarrierWave
   module Storage
@@ -14,6 +14,7 @@ module CarrierWave
 
         def initialize(uploader, database, path)
           @database = database
+          @grid = GridFileSystem.new(@database)
           @path = path
           @uploader = uploader
         end
@@ -31,15 +32,15 @@ module CarrierWave
         end
 
         def read
-          ::GridFS::GridStore.read(@database, @path)
+          @grid.open(@path, 'r').data
         end
 
         def delete
-          ::GridFS::GridStore.unlink(@database, @path)
+          @grid.delete(@path)
         end
 
         def content_type
-          ::GridFS::GridStore.open(@database, @path, 'r') { |f| return f.content_type }
+          @grid.open(@path, 'r').content_type
         end
 
       end
@@ -56,7 +57,7 @@ module CarrierWave
       # [CarrierWave::SanitizedFile] a sanitized file
       #
       def store!(file)
-        ::GridFS::GridStore.open(database, uploader.store_path, 'w', :content_type => file.content_type) do |f|
+        grid.open(uploader.store_path, 'w', :content_type => file.content_type) do |f| 
           f.write file.read
         end
         CarrierWave::Storage::GridFS::File.new(uploader, database, uploader.store_path)
@@ -91,7 +92,11 @@ module CarrierWave
           db
         end
       end
-
+      
+      def grid
+        GridFileSystem.new(database)
+      end
+      
     end # File
   end # Storage
 end # CarrierWave

@@ -1,6 +1,8 @@
 # encoding: utf-8
 
 require File.dirname(__FILE__) + '/../spec_helper'
+require 'mongo'
+include Mongo
 
 describe CarrierWave::Storage::GridFS do
 
@@ -13,13 +15,15 @@ describe CarrierWave::Storage::GridFS do
     @uploader.stub!(:grid_fs_access_url).and_return(nil)
     @uploader.stub!(:grid_fs_username).and_return(nil)
     @uploader.stub!(:grid_fs_password).and_return(nil)
+    
+    @grid = GridFileSystem.new(@database)
 
     @storage = CarrierWave::Storage::GridFS.new(@uploader)
     @file = stub_tempfile('test.jpg', 'application/xml')
   end
   
   after do
-    GridFS::GridStore.unlink(@database, 'uploads/bar.txt')
+    @grid.delete('uploads/bar.txt')
   end
 
   describe '#store!' do
@@ -29,7 +33,7 @@ describe CarrierWave::Storage::GridFS do
     end
     
     it "should upload the file to gridfs" do
-      GridFS::GridStore.read(@database, 'uploads/bar.txt').should == 'this is stuff'
+      @grid.open('uploads/bar.txt', 'r').data.should == 'this is stuff'
     end
     
     it "should not have a path" do
@@ -42,7 +46,7 @@ describe CarrierWave::Storage::GridFS do
     
     it "should be deletable" do
       @grid_fs_file.delete
-      GridFS::GridStore.read(@database, 'uploads/bar.txt').should == ''
+      lambda {@grid.open('uploads/bar.txt', 'r')}.should raise_error(Mongo::GridFileNotFound)
     end
     
     it "should store the content type on GridFS" do
@@ -52,7 +56,7 @@ describe CarrierWave::Storage::GridFS do
   
   describe '#retrieve!' do
     before do
-      GridFS::GridStore.open(@database, 'uploads/bar.txt', 'w') { |f| f.puts "A test, 1234" }
+      @grid.open('uploads/bar.txt', 'w') { |f| f.write "A test, 1234" }
       @uploader.stub!(:store_path).with('bar.txt').and_return('uploads/bar.txt')
       @grid_fs_file = @storage.retrieve!('bar.txt')
     end
@@ -76,7 +80,7 @@ describe CarrierWave::Storage::GridFS do
     
     it "should be deletable" do
       @grid_fs_file.delete
-      GridFS::GridStore.read(@database, 'uploads/bar.txt').should == ''
+      lambda {@grid.open('uploads/bar.txt', 'r')}.should raise_error(Mongo::GridFileNotFound)
     end
   end
 
