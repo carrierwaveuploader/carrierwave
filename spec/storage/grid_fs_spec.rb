@@ -2,7 +2,6 @@
 
 require File.dirname(__FILE__) + '/../spec_helper'
 require 'mongo'
-include Mongo
 
 describe CarrierWave::Storage::GridFS do
 
@@ -16,7 +15,7 @@ describe CarrierWave::Storage::GridFS do
     @uploader.stub!(:grid_fs_username).and_return(nil)
     @uploader.stub!(:grid_fs_password).and_return(nil)
     
-    @grid = GridFileSystem.new(@database)
+    @grid = Mongo::GridFileSystem.new(@database)
 
     @storage = CarrierWave::Storage::GridFS.new(@uploader)
     @file = stub_tempfile('test.jpg', 'application/xml')

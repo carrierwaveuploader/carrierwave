@@ -1,6 +1,5 @@
 # encoding: utf-8
 require 'mongo'
-include Mongo
 
 module CarrierWave
   module Storage
@@ -12,9 +11,7 @@ module CarrierWave
 
       class File
 
-        def initialize(uploader, database, path)
-          @database = database
-          @grid = GridFileSystem.new(@database)
+        def initialize(uploader, path)
           @path = path
           @uploader = uploader
         end
@@ -32,15 +29,40 @@ module CarrierWave
         end
 
         def read
-          @grid.open(@path, 'r').data
+          grid.open(@path, 'r').data
+        end
+
+        def write(file)
+          grid.open(@uploader.store_path, 'w', :content_type => file.content_type) do |f| 
+            f.write(file.read)
+          end
         end
 
         def delete
-          @grid.delete(@path)
+          grid.delete(@path)
         end
 
         def content_type
-          @grid.open(@path, 'r').content_type
+          grid.open(@path, 'r').content_type
+        end
+
+      protected
+
+        def database
+          @connection ||= begin
+            host = @uploader.grid_fs_host
+            port = @uploader.grid_fs_port
+            database = @uploader.grid_fs_database
+            username = @uploader.grid_fs_username
+            password = @uploader.grid_fs_password
+            db = Mongo::Connection.new(host, port).db(database)
+            db.authenticate(username, password) if username && password
+            db
+          end
+        end
+        
+        def grid
+          @grid ||= Mongo::GridFileSystem.new(database)
         end
 
       end
@@ -57,10 +79,9 @@ module CarrierWave
       # [CarrierWave::SanitizedFile] a sanitized file
       #
       def store!(file)
-        grid.open(uploader.store_path, 'w', :content_type => file.content_type) do |f| 
-          f.write file.read
-        end
-        CarrierWave::Storage::GridFS::File.new(uploader, database, uploader.store_path)
+        stored = CarrierWave::Storage::GridFS::File.new(uploader, uploader.store_path)
+        stored.write(file)
+        stored
       end
 
       ##
@@ -75,28 +96,9 @@ module CarrierWave
       # [CarrierWave::Storage::GridFS::File] a sanitized file
       #
       def retrieve!(identifier)
-        CarrierWave::Storage::GridFS::File.new(uploader, database, uploader.store_path(identifier))
+        CarrierWave::Storage::GridFS::File.new(uploader, uploader.store_path(identifier))
       end
 
-    private
-
-      def database
-        @connection ||= begin
-          host = uploader.grid_fs_host
-          port = uploader.grid_fs_port
-          database = uploader.grid_fs_database
-          username = uploader.grid_fs_username
-          password = uploader.grid_fs_password
-          db = Mongo::Connection.new(host, port).db(database)
-          db.authenticate(username, password) if username && password
-          db
-        end
-      end
-      
-      def grid
-        GridFileSystem.new(database)
-      end
-      
     end # File
   end # Storage
 end # CarrierWave
