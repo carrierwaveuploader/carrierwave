@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.description = "Upload files in your Ruby applications, map them to a range of ORMs, store them on different backends."
   s.summary = "Ruby file upload library"
   s.email = ["jonas.nicklas@gmail.com"]
-  s.extra_rdoc_files = ["History.txt", "Manifest.txt", "features/fixtures/bork.txt", "features/fixtures/monkey.txt", "README.rdoc"]
+  s.extra_rdoc_files = ["README.rdoc"]
   s.files = Dir.glob("{bin,lib}/**/*") + %w(README.rdoc)
   s.homepage = %q{http://carrierwave.rubyforge.org}
   s.rdoc_options = ["--main", "README.rdoc"]
