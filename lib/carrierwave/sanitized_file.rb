@@ -199,7 +199,7 @@ module CarrierWave
         File.open(new_path, "wb") { |f| f.write(read) }
       end
       chmod!(new_path, permissions)
-      self.class.new(new_path)
+      self.class.new({:tempfile => File.open(new_path), :content_type => content_type})
     end
 
     ##
