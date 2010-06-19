@@ -68,11 +68,7 @@ module CarrierWave
   # http://rubyforge.org/forum/forum.php?thread_id=1374&forum_id=1618
   #
   module RMagick
-
-    def self.included(base)
-      super
-      base.extend(ClassMethods)
-    end
+    extend ActiveSupport::Concern
 
     module ClassMethods
       def convert(format)

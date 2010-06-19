@@ -3,8 +3,9 @@
 module CarrierWave
   module Uploader
     module ExtensionWhitelist
+      extend ActiveSupport::Concern
 
-      setup do
+      included do
         before :cache, :check_whitelist!
       end
 

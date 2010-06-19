@@ -3,10 +3,11 @@
 module CarrierWave
   module Uploader
     module Processing
+      extend ActiveSupport::Concern
 
-      depends_on CarrierWave::Uploader::Callbacks
+      include CarrierWave::Uploader::Callbacks
 
-      setup do
+      included do
         after :cache, :process!
       end
 

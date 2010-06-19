@@ -21,9 +21,10 @@ module CarrierWave
 
   module Uploader
     module Cache
+      extend ActiveSupport::Concern
 
-      depends_on CarrierWave::Uploader::Callbacks
-      depends_on CarrierWave::Uploader::Configuration
+      include CarrierWave::Uploader::Callbacks
+      include CarrierWave::Uploader::Configuration
 
       module ClassMethods
 
@@ -38,7 +39,7 @@ module CarrierWave
         # === Note
         # 
         # This only works as long as you haven't done anything funky with your cache_dir.
-        # It's recommended that you keen cache files in one place only.
+        # It's recommended that you keep cache files in one place only.
         #
         def clean_cached_files!
           Dir.glob(File.expand_path(File.join(cache_dir, '*'), CarrierWave.root)).each do |dir|

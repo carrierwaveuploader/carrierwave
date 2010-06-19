@@ -1,10 +1,10 @@
 # encoding: utf-8
 
 require 'fileutils'
-require 'carrierwave/core_ext/blank'
-require 'carrierwave/core_ext/module_setup'
-require 'carrierwave/core_ext/inheritable_attributes'
 require 'carrierwave/core_ext/file'
+require 'active_support/core_ext/object/blank'
+require 'active_support/core_ext/class/inheritable_attributes'
+require 'active_support/concern'
 
 module CarrierWave
 
@@ -81,8 +81,13 @@ if defined?(Merb)
 
 elsif defined?(Rails)
 
-  CarrierWave.root = File.join(Rails.root, 'public')
-  ActiveSupport::Dependencies.load_paths << File.join(Rails.root, "app", "uploaders")
+  module CarrierWave
+    class Railtie < Rails::Railtie
+      initializer "carrierwave.setup_paths" do
+        CarrierWave.root = Rails.root.join(Rails.public_path).to_s
+      end
+    end
+  end
 
 elsif defined?(Sinatra)
 
