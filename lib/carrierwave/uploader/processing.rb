@@ -8,6 +8,7 @@ module CarrierWave
 
       setup do
         after :cache, :process!
+        after :recreate_versions, :process!
       end
 
       module ClassMethods
