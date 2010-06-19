@@ -197,6 +197,21 @@ describe CarrierWave::Uploader do
 
     end
 
+    describe '#recreate_versions!' do
+      before do
+        @file = File.open(file_path('test.jpg'))
+      end
+
+      it "should overwrite all stored versions with the contents of the original file" do
+        @uploader.store!(@file)
+
+        File.open(@uploader.path, 'w') { |f| f.write "Contents changed" }
+        File.read(@uploader.thumb.path).should_not == "Contents changed"
+        @uploader.recreate_versions!
+        File.read(@uploader.thumb.path).should == "Contents changed"
+      end
+    end
+
     describe '#remove!' do
       before do
         @uploader_class.storage = mock_storage('base')
