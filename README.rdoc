@@ -66,7 +66,7 @@ Most of the time you are going to want to use CarrierWave together with an ORM.
 It is quite simple to mount uploaders on columns in your model, so you can
 simply assign files and get going:
 
-=== ActiveRecord, DataMapper, Sequel, MongoMapper
+=== ActiveRecord, DataMapper, Sequel, Mongoid
 
 Make sure you are loading CarrierWave after loading your ORM, otherwise you'll
 need to require the relevant extension manually, e.g.:
