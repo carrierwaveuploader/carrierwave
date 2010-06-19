@@ -237,6 +237,22 @@ this easily by overriding the +default_url+ method in your uploader:
       end
     end
 
+== Recreating versions
+
+You might come to a situation where you want to retroactively change a version
+or add a new one. You can use the recreate_versions! method to recreate the
+versions from the base file. This uses a naive approach which will reupload and
+process all versions.
+
+   instance = MyUploader.new
+   instance.recreate_versions!
+
+Or on a mounted uploader:
+
+   User.all.each do |user|
+     user.avatar.recreate_versions!
+   end
+
 == Configuring CarrierWave
 
 CarrierWave has a broad range of configuration options, which you can configure,
