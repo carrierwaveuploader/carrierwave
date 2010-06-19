@@ -4,6 +4,7 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 require 'dm-core'
 require 'dm-validations'
+require 'dm-migrations'
 require 'carrierwave/orm/datamapper'
 
 DataMapper.setup(:default, 'sqlite3::memory:')
