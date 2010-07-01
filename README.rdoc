@@ -355,6 +355,12 @@ You must also create a container for Carrierwave to use, and mark it public (pub
       config.cloud_files_container = 'name_of_bucket'
     end
 
+You can optionally include your CDN host name in the configuration.
+This is *highly* recommended, as without it every request requires a lookup
+of this information.
+
+    config.cloud_files_cdn_host = "c000000.cdn.rackspacecloud.com"
+
 Do this in an initializer in Rails, and in a +before_app_loads+ block in Merb.
 
 And then in your uploader, set the storage to :cloud_files
