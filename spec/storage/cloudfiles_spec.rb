@@ -12,6 +12,7 @@ if ENV['CLOUDFILES_SPEC']
       @uploader.stub!(:cloud_files_username).and_return(ENV["CLOUD_FILES_USER_NAME"])
       @uploader.stub!(:cloud_files_api_key).and_return(ENV["CLOUD_FILES_API_KEY"])
       @uploader.stub!(:cloud_files_container).and_return(ENV['CARRIERWAVE_TEST_CONTAINER'])
+      @uploader.stub!(:cloud_files_cdn_host).and_return(nil) # Unless configured below
       @storage = CarrierWave::Storage::CloudFiles.new(@uploader)
       @file = stub_tempfile('test.jpg', 'application/xml')
       
@@ -34,11 +35,13 @@ if ENV['CLOUDFILES_SPEC']
       end
           
       it "should have an Rackspace URL" do
-        @cloud_file.url.should =~ %r!http://(.*?).cdn.cloudfiles.rackspacecloud.com/uploads/bar.txt!
+        # Don't check if its ".cdn." or ".cdn2." because they change these URLs
+        @cloud_file.url.should =~ %r!http://(.*?).rackspacecloud.com/uploads/bar.txt!
       end
       
       it "should store the content type on Cloud Files" do
-        @cloud_file.content_type.should == 'application/xml'
+        # Recent addition of the charset to the response
+        @cloud_file.content_type.should == 'application/xml; charset=UTF-8'
       end
       
       it "should be deletable" do
@@ -65,7 +68,13 @@ if ENV['CLOUDFILES_SPEC']
       end
     
       it "should have an Rackspace URL" do
-        @cloud_file.url.should =~ %r!http://(.*?).cdn.cloudfiles.rackspacecloud.com/uploads/bar.txt!
+        # Don't check if its ".cdn." or ".cdn2." because they change these URLs
+        @cloud_file.url.should =~ %r!http://(.*?).rackspacecloud.com/uploads/bar.txt!
+      end
+      
+      it "should allow for configured CDN urls" do
+        @uploader.stub!(:cloud_files_cdn_host).and_return("cdn.com")
+        @cloud_file.url.should == 'http://cdn.com/uploads/bar.txt'
       end
     
       it "should be deletable" do
@@ -73,6 +82,7 @@ if ENV['CLOUDFILES_SPEC']
         @container.object_exists?('uploads/bar.txt').should be_false
       end
     end
+      
 
   end
 end
