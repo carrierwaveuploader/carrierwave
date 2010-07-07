@@ -38,23 +38,23 @@ module CarrierWave
         storage
       end
     end
-    
+
     module MockFiles
       def stub_merb_tempfile(filename)
         raise "#{path} file does not exist" unless File.exist?(file_path(filename))
 
         t = Tempfile.new(filename)
         FileUtils.copy_file(file_path(filename), t.path)
-    
+
         return t
       end
-  
+
       def stub_tempfile(filename, mime_type=nil, fake_name=nil)
         raise "#{path} file does not exist" unless File.exist?(file_path(filename))
 
         t = Tempfile.new(filename)
         FileUtils.copy_file(file_path(filename), t.path)
-    
+
         # This is stupid, but for some reason rspec won't play nice...
         eval <<-EOF
         def t.original_filename; '#{fake_name || filename}'; end
@@ -82,6 +82,20 @@ module CarrierWave
         return f
       end
     end
+
+    module I18nHelpers
+      def change_locale_and_store_translations(locale, translations, &block)
+        current_locale = I18n.locale
+        begin
+          I18n.backend.store_translations locale, translations
+          I18n.locale = locale
+          yield
+        ensure
+          I18n.reload!
+          I18n.locale = current_locale
+        end
+      end
+    end
   end
 end
 
@@ -89,4 +103,5 @@ Spec::Runner.configure do |config|
   config.include CarrierWave::Test::Matchers
   config.include CarrierWave::Test::MockFiles
   config.include CarrierWave::Test::MockStorage
+  config.include CarrierWave::Test::I18nHelpers
 end
