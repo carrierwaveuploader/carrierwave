@@ -51,6 +51,11 @@ describe CarrierWave::Storage::GridFS do
     it "should store the content type on GridFS" do
       @grid_fs_file.content_type.should == 'application/xml'
     end
+    
+    it "should have a file length" do
+      @grid_fs_file.file_length.should == 13
+    end
+    
   end
   
   describe '#retrieve!' do

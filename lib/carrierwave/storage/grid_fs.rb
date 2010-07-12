@@ -45,6 +45,10 @@ module CarrierWave
         def content_type
           grid.open(@path, 'r').content_type
         end
+        
+        def file_length
+          grid.open(@path, 'r').file_length
+        end
 
       protected
 
