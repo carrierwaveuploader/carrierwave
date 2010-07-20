@@ -6,7 +6,9 @@ $:.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 require "rubygems"
 require "bundler"
 Bundler.setup
-Bundler.require :default, :development
+Bundler.require :default
+
+require 'mongoid'
 
 require 'tempfile'
 require 'time'
