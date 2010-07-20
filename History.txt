@@ -1,3 +1,18 @@
+=== Version 0.4.6 2010-07-20
+
+* [removed] Support for MongoMapper, see: http://groups.google.com/group/carrierwave/browse_thread/thread/56df146b83878c22
+* [changed] AWS support now uses the aws gem, instead of using aws-s3 or right-aws as previously
+* [added] cloud_files_cdn_host for Cloudfiles for performance gain
+* [added] #recreate_versions! to recreate versions from base file
+* [added] Support for MiniMagick in RSpec matchers
+* [added] RMagick's #resize_to_fill now takes an optional Gravity
+* [fixed] Pass through options to to_json
+* [fixed] Support new GridFS syntax for lates mongo gem
+* [fixed] Validation errors are internationalized when the error is thrown, not on load
+* [fixed] Rescue correct MiniMagick error
+* [fixed] Support DataMapper 1.0
+* [fixed] SanitizedFile#copy_to preserves content_type. Should fix GridFS content type not being set.
+
 === Version 0.4.5 2010-02-20
 
 * [added] Support for Rackspace Cloudfiles
