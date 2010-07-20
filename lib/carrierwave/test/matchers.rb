@@ -111,10 +111,10 @@ module CarrierWave
 
       class ImageLoader # :nodoc:
         def self.load_image(filename)
-          if defined? MiniMagick
+          if defined? ::MiniMagick
             MiniMagickWrapper.new(filename)
           else
-            unless defined? Magick
+            unless defined? ::Magick
               begin
                 require 'rmagick'
               rescue LoadError
