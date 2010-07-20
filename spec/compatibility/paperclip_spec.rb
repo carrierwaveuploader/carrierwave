@@ -1,21 +1,16 @@
 # encoding: utf-8
 
-require File.dirname(__FILE__) + '/../spec_helper'
+require 'spec_helper'
 
 require 'carrierwave/orm/activerecord'
 
-module Rails
-  def self.root
-    File.expand_path(File.join('..'), File.dirname(__FILE__))
-  end
-  def self.env
-    "test"
-  end
-end unless defined?(Rails)
+module Rails; end unless defined?(Rails)
 
 describe CarrierWave::Compatibility::Paperclip do
 
   before do
+    Rails.stub(:root).and_return('/rails/root')
+    Rails.stub(:env).and_return('test')
     @uploader_class = Class.new(CarrierWave::Uploader::Base) do
       include CarrierWave::Compatibility::Paperclip
     end
@@ -30,7 +25,7 @@ describe CarrierWave::Compatibility::Paperclip do
 
   describe '#store_path' do
     it "should mimics paperclip default" do
-      @uploader.store_path("monkey.png").should == CarrierWave::Uploader::Base.root + "/system/monkeys/23/original/monkey.png"
+      @uploader.store_path("monkey.png").should == "/rails/root/public/system/monkeys/23/original/monkey.png"
     end
 
     it "should interpolate the root path" do

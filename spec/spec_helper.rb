@@ -15,6 +15,7 @@ require 'time'
 require 'logger'
 
 require 'carrierwave'
+require 'timecop'
 
 alias :running :lambda
 
