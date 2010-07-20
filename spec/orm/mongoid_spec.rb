@@ -149,6 +149,7 @@ describe CarrierWave::Mongoid do
           @doc.save
           @doc.remove_image = true
           @doc.save
+          @doc.reload
           @doc.image.should be_blank
           @doc.image_filename.should == ''
         end
