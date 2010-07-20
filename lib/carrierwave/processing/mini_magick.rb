@@ -253,7 +253,7 @@ module CarrierWave
       image = yield(image)
       image.write(current_path)
       ::MiniMagick::Image.from_file(current_path)
-    rescue ::MiniMagick::MiniMagickError => e
+    rescue ::MiniMagick::Error => e
       raise CarrierWave::ProcessingError.new("Failed to manipulate with MiniMagick, maybe it is not an image? Original Error: #{e}")
     end
 
