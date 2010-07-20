@@ -14,6 +14,7 @@ upload files.
 * Please {report any issues}[http://github.com/jnicklas/carrierwave/issues] on GitHub
 * Please direct any questions at the {mailing list}[http://groups.google.com/group/carrierwave]
 * Check out the {example app}[http://github.com/jnicklas/carrierwave-example-app]
+* Instructions for setting up a development environment are at the bottom of this file
 
 == Getting Started
 
@@ -536,14 +537,17 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 == Development
 
-If you want to run the tests (and you should) it might be convenient to install
-the development dependencies, you can do that with:
+In order to setup a development environment and run the specs, you'll
+need to install bundler:
 
-    sudo gem install carrierwave --development
+    gem install bundler --pre
 
-CarrierWave is still young, but most of it is pretty well documented. It is also
-extensively specced, and there are cucumber features for some common use cases.
-Just dig in and look at the source for more in-depth explanation of what things
-are doing.
+And then install the dependencies:
+
+    bundle install
+
+You should now be able to run the tests:
+
+    bundle exec rake spec
 
 Issues are reported on GitHub, pull requests are very welcome!
