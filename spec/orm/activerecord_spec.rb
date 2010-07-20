@@ -94,7 +94,7 @@ describe CarrierWave::ActiveRecord do
 
       it "should copy a file into into the cache directory" do
         @event.image = stub_file('test.jpeg')
-        @event.image.current_path.should =~ /^#{public_path('uploads/tmp')}/
+        @event.image.current_path.should =~ %r(^#{public_path('uploads/tmp')})
       end
 
       it "should do nothing when nil is assigned" do
@@ -123,13 +123,13 @@ describe CarrierWave::ActiveRecord do
 
         it "should use I18n for integrity error messages" do
           @event.valid?
-          @event.errors[:image].to_s.should == 'is not an allowed type of file.'
+          @event.errors[:image].should == ['is not an allowed type of file.']
 
           change_locale_and_store_translations(:pt, :carrierwave => {
             :errors => { :integrity => 'tipo de imagem não permitido.' }
           }) do
             @event.should_not be_valid
-            @event.errors[:image].to_s.should == 'tipo de imagem não permitido.'
+            @event.errors[:image].should == ['tipo de imagem não permitido.']
           end
         end
       end
@@ -151,13 +151,13 @@ describe CarrierWave::ActiveRecord do
 
         it "should use I18n for processing error messages" do
           @event.valid?
-          @event.errors[:image].to_s.should == 'failed to be processed.'
+          @event.errors[:image].should == ['failed to be processed.']
 
           change_locale_and_store_translations(:pt, :carrierwave => {
             :errors => { :processing => 'falha ao processar imagem.' }
           }) do
             @event.should_not be_valid
-            @event.errors[:image].to_s.should == 'falha ao processar imagem.'
+            @event.errors[:image].should == ['falha ao processar imagem.']
           end
         end
       end
