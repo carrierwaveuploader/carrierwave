@@ -3,19 +3,16 @@
 $TESTING=true
 $:.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 
-require 'rubygems'
+require "rubygems"
+require "bundler"
+Bundler.setup
+Bundler.require :default, :development
 
 require 'tempfile'
-#require 'ruby-debug'
-require 'spec'
-require 'spec/autorun'
+require 'time'
+require 'logger'
 
 require 'carrierwave'
-require 'timecop'
-require 'time'
-require 'json'
-
-require 'logger'
 
 alias :running :lambda
 

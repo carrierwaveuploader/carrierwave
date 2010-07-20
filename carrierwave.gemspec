@@ -18,21 +18,5 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.5}
   s.specification_version = 3
 
-  s.add_development_dependency("rspec", [">= 1.2.8"])
-  s.add_development_dependency("cucumber", [">= 0.3.96"])
-  s.add_development_dependency("activerecord", [">= 2.3.3"])
-  s.add_development_dependency("sqlite3-ruby", [">= 1.2.5"])
-  s.add_development_dependency("dm-core", [">= 1.0.0"])
-  s.add_development_dependency("dm-validations", [">= 1.0.0"])
-  s.add_development_dependency("dm-migrations", [">= 1.0.0"])
-  s.add_development_dependency("dm-sqlite-adapter", [">= 1.0.0"])
-  s.add_development_dependency("sequel", [">= 3.2.0"])
-  s.add_development_dependency("rmagick", [">= 2.10.0"])
-  s.add_development_dependency("RubyInline", [">= 2.10.0"])
-  s.add_development_dependency("image_science", [">= 2.10.0"])
-  s.add_development_dependency("mini_magick", [">= 1.2.5"])
-  s.add_development_dependency("mongoid", [">= 0.10.4"])
-  s.add_development_dependency("aws-s3", [">= 0.6.2"])
-  s.add_development_dependency("timecop", [">= 0.3.4"])
-  s.add_development_dependency("json", [">= 1.1.9"])
+  s.add_dependency("activesupport", [">= 3.0.0.beta4"])
 end
