@@ -6,13 +6,14 @@ $:.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 require "rubygems"
 require "bundler"
 Bundler.setup
-Bundler.require :default, :development
+Bundler.require :default
 
 require 'tempfile'
 require 'time'
 require 'logger'
 
 require 'carrierwave'
+require 'timecop'
 
 alias :running :lambda
 
