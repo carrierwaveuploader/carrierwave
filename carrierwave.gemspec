@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = "carrierwave"
-  s.version = "0.4.7"
+  s.version = "0.4.8"
 
   s.authors = ["Jonas Nicklas"]
   s.date = Date.today
@@ -18,5 +18,5 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.5}
   s.specification_version = 3
 
-  s.add_dependency("activesupport", [">= 3.0.0.beta4"])
+  s.add_dependency("activesupport", ["~> 2.3.8"])
 end
