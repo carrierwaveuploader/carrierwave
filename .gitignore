@@ -10,3 +10,4 @@ more/datamapper/spec/public
 *.project
 spec/test.log
 *.swp
+.rvmrc
