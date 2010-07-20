@@ -4,7 +4,6 @@ require 'fileutils'
 require 'carrierwave/core_ext/blank'
 require 'carrierwave/core_ext/module_setup'
 require 'carrierwave/core_ext/inheritable_attributes'
-require 'carrierwave/core_ext/file'
 
 module CarrierWave
 
