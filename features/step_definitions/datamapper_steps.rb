@@ -6,7 +6,7 @@ Given /^a datamapper class that has a '([^\']*)' column$/ do |column|
 
     storage_names[:default] = 'users'
     
-    property :id, Integer, :key => true
+    property :id, DataMapper::Types::Serial
     property column.to_sym, String
   end
   @mountee_klass.auto_migrate!
