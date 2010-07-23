@@ -53,7 +53,7 @@ module CarrierWave
       protected
 
         def database
-          @connection ||= begin
+          @connection ||= @uploader.grid_fs_connection || begin
             host = @uploader.grid_fs_host
             port = @uploader.grid_fs_port
             database = @uploader.grid_fs_database
