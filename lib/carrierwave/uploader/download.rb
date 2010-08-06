@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require 'net/http'
+require 'open-uri'
 
 module CarrierWave
   module Uploader
@@ -31,7 +31,7 @@ module CarrierWave
       private
 
         def file
-          @file ||= StringIO.new(Net::HTTP.get_response(@uri).body)
+          @file ||= open(@uri.to_s)
         end
 
         def method_missing(*args, &block)
