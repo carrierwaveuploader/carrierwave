@@ -1,8 +1,12 @@
 # -*- encoding: utf-8 -*-
+lib = File.expand_path('../lib/', __FILE__)
+$:.unshift lib unless $:.include?(lib)
+
+require 'carrierwave/version'
 
 Gem::Specification.new do |s|
   s.name = "carrierwave"
-  s.version = "0.5.0.beta2"
+  s.version = CarrierWave::VERSION
 
   s.authors = ["Jonas Nicklas"]
   s.date = Date.today

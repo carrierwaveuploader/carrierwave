@@ -7,8 +7,6 @@ require 'active_support/concern'
 
 module CarrierWave
 
-  VERSION = "0.4.5"
-
   class << self
     attr_accessor :root
 
@@ -32,6 +30,7 @@ module CarrierWave
   autoload :RMagick, 'carrierwave/processing/rmagick'
   autoload :ImageScience, 'carrierwave/processing/image_science'
   autoload :MiniMagick, 'carrierwave/processing/mini_magick'
+  autoload :VERSION, 'carrierwave/version'
 
   module Storage
     autoload :Abstract, 'carrierwave/storage/abstract'
