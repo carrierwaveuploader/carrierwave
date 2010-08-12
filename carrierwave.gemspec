@@ -22,9 +22,9 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.5}
   s.specification_version = 3
 
-  s.add_dependency("activesupport", [">= 3.0.0.beta4"])
+  s.add_dependency("activesupport", [">= 3.0.0.rc"])
 
-  s.add_development_dependency "rails", [">= 3.0.0.beta4"]
+  s.add_development_dependency "rails", [">= 3.0.0.rc"]
   s.add_development_dependency "rspec", ["<= 2.0.0"]
   s.add_development_dependency "aws"
   s.add_development_dependency "cucumber"
@@ -38,7 +38,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "RubyInline"
   s.add_development_dependency "image_science"
   s.add_development_dependency "mini_magick"
-  s.add_development_dependency "mongoid", [">= 2.0.0.beta6"]
+  s.add_development_dependency "mongoid", ["= 2.0.0.beta.16"]
   s.add_development_dependency "bson_ext"
   s.add_development_dependency "aws-s3"
   s.add_development_dependency "timecop"
