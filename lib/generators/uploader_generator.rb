@@ -3,7 +3,7 @@ require 'rails/generators/named_base'
 
 class UploaderGenerator < Rails::Generators::NamedBase
   def create_uploader_file
-    template 'uploader.rb', File.join('app/uploaders', class_path, "#{file_name}.rb")
+    template 'uploader.rb', File.join('app/uploaders', class_path, "#{file_name}_uploader.rb")
   end
   
   def self.source_root
