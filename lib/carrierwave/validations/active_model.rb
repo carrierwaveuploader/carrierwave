@@ -15,8 +15,7 @@ module CarrierWave
       
         def validate_each(record, attribute, value)
           if record.send("#{attribute}_processing_error")
-            options[:message] ||= I18n.t('carrierwave.errors.processing', :default => 'failed to be processed.')
-            record.errors.add attribute, :integrity, options
+            record.errors[attribute] = I18n.t('carrierwave.errors.processing', :default => 'failed to be processed.')
           end
         end
       end
@@ -25,8 +24,7 @@ module CarrierWave
 
         def validate_each(record, attribute, value)
           if record.send("#{attribute}_integrity_error")
-            options[:message] ||= I18n.t('carrierwave.errors.integrity', :default => 'is not an allowed type of file.')
-            record.errors.add attribute, :processing, options.merge!(:value => value)
+            record.errors[attribute] = I18n.t('carrierwave.errors.integrity', :default => 'is not an allowed type of file.')
           end
         end
       end
