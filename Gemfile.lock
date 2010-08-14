@@ -94,7 +94,7 @@ GEM
       subexec (~> 0.0.4)
     mongo (1.0.5)
       bson (>= 1.0.4)
-    mongoid (2.0.0.beta9)
+    mongoid (2.0.0.beta.9)
       activemodel (~> 3.0.0.beta)
       bson (~> 1.0.3)
       mongo (~> 1.0.3)
@@ -154,7 +154,7 @@ DEPENDENCIES
   image_science
   json
   mini_magick
-  mongoid (>= 2.0.0.beta6)
+  mongoid (>= 2.0.0.beta.6)
   rails (>= 3.0.0.beta4)
   rmagick
   rspec (<= 2.0.0)
