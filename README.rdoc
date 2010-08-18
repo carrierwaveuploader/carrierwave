@@ -470,7 +470,7 @@ If you are using Paperclip, you can use the provided compatibility module:
       include CarrierWave::Compatibility::Paperclip
     end
 
-See the documentation for <code>Paperclip::Compatibility::Paperclip</code> for more
+See the documentation for <code>CarrierWave::Compatibility::Paperclip</code> for more
 detaills.
 
 Be sure to use mount_on to specify the correct column:
