@@ -29,7 +29,8 @@ module CarrierWave
         add_config :store_dir
         add_config :cache_dir
         add_config :enable_processing
-
+        add_config :ensure_multipart_form
+        
         # Mounting
         add_config :ignore_integrity_errors
         add_config :ignore_processing_errors
@@ -62,6 +63,7 @@ module CarrierWave
           config.validate_processing = true
           config.root = CarrierWave.root
           config.enable_processing = true
+          config.ensure_multipart_form = true
         end
       end
 
