@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
   s.add_dependency("activesupport", [">= 3.0.0.rc"])
 
   s.add_development_dependency "rails", [">= 3.0.0.rc"]
-  s.add_development_dependency "rspec", ["<= 2.0.0"]
+  s.add_development_dependency "rspec", ["~> 1.3.0"]
   s.add_development_dependency "aws"
   s.add_development_dependency "cucumber"
   s.add_development_dependency "sqlite3-ruby"
