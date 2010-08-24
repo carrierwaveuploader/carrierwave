@@ -17,9 +17,7 @@ describe CarrierWave::Uploader::Download do
 
     before do
       CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
-      response = mock('HTTP Response')
-      response.stub!(:body).and_return('Response Body')
-      Net::HTTP.stub!(:get_response).and_return(response)
+      Kernel.stub!(:open).and_return('Response Body')
     end
 
     it "should cache a file" do

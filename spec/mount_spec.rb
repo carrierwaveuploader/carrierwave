@@ -217,9 +217,7 @@ describe CarrierWave::Mount do
 
     describe '#remote_image_url' do
       before do
-        response = mock('HTTP Response')
-        response.stub!(:body).and_return('Response Body')
-        Net::HTTP.stub!(:get_response).and_return(response)
+        Kernel.stub!(:open).and_return('Response Body')
       end
 
       it "should return nil" do
@@ -234,9 +232,7 @@ describe CarrierWave::Mount do
 
     describe '#remote_image_url=' do
       before do
-        response = mock('HTTP Response')
-        response.stub!(:body).and_return('Response Body')
-        Net::HTTP.stub!(:get_response).and_return(response)
+        Kernel.stub!(:open).and_return('Response Body')
       end
 
       it "should do nothing when nil is assigned" do
