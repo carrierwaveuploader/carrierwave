@@ -11,3 +11,4 @@ more/datamapper/spec/public
 spec/test.log
 *.swp
 .rvmrc
+.bundle
