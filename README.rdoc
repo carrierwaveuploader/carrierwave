@@ -76,7 +76,7 @@ need to require the relevant extension manually, e.g.:
 
 Add a string column to the model you want to mount the uploader on:
 
-    add_column :user, :avatar, :string
+    add_column :users, :avatar, :string
 
 Open your model file and mount the uploader:
 
