@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = "carrierwave"
-  s.version = "0.4.9"
+  s.version = "0.4.10"
 
   s.authors = ["Jonas Nicklas"]
   s.date = Date.today
@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.summary = "Ruby file upload library"
   s.email = ["jonas.nicklas@gmail.com"]
   s.extra_rdoc_files = ["README.rdoc"]
-  s.files = Dir.glob("{bin,lib}/**/*") + %w(README.rdoc)
+  s.files = Dir.glob("{bin,lib,rails_generators,merb_generators}/**/*") + %w(README.rdoc Generators)
   s.homepage = %q{http://carrierwave.rubyforge.org}
   s.rdoc_options = ["--main", "README.rdoc"]
   s.require_paths = ["lib"]
