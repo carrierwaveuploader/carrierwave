@@ -24,6 +24,7 @@ if ENV['S3_SPEC']
 
     describe 'general setup' do
       before(:each) do
+        @storage.connection.put(@bucket, "uploads/bar.txt", "A test, 1234", {'a-amz-acl' => 'public-read'})
         @uploader.stub!(:s3_access_policy).and_return(nil)
         @uploader.stub!(:s3_access).and_return(nil)
         @s3_file = CarrierWave::Storage::S3::File.new(@uploader, @storage, 'uploads/bar.txt')
@@ -41,6 +42,15 @@ if ENV['S3_SPEC']
       it "should use old s3_access config if s3_access_policy not set" do
         @uploader.stub!(:s3_access).and_return(:public_read_write)
         @s3_file.access_policy.should eql('public-read-write')
+      end
+
+      it "should retrieve headers" do
+        @s3_file.instance_variable_get(:@headers).should be_blank
+        @s3_file.headers.should_not be_blank
+      end
+
+      it "should return filesize" do
+        @s3_file.size.should == 12
       end
     end
 
@@ -85,6 +95,9 @@ if ENV['S3_SPEC']
         headers["Expires"].should == 'Fri, 21 Jan 2021 16:51:06 GMT'
       end
 
+      it "should return filesize" do
+        @s3_file.size.should == 13
+      end
     end
   
     describe '#retrieve!' do
@@ -109,6 +122,10 @@ if ENV['S3_SPEC']
       it "should be deletable" do
         @s3_file.delete
         lambda {@storage.connection.head_object(@bucket, 'uploads/bar.txt')}.should raise_error(Excon::Errors::NotFound)
+      end
+
+      it "should return filesize" do
+        @s3_file.size.should == 12
       end
     end
 

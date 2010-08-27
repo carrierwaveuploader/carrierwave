@@ -142,9 +142,13 @@ module CarrierWave
           headers["Content-Type"] = type
         end
 
+        def size
+         	headers['content-length'].to_i
+        end
+
         # Headers returned from file retrieval
         def headers
-          @headers ||= {}
+          @headers ||= connection.head(bucket, @path)
         end
 
       private
