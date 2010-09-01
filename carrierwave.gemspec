@@ -37,7 +37,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rmagick"
   s.add_development_dependency "RubyInline"
   s.add_development_dependency "image_science"
-  s.add_development_dependency "mini_magick"
+  s.add_development_dependency "mini_magick", ["~> 2.1.0"]
   s.add_development_dependency "mongoid", ["= 2.0.0.beta.16"]
   s.add_development_dependency "bson_ext"
   s.add_development_dependency "aws-s3"
