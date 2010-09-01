@@ -5,6 +5,8 @@ rescue LoadError
   raise "You don't have the 'aws' gem installed. 'aws-s3' and 'right_aws' are no longer supported."
 end
 
+require 'active_support/inflector'
+
 module CarrierWave
   module Storage
 
