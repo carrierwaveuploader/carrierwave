@@ -40,14 +40,6 @@ GEM
     addressable (2.2.0)
     arel (1.0.1)
       activesupport (~> 3.0.0)
-    aws (2.3.20)
-      http_connection
-      uuidtools
-      xml-simple
-    aws-s3 (0.6.2)
-      builder
-      mime-types
-      xml-simple
     bson (1.0.4)
     bson_ext (1.0.4)
     builder (2.1.2)
@@ -77,10 +69,20 @@ GEM
       data_objects (= 0.10.2)
     erubis (2.6.6)
       abstract (>= 1.0.0)
+    excon (0.2.0)
     extlib (0.9.15)
+    fog (0.2.30)
+      builder
+      excon (>= 0.2.0)
+      formatador (>= 0.0.15)
+      json
+      mime-types
+      net-ssh
+      nokogiri (>= 1.4.3.1)
+      ruby-hmac
+    formatador (0.0.15)
     gherkin (2.1.5)
       trollop (~> 1.16.2)
-    http_connection (1.3.0)
     i18n (0.4.1)
     image_science (1.2.1)
     json (1.4.6)
@@ -100,6 +102,8 @@ GEM
       mongo (= 1.0.7)
       tzinfo (~> 0.3.22)
       will_paginate (~> 3.0.pre)
+    net-ssh (2.0.23)
+    nokogiri (1.4.3.1)
     polyglot (0.3.1)
     rack (1.2.1)
     rack-mount (0.6.13)
@@ -122,6 +126,7 @@ GEM
     rake (0.8.7)
     rmagick (2.13.1)
     rspec (1.3.0)
+    ruby-hmac (0.4.0)
     sequel (3.14.0)
     sqlite3-ruby (1.3.1)
     subexec (0.0.4)
@@ -132,9 +137,7 @@ GEM
       polyglot (>= 0.3.1)
     trollop (1.16.2)
     tzinfo (0.3.23)
-    uuidtools (2.1.1)
     will_paginate (3.0.pre2)
-    xml-simple (1.0.12)
 
 PLATFORMS
   ruby
@@ -142,8 +145,6 @@ PLATFORMS
 DEPENDENCIES
   RubyInline
   activesupport (~> 3.0.0)
-  aws
-  aws-s3
   bson_ext
   carrierwave!
   cucumber
@@ -151,6 +152,7 @@ DEPENDENCIES
   dm-migrations
   dm-sqlite-adapter
   dm-validations
+  fog (~> 0.2.30)
   image_science
   json
   mini_magick (~> 2.1)

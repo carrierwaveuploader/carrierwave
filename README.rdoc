@@ -320,10 +320,10 @@ CarrierWave comes with some RSpec matchers which you may find useful:
 
 == Using Amazon S3
 
-Older versions of CarrierWave used the +aws-s3+ and +right_aws+ libraries. The Aws[http://github.com/appoxy/aws]
-is now used meaning european buckets are supported out the box. Ensure you have it installed:
+Older versions of CarrierWave used the +aws+, +aws-s3+, and/or +right_aws+ libraries.
+Now fog[http://github.com/geemus/fog] is now used instead. Ensure you have it installed:
 
-    gem install aws
+    gem install fog
 
 You'll need to configure a bucket, access id and secret key like this:
 

@@ -1,7 +1,6 @@
 # encoding: utf-8
 
 require 'spec_helper'
-require 'aws'
 
 if ENV['S3_SPEC']
   describe CarrierWave::Storage::S3 do
@@ -13,7 +12,6 @@ if ENV['S3_SPEC']
       @uploader.stub!(:s3_bucket).and_return(@bucket)
       @uploader.stub!(:s3_access_policy).and_return('public-read')
       @uploader.stub!(:s3_cnamed).and_return(false)
-      @uploader.stub!(:s3_multi_thread).and_return(true)
       @uploader.stub!(:s3_headers).and_return({'Expires' => 'Fri, 21 Jan 2021 16:51:06 GMT'})
 
       @storage = CarrierWave::Storage::S3.new(@uploader)
@@ -21,7 +19,7 @@ if ENV['S3_SPEC']
     end
   
     after do
-      @storage.connection.delete(@bucket, 'uploads/bar.txt')
+      @storage.connection.delete_object(@bucket, 'uploads/bar.txt')
     end
 
     describe 'general setup' do
@@ -53,7 +51,7 @@ if ENV['S3_SPEC']
       end
     
       it "should upload the file to s3" do
-        @storage.connection.get_object(@bucket, 'uploads/bar.txt').should == 'this is stuff'
+        @storage.connection.get_object(@bucket, 'uploads/bar.txt').body.should == 'this is stuff'
       end
     
       it "should have a path" do
@@ -78,7 +76,7 @@ if ENV['S3_SPEC']
       
       it "should be deletable" do
         @s3_file.delete
-        lambda {@storage.connection.head(@bucket, 'uploads/bar.txt')}.should raise_error(Aws::AwsError)
+        lambda {@storage.connection.head_object(@bucket, 'uploads/bar.txt')}.should raise_error(Excon::Errors::NotFound)
       end
       
       it "should set headers" do
@@ -91,7 +89,7 @@ if ENV['S3_SPEC']
   
     describe '#retrieve!' do
       before do
-        @storage.connection.put(@bucket, "uploads/bar.txt", "A test, 1234", {'a-amz-acl' => 'public-read'})
+        @storage.connection.put_object(@bucket, "uploads/bar.txt", "A test, 1234", {'a-amz-acl' => 'public-read'})
         @uploader.stub!(:store_path).with('bar.txt').and_return('uploads/bar.txt')
         @s3_file = @storage.retrieve!('bar.txt')
       end
@@ -110,7 +108,7 @@ if ENV['S3_SPEC']
     
       it "should be deletable" do
         @s3_file.delete
-        lambda {@storage.connection.head(@bucket, 'uploads/bar.txt')}.should raise_error(Aws::AwsError)
+        lambda {@storage.connection.head_object(@bucket, 'uploads/bar.txt')}.should raise_error(Excon::Errors::NotFound)
       end
     end
 

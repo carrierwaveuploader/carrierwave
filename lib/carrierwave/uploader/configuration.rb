@@ -8,14 +8,13 @@ module CarrierWave
         add_config :root
         add_config :permissions
         add_config :storage_engines
-        add_config :s3_access # for old aws/s3
-        add_config :s3_access_policy # for aws
+        add_config :s3_access # for old s3 support
+        add_config :s3_access_policy # for new s3 support
         add_config :s3_bucket
         add_config :s3_access_key_id
         add_config :s3_secret_access_key
         add_config :s3_cnamed
         add_config :s3_headers
-        add_config :s3_multi_thread
         add_config :cloud_files_username
         add_config :cloud_files_api_key
         add_config :cloud_files_container
@@ -48,10 +47,7 @@ module CarrierWave
             :cloud_files => "CarrierWave::Storage::CloudFiles"
           }
           config.storage = :file
-          #config.s3_access = :public_read
-          #config.s3_access_policy = 'public-read' # Now set in library
           config.s3_headers = {}
-          config.s3_multi_thread = true
           config.grid_fs_database = 'carrierwave'
           config.grid_fs_host = 'localhost'
           config.grid_fs_port = 27017
