@@ -123,10 +123,14 @@ describe CarrierWave::ActiveRecord do
 
         it "should use I18n for integrity error messages" do
           @event.valid?
-          @event.errors[:image].should == ['is not an allowed type of file.']
+          @event.errors[:image].should == ['is not an allowed file type']
 
-          change_locale_and_store_translations(:pt, :carrierwave => {
-            :errors => { :integrity => 'tipo de imagem não permitido.' }
+          change_locale_and_store_translations(:pt, :activerecord => {
+            :errors => {
+              :messages => {
+                :carrierwave_integrity_error => 'tipo de imagem não permitido.'
+              }
+            }
           }) do
             @event.should_not be_valid
             @event.errors[:image].should == ['tipo de imagem não permitido.']
@@ -151,10 +155,14 @@ describe CarrierWave::ActiveRecord do
 
         it "should use I18n for processing error messages" do
           @event.valid?
-          @event.errors[:image].should == ['failed to be processed.']
+          @event.errors[:image].should == ['failed to be processed']
 
-          change_locale_and_store_translations(:pt, :carrierwave => {
-            :errors => { :processing => 'falha ao processar imagem.' }
+          change_locale_and_store_translations(:pt, :activerecord => {
+            :errors => {
+              :messages => {
+                :carrierwave_processing_error => 'falha ao processar imagem.'
+              }
+            }
           }) do
             @event.should_not be_valid
             @event.errors[:image].should == ['falha ao processar imagem.']
