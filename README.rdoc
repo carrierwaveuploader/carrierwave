@@ -540,7 +540,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 In order to setup a development environment and run the specs, you'll
 need to install bundler:
 
-    gem install bundler --pre
+    gem install bundler
 
 And then install the dependencies:
 
