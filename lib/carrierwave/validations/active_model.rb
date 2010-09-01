@@ -10,17 +10,17 @@ module CarrierWave
   module Validations
     module ActiveModel
       extend ActiveSupport::Concern
-      
-      class IntegrityValidator < ::ActiveModel::EachValidator
-      
+
+      class ProcessingValidator < ::ActiveModel::EachValidator
+
         def validate_each(record, attribute, value)
           if record.send("#{attribute}_processing_error")
             record.errors[attribute] = I18n.t('carrierwave.errors.processing', :default => 'failed to be processed.')
           end
         end
       end
-    
-      class ProcessingValidator < ::ActiveModel::EachValidator
+
+      class IntegrityValidator < ::ActiveModel::EachValidator
 
         def validate_each(record, attribute, value)
           if record.send("#{attribute}_integrity_error")
@@ -66,7 +66,7 @@ module CarrierWave
           validates_with ProcessingValidator, _merge_attributes(attr_names)
         end
       end
-      
+
       included do
         extend HelperMethods
         include HelperMethods
