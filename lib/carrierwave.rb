@@ -81,7 +81,7 @@ if defined?(Merb)
 elsif defined?(Rails)
 
   CarrierWave.root = File.join(Rails.root, 'public')
-  ActiveSupport::Dependencies.load_paths << File.join(Rails.root, "app", "uploaders")
+  ActiveSupport::Dependencies.autoload_paths << Rails.root.join('app', 'uploaders')
 
 elsif defined?(Sinatra)
 
