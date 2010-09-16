@@ -13,7 +13,7 @@ module CarrierWave
 
       class RemoteFile
         def initialize(uri)
-          @uri = URI.parse(uri)
+          @uri = URI.parse(URI.escape(uri))
         end
 
         def original_filename

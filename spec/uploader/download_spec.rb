@@ -67,6 +67,11 @@ describe CarrierWave::Uploader::Download do
         @uploader.download!('/etc/passwd')
       }.should raise_error(CarrierWave::DownloadError)
     end
+    
+    it "should accept spaces in the url" do
+      @uploader.download!('http://www.example.com/test with spaces/file.png')
+      @uploader.url.should == '/uploads/tmp/20071201-1234-345-2255/file.png'
+    end
   end
 
 end
