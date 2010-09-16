@@ -31,8 +31,11 @@ module CarrierWave
       private
 
         def file
-          file = Kernel.open(@uri.to_s)
-          @file ||= file.is_a?(String) ? StringIO.new(file) : file
+          if @file.blank?
+            @file = Kernel.open(@uri.to_s)
+            @file = @file.is_a?(String) ? StringIO.new(@file) : @file
+          end
+          @file
         end
 
         def method_missing(*args, &block)
