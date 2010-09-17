@@ -1,26 +1,22 @@
 # encoding: utf-8
 begin
-  require 'aws'
+  require 'fog'
 rescue LoadError
-  raise "You don't have the 'aws' gem installed. 'aws-s3' and 'right_aws' are no longer supported."
+  raise "You don't have the 'fog' gem installed. The 'aws', 'aws-s3' and 'right_aws' gems are no longer supported."
 end
 
 module CarrierWave
   module Storage
 
     ##
-    # Uploads things to Amazon S3 webservices using the "aws" library (aws gem). 
-    # In order for CarrierWave to connect to Amazon S3, you'll need to specify an access key id, secret key
-    # and bucket
+    # Uploads things to Amazon S3 using the "fog" gem.
+    # You'll need to specify the access_key_id, secret_access_key and bucket.
     #
     #     CarrierWave.configure do |config|
     #       config.s3_access_key_id = "xxxxxx"
     #       config.s3_secret_access_key = "xxxxxx"
     #       config.s3_bucket = "my_bucket_name"
     #     end
-    #
-    # The AWS::S3Interface is used directly as opposed to the normal AWS::S3::Bucket et.al. classes.
-    # This gives much improved performance and avoids unnecessary requests.
     #
     # You can set the access policy for the uploaded files:
     #
@@ -51,7 +47,7 @@ module CarrierWave
     #     end
     #
     # Now the resulting url will be
-    #     
+    #
     #     http://bucketname.domain.tld/path/to/file
     #
     # instead of
@@ -87,16 +83,16 @@ module CarrierWave
         # [String] contents of the file
         #
         def read
-          result = connection.get(bucket, @path)
-          @headers = result[:headers]
-          result[:object]
+          result = connection.get_object(bucket, @path)
+          @headers = result.headers
+          result.body
         end
 
         ##
         # Remove the file from Amazon S3
         #
         def delete
-          connection.delete(bucket, @path)
+          connection.delete_object(bucket, @path)
         end
 
         ##
@@ -116,10 +112,10 @@ module CarrierWave
 
         def store(file)
           content_type ||= file.content_type # this might cause problems if content type changes between read and upload (unlikely)
-          connection.put(bucket, @path, file.read,
+          connection.put_object(bucket, @path, file.read,
             {
               'x-amz-acl' => access_policy,
-              'content-type' => content_type
+              'Content-Type' => content_type
             }.merge(@uploader.s3_headers)
           )
         end
@@ -127,7 +123,7 @@ module CarrierWave
         # The Amazon S3 Access policy ready to send in storage request headers.
         def access_policy
           return @access_policy unless @access_policy.blank?
-          if @uploader.s3_access_policy.blank? 
+          if @uploader.s3_access_policy.blank?
             if !@uploader.s3_access.blank?
               @access_policy = @uploader.s3_access.to_s.gsub(/_/, '-')
             else
@@ -139,20 +135,20 @@ module CarrierWave
         end
 
         def content_type
-          headers["content-type"]
+          headers["Content-Type"]
         end
 
         def content_type=(type)
-          headers["content-type"] = type
+          headers["Content-Type"] = type
         end
 
         # Headers returned from file retrieval
         def headers
           @headers ||= {}
         end
- 
+
       private
-    
+
         def bucket
           @uploader.s3_bucket
         end
@@ -172,7 +168,7 @@ module CarrierWave
       #
       # === Returns
       #
-      # [CarrierWave::Storage::RightS3::File] the stored file
+      # [CarrierWave::Storage::S3::File] the stored file
       #
       def store!(file)
         f = CarrierWave::Storage::S3::File.new(uploader, self, uploader.store_path)
@@ -188,16 +184,16 @@ module CarrierWave
       #
       # === Returns
       #
-      # [CarrierWave::Storage::RightS3::File] the stored file
+      # [CarrierWave::Storage::S3::File] the stored file
       #
       def retrieve!(identifier)
         CarrierWave::Storage::S3::File.new(uploader, self, uploader.store_path(identifier))
       end
 
       def connection
-        @connection ||= Aws::S3Interface.new(
-          uploader.s3_access_key_id, uploader.s3_secret_access_key,
-          :multi_thread => uploader.s3_multi_thread
+        @connection ||= Fog::AWS::S3.new(
+          :aws_access_key_id => uploader.s3_access_key_id,
+          :aws_secret_access_key => uploader.s3_secret_access_key
         )
       end
 
