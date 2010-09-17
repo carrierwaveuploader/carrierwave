@@ -26,9 +26,9 @@ In Merb, add it as a dependency to your config/dependencies.rb:
 
     dependency 'carrierwave'
 
-In Rails, add it to your environment.rb:
+In Rails, add it to your Gemfile:
 
-    config.gem "carrierwave"
+    gem 'carrierwave'
 
 == Quick Start
 
@@ -38,7 +38,7 @@ Start off by generating an uploader:
 
 or in Rails:
 
-    script/generate uploader Avatar
+    rails generate uploader Avatar
 
 this should give you a file in:
 
@@ -61,7 +61,8 @@ You can use your uploader class to store and retrieve files like this:
 
 CarrierWave gives you a +store+ for permanent storage, and a +cache+ for
 temporary storage. You can use different stores, at the moment a filesystem
-store, an Amazon S3 store, a Rackspace Cloud Files store, and a store for MongoDB's GridFS are bundled.
+store, an Amazon S3 store, a Rackspace Cloud Files store, and a store for
+MongoDB's GridFS are bundled.
 
 Most of the time you are going to want to use CarrierWave together with an ORM.
 It is quite simple to mount uploaders on columns in your model, so you can
@@ -112,9 +113,12 @@ Define +store_dir+ as +nil+ if you'd like to store files at the root level.
 
 == Securing uploads
 
-Certain file might be dangerous if uploaded to the wrong location, such as php files or other script files. CarrierWave allows you to specify a white-list of allowed extensions.
+Certain file might be dangerous if uploaded to the wrong location, such as php
+files or other script files. CarrierWave allows you to specify a white-list of
+allowed extensions.
 
-If you're mounting the uploader, uploading a file with the wrong extension will make the record invalid instead. Otherwise, an error is raised.
+If you're mounting the uploader, uploading a file with the wrong extension will
+make the record invalid instead. Otherwise, an error is raised.
 
     class MyUploader < CarrierWave::Uploader::Base
       def extension_white_list
@@ -170,7 +174,7 @@ in that case. Suppose your +user+ model has an uploader mounted on +avatar+
 file, just add a hidden field called +avatar_cache+. In Rails, this would look
 like this:
 
-    <% form_for @user, :html => {:multipart => true} do |f| %>
+    <%= form_for @user, :html => {:multipart => true} do |f| %>
       <p>
         <label>My Avatar</label>
         <%= f.file_field :avatar %>
@@ -181,7 +185,7 @@ like this:
 It might be a good idea to show the user that a file has been uploaded, in the
 case of images, a small thumbnail would be a good indicator:
 
-    <% form_for @user, :html => {:multipart => true} do |f| %>
+    <%= form_for @user, :html => {:multipart => true} do |f| %>
       <p>
         <label>My Avatar</label>
         <%= image_tag(@user.avatar_url) if @user.avatar? %>
@@ -195,7 +199,7 @@ case of images, a small thumbnail would be a good indicator:
 If you want to remove a previously uploaded file on a mounted uploader, you can
 easily add a checkbox to the form which will remove the file when checked.
 
-    <% form_for @user, :html => {:multipart => true} do |f| %>
+    <%= form_for @user, :html => {:multipart => true} do |f| %>
       <p>
         <label>My Avatar</label>
         <%= image_tag(@user.avatar_url) if @user.avatar? %>
@@ -215,10 +219,10 @@ If you want to remove the file manually, you can call <code>remove_avatar!</code
 == Uploading files from a remote location
 
 Your users may find it convenient to upload a file from a location on the Internet
-via a URL. CarrierWave makes this simple, just add the appropriate column to your
+via a URL. CarrierWave makes this simple, just add the appropriate attribute to your
 form and you're good to go:
 
-    <% form_for @user, :html => {:multipart => true} do |f| %>
+    <%= form_for @user, :html => {:multipart => true} do |f| %>
       <p>
         <label>My Avatar URL:</label>
         <%= image_tag(@user.avatar_url) if @user.avatar? %>
@@ -269,6 +273,10 @@ Or alternatively:
     class AvatarUploader < CarrierWave::Uploader::Base
       permissions 0777
     end
+
+If you're using Rails, create an initializer for this:
+
+    config/initializers/carrierwave.rb
 
 == Testing CarrierWave
 
@@ -343,7 +351,6 @@ And then in your uploader, set the storage to :s3
 
 That's it! You can still use the <code>CarrierWave::Uploader#url</code> method to return
 the url to the file on Amazon S3.
-
 
 == Using Rackspace Cloud Files
 
