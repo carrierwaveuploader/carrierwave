@@ -299,6 +299,8 @@ CarrierWave comes with some RSpec matchers which you may find useful:
     require 'carrierwave/test/matchers'
 
     describe MyUploader do
+      include CarrierWave::Test::Matchers
+    
       before do
         MyUploader.enable_processing = true
         @uploader = MyUploader.new(@user, :avatar)
