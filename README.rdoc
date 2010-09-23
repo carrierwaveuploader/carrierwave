@@ -4,8 +4,8 @@ http://carrierwave.rubyforge.org
 
 == Summary
 
-This plugin for Merb and Rails provides a simple and extremely flexible way to
-upload files.
+This gem provides a simple and extremely flexible way to upload files from Ruby applications.
+It works well with Rack based web applications, such as Ruby on Rails.
 
 == Description
 
@@ -22,10 +22,6 @@ Install the latest stable release:
 
     [sudo] gem install carrierwave
 
-In Merb, add it as a dependency to your config/dependencies.rb:
-
-    dependency 'carrierwave'
-
 In Rails, add it to your Gemfile:
 
     gem 'carrierwave'
@@ -33,10 +29,6 @@ In Rails, add it to your Gemfile:
 == Quick Start
 
 Start off by generating an uploader:
-
-    merb-gen uploader Avatar
-
-or in Rails:
 
     rails generate uploader Avatar
 
@@ -300,7 +292,7 @@ CarrierWave comes with some RSpec matchers which you may find useful:
 
     describe MyUploader do
       include CarrierWave::Test::Matchers
-    
+
       before do
         MyUploader.enable_processing = true
         @uploader = MyUploader.new(@user, :avatar)
@@ -335,7 +327,7 @@ Now fog[http://github.com/geemus/fog] is now used instead. Ensure you have it in
 
     gem install fog
 
-You'll need to configure a bucket, access id and secret key like this:
+You'll need to configure a bucket, access id and secret key like this in an initializer:
 
     CarrierWave.configure do |config|
       config.s3_access_key_id = 'xxxxxx'
@@ -343,9 +335,7 @@ You'll need to configure a bucket, access id and secret key like this:
       config.s3_bucket = 'name_of_bucket'
     end
 
-Do this in an initializer in Rails, and in a +before_app_loads+ block in Merb.
-
-And then in your uploader, set the storage to :s3
+In your uploader, set the storage to :s3
 
     class AvatarUploader < CarrierWave::Uploader::Base
       storage :s3
@@ -371,9 +361,7 @@ of this information.
 
     config.cloud_files_cdn_host = "c000000.cdn.rackspacecloud.com"
 
-Do this in an initializer in Rails, and in a +before_app_loads+ block in Merb.
-
-And then in your uploader, set the storage to :cloud_files
+In your uploader, set the storage to :cloud_files
 
     class AvatarUploader < CarrierWave::Uploader::Base
       storage :cloud_files
