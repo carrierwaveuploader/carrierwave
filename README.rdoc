@@ -488,27 +488,6 @@ your translations file:
         integrity: 'Not an image.'
         processing: 'Cannot resize image.'
 
-== Contributors
-
-These people have contributed their time and effort to CarrierWave:
-
-* Jonas Nicklas
-* Pavel Kunc
-* Andrew Timberlake
-* Durran Jordan
-* Scott Motte
-* Sho Fukamachi
-* Sam Lown
-* Dave Ott
-* Quin Hoxie
-* H. Wade Minter
-* Trevor Turk
-* Nicklas Ramhöj
-* Matt Hooks
-* Andreas Haller
-* Lars Pind
-* Ramon Soares
-
 == License
 
 Copyright (c) 2008 Jonas Nicklas
