@@ -148,7 +148,11 @@ module CarrierWave
 
         # Headers returned from file retrieval
         def headers
-          @headers ||= connection.head(bucket, @path)
+          @headers ||= begin
+            connection.head_object(bucket, @path).headers
+          rescue Excon::Errors::NotFound # Don't die, just return no headers
+            {}
+          end
         end
 
       private
