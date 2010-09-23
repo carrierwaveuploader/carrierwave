@@ -143,7 +143,7 @@ module CarrierWave
         end
 
         def size
-         	headers['content-length'].to_i
+           headers['Content-Length'].to_i
         end
 
         # Headers returned from file retrieval
