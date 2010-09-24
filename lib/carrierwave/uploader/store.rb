@@ -56,7 +56,9 @@ module CarrierWave
         cache!(new_file) if new_file
         if @file and @cache_id
           with_callbacks(:store, new_file) do
-            @file = storage.store!(@file)
+            new_file = storage.store!(@file)
+            @file.delete
+            @file = new_file
             @cache_id = nil
           end
         end

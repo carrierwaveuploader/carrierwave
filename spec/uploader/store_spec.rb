@@ -87,6 +87,12 @@ describe CarrierWave::Uploader do
       @uploader.store!(@file)
       @uploader.file.should == @stored_file
     end
+    
+    it "should delete the old file" do
+      @uploader.cache!(@file)
+      @uploader.file.should_receive(:delete).and_return(true)
+      @uploader.store!
+    end
 
     it "should do nothing when trying to store an empty file" do
       @uploader.store!(nil)
