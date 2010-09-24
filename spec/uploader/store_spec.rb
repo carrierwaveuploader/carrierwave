@@ -93,6 +93,18 @@ describe CarrierWave::Uploader do
       @uploader.file.should_receive(:delete).and_return(true)
       @uploader.store!
     end
+    
+    context "without the delete_file_after_storage option" do
+      before do
+        @uploader_class.delete_file_after_storage = false
+      end
+      
+      it "should not delete the old file" do
+        @uploader.cache!(@file)
+        @uploader.file.should_not_receive(:delete).and_return(true)
+        @uploader.store!
+      end
+    end
 
     it "should do nothing when trying to store an empty file" do
       @uploader.store!(nil)
