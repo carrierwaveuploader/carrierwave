@@ -11,6 +11,7 @@ module CarrierWave
     def mount_uploader(column, uploader, options={}, &block)
       options[:mount_on] ||= "#{column}_filename"
       field options[:mount_on]
+      attr_protected options[:mount_on].to_sym
       
       super
       

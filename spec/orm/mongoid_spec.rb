@@ -78,7 +78,8 @@ describe CarrierWave::Mongoid do
 
       before do
         mongo_user_klass = reset_mongo_class
-        @document = mongo_user_klass.new(:image_filename => "test.jpg")
+        @document = mongo_user_klass.new
+        @document.image_filename = "test.jpg"
         @document.save
         @doc = MongoUser.first
       end

@@ -21,6 +21,8 @@ module CarrierWave
 
       include CarrierWave::Validations::ActiveModel
 
+      attr_protected column.to_sym
+
       validates_integrity_of column if uploader_option(column.to_sym, :validate_integrity)
       validates_processing_of column if uploader_option(column.to_sym, :validate_processing)
 
