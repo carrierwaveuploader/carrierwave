@@ -7,6 +7,34 @@ module CarrierWave
     ##
     # The GridFS store uses MongoDB's GridStore file storage system to store files
     #
+    # There are two ways of configuring the GridFS connection. Either you create a
+    # connection or you reuse an existing connection.
+    #
+    # Creating a connection looks something like this:
+    # 
+    #     CarrierWave.configure do |config|
+    #       config.storage = :grid_fs
+    #       config.grid_fs_host = "your-host.com"
+    #       config.grid_fs_port = "27017"
+    #       config.grid_fs_database = "your_dbs_app_name"
+    #       config.grid_fs_username = "user"
+    #       config.grid_fs_password = "verysecret"
+    #       config.grid_fs_access_url = "/images"
+    #     end
+    #
+    #   In the above example your documents url will look like:
+    #   
+    #      http://your-app.com/images/:document-identifier-here
+    #
+    # When you already have a Mongo connection object (for example through Mongoid)
+    # you can also reuse this connection:
+    #
+    #     CarrierWave.configure do |config|
+    #       config.storage = :grid_fs
+    #       config.grid_fs_connection = Mongoid.database
+    #       config.grid_fs_access_url = "/images"
+    #     end
+    #
     class GridFS < Abstract
 
       class File
@@ -53,7 +81,7 @@ module CarrierWave
       protected
 
         def database
-          @connection ||= begin
+          @connection ||= @uploader.grid_fs_connection || begin
             host = @uploader.grid_fs_host
             port = @uploader.grid_fs_port
             database = @uploader.grid_fs_database
