@@ -1,3 +1,7 @@
+=== master
+
+* [changed] Depend on activesupport ~> 3.0 for Rails 3.1 compatibility
+
 === Version 0.5 2010-09-23
 
 * [changed] Support S3 file storage with the fog gem, instead of the aws gem (Trevor Turk)

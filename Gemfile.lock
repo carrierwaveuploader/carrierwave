@@ -1,8 +1,8 @@
 PATH
   remote: .
   specs:
-    carrierwave (0.5.0.beta2)
-      activesupport (~> 3.0.0)
+    carrierwave (0.5.0)
+      activesupport (~> 3.0)
 
 GEM
   remote: http://rubygems.org/
@@ -144,7 +144,7 @@ PLATFORMS
 
 DEPENDENCIES
   RubyInline
-  activesupport (~> 3.0.0)
+  activesupport (~> 3.0)
   bson_ext
   carrierwave!
   cucumber
