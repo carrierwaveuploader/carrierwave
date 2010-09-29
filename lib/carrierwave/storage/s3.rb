@@ -199,7 +199,7 @@ module CarrierWave
       end
 
       def connection
-        @connection ||= Fog::AWS::S3.new(
+        @connection ||= Fog::AWS::Storage.new(
           :aws_access_key_id => uploader.s3_access_key_id,
           :aws_secret_access_key => uploader.s3_secret_access_key
         )
