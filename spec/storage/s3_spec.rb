@@ -24,7 +24,7 @@ if ENV['S3_SPEC']
 
     describe 'general setup' do
       before(:each) do
-        @storage.connection.put(@bucket, "uploads/bar.txt", "A test, 1234", {'a-amz-acl' => 'public-read'})
+        @storage.connection.put_object(@bucket, "uploads/bar.txt", "A test, 1234", {'a-amz-acl' => 'public-read'})
         @uploader.stub!(:s3_access_policy).and_return(nil)
         @uploader.stub!(:s3_access).and_return(nil)
         @s3_file = CarrierWave::Storage::S3::File.new(@uploader, @storage, 'uploads/bar.txt')

@@ -143,12 +143,16 @@ module CarrierWave
         end
 
         def size
-         	headers['content-length'].to_i
+           headers['Content-Length'].to_i
         end
 
         # Headers returned from file retrieval
         def headers
-          @headers ||= connection.head(bucket, @path)
+          @headers ||= begin
+            connection.head_object(bucket, @path).headers
+          rescue Excon::Errors::NotFound # Don't die, just return no headers
+            {}
+          end
         end
 
       private
@@ -195,7 +199,7 @@ module CarrierWave
       end
 
       def connection
-        @connection ||= Fog::AWS::S3.new(
+        @connection ||= Fog::AWS::Storage.new(
           :aws_access_key_id => uploader.s3_access_key_id,
           :aws_secret_access_key => uploader.s3_secret_access_key
         )

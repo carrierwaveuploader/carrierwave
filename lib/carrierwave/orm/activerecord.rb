@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 require 'active_record'
-require File.expand_path(File.dirname(__FILE__) + "../../validations/active_model")
+require 'carrierwave/validations/active_model'
 
 module CarrierWave
   module ActiveRecord
