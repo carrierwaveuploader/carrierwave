@@ -26,6 +26,9 @@ In Rails, add it to your Gemfile:
 
     gem 'carrierwave'
 
+CarrierWave is only compatible with Rails 3 and later as of version 0.5. If you want to use
+Rails 2, please use the latest gem in the 0.4.X series.
+
 == Quick Start
 
 Start off by generating an uploader:
