@@ -24,8 +24,8 @@ module CarrierWave
       #
       # [String] A JSON serializtion containing this uploader's URL
       #
-      def to_json(*args)
-        { 'url' => url }.to_json(*args)
+      def as_json(options = nil)
+        { :url => url }
       end
 
     end # Url
