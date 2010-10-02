@@ -1,7 +1,11 @@
 === master
 
-* [changed] Depend on activesupport ~> 3.0 for Rails 3.1 compatibility
-* [changed] Update fog support to remove deprecation warnings (requires fog >= 0.3.0)
+* [changed] Depend on activesupport ~> 3.0 for Rails 3.1 compatibility [Trevor Turk]
+* [changed] Update fog support to remove deprecation warnings (requires fog >= 0.3.0) [Paul Elliott]
+* [changed] Convert generic MiniMagick::Invalid into ProcessingError [Alex Crichton]
+* [changed] Clean up internal require statements [Josh Kalderimis]
+* [fixed] Header support for S3 [Alex Crichton]
+* [fixed] Stack level too deep errors when using to_json [Trevor Turk]
 
 === Version 0.5 2010-09-23
 
