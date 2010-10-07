@@ -21,15 +21,14 @@ module CarrierWave
     # You can set the access policy for the uploaded files:
     #
     #     CarrierWave.configure do |config|
-    #       config.s3_access_policy = 'public-read'
+    #       config.s3_access_policy = :public_read
     #     end
     #
     # The default is 'public-read'. For more options see:
     #
     # http://docs.amazonwebservices.com/AmazonS3/latest/RESTAccessPolicy.html#RESTCannedAccessPolicies
     #
-    # For backwards compatability with the original aws-s3 library, if the old +config.s3_access+ is set it
-    # will be converted to the appropriate access policy:
+    # The following access policies are available:
     #
     # [:private]              No one else has any access rights.
     # [:public_read]          The anonymous principal is granted READ access.
@@ -103,35 +102,33 @@ module CarrierWave
         # [String] file's url
         #
         def url
-          if @uploader.s3_cnamed
-            ["http://#{@uploader.s3_bucket}", @path].compact.join('/')
+          if access_policy == :authenticated_read
+            authenticated_url
           else
-            ["http://#{@uploader.s3_bucket}.s3.amazonaws.com", @path].compact.join('/')
+            public_url
           end
+        end
+
+        def public_url
+          if cnamed?
+            ["http://#{bucket}", path].compact.join('/')
+          else
+            ["http://#{bucket}.s3.amazonaws.com", path].compact.join('/')
+          end
+        end
+
+        def authenticated_url
+          connection.get_object_url(bucket, path, Time.now + 60 * 10)
         end
 
         def store(file)
           content_type ||= file.content_type # this might cause problems if content type changes between read and upload (unlikely)
-          connection.put_object(bucket, @path, file.read,
+          connection.put_object(bucket, path, file.read,
             {
-              'x-amz-acl' => access_policy,
+              'x-amz-acl' => access_policy.to_s.gsub('_', '-'),
               'Content-Type' => content_type
             }.merge(@uploader.s3_headers)
           )
-        end
-
-        # The Amazon S3 Access policy ready to send in storage request headers.
-        def access_policy
-          return @access_policy unless @access_policy.blank?
-          if @uploader.s3_access_policy.blank?
-            if !@uploader.s3_access.blank?
-              @access_policy = @uploader.s3_access.to_s.gsub(/_/, '-')
-            else
-              @access_policy = 'public-read'
-            end
-          else
-            @access_policy = @uploader.s3_access_policy
-          end
         end
 
         def content_type
@@ -156,6 +153,14 @@ module CarrierWave
         end
 
       private
+
+        def cnamed?
+          @uploader.s3_cnamed
+        end
+
+        def access_policy
+          @uploader.s3_access_policy
+        end
 
         def bucket
           @uploader.s3_bucket

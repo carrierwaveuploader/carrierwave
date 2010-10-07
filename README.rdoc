@@ -326,7 +326,7 @@ CarrierWave comes with some RSpec matchers which you may find useful:
 == Using Amazon S3
 
 Older versions of CarrierWave used the +aws+, +aws-s3+, and/or +right_aws+ libraries.
-Now fog[http://github.com/geemus/fog] is now used instead. Ensure you have it installed:
+Now fog[http://github.com/geemus/fog] is used instead. Ensure you have it installed:
 
     gem install fog
 
