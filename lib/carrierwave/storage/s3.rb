@@ -24,7 +24,7 @@ module CarrierWave
     #       config.s3_access_policy = :public_read
     #     end
     #
-    # The default is 'public-read'. For more options see:
+    # The default is :public_read. For more options see:
     #
     # http://docs.amazonwebservices.com/AmazonS3/latest/RESTAccessPolicy.html#RESTCannedAccessPolicies
     #
