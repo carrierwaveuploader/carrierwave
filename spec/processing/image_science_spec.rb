@@ -16,7 +16,7 @@ else
       FileUtils.cp(file_path('landscape.jpg'), file_path('landscape_copy.jpg'))
       @instance.stub(:current_path).and_return(file_path('landscape_copy.jpg'))
     end
-    
+
     after do
       FileUtils.rm(file_path('landscape_copy.jpg'))
     end
@@ -26,7 +26,7 @@ else
         @instance.resize_to_fill(200, 200)
         @instance.should have_dimensions(200, 200)
       end
-      
+
       it "should scale up the image if it smaller than the given dimensions" do
         @instance.resize_to_fill(1000, 1000)
         @instance.should have_dimensions(1000, 1000)
@@ -38,7 +38,7 @@ else
         @instance.resize_to_fit(200, 200)
         @instance.should have_dimensions(200, 150)
       end
-      
+
       it "should scale up the image if it smaller than the given dimensions" do
         @instance.resize_to_fit(1000, 1000)
         @instance.should have_dimensions(1000, 750)
@@ -50,7 +50,7 @@ else
         @instance.resize_to_limit(200, 200)
         @instance.should have_dimensions(200, 150)
       end
-      
+
       it "should not scale up the image if it smaller than the given dimensions" do
         @instance.resize_to_limit(1000, 1000)
         @instance.should have_dimensions(640, 480)

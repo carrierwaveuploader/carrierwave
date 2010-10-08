@@ -57,7 +57,12 @@ module CarrierWave
         if @file and @cache_id
           with_callbacks(:store, new_file) do
             @file = storage.store!(@file)
-            @cache_id = nil
+
+            if @old_file && @old_file.path != @file.path # if the path hasn't changed, no need to delete it
+              @old_file.delete
+            end
+
+            @cache_id = @old_file = nil
           end
         end
       end

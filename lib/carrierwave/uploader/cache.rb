@@ -7,7 +7,7 @@ module CarrierWave
       "You tried to assign a String or a Pathname to an uploader, for security reasons, this is not allowed.\n\n If this is a file upload, please check that your upload form is multipart encoded."
     end
   end
-  
+
   ##
   # Generates a unique cache id for use in the caching system
   #
@@ -37,7 +37,7 @@ module CarrierWave
         #   CarrierWave.clean_cached_files!
         #
         # === Note
-        # 
+        #
         # This only works as long as you haven't done anything funky with your cache_dir.
         # It's recommended that you keep cache files in one place only.
         #
@@ -86,6 +86,8 @@ module CarrierWave
       # [CarrierWave::FormNotMultipart] if the assigned parameter is a string
       #
       def cache!(new_file)
+        # puts "[store][store!] new_file = #{new_file.inspect} / #{@file.inspect} / #{@cache_id}"
+
         new_file = CarrierWave::SanitizedFile.new(new_file)
         raise CarrierWave::FormNotMultipart if new_file.is_path? && ensure_multipart_form
 
@@ -95,6 +97,8 @@ module CarrierWave
 
             @filename = new_file.filename
             self.original_filename = new_file.filename
+
+            @old_file = file.clone if file # keep tracks of the previous file
 
             @file = new_file.copy_to(cache_path, permissions)
           end

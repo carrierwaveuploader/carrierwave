@@ -100,6 +100,13 @@ describe CarrierWave::Uploader do
       @uploader.retrieve_from_store!('monkey.txt')
       @uploader.store!
     end
+
+    # it "should delete the previous file when replacing it by a new one" do
+    #   @uploader.store!(@file)
+    #   (old_file = @uploader.file).should_receive(:delete)
+    #   @file = File.open(file_path('test.jpeg'))
+    #   @uploader.store!(@file)
+    # end
   end
 
   describe '#retrieve_from_store!' do
@@ -147,7 +154,7 @@ describe CarrierWave::Uploader do
       @uploader.file.should == @stored_file
     end
   end
-  
+
   describe 'with an overridden filename' do
     before do
       @uploader_class.class_eval do
@@ -161,7 +168,7 @@ describe CarrierWave::Uploader do
       @path = ::File.expand_path(@uploader.store_path, @uploader.root)
       File.exist?(@path).should be_true
     end
-    
+
     it "should not create new files if there is no file" do
       @uploader.store!(nil)
       @path = ::File.expand_path(@uploader.store_path, @uploader.root)
