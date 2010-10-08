@@ -44,69 +44,76 @@ describe CarrierWave::Uploader do
       @uploader.store!(@file)
       @uploader.current_path.should == '/path/to/somewhere'
     end
-
+    
     it "should not be cached" do
       @uploader.store!(@file)
       @uploader.should_not be_cached
     end
-
+    
     it "should set the url" do
       @uploader.store!(@file)
       @uploader.url.should == 'http://www.example.com'
     end
-
+    
     it "should set the identifier" do
       @uploader.store!(@file)
       @uploader.identifier.should == 'this-is-me'
     end
-
+    
     it "should, if a file is given as argument, cache that file" do
       @uploader.should_receive(:cache!).with(@file)
       @uploader.store!(@file)
     end
-
+    
     it "should use a previously cached file if no argument is given" do
       @uploader.cache!(File.open(file_path('test.jpg')))
       @uploader.should_not_receive(:cache!)
       @uploader.store!
     end
-
+    
     it "should instruct the storage engine to store the file" do
       @uploader.cache!(@file)
       @storage.should_receive(:store!).with(@uploader.file).and_return(:monkey)
       @uploader.store!
     end
-
+    
     it "should reset the cache_name" do
       @uploader.cache!(@file)
       @uploader.store!
       @uploader.cache_name.should be_nil
     end
-
+    
     it "should cache the result given by the storage engine" do
       @uploader.store!(@file)
       @uploader.file.should == @stored_file
     end
-
+    
     it "should do nothing when trying to store an empty file" do
       @uploader.store!(nil)
     end
-
+    
     it "should not re-store a retrieved file" do
       @stored_file = mock('a stored file')
       @storage.stub!(:retrieve!).and_return(@stored_file)
-
+    
       @uploader_class.storage.should_not_receive(:store!)
       @uploader.retrieve_from_store!('monkey.txt')
       @uploader.store!
     end
 
-    # it "should delete the previous file when replacing it by a new one" do
-    #   @uploader.store!(@file)
-    #   (old_file = @uploader.file).should_receive(:delete)
-    #   @file = File.open(file_path('test.jpeg'))
-    #   @uploader.store!(@file)
-    # end
+    it "should delete the previous file when replacing it by a new one" do
+      @uploader.store!(@file)
+
+      @stored_file = mock('another stored file')
+      @stored_file.stub!(:path).and_return('/path/to/somewhereelse')
+      @stored_file.stub!(:url).and_return('http://www.example.com')
+      @storage.stub!(:store!).and_return(@stored_file)
+
+      (old_file = @uploader.file).should_receive(:delete)
+
+      @file = File.open(file_path('test.jpeg'))
+      @uploader.store!(@file)
+    end
   end
 
   describe '#retrieve_from_store!' do
