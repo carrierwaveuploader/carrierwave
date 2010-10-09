@@ -24,7 +24,7 @@ module CarrierWave
       # for objects that are not dirty. By explicitly calling
       # attribute_set we are marking the record as dirty.
       class_eval <<-RUBY
-        def remove_image=(value)
+        def remove_#{column}=(value)
           _mounter(:#{column}).remove = value
           attribute_set(:#{column}, '') if _mounter(:#{column}).remove?
         end
