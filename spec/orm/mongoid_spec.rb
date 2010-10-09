@@ -37,6 +37,12 @@ class ProcessingErrorUploader < CarrierWave::Uploader::Base
   end
 end
 
+class RenameUploader < CarrierWave::Uploader::Base
+  def stale_model?
+    model.image_filename_changed?
+  end
+end
+
 
 describe CarrierWave::Mongoid do
 
@@ -239,6 +245,25 @@ describe CarrierWave::Mongoid do
           @doc.image_filename.should == ''
         end
 
+      end
+
+    end
+
+    context "when a file is renamed" do
+
+      before do
+        mongo_user_klass = reset_mongo_class(RenameUploader)
+        @doc = mongo_user_klass.new
+
+        @doc.image = stub_file('test.jpg')
+        @doc.save
+      end
+
+      it 'should change the filename' do
+        @doc.image_filename = 'test_2.jpg'
+        @doc.save
+        File.exist?(public_path('uploads/test.jpeg')).should be_false
+        File.exist?(public_path('uploads/test_2.jpg')).should be_true
       end
 
     end

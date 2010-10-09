@@ -209,6 +209,21 @@ module CarrierWave
       FileUtils.rm(self.path) if exists?
     end
 
+    # ##
+    # # Rename the file in the filesystem
+    # #
+    # def rename(new_path, permissions=nil)
+    #   return if self.empty?
+    #   new_path = File.expand_path(new_path)
+    #
+    #   mkdir!(new_path)
+    #   if exists?
+    #     FileUtils.mv(path, new_path) unless new_path == path
+    #   end
+    #   chmod!(new_path, permissions)
+    #   self.file = new_path
+    # end
+
     ##
     # Returns the content type of the file.
     #

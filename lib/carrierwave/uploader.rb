@@ -38,6 +38,7 @@ module CarrierWave
       include CarrierWave::Uploader::Versions
       include CarrierWave::Uploader::DefaultUrl
       include CarrierWave::Uploader::Configuration
+      include CarrierWave::Uploader::Rename
     end # Base
 
   end # Uploader

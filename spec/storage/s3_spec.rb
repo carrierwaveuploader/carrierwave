@@ -21,6 +21,7 @@ if ENV['S3_SPEC']
 
     after do
       @storage.connection.delete_object(@bucket, 'uploads/bar.txt')
+      @storage.connection.delete_object(@bucket, 'uploads/bar_2.txt')
     end
 
     describe 'general setup' do
@@ -111,6 +112,34 @@ if ENV['S3_SPEC']
       it "should return filesize" do
         @s3_file.size.should == 12
       end
+    end
+
+    describe '#rename!' do
+      before do
+        @uploader.stub!(:store_path).and_return('uploads/bar.txt')
+        @s3_file = @storage.store!(@file)
+
+        @uploader.stub!(:new_identifier).and_return('bar_2.txt')
+        @uploader.stub!(:store_path).with('bar_2.txt').and_return('uploads/bar_2.txt')
+        @s3_file = @storage.rename!(@s3_file)
+      end
+
+      it "should retrieve the previous file contents from s3" do
+        @s3_file.read.chomp.should == "this is stuff"
+      end
+
+      it "should not retrieve the old file" do
+        lambda {@storage.connection.head_object(@bucket, 'uploads/bar.txt')}.should raise_error(Excon::Errors::NotFound)
+      end
+
+      it "should have a path" do
+        @s3_file.path.should == 'uploads/bar_2.txt'
+      end
+
+      it "should have an Amazon URL" do
+        @s3_file.url.should == "http://#{@bucket}.s3.amazonaws.com/uploads/bar_2.txt"
+      end
+
     end
 
     describe 'access policy' do

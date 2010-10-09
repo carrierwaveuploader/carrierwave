@@ -25,6 +25,9 @@ module CarrierWave
       def retrieve!(identifier)
       end
 
+      def rename!(file)
+      end
+
     end # Abstract
   end # Storage
 end # CarrierWave

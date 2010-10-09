@@ -94,6 +94,17 @@ module CarrierWave
           connection.delete_object(bucket, @path)
         end
 
+        def rename(new_path)
+          file = connection.put_object(bucket, new_path, read,
+            {
+              'x-amz-acl' => access_policy.to_s.gsub('_', '-'),
+              'Content-Type' => content_type
+            }.merge(@uploader.s3_headers)
+          )
+          delete
+          file
+        end
+
         ##
         # Returns the url on Amazon's S3 service
         #
@@ -201,6 +212,23 @@ module CarrierWave
       #
       def retrieve!(identifier)
         CarrierWave::Storage::S3::File.new(uploader, self, uploader.store_path(identifier))
+      end
+
+      ##
+      # Rename a file on S3
+      #
+      # === Parameters
+      #
+      # [file (CarrierWave::Storage::S3::File)] the file to rename
+      #
+      # === Returns
+      #
+      # [CarrierWave::Storage::S3::File] the renamed file
+      #
+      def rename!(file)
+        path = uploader.store_path(uploader.new_identifier)
+        file.rename(path)
+        CarrierWave::Storage::S3::File.new(uploader, self, path)
       end
 
       def connection

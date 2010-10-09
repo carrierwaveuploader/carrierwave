@@ -43,6 +43,12 @@ module CarrierWave
         CarrierWave::SanitizedFile.new(path)
       end
 
+      def rename!(file)
+        path = ::File.join(::File.expand_path(uploader.store_path(uploader.new_identifier), uploader.root))
+        file.move_to(path, uploader.permissions)
+        CarrierWave::SanitizedFile.new(path)
+      end
+
     end # File
   end # Storage
 end # CarrierWave
