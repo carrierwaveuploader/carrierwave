@@ -28,6 +28,11 @@ module CarrierWave
           _mounter(:#{column}).remove = value
           attribute_set(:#{column}, '') if _mounter(:#{column}).remove?
         end
+        # Override setter to mark property as dirty
+        def #{column}=(new_file)
+          self.attribute_set(:#{column}, new_file)
+          _mounter(:#{column}).cache(new_file)
+        end
       RUBY
     end
 
