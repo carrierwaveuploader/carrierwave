@@ -27,6 +27,10 @@ module CarrierWave
         @filename
       end
 
+      def delete_original_file?
+        @original_file && @original_file.path != @file.path # if the path hasn't changed, no need to delete it
+      end
+
       ##
       # Calculates the path where the file should be stored. If +for_file+ is given, it will be
       # used as the filename, otherwise +CarrierWave::Uploader#filename+ is assumed.
@@ -60,13 +64,9 @@ module CarrierWave
 
             # puts "new_file = #{new_file.inspect} / #{@file.inspect} / old_file ? #{@old_file}"
 
-            puts "original file = #{@original_file.inspect} / change file ? #{@change_file.inspect}"
+            puts "original file = #{@original_file.inspect}" # / change file ? #{@change_file.inspect}"
 
-            if @delete_original_file == true && @original_file.path != @file.path # if the path hasn't changed, no need to delete it
-              @original_file.delete
-            end
-
-            @original_file = @file
+            @original_file.delete if self.delete_original_file?
 
             # if @old_file && @old_file.path != @file.path # if the path hasn't changed, no need to delete it
             #   puts "deleting @old_file"
@@ -74,7 +74,7 @@ module CarrierWave
             # end
 
             @cache_id = nil
-            @delete_original_file = false
+            @original_file = nil
           end
         end
       end

@@ -236,10 +236,6 @@ module CarrierWave
           _mounter(:#{column}).rename!
         end
 
-        def backup_original_#{column}_file
-          _mounter(:#{column}).backup_original_file
-        end
-
       RUBY
 
     end
@@ -358,13 +354,6 @@ module CarrierWave
 
       def rename!
         uploader.rename!
-      end
-
-      def backup_original_file
-        puts "[backup_original_file] called !!! #{uploader.file.inspect}"
-        if uploader.file
-          uploader.instance_variable_set(:@original_file, uploader.file.clone)
-        end
       end
 
       def check_stale_record!

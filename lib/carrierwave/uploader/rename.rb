@@ -8,10 +8,8 @@ module CarrierWave
       include CarrierWave::Uploader::Callbacks
 
       included do
-        after :rename!, :recreate_versions!
+        after :rename, :recreate_versions!
       end
-
-      # attr_reader :new_identifier
 
       ##
       # Override this method in your uploader to check if the model has been updated.
@@ -43,6 +41,7 @@ module CarrierWave
         with_callbacks(:rename) do
           puts "[Rename][rename!] @file = #{@file.inspect} / #{@file.path} /#{model.inspect}"
           @file = storage.rename!(@original_file)
+          @original_file = nil
           @rename = false
         end
       end
@@ -50,11 +49,12 @@ module CarrierWave
       private
 
       def check_stale_model!
-        @rename = self.stale_model? && @cache_id.nil?
+        # the conditions below means: mountable uploader, already an existing file, model has been modified and not changing the file currently.
+        @rename = self.file && self.model && self.stale_model? && @cache_id.nil?
 
-        if self.rename? && self.model
-          # @new_identifier = self.model.send(:_mounter, self.mounted_as).identifier
-          @filename = self.model.send(:_mounter, self.mounted_as).identifier
+        if self.rename?
+          @original_file = self.file.clone
+          @filename = self.model.send(:_mounter, self.mounted_as).identifier # default filename has to be the one from the model
         end
       end
 
