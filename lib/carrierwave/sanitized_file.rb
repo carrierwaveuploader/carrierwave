@@ -168,6 +168,7 @@ module CarrierWave
 
       mkdir!(new_path)
       if exists?
+        puts "moving #{path} to #{new_path}"
         FileUtils.mv(path, new_path) unless new_path == path
       else
         File.open(new_path, "wb") { |f| f.write(read) }
@@ -201,6 +202,24 @@ module CarrierWave
       chmod!(new_path, permissions)
       self.class.new({:tempfile => new_path, :content_type => content_type})
     end
+
+    # ##
+    # # Rename this move. Returns the a copy of the file
+    # #
+    # # === Parameters
+    # #
+    # # [new_path (String)] The path where the file should be copied to.
+    # # [permissions (Integer)] permissions to set on the copy
+    # #
+    # # === Returns
+    # #
+    # # @return [CarrierWave::SanitizedFile] the location where the file will be stored.
+    # #
+    # def rename(new_path, permissions=nil)
+    #   f = self.copy_to(new_path, permissions=nil)
+    #   self.delete
+    #   f
+    # end
 
     ##
     # Removes the file from the filesystem.

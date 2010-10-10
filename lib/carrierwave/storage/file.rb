@@ -44,9 +44,11 @@ module CarrierWave
       end
 
       def rename!(file)
-        path = ::File.join(::File.expand_path(uploader.store_path(uploader.new_identifier), uploader.root))
+        # puts "\t\t[rename!] identifier = '#{uploader.identifier}' / #{uploader.filename}"
+        path = ::File.expand_path(uploader.store_path, uploader.root)
+        # puts "\t\t[rename!] old path = #{file.path}, new path = #{path}"
         file.move_to(path, uploader.permissions)
-        CarrierWave::SanitizedFile.new(path)
+        file
       end
 
     end # File

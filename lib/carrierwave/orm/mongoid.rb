@@ -6,6 +6,7 @@ require 'carrierwave/validations/active_model'
 module CarrierWave
   module Mongoid
     include CarrierWave::Mount
+
     ##
     # See +CarrierWave::Mount#mount_uploader+ for documentation
     #
@@ -23,6 +24,7 @@ module CarrierWave
       validates_integrity_of  column if uploader_option(column.to_sym, :validate_integrity)
       validates_processing_of column if uploader_option(column.to_sym, :validate_processing)
 
+      after_initialize "backup_original_#{column}_file".to_sym
       before_save "check_stale_#{column}!".to_sym
       after_save "rename_#{column}!".to_sym
       after_save "store_#{column}!".to_sym
@@ -33,3 +35,15 @@ module CarrierWave
 end # CarrierWave
 
 Mongoid::Document::ClassMethods.send(:include, CarrierWave::Mongoid)
+
+def instantiate(attrs = nil, allocating = false)
+  attributes = attrs || {}
+  if attributes["_id"] || allocating
+    document = allocate
+    document.instance_variable_set(:@attributes, attributes)
+    document.setup_modifications
+    document
+  else
+    new(attrs)
+  end
+end

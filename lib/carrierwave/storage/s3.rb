@@ -226,7 +226,7 @@ module CarrierWave
       # [CarrierWave::Storage::S3::File] the renamed file
       #
       def rename!(file)
-        path = uploader.store_path(uploader.new_identifier)
+        path = uploader.store_path
         file.rename(path)
         CarrierWave::Storage::S3::File.new(uploader, self, path)
       end

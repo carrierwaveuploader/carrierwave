@@ -7,7 +7,6 @@ describe CarrierWave::Uploader do
   before do
     @uploader_class = Class.new(CarrierWave::Uploader::Base)
     @uploader = @uploader_class.new
-    @uploader.stub!(:filename_from_model).and_return('somewhere')
   end
 
   after do
@@ -32,9 +31,9 @@ describe CarrierWave::Uploader do
     end
 
     it "should not be renamed" do
-      @stored_file.should_not_receive(:rename!)
-      @uploader.rename!
-    end
+       @stored_file.should_not_receive(:rename!)
+       @uploader.rename!
+     end
 
     describe 'with stale model' do
 

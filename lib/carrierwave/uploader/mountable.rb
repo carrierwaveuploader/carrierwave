@@ -4,7 +4,7 @@ module CarrierWave
   module Uploader
     module Mountable
 
-      attr_reader :model, :mounted_as
+      attr_reader :model, :mounted_as, :original_file
 
       ##
       # If a model is given as the first parameter, it will stored in the uploader, and

@@ -11,10 +11,10 @@ module CarrierWave
         after :rename!, :recreate_versions!
       end
 
-      attr_reader :new_identifier
+      # attr_reader :new_identifier
 
       ##
-      # Override this method in your uploader to check if the store_dir or the filename has been updated.
+      # Override this method in your uploader to check if the model has been updated.
       #
       # === Returns
       #
@@ -23,37 +23,41 @@ module CarrierWave
       # === Examples
       #
       #     def stale_model?
-      #       model.folder_changed? # because store_dir uses model_changes
+      #       model.folder_changed? # because store_dir is based on the folder property of the model
       #     end
       #
       def stale_model?
-        false
+         false
       end
 
-      def filename_from_model
-        self.model.send(:_mounter, self.mounted_as).identifier
+      def rename?
+        @rename || false
       end
 
       ##
       # Renames the file
       #
       def rename!
-        return true if !@stale_model || @cache_id
+        return true if !self.rename?
 
         with_callbacks(:rename) do
-          # puts "[Rename][rename!] @file = #{@file.inspect}"
-          @file = storage.rename!(@file)
-          @old_file = nil
+          puts "[Rename][rename!] @file = #{@file.inspect} / #{@file.path} /#{model.inspect}"
+          @file = storage.rename!(@original_file)
+          @rename = false
         end
       end
 
       private
 
       def check_stale_model!
-        @stale_model = self.stale_model?
-        @new_identifier = self.filename_from_model
+        @rename = self.stale_model? && @cache_id.nil?
+
+        if self.rename? && self.model
+          # @new_identifier = self.model.send(:_mounter, self.mounted_as).identifier
+          @filename = self.model.send(:_mounter, self.mounted_as).identifier
+        end
       end
 
-    end # Remove
+    end # Rename
   end # Uploader
 end # CarrierWave

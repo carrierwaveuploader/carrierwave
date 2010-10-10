@@ -89,6 +89,8 @@ module CarrierWave
         new_file = CarrierWave::SanitizedFile.new(new_file)
         raise CarrierWave::FormNotMultipart if new_file.is_path? && ensure_multipart_form
 
+        # puts "new_file = #{new_file.inspect} / #{new_file.empty?}"
+
         unless new_file.empty?
           with_callbacks(:cache, new_file) do
             self.cache_id = CarrierWave.generate_cache_id unless cache_id
@@ -96,7 +98,9 @@ module CarrierWave
             @filename = new_file.filename
             self.original_filename = new_file.filename
 
-            @old_file = file.clone if file # keep tracks of the previous file
+            @delete_original_file = !@original_file.nil? # to be sure to delete the original file
+            # keep tracks of the previous file
+            # puts "@old_file = #{@old_file.inspect}"
 
             @file = new_file.copy_to(cache_path, permissions)
           end
