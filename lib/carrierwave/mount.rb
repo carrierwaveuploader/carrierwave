@@ -60,9 +60,7 @@ module CarrierWave
     # retrieve files like this:
     #
     #     @user.image # => <Uploader>
-    #     @user.image = some_file_object
-    #
-    #     @user.store_image!
+    #     @user.image.store!(some_file_object)
     #
     #     @user.image.url # => '/some_url.png'
     #
