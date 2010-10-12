@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 # Seems like ImageScience doesn't work on 1.9
-if true #RUBY_VERSION =~ /^1\.9/
+if RUBY_VERSION =~ /^1\.9/
   puts "ImageScience doesn't work on Ruby 1.9, skipping"
 else
   describe CarrierWave::ImageScience do

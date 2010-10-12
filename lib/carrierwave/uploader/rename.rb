@@ -39,7 +39,6 @@ module CarrierWave
         return true if !self.rename?
 
         with_callbacks(:rename) do
-          puts "[Rename][rename!] @file = #{@file.inspect} / #{@file.path} /#{model.inspect}"
           @file = storage.rename!(@original_file)
           @original_file = nil
           @rename = false
@@ -49,7 +48,7 @@ module CarrierWave
       private
 
       def check_stale_model!
-        # the conditions below means: mountable uploader, already an existing file, model has been modified and not changing the file currently.
+        # the conditions below means: already an existing file, with model, model has been modified and not changing the file currently.
         @rename = self.file && self.model && self.stale_model? && @cache_id.nil?
 
         if self.rename?

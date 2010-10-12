@@ -277,7 +277,6 @@ module CarrierWave
       end
 
       def write_identifier
-        puts "uploader.identifier = #{uploader.identifier} / #{self.identifier}"
         if remove?
           record.write_uploader(serialization_column, '')
         elsif not uploader.identifier.blank?

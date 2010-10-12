@@ -62,16 +62,7 @@ module CarrierWave
           with_callbacks(:store, new_file) do
             @file = storage.store!(@file)
 
-            # puts "new_file = #{new_file.inspect} / #{@file.inspect} / old_file ? #{@old_file}"
-
-            puts "original file = #{@original_file.inspect}" # / change file ? #{@change_file.inspect}"
-
             @original_file.delete if self.delete_original_file?
-
-            # if @old_file && @old_file.path != @file.path # if the path hasn't changed, no need to delete it
-            #   puts "deleting @old_file"
-            #   @old_file.delete
-            # end
 
             @cache_id = nil
             @original_file = nil

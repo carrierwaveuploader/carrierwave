@@ -91,12 +91,12 @@ module CarrierWave
 
         unless new_file.empty?
           with_callbacks(:cache, new_file) do
+            @original_file ||= self.file.clone if self.file
+
             self.cache_id = CarrierWave.generate_cache_id unless cache_id
 
             @filename = new_file.filename
             self.original_filename = new_file.filename
-
-            @original_file = self.file.clone if self.file
 
             @file = new_file.copy_to(cache_path, permissions)
           end

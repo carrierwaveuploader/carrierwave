@@ -168,7 +168,6 @@ module CarrierWave
 
       mkdir!(new_path)
       if exists?
-        puts "moving #{path} to #{new_path}"
         FileUtils.mv(path, new_path) unless new_path == path
       else
         File.open(new_path, "wb") { |f| f.write(read) }

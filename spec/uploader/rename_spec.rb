@@ -15,6 +15,9 @@ describe CarrierWave::Uploader do
 
   describe '#rename!' do
     before do
+      @model = mock('a model')
+      @model.stub!(:_mounter).with(nil).and_return(Struct.new(:identifier).new)
+
       @file = File.open(file_path('test.jpg'))
 
       @stored_file = mock('a stored file')
@@ -28,6 +31,7 @@ describe CarrierWave::Uploader do
 
       @uploader_class.storage.stub!(:new).and_return(@storage)
       @uploader.store!(@file)
+      @uploader.stub!(:model).and_return(@model)
     end
 
     it "should not be renamed" do
