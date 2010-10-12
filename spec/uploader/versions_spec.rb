@@ -109,40 +109,40 @@ describe CarrierWave::Uploader do
 
     describe '#cache!' do
 
-       before do
-         CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
-       end
+      before do
+        CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+      end
 
-       it "should set store_path with versions" do
-         @uploader.cache!(File.open(file_path('test.jpg')))
-         @uploader.store_path.should == 'uploads/test.jpg'
-         @uploader.thumb.store_path.should == 'uploads/thumb_test.jpg'
-         @uploader.thumb.store_path('kebab.png').should == 'uploads/thumb_kebab.png'
-       end
+      it "should set store_path with versions" do
+        @uploader.cache!(File.open(file_path('test.jpg')))
+        @uploader.store_path.should == 'uploads/test.jpg'
+        @uploader.thumb.store_path.should == 'uploads/thumb_test.jpg'
+        @uploader.thumb.store_path('kebab.png').should == 'uploads/thumb_kebab.png'
+      end
 
-       it "should move it to the tmp dir with the filename prefixed" do
-         @uploader.cache!(File.open(file_path('test.jpg')))
-         @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpg')
-         @uploader.thumb.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/thumb_test.jpg')
-         @uploader.file.exists?.should be_true
-         @uploader.thumb.file.exists?.should be_true
-       end
-     end
+      it "should move it to the tmp dir with the filename prefixed" do
+        @uploader.cache!(File.open(file_path('test.jpg')))
+        @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpg')
+        @uploader.thumb.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/thumb_test.jpg')
+        @uploader.file.exists?.should be_true
+        @uploader.thumb.file.exists?.should be_true
+      end
+    end
 
-     describe '#retrieve_from_cache!' do
-       it "should set the path to the tmp dir" do
-         @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpg')
-         @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpg')
-         @uploader.thumb.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/thumb_test.jpg')
-       end
+    describe '#retrieve_from_cache!' do
+      it "should set the path to the tmp dir" do
+        @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpg')
+        @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpg')
+        @uploader.thumb.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/thumb_test.jpg')
+      end
 
-       it "should set store_path with versions" do
-         @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpg')
-         @uploader.store_path.should == 'uploads/test.jpg'
-         @uploader.thumb.store_path.should == 'uploads/thumb_test.jpg'
-         @uploader.thumb.store_path('kebab.png').should == 'uploads/thumb_kebab.png'
-       end
-     end
+      it "should set store_path with versions" do
+        @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpg')
+        @uploader.store_path.should == 'uploads/test.jpg'
+        @uploader.thumb.store_path.should == 'uploads/thumb_test.jpg'
+        @uploader.thumb.store_path('kebab.png').should == 'uploads/thumb_kebab.png'
+      end
+    end
 
     describe '#store!' do
       before do

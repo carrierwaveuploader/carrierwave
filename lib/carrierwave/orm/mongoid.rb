@@ -34,15 +34,3 @@ module CarrierWave
 end # CarrierWave
 
 Mongoid::Document::ClassMethods.send(:include, CarrierWave::Mongoid)
-
-def instantiate(attrs = nil, allocating = false)
-  attributes = attrs || {}
-  if attributes["_id"] || allocating
-    document = allocate
-    document.instance_variable_set(:@attributes, attributes)
-    document.setup_modifications
-    document
-  else
-    new(attrs)
-  end
-end
