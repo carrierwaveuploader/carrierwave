@@ -31,6 +31,7 @@ module CarrierWave
         add_config :ensure_multipart_form
 
         # Mounting
+        add_config :delete_file_after_storage
         add_config :ignore_integrity_errors
         add_config :ignore_processing_errors
         add_config :validate_integrity
@@ -54,6 +55,7 @@ module CarrierWave
           config.grid_fs_port = 27017
           config.store_dir = 'uploads'
           config.cache_dir = 'uploads/tmp'
+          config.delete_file_after_storage = true
           config.ignore_integrity_errors = true
           config.ignore_processing_errors = true
           config.validate_integrity = true
