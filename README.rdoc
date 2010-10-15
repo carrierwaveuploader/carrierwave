@@ -327,8 +327,7 @@ CarrierWave comes with some RSpec matchers which you may find useful:
 
 == Using Amazon S3
 
-Older versions of CarrierWave used the +aws+, +aws-s3+, and/or +right_aws+ libraries.
-Now fog[http://github.com/geemus/fog] is used instead. Ensure you have it installed:
+Fog[http://github.com/geemus/fog] is used to support Amazon S3. Ensure you have it installed:
 
     gem install fog
 
@@ -529,6 +528,6 @@ And then install the dependencies:
 
 You should now be able to run the tests:
 
-    bundle exec rake spec
+    bundle exec rake
 
 Issues are reported on GitHub, pull requests are very welcome!
