@@ -40,8 +40,8 @@ GEM
     addressable (2.2.0)
     arel (1.0.1)
       activesupport (~> 3.0.0)
-    bson (1.0.4)
-    bson_ext (1.0.4)
+    bson (1.1.1)
+    bson_ext (1.1.1)
     builder (2.1.2)
     cucumber (0.8.5)
       builder (~> 2.1.2)
@@ -94,12 +94,11 @@ GEM
     mime-types (1.16)
     mini_magick (2.3)
       subexec (~> 0.0.4)
-    mongo (1.0.7)
-      bson (>= 1.0.4)
-    mongoid (2.0.0.beta.17)
-      activemodel (~> 3.0.0)
-      bson (= 1.0.4)
-      mongo (= 1.0.7)
+    mongo (1.0.9)
+      bson (>= 1.0.5)
+    mongoid (2.0.0.beta.19)
+      activemodel (~> 3.0)
+      mongo (= 1.0.9)
       tzinfo (~> 0.3.22)
       will_paginate (~> 3.0.pre)
     net-ssh (2.0.23)
@@ -145,7 +144,7 @@ PLATFORMS
 DEPENDENCIES
   RubyInline
   activesupport (~> 3.0)
-  bson_ext
+  bson_ext (= 1.1.1)
   carrierwave!
   cucumber
   dm-core
@@ -156,7 +155,7 @@ DEPENDENCIES
   image_science
   json
   mini_magick (~> 2.3)
-  mongoid (= 2.0.0.beta.17)
+  mongoid (= 2.0.0.beta.19)
   rails (~> 3.0.0)
   rmagick
   rspec (~> 1.3.0)
