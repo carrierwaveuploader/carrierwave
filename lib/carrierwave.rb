@@ -95,6 +95,7 @@ end
 
 
 require 'carrierwave/orm/activerecord' if defined?(ActiveRecord)
+require 'carrierwave/orm/couchrest_model' if defined?(CouchrestModel)
 require 'carrierwave/orm/datamapper' if defined?(DataMapper)
 require 'carrierwave/orm/sequel' if defined?(Sequel)
 require 'carrierwave/orm/mongoid' if defined?(Mongoid)
