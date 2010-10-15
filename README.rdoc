@@ -29,7 +29,7 @@ In Rails, add it to your Gemfile:
 CarrierWave is only compatible with Rails 3 and later as of version 0.5. If you want to use
 Rails 2, please use the latest gem in the 0.4.X series. You may also consider trying
 {this plugin}[http://github.com/gbuesing/carrierwave_rails23_compat] which allows CarrierWave
-to be bundled as a plugin with a Rails 2.3 app.
+to be used with a Rails 2.3 app.
 
 == Quick Start
 
