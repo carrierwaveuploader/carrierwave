@@ -94,9 +94,9 @@ describe CarrierWave::Uploader do
       @uploader.store!
     end
     
-    context "without the delete_file_after_storage option" do
+    context "with the delete_tmp_file_after_storage option set to false" do
       before do
-        @uploader_class.delete_file_after_storage = false
+        @uploader_class.delete_tmp_file_after_storage = false
       end
       
       it "should not delete the old file" do
