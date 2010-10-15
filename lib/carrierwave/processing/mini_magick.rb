@@ -249,10 +249,10 @@ module CarrierWave
     # [CarrierWave::ProcessingError] if manipulation failed.
     #
     def manipulate!
-      image = ::MiniMagick::Image.from_file(current_path)
+      image = ::MiniMagick::Image.open(current_path)
       image = yield(image)
       image.write(current_path)
-      ::MiniMagick::Image.from_file(current_path)
+      ::MiniMagick::Image.open(current_path)
     rescue ::MiniMagick::Error, MiniMagick::Invalid => e
       raise CarrierWave::ProcessingError.new("Failed to manipulate with MiniMagick, maybe it is not an image? Original Error: #{e}")
     end

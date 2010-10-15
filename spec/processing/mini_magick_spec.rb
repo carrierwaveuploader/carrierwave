@@ -20,7 +20,7 @@ describe CarrierWave::MiniMagick do
   describe "#convert" do
     it "should convert from one format to another" do
       @instance.convert('png')
-      img = ::MiniMagick::Image.from_file(@instance.current_path)
+      img = ::MiniMagick::Image.open(@instance.current_path)
       img['format'].should =~ /PNG/
     end
   end

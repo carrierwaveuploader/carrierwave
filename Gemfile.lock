@@ -92,7 +92,7 @@ GEM
       mime-types
       treetop (>= 1.4.5)
     mime-types (1.16)
-    mini_magick (2.1)
+    mini_magick (2.3)
       subexec (~> 0.0.4)
     mongo (1.0.7)
       bson (>= 1.0.4)
@@ -155,7 +155,7 @@ DEPENDENCIES
   fog (~> 0.3.7)
   image_science
   json
-  mini_magick (~> 2.1)
+  mini_magick (~> 2.3)
   mongoid (= 2.0.0.beta.17)
   rails (~> 3.0.0)
   rmagick
