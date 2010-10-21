@@ -29,9 +29,9 @@ module CarrierWave
         add_config :cache_dir
         add_config :enable_processing
         add_config :ensure_multipart_form
+        add_config :delete_tmp_file_after_storage
 
         # Mounting
-        add_config :delete_tmp_file_after_storage
         add_config :ignore_integrity_errors
         add_config :ignore_processing_errors
         add_config :validate_integrity

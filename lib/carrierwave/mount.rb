@@ -110,7 +110,6 @@ module CarrierWave
     # [:mount_on => Symbol] if the name of the column to be serialized to differs you can override it using this option
     # [:ignore_integrity_errors => Boolean] if set to true, integrity errors will result in caching failing silently
     # [:ignore_processing_errors => Boolean] if set to true, processing errors will result in caching failing silently
-    # [:delete_tmp_file_after_storage => Boolean] if set to true, the tmp file will be deleted when the file is stored
     #
     # === Examples
     #
