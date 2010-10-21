@@ -1,14 +1,21 @@
 === master
 
+* [changed] s3_access renamed to s3_access_policy [Jonas Nicklas]
 * [changed] Depend on activesupport ~> 3.0 for Rails 3.1 compatibility [Trevor Turk]
-* [changed] Update fog support to remove deprecation warnings (requires fog >= 0.3.0) [Paul Elliott]
+* [changed] Use fog >= 0.3.0, fix deprecation warnings [Paul Elliott]
+* [changed] Use mini_magick ~> 2.3, MiniMagick::Image.from_file becomes MiniMagick::Image.open [Fredrik Björk]
 * [changed] Convert generic MiniMagick::Invalid into ProcessingError [Alex Crichton]
-* [changed] Clean up internal require statements [Josh Kalderimis]
+* [changed] Remove cached tmp file after storing for file store [Damien Mathieu]
+* [added] Option to retain cached tmp file after storage (delete_tmp_file_after_storage) [Damien Mathieu]
+* [added] Transparent support for authenticated_read on S3 [Jonas Nicklas]
+* [fixed] Clean up internal require statements [Josh Kalderimis]
 * [fixed] Header support for S3 [Alex Crichton]
 * [fixed] Stack level too deep errors when using to_json [Trevor Turk]
+* [fixed] Documentation for mount_uploader [Nathan Kleyn]
 
 === Version 0.5 2010-09-23
 
+* [changed] Use ActiveModel instead of ActiveRecord validations to support Mongoid validations as well [Jeroen van Dijk, saberma]
 * [changed] Support S3 file storage with the fog gem, instead of the aws gem (Trevor Turk)
 * [changed] Move translations to a YAML file (Josh Kalderimis)
 * [changed] Depend on activesupport ~> 3.0.0 instead of >= 3.0.0.rc (Trevor Turk)
