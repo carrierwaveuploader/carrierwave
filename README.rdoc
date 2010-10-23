@@ -76,6 +76,12 @@ Add a string column to the model you want to mount the uploader on:
 
     add_column :users, :avatar, :string
 
+If you are using DataMapper you just add
+
+    property :avatar, String, :auto_validate => false
+
+to your model. Then proceed as stated below.
+
 Open your model file and mount the uploader:
 
     class User
