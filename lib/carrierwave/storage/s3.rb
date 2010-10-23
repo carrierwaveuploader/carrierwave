@@ -24,6 +24,24 @@ module CarrierWave
     #       config.s3_access_policy = :public_read
     #     end
     #
+    # You can also set a region to be passed to Fog::AWS:Storage.new
+    #
+    #     CarrierWave.configure do |config|
+    #       ...
+    #       config.s3_region = 'eu-west-1'
+    #       ...
+    #     end
+    #
+    #    Accepted values are:
+    #
+    #      - 'eu-west-1' for 's3-eu-west-1.amazonaws.com'
+    #      - 'us-east-1' for 's3.amazonaws.com'
+    #      - 'ap-southeast-1' for 's3-ap-southeast-1.amazonaws.com'
+    #      - 'us-west-1' for 's3-us-west-1.amazonaws.com'
+    #
+    #   From http://github.com/geemus/fog/blob/master/lib/fog/aws/storage.rb
+    #
+    #
     # The default is :public_read. For more options see:
     #
     # http://docs.amazonwebservices.com/AmazonS3/latest/RESTAccessPolicy.html#RESTCannedAccessPolicies
@@ -206,10 +224,12 @@ module CarrierWave
       def connection
         @connection ||= Fog::AWS::Storage.new(
           :aws_access_key_id => uploader.s3_access_key_id,
-          :aws_secret_access_key => uploader.s3_secret_access_key
+          :aws_secret_access_key => uploader.s3_secret_access_key,
+          :region => uploader.s3_region
         )
       end
 
     end # S3
   end # Storage
 end # CarrierWave
+

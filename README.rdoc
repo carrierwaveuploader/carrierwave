@@ -2,6 +2,25 @@
 
 http://carrierwave.rubyforge.org
 
+== RogerCampos little addition
+
+This fork adds a "s3_region" option to config block, wich will be passed to Fog::AWS::Storage.new
+
+     CarrierWave.configure do |config|
+       ...
+       config.s3_region = 'eu-west-1'
+       ...
+     end
+
+    Accepted values are:
+
+      * 'eu-west-1'          for 's3-eu-west-1.amazonaws.com'
+      * 'us-east-1'          for 's3.amazonaws.com'
+      * 'ap-southeast-1'     for 's3-ap-southeast-1.amazonaws.com'
+      * 'us-west-1'          for 's3-us-west-1.amazonaws.com'
+
+   Look at http://github.com/geemus/fog/blob/master/lib/fog/aws/storage.rb for more options.
+
 == Summary
 
 This gem provides a simple and extremely flexible way to upload files from Ruby applications.
@@ -531,3 +550,4 @@ You should now be able to run the tests:
     bundle exec rake
 
 Issues are reported on GitHub, pull requests are very welcome!
+
