@@ -14,6 +14,7 @@ if ENV['S3_SPEC']
       @uploader.stub!(:s3_access_policy).and_return(:public_read)
       @uploader.stub!(:s3_cnamed).and_return(false)
       @uploader.stub!(:s3_headers).and_return({'Expires' => 'Fri, 21 Jan 2021 16:51:06 GMT'})
+      @uploader.stub!(:s3_region).and_return(ENV["S3_REGION"] || 'us-east-1')
 
       @storage = CarrierWave::Storage::S3.new(@uploader)
       @file = CarrierWave::SanitizedFile.new(file_path('test.jpg'))
@@ -153,5 +154,25 @@ if ENV['S3_SPEC']
       end
     end
 
+    describe 's3 region' do
+      before do
+        @uploader.stub!(:store_path).and_return('uploads/bar.txt')
+        @s3_file = @storage.store!(@file)
+      end
+
+      it "should use region-specific url for accessing aws" do
+        host = URI.parse(@s3_file.authenticated_url).host
+        case @uploader.s3_region
+        when 'eu-west-1'
+          host.should == 's3-eu-west-1.amazonaws.com'
+        when 'us-east-1'
+          host.should == 's3.amazonaws.com'
+        when 'ap-southeast-1'
+          host.should == 's3-ap-southeast-1.amazonaws.com'
+        when 'us-west-1'
+          host.should == 's3-us-west-1.amazonaws.com'
+        end
+      end
+    end
   end
 end

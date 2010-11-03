@@ -51,6 +51,7 @@ module CarrierWave
           config.storage = :file
           config.s3_headers = {}
           config.s3_access_policy = :public_read
+          config.s3_region = 'us-east-1'
           config.grid_fs_database = 'carrierwave'
           config.grid_fs_host = 'localhost'
           config.grid_fs_port = 27017
