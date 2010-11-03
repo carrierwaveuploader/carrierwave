@@ -2,25 +2,6 @@
 
 http://carrierwave.rubyforge.org
 
-== RogerCampos little addition
-
-This fork adds a "s3_region" option to config block, wich will be passed to Fog::AWS::Storage.new
-
-     CarrierWave.configure do |config|
-       ...
-       config.s3_region = 'eu-west-1'
-       ...
-     end
-
-    Accepted values are:
-
-      * 'eu-west-1'          for 's3-eu-west-1.amazonaws.com'
-      * 'us-east-1'          for 's3.amazonaws.com'
-      * 'ap-southeast-1'     for 's3-ap-southeast-1.amazonaws.com'
-      * 'us-west-1'          for 's3-us-west-1.amazonaws.com'
-
-   Look at http://github.com/geemus/fog/blob/master/lib/fog/aws/storage.rb for more options.
-
 == Summary
 
 This gem provides a simple and extremely flexible way to upload files from Ruby applications.
@@ -363,6 +344,22 @@ In your uploader, set the storage to :s3
     class AvatarUploader < CarrierWave::Uploader::Base
       storage :s3
     end
+
+You can also use the s3_region option to set the region for your bucket
+
+    CarrierWave.configure do |config|
+      ...
+      config.s3_region = 'eu-west-1'
+      ...
+    end
+
+Available options are defined in Fog Storage[http://github.com/geemus/fog/blob/master/lib/fog/aws/storage.rb]
+
+* 'eu-west-1' for 's3-eu-west-1.amazonaws.com'
+* 'us-east-1' for 's3.amazonaws.com'
+* 'ap-southeast-1' for 's3-ap-southeast-1.amazonaws.com'
+* 'us-west-1' for 's3-us-west-1.amazonaws.com'
+
 
 That's it! You can still use the <code>CarrierWave::Uploader#url</code> method to return
 the url to the file on Amazon S3.
