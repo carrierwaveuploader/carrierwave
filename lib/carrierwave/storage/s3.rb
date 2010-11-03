@@ -24,24 +24,6 @@ module CarrierWave
     #       config.s3_access_policy = :public_read
     #     end
     #
-    # You can also set a region to be passed to Fog::AWS:Storage.new
-    #
-    #     CarrierWave.configure do |config|
-    #       ...
-    #       config.s3_region = 'eu-west-1'
-    #       ...
-    #     end
-    #
-    #    Accepted values are:
-    #
-    #      - 'eu-west-1' for 's3-eu-west-1.amazonaws.com'
-    #      - 'us-east-1' for 's3.amazonaws.com'
-    #      - 'ap-southeast-1' for 's3-ap-southeast-1.amazonaws.com'
-    #      - 'us-west-1' for 's3-us-west-1.amazonaws.com'
-    #
-    #   From http://github.com/geemus/fog/blob/master/lib/fog/aws/storage.rb
-    #
-    #
     # The default is :public_read. For more options see:
     #
     # http://docs.amazonwebservices.com/AmazonS3/latest/RESTAccessPolicy.html#RESTCannedAccessPolicies
@@ -70,6 +52,19 @@ module CarrierWave
     # instead of
     #
     #     http://bucketname.domain.tld.s3.amazonaws.com/path/to/file
+    #
+    # You can specify a region. US Standard "us-east-1" is the default.
+    #
+    #     CarrierWave.configure do |config|
+    #       config.s3_region = 'eu-west-1'
+    #     end
+    #
+    # Available options are defined in Fog Storage[http://github.com/geemus/fog/blob/master/lib/fog/aws/storage.rb]
+    #
+    #     'eu-west-1' => 's3-eu-west-1.amazonaws.com'
+    #     'us-east-1' => 's3.amazonaws.com'
+    #     'ap-southeast-1' => 's3-ap-southeast-1.amazonaws.com'
+    #     'us-west-1' => 's3-us-west-1.amazonaws.com'
     #
     class S3 < Abstract
 

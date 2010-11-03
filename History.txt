@@ -6,6 +6,7 @@
 * [changed] Use mini_magick ~> 2.3, MiniMagick::Image.from_file becomes MiniMagick::Image.open [Fredrik Björk]
 * [changed] Convert generic MiniMagick::Invalid into ProcessingError [Alex Crichton]
 * [changed] Remove cached tmp file after storing for file store [Damien Mathieu]
+* [added] s3_region config option to set AWS S3 region [Roger Campos]
 * [added] Option to retain cached tmp file after storage (delete_tmp_file_after_storage) [Damien Mathieu]
 * [added] Transparent support for authenticated_read on S3 [Jonas Nicklas]
 * [fixed] Clean up internal require statements [Josh Kalderimis]
