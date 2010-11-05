@@ -487,10 +487,10 @@ happily accepted.
 The activerecord validations use the Rails i18n framework. Add these keys to
 your translations file:
 
-    carrierwave:
-      errors:
-        integrity: 'Not an image.'
-        processing: 'Cannot resize image.'
+    errors:
+      messages:
+        carrierwave_processing_error: 'Cannot resize image.'
+        carrierwave_integrity_error: 'Not an image.'
 
 == License
 
