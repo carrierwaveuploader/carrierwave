@@ -24,14 +24,14 @@ describe CarrierWave::Uploader do
     after { FileUtils.rm_rf(@cache_dir) }
 
     it "should clear all files older than 24 hours in the default cache directory" do
-      Timecop.freeze(Time.parse('2007-12-06 10:12')) do
+      Timecop.freeze(Time.utc(2007, 12, 6, 10, 12)) do
         @uploader_class.clean_cached_files!
       end
       Dir.glob("#{@cache_dir}/*").should have(1).element
     end
 
     it "should be aliased on the CarrierWave module" do
-      Timecop.freeze(Time.parse('2007-12-06 10:12')) do
+      Timecop.freeze(Time.utc(2007, 12, 6, 10, 12)) do
         CarrierWave.clean_cached_files!
       end
       Dir.glob("#{@cache_dir}/*").should have(1).element
