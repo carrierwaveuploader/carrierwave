@@ -69,18 +69,18 @@ GEM
       data_objects (= 0.10.2)
     erubis (2.6.6)
       abstract (>= 1.0.0)
-    excon (0.2.3)
+    excon (0.2.4)
     extlib (0.9.15)
-    fog (0.3.7)
+    fog (0.3.25)
       builder
-      excon (>= 0.2.3)
-      formatador (>= 0.0.15)
+      excon (>= 0.2.4)
+      formatador (>= 0.0.16)
       json
       mime-types
       net-ssh (~> 2.0.23)
       nokogiri (~> 1.4.3.1)
       ruby-hmac
-    formatador (0.0.15)
+    formatador (0.0.16)
     gherkin (2.1.5)
       trollop (~> 1.16.2)
     i18n (0.4.1)
@@ -151,7 +151,7 @@ DEPENDENCIES
   dm-migrations
   dm-sqlite-adapter
   dm-validations
-  fog (~> 0.3.7)
+  fog (~> 0.3.25)
   image_science
   json
   mini_magick (~> 2.3)
