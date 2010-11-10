@@ -331,18 +331,21 @@ Fog[http://github.com/geemus/fog] is used to support Amazon S3. Ensure you have 
 
     gem install fog
 
-You'll need to configure a bucket, access id and secret key like this in an initializer:
+You'll need to configure a directory, access id and secret key like this in an initializer:
 
     CarrierWave.configure do |config|
-      config.s3_access_key_id = 'xxxxxx'
-      config.s3_secret_access_key = 'xxxxxx'
-      config.s3_bucket = 'name_of_bucket'
+      config.fog_credentials = {
+        :aws_access_key_id      => 'xxxxxx',
+        :aws_secret_access_key  => 'yyyyyy,
+        :provider => 'AWS'
+      }
+      config.fog_directory = 'name_of_directory'
     end
 
-In your uploader, set the storage to :s3
+In your uploader, set the storage to :fog
 
     class AvatarUploader < CarrierWave::Uploader::Base
-      storage :s3
+      storage :fog
     end
 
 You can specify a region. US Standard "us-east-1" is the default.
@@ -358,34 +361,65 @@ Available options are defined in Fog Storage[http://github.com/geemus/fog/blob/m
     'ap-southeast-1' => 's3-ap-southeast-1.amazonaws.com'
     'us-west-1' => 's3-us-west-1.amazonaws.com'
 
-That's it! You can still use the <code>CarrierWave::Uploader#url</code> method to return
-the url to the file on Amazon S3.
+That's it! You can still use the <code>CarrierWave::Uploader#url</code> method to return the url to the file on Amazon S3.
+
+== Using Google Storage for Developers
+
+Fog[http://github.com/geemus/fog] is used to support Google Storage for Developers. Ensure you have it installed:
+
+    gem install fog
+
+You'll need to configure a directory, access id and secret key like this in an initializer:
+
+    CarrierWave.configure do |config|
+      config.fog_credentials = {
+        :google_access_key_id      => 'xxxxxx',
+        :google_secret_access_key  => 'yyyyyy,
+        :provider => 'Google'
+      }
+      config.fog_directory = 'name_of_directory'
+    end
+
+In your uploader, set the storage to :fog
+
+    class AvatarUploader < CarrierWave::Uploader::Base
+      storage :fog
+    end
+
+That's it! You can still use the <code>CarrierWave::Uploader#public_url</code> method to return
+the url to the file on Google.
 
 == Using Rackspace Cloud Files
 
-Cloud Files support requires a {Rackspace Cloud}[http://rackspacecloud.com] username and API key.
-You must also create a container for Carrierwave to use, and mark it public (publish it to the CDN)
+Fog[http://github.com/geemus/fog] is used to support Rackspace Cloud Files. Ensure you have it installed:
+
+    gem install fog
+
+You'll need to configure a directory, access id and secret key like this in an initializer:
 
     CarrierWave.configure do |config|
-      config.cloud_files_username = 'xxxxxx'
-      config.cloud_files_api_key = 'xxxxxxxxxxxxxxxxxxxxx'
-      config.cloud_files_container = 'name_of_bucket'
+      config.fog_credentials = {
+        :provider => 'Rackspace',
+        :rackspace_api_key  => 'xxxxxx',
+        :rackspace_username => 'yyyyyy,
+      }
+      config.fog_directory = 'name_of_directory'
     end
 
 You can optionally include your CDN host name in the configuration.
 This is *highly* recommended, as without it every request requires a lookup
 of this information.
 
-    config.cloud_files_cdn_host = "c000000.cdn.rackspacecloud.com"
+    config.fog_host = "c000000.cdn.rackspacecloud.com"
 
-In your uploader, set the storage to :cloud_files
+In your uploader, set the storage to :fog
 
     class AvatarUploader < CarrierWave::Uploader::Base
-      storage :cloud_files
+      storage :fog
     end
 
-That's it! You can still use the <code>CarrierWave::Uploader#url</code> method to return
-the url to the file on the Cloud Files CDN.
+That's it! You can still use the <code>CarrierWave::Uploader#public_url</code> method to return
+the url to the file on Rackspace Cloud Files.
 
 == Using MongoDB's GridFS store
 

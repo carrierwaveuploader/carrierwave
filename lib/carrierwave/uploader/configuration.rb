@@ -32,6 +32,12 @@ module CarrierWave
         add_config :ensure_multipart_form
         add_config :delete_tmp_file_after_storage
 
+        # fog
+        add_config :fog_credentials
+        add_config :fog_directory
+        add_config :fog_host
+        add_config :fog_public
+
         # Mounting
         add_config :ignore_integrity_errors
         add_config :ignore_processing_errors
@@ -43,6 +49,7 @@ module CarrierWave
           config.permissions = 0644
           config.storage_engines = {
             :file => "CarrierWave::Storage::File",
+            :fog => "CarrierWave::Storage::Fog",
             :s3 => "CarrierWave::Storage::S3",
             :grid_fs => "CarrierWave::Storage::GridFS",
             :right_s3 => "CarrierWave::Storage::RightS3",

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    carrierwave (0.5.0)
+    carrierwave (0.5.1)
       activesupport (~> 3.0)
 
 GEM
@@ -69,18 +69,19 @@ GEM
       data_objects (= 0.10.2)
     erubis (2.6.6)
       abstract (>= 1.0.0)
-    excon (0.2.3)
+    excon (0.2.8)
     extlib (0.9.15)
-    fog (0.3.7)
+    fog (0.3.30)
       builder
-      excon (>= 0.2.3)
-      formatador (>= 0.0.15)
+      excon (>= 0.2.8)
+      formatador (>= 0.0.16)
       json
       mime-types
-      net-ssh (~> 2.0.23)
-      nokogiri (~> 1.4.3.1)
+      named-parameters (>= 0.0.17)
+      net-ssh (>= 2.0.23)
+      nokogiri (>= 1.4.4)
       ruby-hmac
-    formatador (0.0.15)
+    formatador (0.0.16)
     gherkin (2.1.5)
       trollop (~> 1.16.2)
     i18n (0.4.1)
@@ -101,8 +102,9 @@ GEM
       mongo (= 1.0.9)
       tzinfo (~> 0.3.22)
       will_paginate (~> 3.0.pre)
+    named-parameters (0.0.17)
     net-ssh (2.0.23)
-    nokogiri (1.4.3.1)
+    nokogiri (1.4.4)
     polyglot (0.3.1)
     rack (1.2.1)
     rack-mount (0.6.13)
@@ -151,7 +153,7 @@ DEPENDENCIES
   dm-migrations
   dm-sqlite-adapter
   dm-validations
-  fog (~> 0.3.7)
+  fog (~> 0.3.30)
   image_science
   json
   mini_magick (~> 2.3)
