@@ -139,33 +139,23 @@ describe CarrierWave::SanitizedFile do
   shared_examples_for "all valid sanitized files" do
 
     describe '#empty?' do
-      it "should not be empty" do
-        subject.should_not be_empty
-      end
+      it { should_not be_empty }
     end
 
     describe '#original_filename' do
-      it "should return the original filename" do
-        subject.original_filename.should == "llama.jpg"
-      end
+      its(:original_filename) { should == 'llama.jpg' }
     end
 
     describe '#filename' do
-      it "should return the filename" do
-        subject.filename.should == "llama.jpg"
-      end
+      its(:filename) { should == 'llama.jpg' }
     end
 
     describe '#basename' do
-      it "should return the basename" do
-        subject.basename.should == "llama"
-      end
+      its(:basename) { should == 'llama' }
     end
 
     describe '#extension' do
-      it "should return the extension" do
-        subject.extension.should == "jpg"
-      end
+      its(:extension) { should == 'jpg' }
     end
 
     describe "#read" do
@@ -175,9 +165,7 @@ describe CarrierWave::SanitizedFile do
     end
 
     describe "#size" do
-      it "should return the size of the file" do
-        subject.size.should == 13
-      end
+      its(:size) { should == 13 }
     end
 
     describe '#move_to' do
@@ -395,9 +383,7 @@ describe CarrierWave::SanitizedFile do
     end
 
     describe '#path' do
-      it "should be nil" do
-        subject.path.should be_nil
-      end
+      its(:path) { should be_nil }
     end
 
     describe '#delete' do
@@ -505,39 +491,27 @@ describe CarrierWave::SanitizedFile do
     end
 
     describe '#size' do
-      it "should be zero" do
-        subject.size.should be_zero
-      end
+      its(:size) { should be_zero }
     end
 
     describe '#path' do
-      it "should be nil" do
-        subject.path.should be_nil
-      end
+      its(:path) { should be_nil }
     end
 
     describe '#original_filename' do
-      it "should be nil" do
-        subject.original_filename.should be_nil
-      end
+      its(:original_filename) { should be_nil }
     end
 
     describe '#filename' do
-      it "should be nil" do
-        subject.filename.should be_nil
-      end
+      its(:filename) { should be_nil }
     end
 
     describe '#basename' do
-      it "should be nil" do
-        subject.basename.should be_nil
-      end
+      its(:basename) { should be_nil }
     end
 
     describe '#extension' do
-      it "should be nil" do
-        subject.extension.should be_nil
-      end
+      its(:extension) { should be_nil }
     end
 
     describe '#delete' do
@@ -569,39 +543,27 @@ describe CarrierWave::SanitizedFile do
     end
 
     describe '#size' do
-      it "should be zero" do
-        subject.size.should be_zero
-      end
+      its(:size) { should be_zero }
     end
 
     describe '#path' do
-      it "should be nil" do
-        subject.path.should be_nil
-      end
+      its(:path) { should be_nil }
     end
 
     describe '#original_filename' do
-      it "should be nil" do
-        subject.original_filename.should be_nil
-      end
+      its(:original_filename) { should be_nil }
     end
 
     describe '#filename' do
-      it "should be nil" do
-        subject.filename.should be_nil
-      end
+      its(:filename) { should be_nil }
     end
 
     describe '#basename' do
-      it "should be nil" do
-        subject.basename.should be_nil
-      end
+      its(:basename) { should be_nil }
     end
 
     describe '#extension' do
-      it "should be nil" do
-        subject.extension.should be_nil
-      end
+      its(:extension) { should be_nil }
     end
 
     describe '#delete' do
