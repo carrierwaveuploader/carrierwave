@@ -114,9 +114,17 @@ module CarrierWave
       # versions if their parameters somehow have changed.
       #
       def recreate_versions!
-        with_callbacks(:recreate_versions, file) do
-          versions.each { |name, v| v.store!(file) }
-        end
+        # Some files could possibly not be stored on the local disk. This
+        # doesn't play nicely with processing. To fix this, we create a new
+        # file with the same original filename and we call file.read to get the
+        # data for the file and then store that.
+        #
+        # The call to store! will trigger the necessary callbacks to both
+        # process this version and all sub-versions
+        local_file = SanitizedFile.new :tempfile => StringIO.new(file.read),
+          :filename => File.basename(path)
+
+        store! local_file
       end
 
     private
