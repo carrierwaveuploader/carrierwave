@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require 'spec_helper'
+require 'active_support/json'
 
 describe CarrierWave::Uploader do
 
