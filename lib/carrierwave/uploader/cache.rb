@@ -45,7 +45,7 @@ module CarrierWave
           Dir.glob(File.expand_path(File.join(cache_dir, '*'), CarrierWave.root)).each do |dir|
             time = dir.scan(/(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})/).first.map { |t| t.to_i }
             time = Time.utc(*time)
-            if time < (Time.now - (60*60*24))
+            if time < (Time.now.utc - (60*60*24))
               FileUtils.rm_rf(dir)
             end
           end

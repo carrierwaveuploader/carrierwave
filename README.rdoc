@@ -4,8 +4,8 @@ http://carrierwave.rubyforge.org
 
 == Summary
 
-This plugin for Merb and Rails provides a simple and extremely flexible way to
-upload files.
+This gem provides a simple and extremely flexible way to upload files from Ruby applications.
+It works well with Rack based web applications, such as Ruby on Rails.
 
 == Description
 
@@ -22,23 +22,20 @@ Install the latest stable release:
 
     [sudo] gem install carrierwave
 
-In Merb, add it as a dependency to your config/dependencies.rb:
+In Rails, add it to your Gemfile:
 
-    dependency 'carrierwave'
+    gem 'carrierwave'
 
-In Rails, add it to your environment.rb:
-
-    config.gem "carrierwave"
+CarrierWave is only compatible with Rails 3 and later as of version 0.5. If you want to use
+Rails 2, please use the latest gem in the 0.4.X series. You may also consider trying
+{this plugin}[http://github.com/gbuesing/carrierwave_rails23_compat] which allows CarrierWave
+to be used with a Rails 2.3 app.
 
 == Quick Start
 
 Start off by generating an uploader:
 
-    merb-gen uploader Avatar
-
-or in Rails:
-
-    script/generate uploader Avatar
+    rails generate uploader Avatar
 
 this should give you a file in:
 
@@ -61,7 +58,8 @@ You can use your uploader class to store and retrieve files like this:
 
 CarrierWave gives you a +store+ for permanent storage, and a +cache+ for
 temporary storage. You can use different stores, at the moment a filesystem
-store, an Amazon S3 store, a Rackspace Cloud Files store, and a store for MongoDB's GridFS are bundled.
+store, an Amazon S3 store, a Rackspace Cloud Files store, and a store for
+MongoDB's GridFS are bundled.
 
 Most of the time you are going to want to use CarrierWave together with an ORM.
 It is quite simple to mount uploaders on columns in your model, so you can
@@ -112,9 +110,12 @@ Define +store_dir+ as +nil+ if you'd like to store files at the root level.
 
 == Securing uploads
 
-Certain file might be dangerous if uploaded to the wrong location, such as php files or other script files. CarrierWave allows you to specify a white-list of allowed extensions.
+Certain file might be dangerous if uploaded to the wrong location, such as php
+files or other script files. CarrierWave allows you to specify a white-list of
+allowed extensions.
 
-If you're mounting the uploader, uploading a file with the wrong extension will make the record invalid instead. Otherwise, an error is raised.
+If you're mounting the uploader, uploading a file with the wrong extension will
+make the record invalid instead. Otherwise, an error is raised.
 
     class MyUploader < CarrierWave::Uploader::Base
       def extension_white_list
@@ -170,7 +171,7 @@ in that case. Suppose your +user+ model has an uploader mounted on +avatar+
 file, just add a hidden field called +avatar_cache+. In Rails, this would look
 like this:
 
-    <% form_for @user, :html => {:multipart => true} do |f| %>
+    <%= form_for @user, :html => {:multipart => true} do |f| %>
       <p>
         <label>My Avatar</label>
         <%= f.file_field :avatar %>
@@ -181,7 +182,7 @@ like this:
 It might be a good idea to show the user that a file has been uploaded, in the
 case of images, a small thumbnail would be a good indicator:
 
-    <% form_for @user, :html => {:multipart => true} do |f| %>
+    <%= form_for @user, :html => {:multipart => true} do |f| %>
       <p>
         <label>My Avatar</label>
         <%= image_tag(@user.avatar_url) if @user.avatar? %>
@@ -195,7 +196,7 @@ case of images, a small thumbnail would be a good indicator:
 If you want to remove a previously uploaded file on a mounted uploader, you can
 easily add a checkbox to the form which will remove the file when checked.
 
-    <% form_for @user, :html => {:multipart => true} do |f| %>
+    <%= form_for @user, :html => {:multipart => true} do |f| %>
       <p>
         <label>My Avatar</label>
         <%= image_tag(@user.avatar_url) if @user.avatar? %>
@@ -215,10 +216,10 @@ If you want to remove the file manually, you can call <code>remove_avatar!</code
 == Uploading files from a remote location
 
 Your users may find it convenient to upload a file from a location on the Internet
-via a URL. CarrierWave makes this simple, just add the appropriate column to your
+via a URL. CarrierWave makes this simple, just add the appropriate attribute to your
 form and you're good to go:
 
-    <% form_for @user, :html => {:multipart => true} do |f| %>
+    <%= form_for @user, :html => {:multipart => true} do |f| %>
       <p>
         <label>My Avatar URL:</label>
         <%= image_tag(@user.avatar_url) if @user.avatar? %>
@@ -270,6 +271,10 @@ Or alternatively:
       permissions 0777
     end
 
+If you're using Rails, create an initializer for this:
+
+    config/initializers/carrierwave.rb
+
 == Testing CarrierWave
 
 It's a good idea to test you uploaders in isolation. In order to speed up your
@@ -291,6 +296,8 @@ CarrierWave comes with some RSpec matchers which you may find useful:
     require 'carrierwave/test/matchers'
 
     describe MyUploader do
+      include CarrierWave::Test::Matchers
+
       before do
         MyUploader.enable_processing = true
         @uploader = MyUploader.new(@user, :avatar)
@@ -320,12 +327,11 @@ CarrierWave comes with some RSpec matchers which you may find useful:
 
 == Using Amazon S3
 
-Older versions of CarrierWave used the +aws-s3+ and +right_aws+ libraries. The Aws[http://github.com/appoxy/aws]
-is now used meaning european buckets are supported out the box. Ensure you have it installed:
+Fog[http://github.com/geemus/fog] is used to support Amazon S3. Ensure you have it installed:
 
-    gem install aws
+    gem install fog
 
-You'll need to configure a bucket, access id and secret key like this:
+You'll need to configure a bucket, access id and secret key like this in an initializer:
 
     CarrierWave.configure do |config|
       config.s3_access_key_id = 'xxxxxx'
@@ -333,9 +339,7 @@ You'll need to configure a bucket, access id and secret key like this:
       config.s3_bucket = 'name_of_bucket'
     end
 
-Do this in an initializer in Rails, and in a +before_app_loads+ block in Merb.
-
-And then in your uploader, set the storage to :s3
+In your uploader, set the storage to :s3
 
     class AvatarUploader < CarrierWave::Uploader::Base
       storage :s3
@@ -343,7 +347,6 @@ And then in your uploader, set the storage to :s3
 
 That's it! You can still use the <code>CarrierWave::Uploader#url</code> method to return
 the url to the file on Amazon S3.
-
 
 == Using Rackspace Cloud Files
 
@@ -362,9 +365,7 @@ of this information.
 
     config.cloud_files_cdn_host = "c000000.cdn.rackspacecloud.com"
 
-Do this in an initializer in Rails, and in a +before_app_loads+ block in Merb.
-
-And then in your uploader, set the storage to :cloud_files
+In your uploader, set the storage to :cloud_files
 
     class AvatarUploader < CarrierWave::Uploader::Base
       storage :cloud_files
@@ -486,31 +487,10 @@ happily accepted.
 The activerecord validations use the Rails i18n framework. Add these keys to
 your translations file:
 
-    carrierwave:
-      errors:
-        integrity: 'Not an image.'
-        processing: 'Cannot resize image.'
-
-== Contributors
-
-These people have contributed their time and effort to CarrierWave:
-
-* Jonas Nicklas
-* Pavel Kunc
-* Andrew Timberlake
-* Durran Jordan
-* Scott Motte
-* Sho Fukamachi
-* Sam Lown
-* Dave Ott
-* Quin Hoxie
-* H. Wade Minter
-* Trevor Turk
-* Nicklas Ramhöj
-* Matt Hooks
-* Andreas Haller
-* Lars Pind
-* Ramon Soares
+    errors:
+      messages:
+        carrierwave_processing_error: 'Cannot resize image.'
+        carrierwave_integrity_error: 'Not an image.'
 
 == License
 
@@ -540,7 +520,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 In order to setup a development environment and run the specs, you'll
 need to install bundler:
 
-    gem install bundler --pre
+    gem install bundler
 
 And then install the dependencies:
 
@@ -548,6 +528,7 @@ And then install the dependencies:
 
 You should now be able to run the tests:
 
-    bundle exec rake spec
+    bundle exec rake
 
 Issues are reported on GitHub, pull requests are very welcome!
+

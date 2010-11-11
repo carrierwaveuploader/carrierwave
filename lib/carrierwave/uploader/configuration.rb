@@ -8,18 +8,18 @@ module CarrierWave
         add_config :root
         add_config :permissions
         add_config :storage_engines
-        add_config :s3_access # for old aws/s3
-        add_config :s3_access_policy # for aws
+        add_config :s3_access_policy
         add_config :s3_bucket
         add_config :s3_access_key_id
         add_config :s3_secret_access_key
         add_config :s3_cnamed
         add_config :s3_headers
-        add_config :s3_multi_thread
+        add_config :s3_region
         add_config :cloud_files_username
         add_config :cloud_files_api_key
         add_config :cloud_files_container
         add_config :cloud_files_cdn_host
+        add_config :grid_fs_connection
         add_config :grid_fs_database
         add_config :grid_fs_host
         add_config :grid_fs_port
@@ -30,14 +30,15 @@ module CarrierWave
         add_config :cache_dir
         add_config :enable_processing
         add_config :ensure_multipart_form
-        
+        add_config :delete_tmp_file_after_storage
+
         # Mounting
         add_config :ignore_integrity_errors
         add_config :ignore_processing_errors
         add_config :validate_integrity
         add_config :validate_processing
         add_config :mount_on
-        
+
         configure do |config|
           config.permissions = 0644
           config.storage_engines = {
@@ -48,15 +49,15 @@ module CarrierWave
             :cloud_files => "CarrierWave::Storage::CloudFiles"
           }
           config.storage = :file
-          #config.s3_access = :public_read
-          #config.s3_access_policy = 'public-read' # Now set in library
           config.s3_headers = {}
-          config.s3_multi_thread = true
+          config.s3_access_policy = :public_read
+          config.s3_region = 'us-east-1'
           config.grid_fs_database = 'carrierwave'
           config.grid_fs_host = 'localhost'
           config.grid_fs_port = 27017
           config.store_dir = 'uploads'
           config.cache_dir = 'uploads/tmp'
+          config.delete_tmp_file_after_storage = true
           config.ignore_integrity_errors = true
           config.ignore_processing_errors = true
           config.validate_integrity = true

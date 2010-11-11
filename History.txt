@@ -1,3 +1,36 @@
+=== master
+
+* [changed] s3_access renamed to s3_access_policy [Jonas Nicklas]
+* [changed] Depend on activesupport ~> 3.0 for Rails 3.1 compatibility [Trevor Turk]
+* [changed] Use fog >= 0.3.0, fix deprecation warnings [Paul Elliott]
+* [changed] Use mini_magick ~> 2.3, MiniMagick::Image.from_file becomes MiniMagick::Image.open [Fredrik Björk]
+* [changed] Convert generic MiniMagick::Invalid into ProcessingError [Alex Crichton]
+* [changed] Remove cached tmp file after storing for file store [Damien Mathieu]
+* [added] s3_region config option to set AWS S3 region [Roger Campos]
+* [added] Option to retain cached tmp file after storage (delete_tmp_file_after_storage) [Damien Mathieu]
+* [added] Transparent support for authenticated_read on S3 [Jonas Nicklas]
+* [fixed] Clean up internal require statements [Josh Kalderimis]
+* [fixed] Header support for S3 [Alex Crichton]
+* [fixed] Stack level too deep errors when using to_json [Trevor Turk]
+* [fixed] Documentation for mount_uploader [Nathan Kleyn]
+
+=== Version 0.5 2010-09-23
+
+* [changed] Use ActiveModel instead of ActiveRecord validations to support Mongoid validations as well [Jeroen van Dijk, saberma]
+* [changed] Support S3 file storage with the fog gem, instead of the aws gem (Trevor Turk)
+* [changed] Move translations to a YAML file (Josh Kalderimis)
+* [changed] Depend on activesupport ~> 3.0.0 instead of >= 3.0.0.rc (Trevor Turk)
+* [changed] Remove old Merb and Rails generators, support Rails 3 generators (Jonas Nicklas, Trevor Turk)
+* [changed] Replace Net::HTTP with open-url for remote file downloads (icebreaker)
+* [changed] Move translations to a YAML file (Josh Kalderimis)
+* [changed] Use gemspec to generate Gemfile contents (Jonas Nicklas)
+* [added] Add file size support for S3 storage (Pavel Chipiga)
+* [added] Add option for disabling multipart form check (Dennis Blöte)
+* [fixed] Correct naming of validators (Josh Kalderimis)
+* [fixed] Fix remote file downloader (Jonas Nicklas)
+* [fixed] Escape URLs passed to remote file downloader so URLs with spaces work (Mauricio Zaffari)
+* [fixed] Correct filename used in generators (Fred Wu)
+
 === Version 0.4.6 2010-07-20
 
 * [removed] Support for MongoMapper, see: http://groups.google.com/group/carrierwave/browse_thread/thread/56df146b83878c22
@@ -26,7 +59,7 @@
 * [added] CarrierWave.clean_cached_files! to remove old cached files
 * [added] Option to set headers for S3
 * [added] GridStore now has authentication
-* [fixed] Rmagick convert method now does what it says 
+* [fixed] Rmagick convert method now does what it says
 * [fixed] Content type is stored on GridStore and Amazon S3
 * [fixed] Metadata is no longer broken for S3
 
@@ -90,7 +123,7 @@ A bugfix release. Drop in compatible with 0.3.0.
 
 * [fixed] Saving a record with a mounted Uploader no longer removes uploaded file
 * [fixed] The file returned by S3 storage now has the path set to the full store path
-* [added] File returned by S3 storage now responds to S3 specific methods 
+* [added] File returned by S3 storage now responds to S3 specific methods
 
 === 0.3 2009-06-20
 
@@ -99,9 +132,9 @@ most bugs should be fixed.
 
 * [changed] Reworked how storage engines work, some internal API changes
 * [added] Macro-like methods for RMagick, no need to call #process any more!
-* [added] Ability to super to any Mount method 
+* [added] Ability to super to any Mount method
 * [fixed] Sequel support should now work as expected
-* [fixed] ActiveRecord no longer saves the record twice 
+* [fixed] ActiveRecord no longer saves the record twice
 * [added] Added convenient macro style class methods to rmagick processing
 
 === 0.2.4 2009-06-11

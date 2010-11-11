@@ -10,21 +10,21 @@ module CarrierWave
   module Validations
     module ActiveModel
       extend ActiveSupport::Concern
-      
-      class IntegrityValidator < ::ActiveModel::EachValidator
-      
-        def validate_each(record, attribute, value)
-          if record.send("#{attribute}_processing_error")
-            record.errors[attribute] = I18n.t('carrierwave.errors.processing', :default => 'failed to be processed.')
-          end
-        end
-      end
-    
+
       class ProcessingValidator < ::ActiveModel::EachValidator
 
         def validate_each(record, attribute, value)
+          if record.send("#{attribute}_processing_error")
+            record.errors.add(attribute, :carrierwave_processing_error)
+          end
+        end
+      end
+
+      class IntegrityValidator < ::ActiveModel::EachValidator
+
+        def validate_each(record, attribute, value)
           if record.send("#{attribute}_integrity_error")
-            record.errors[attribute] = I18n.t('carrierwave.errors.integrity', :default => 'is not an allowed type of file.')
+            record.errors.add(attribute, :carrierwave_integrity_error)
           end
         end
       end
@@ -66,7 +66,7 @@ module CarrierWave
           validates_with ProcessingValidator, _merge_attributes(attr_names)
         end
       end
-      
+
       included do
         extend HelperMethods
         include HelperMethods
@@ -74,3 +74,6 @@ module CarrierWave
     end
   end
 end
+
+I18n.load_path << File.join(File.dirname(__FILE__), "..", "locale", 'en.yml')
+

@@ -154,7 +154,7 @@ module CarrierWave
         end
 
         def initialize(filename)
-          @image = ::MiniMagick::Image.from_file(filename)
+          @image = ::MiniMagick::Image.open(filename)
         end
       end
 

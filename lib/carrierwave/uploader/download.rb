@@ -13,7 +13,7 @@ module CarrierWave
 
       class RemoteFile
         def initialize(uri)
-          @uri = URI.parse(uri)
+          @uri = URI.parse(URI.escape(uri))
         end
 
         def original_filename
@@ -31,7 +31,11 @@ module CarrierWave
       private
 
         def file
-          @file ||= StringIO.new(Kernel.open(@uri.to_s))
+          if @file.blank?
+            @file = Kernel.open(@uri.to_s)
+            @file = @file.is_a?(String) ? StringIO.new(@file) : @file
+          end
+          @file
         end
 
         def method_missing(*args, &block)
