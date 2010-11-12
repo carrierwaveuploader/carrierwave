@@ -13,6 +13,7 @@ if ENV['S3_SPEC']
       @uploader.stub!(:s3_bucket).and_return(@bucket)
       @uploader.stub!(:s3_access_policy).and_return(:public_read)
       @uploader.stub!(:s3_cnamed).and_return(false)
+      @uploader.stub!(:s3_cname).and_return(nil)
       @uploader.stub!(:s3_headers).and_return({'Expires' => 'Fri, 21 Jan 2021 16:51:06 GMT'})
       @uploader.stub!(:s3_region).and_return(ENV["S3_REGION"] || 'us-east-1')
 
@@ -66,6 +67,29 @@ if ENV['S3_SPEC']
           @uploader.stub!(:s3_cnamed).and_return(true)
           @uploader.stub!(:s3_bucket).and_return('foo.bar')
           @s3_file.url.should == 'http://foo.bar/uploads/bar.txt'
+        end
+      end
+      
+      context "with public cname" do
+        before do
+          @uploader.stub!(:s3_cname).and_return("domain.tld")
+          @uploader.stub!(:s3_bucket).and_return("foo.bar")
+        end
+        
+        it "should have a public URL to cname" do
+          @s3_file.url.should == "http://domain.tld/uploads/bar.txt"
+        end
+      end
+      
+      context "with cnamed bucket and public cname" do
+        before do
+          @uploader.stub!(:s3_cnamed).and_return(true)
+          @uploader.stub!(:s3_cname).and_return("domain.tld")
+          @uploader.stub!(:s3_bucket).and_return("foo.bar")
+        end
+        
+        it "should have a public URL to cname" do
+          @s3_file.public_url.should == "http://domain.tld/uploads/bar.txt"
         end
       end
 

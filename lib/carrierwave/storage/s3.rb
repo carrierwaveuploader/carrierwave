@@ -123,7 +123,9 @@ module CarrierWave
         end
 
         def public_url
-          if cnamed?
+          if cname
+            ["http://#{cname}", path].compact.join('/')
+          elsif cnamed?
             ["http://#{bucket}", path].compact.join('/')
           else
             ["http://#{bucket}.s3.amazonaws.com", path].compact.join('/')
@@ -166,6 +168,10 @@ module CarrierWave
         end
 
       private
+      
+        def cname
+          @uploader.s3_cname
+        end
 
         def cnamed?
           @uploader.s3_cnamed
