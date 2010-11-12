@@ -12,6 +12,7 @@ module CarrierWave
         add_config :s3_bucket
         add_config :s3_access_key_id
         add_config :s3_secret_access_key
+        add_config :s3_cname
         add_config :s3_cnamed
         add_config :s3_headers
         add_config :s3_region
