@@ -1,4 +1,4 @@
-=== master
+=== Version 0.5.1 2010-12-01
 
 * [changed] s3_access renamed to s3_access_policy [Jonas Nicklas]
 * [changed] Depend on activesupport ~> 3.0 for Rails 3.1 compatibility [Trevor Turk]
