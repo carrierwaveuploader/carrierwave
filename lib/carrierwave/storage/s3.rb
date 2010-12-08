@@ -137,17 +137,14 @@ module CarrierWave
 
         def store(file)
           content_type ||= file.content_type # this might cause problems if content type changes between read and upload (unlikely)
-          begin
-            Timeout.timeout(@uploader.s3_timeout) do
-              connection.put_object(bucket, path, file.read,
-                {
-                  'x-amz-acl' => access_policy.to_s.gsub('_', '-'),
-                  'Content-Type' => content_type
-                }.merge(@uploader.s3_headers)
-              )
-            end
-          rescue Timeout::Error
-            # hmmm...
+          # This will throw a Timeout::Error on timeout
+          Timeout.timeout(@uploader.s3_timeout) do
+            connection.put_object(bucket, path, file.read,
+              {
+                'x-amz-acl' => access_policy.to_s.gsub('_', '-'),
+                'Content-Type' => content_type
+              }.merge(@uploader.s3_headers)
+            )
           end
         end
 
