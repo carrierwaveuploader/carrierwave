@@ -5,6 +5,7 @@ rescue LoadError
   raise "You don't have the 'fog' gem installed. The 'aws', 'aws-s3' and 'right_aws' gems are no longer supported."
 end
 
+
 module CarrierWave
   module Storage
 
@@ -136,12 +137,18 @@ module CarrierWave
 
         def store(file)
           content_type ||= file.content_type # this might cause problems if content type changes between read and upload (unlikely)
-          connection.put_object(bucket, path, file.read,
-            {
-              'x-amz-acl' => access_policy.to_s.gsub('_', '-'),
-              'Content-Type' => content_type
-            }.merge(@uploader.s3_headers)
-          )
+          begin
+            Timeout.timeout(@uploader.s3_timeout) do
+              connection.put_object(bucket, path, file.read,
+                {
+                  'x-amz-acl' => access_policy.to_s.gsub('_', '-'),
+                  'Content-Type' => content_type
+                }.merge(@uploader.s3_headers)
+              )
+            end
+          rescue Timeout::Error
+            # hmmm...
+          end
         end
 
         def content_type
