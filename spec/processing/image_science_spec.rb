@@ -31,6 +31,11 @@ else
         @instance.resize_to_fill(1000, 1000)
         @instance.should have_dimensions(1000, 1000)
       end
+
+      it "should resize to a aspect ratio between 4:3 to 2:1 (width:height)" do
+        @instance.resize_to_fill(400, 250)
+        @instance.should have_dimensions(400, 250)
+      end
     end
 
     describe '#resize_to_fit' do
