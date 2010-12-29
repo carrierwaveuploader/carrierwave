@@ -5,8 +5,14 @@ module CarrierWave
     module Callbacks
       extend ActiveSupport::Concern
 
+      configurables = :_before_callbacks, :_after_callbacks
+
       included do
-        class_inheritable_accessor :_before_callbacks, :_after_callbacks
+        if respond_to?(:class_attribute)
+          class_attribute *configurables, :instance_writer => false
+        else
+          class_inheritable_accessor *configurables
+        end
       end
 
       def with_callbacks(kind, *args)
@@ -25,7 +31,7 @@ module CarrierWave
           (self._after_callbacks || { kind => [] })[kind] || []
         end
 
-        def before(kind, callback)          
+        def before(kind, callback)
           self._before_callbacks ||= {}
           self._before_callbacks[kind] = _before_callbacks_for(kind) + [callback]
         end
