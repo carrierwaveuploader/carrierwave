@@ -27,6 +27,7 @@ module CarrierWave
     # [:aws_access_key_id]
     # [:aws_secret_access_key]
     # [:region]                 (optional) defaults to 'us-east-1'
+    #   :region should be one of ['eu-west-1', 'us-east-1', 'ap-southeast-1', 'us-west-1']
     #
     #
     # Google credentials contain the following keys:
@@ -98,8 +99,25 @@ module CarrierWave
 
       class File
 
+        ##
+        # Current local path to file
+        #
+        # === Returns
+        #
+        # [String] a path to file
+        #
         attr_reader :path
 
+        ##
+        # Return a temporary authenticated url to a private file, if available
+        # Only supported for AWS and Google providers
+        #
+        # === Returns
+        #
+        # [String] temporary authenticated url
+        #   or
+        # [NilClass] no authenticated url available
+        #
         def authenticated_url
           if ['AWS', 'Google'].include?(@uploader.fog_credentials[:provider])
             # avoid a get by just using local reference
@@ -109,10 +127,24 @@ module CarrierWave
           end
         end
 
+        ##
+        # Lookup value for file content-type header
+        #
+        # === Returns
+        #
+        # [String] value of content-type
+        #
         def content_type
           file.content_type
         end
 
+        ##
+        # Remove the file from service
+        #
+        # === Returns
+        #
+        # [Boolean] true for success or raises error
+        #
         def delete
           file.destroy
         end
@@ -121,14 +153,33 @@ module CarrierWave
           @uploader, @base, @path = uploader, base, path
         end
 
+        ##
+        # Read content of file from service
+        #
+        # === Returns
+        #
+        # [String] contents of file
         def read
           file.body
         end
 
+        ##
+        # Return size of file body
+        #
+        # === Returns
+        #
+        # [Integer] size of file body
+        #
         def size
           file.content_length
         end
 
+        ##
+        # Write file to service
+        #
+        # === Returns
+        #
+        # [Boolean] true on success or raises error
         def store(new_file)
           @file = directory.files.create({
             :body         => new_file.read,
@@ -136,8 +187,18 @@ module CarrierWave
             :key          => path,
             :public       => @uploader.fog_public
           })
+          true
         end
 
+        ##
+        # Return a url to a public file, if available
+        #
+        # === Returns
+        #
+        # [String] public url
+        #   or
+        # [NilClass] no public url available
+        #
         def public_url
           if host = @uploader.fog_host
             host << '/' << path
@@ -147,6 +208,15 @@ module CarrierWave
           end
         end
 
+        ##
+        # Return url to file, if avaliable
+        #
+        # === Returns
+        #
+        # [String] url
+        #   or
+        # [NilClass] no url available
+        #
         def url
           if !@uploader.fog_public
             authenticated_url
@@ -157,10 +227,24 @@ module CarrierWave
 
       private
 
+        ##
+        # connection to service
+        #
+        # === Returns
+        #
+        # [Fog::#{provider}::Storage] connection to service
+        #
         def connection
           @base.connection
         end
 
+        ##
+        # lookup directory containing file
+        #
+        # === Returns
+        #
+        # [Fog::#{provider}::Directory] containing directory
+        #
         def directory
           @directory ||= begin
             connection.directories.get(@uploader.fog_directory) || connection.directories.create(
@@ -170,6 +254,13 @@ module CarrierWave
           end
         end
 
+        ##
+        # lookup file
+        #
+        # === Returns
+        #
+        # [Fog::#{provider}::File] file data from remote service
+        #
         def file
           @file ||= directory.files.get(path)
         end
