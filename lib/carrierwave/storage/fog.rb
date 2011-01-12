@@ -18,6 +18,8 @@ module CarrierWave
     #
     # [:fog_credentials]  credentials to for provider
     # [:fog_directory]    specifies name of directory to store data in
+    #
+    # [:fog_attributes]   (optional) additional attributes to set on files
     # [:fog_host]         (optional) non-default host to serve files from
     # [:fog_public]       (optional) public readability, defaults to false
     #
@@ -109,6 +111,17 @@ module CarrierWave
         attr_reader :path
 
         ##
+        # Return all attributes from file
+        #
+        # === Returns
+        #
+        # [Hash] attributes from file
+        #
+        def attributes
+          file.attributes
+        end
+
+        ##
         # Return a temporary authenticated url to a private file, if available
         # Only supported for AWS and Google providers
         #
@@ -160,6 +173,21 @@ module CarrierWave
           file.destroy
         end
 
+        ##
+        # deprecated: All attributes from file (includes headers)
+        #
+        # === Returns
+        #
+        # [Hash] attributes from file
+        #
+        def headers
+          location = caller.first
+          warning = "[yellow][WARN] headers is deprecated, use attributes instead[/]"
+          warning << " [light_black](#{location})[/]"
+          Formatador.display_line(warning)
+          attributes
+        end
+
         def initialize(uploader, base, path)
           @uploader, @base, @path = uploader, base, path
         end
@@ -198,7 +226,7 @@ module CarrierWave
             :content_type => content_type,
             :key          => path,
             :public       => @uploader.fog_public
-          })
+          }.merge(@uploader.fog_attributes))
           true
         end
 

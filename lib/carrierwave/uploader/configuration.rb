@@ -33,6 +33,7 @@ module CarrierWave
         add_config :delete_tmp_file_after_storage
 
         # fog
+        add_config :fog_attributes
         add_config :fog_credentials
         add_config :fog_directory
         add_config :fog_host
