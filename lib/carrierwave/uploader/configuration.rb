@@ -63,6 +63,9 @@ module CarrierWave
           config.grid_fs_database = 'carrierwave'
           config.grid_fs_host = 'localhost'
           config.grid_fs_port = 27017
+          config.fog_attributes = {}
+          config.fog_credentials = {}
+          config.fog_public = true
           config.store_dir = 'uploads'
           config.cache_dir = 'uploads/tmp'
           config.delete_tmp_file_after_storage = true

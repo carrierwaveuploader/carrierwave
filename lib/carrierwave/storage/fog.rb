@@ -16,7 +16,7 @@ module CarrierWave
     #
     # You need to setup some options to configure your usage:
     #
-    # [:fog_credentials]  credentials to for provider
+    # [:fog_credentials]  credentials for service
     # [:fog_directory]    specifies name of directory to store data in
     #
     # [:fog_attributes]   (optional) additional attributes to set on files
