@@ -135,7 +135,18 @@ module CarrierWave
         # [String] value of content-type
         #
         def content_type
-          file.content_type
+          @content_type
+        end
+
+        ##
+        # Set non-default content-type header (default is file.content_type)
+        #
+        # === Returns
+        #
+        # [String] returns new content type value
+        #
+        def content_type=(new_content_type)
+          @content_type = new_content_type
         end
 
         ##
@@ -181,9 +192,10 @@ module CarrierWave
         #
         # [Boolean] true on success or raises error
         def store(new_file)
+          self.content_type ||= new_file.content_type
           @file = directory.files.create({
             :body         => new_file.read,
-            :content_type => new_file.content_type,
+            :content_type => content_type,
             :key          => path,
             :public       => @uploader.fog_public
           })
@@ -262,7 +274,11 @@ module CarrierWave
         # [Fog::#{provider}::File] file data from remote service
         #
         def file
-          @file ||= directory.files.get(path)
+          @file ||= begin
+            file = directory.files.get(path)
+            self.content_type = file.content_type
+            file
+          end
         end
 
       end
