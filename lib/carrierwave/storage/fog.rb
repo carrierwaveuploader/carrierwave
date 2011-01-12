@@ -100,6 +100,15 @@ module CarrierWave
 
         attr_reader :path
 
+        def authenticated_url
+          if ['AWS', 'Google'].include?(@uploader.fog_credentials[:provider])
+            # avoid a get by just using local reference
+            directory.files.new(:key => path).url(Fog::Time.now + 60 * 10)
+          else
+            nil
+          end
+        end
+
         def content_type
           file.content_type
         end
@@ -135,6 +144,14 @@ module CarrierWave
           else
             # avoid a get by just using local reference
             directory.files.new(:key => path).public_url
+          end
+        end
+
+        def url
+          if !@uploader.fog_public
+            authenticated_url
+          else
+            public_url
           end
         end
 
