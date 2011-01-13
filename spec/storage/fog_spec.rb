@@ -32,6 +32,7 @@ if ENV['PROVIDER']
             :rackspace_api_key  => ENV['RACKSPACE_API_KEY']
           }
         end
+        @uploader.stub!(:fog_attributes).and_return({})
         @uploader.stub!(:fog_credentials).and_return(fog_credentials.merge!(:provider => ENV['PROVIDER']))
         @uploader.stub!(:fog_directory).and_return(ENV['CARRIERWAVE_TEST_DIRECTORY'])
         @uploader.stub!(:fog_host).and_return(nil)
