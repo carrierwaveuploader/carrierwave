@@ -21,7 +21,7 @@ module CarrierWave
     #
     # [:fog_attributes]   (optional) additional attributes to set on files
     # [:fog_host]         (optional) non-default host to serve files from
-    # [:fog_public]       (optional) public readability, defaults to false
+    # [:fog_public]       (optional) public readability, defaults to true
     #
     #
     # AWS credentials contain the following keys:
