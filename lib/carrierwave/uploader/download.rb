@@ -17,7 +17,7 @@ module CarrierWave
         end
 
         def original_filename
-          File.basename(@uri.path)
+          File.basename(file.base_uri.path)
         end
 
         def respond_to?(*args)
