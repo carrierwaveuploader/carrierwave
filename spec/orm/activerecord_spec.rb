@@ -42,10 +42,10 @@ describe CarrierWave::ActiveRecord do
       # My god, what a horrible, horrible solution, but AR validations don't work
       # unless the class has a name. This is the best I could come up with :S
       $arclass += 1
-      eval <<-RUBY
-        class Event#{$arclass} < Event; end
-        @class = Event#{$arclass}
-      RUBY
+      @class = Class.new(Event)
+      # AR validations don't work unless the class has a name, and
+      # anonymous classes can be named by assigning them to a constant
+      Object.const_set("Event#{$arclass}", @class)
       @class.table_name = "events"
       @uploader = Class.new(CarrierWave::Uploader::Base)
       @class.mount_uploader(:image, @uploader)
