@@ -114,7 +114,7 @@ module CarrierWave
           end
           
           def cf_connection
-            @cf_connection ||= ::CloudFiles::Connection.new(@uploader.cloud_files_username, @uploader.cloud_files_api_key)
+            @cf_connection ||= ::CloudFiles::Connection.new(:username => @uploader.cloud_files_username, :api_key => @uploader.cloud_files_api_key, :authurl => @uploader.cloud_files_auth_url)
           end
 
           def cf_container

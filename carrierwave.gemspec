@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 lib = File.expand_path('../lib/', __FILE__)
+require 'date'
 $:.unshift lib unless $:.include?(lib)
 
 require 'carrierwave/version'
