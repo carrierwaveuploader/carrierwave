@@ -59,7 +59,24 @@ module CarrierWave
         width, height = extract_dimensions_for_crop(img.width, img.height, new_width, new_height)
         x_offset, y_offset = extract_placement_for_crop(width, height, new_width, new_height)
 
+        # check if if new dimensions are too small for the new image
+        if width < new_width
+          width = new_width
+          height = (new_width.to_f*(img.height.to_f/img.width.to_f)).round
+        elsif height < new_height
+          height = new_height
+          width = (new_height.to_f*(img.width.to_f/img.height.to_f)).round
+        end
+
         img.resize( width, height ) do |i2|
+
+          # check to make sure offset is not negative
+          if x_offset < 0
+            x_offset = 0
+          end
+          if y_offset < 0
+            y_offset = 0
+          end
 
           i2.with_crop( x_offset, y_offset, new_width + x_offset, new_height + y_offset) do |file|
             file.save( self.current_path )
@@ -67,7 +84,7 @@ module CarrierWave
         end
       end
     end
-    
+
     ##
     # Resize the image to fit within the specified dimensions while retaining
     # the original aspect ratio. Will only resize the image if it is larger than the
