@@ -5,42 +5,24 @@ require 'open-uri'
 
 require 'fog'
 
-if ENV['PROVIDER']
+unless ENV['FOG_MOCK'] == 'false'
+  Fog.mock!
+end
+
+def fog_tests(fog_credentials)
   describe CarrierWave::Storage::Fog do
-    describe ENV['PROVIDER'] do
+    describe fog_credentials[:provider] do
       before do
         @uploader = mock('an uploader')
-        fog_credentials = case ENV['PROVIDER']
-        when 'AWS'
-          {
-            :aws_access_key_id      => ENV['S3_ACCESS_KEY_ID'],
-            :aws_secret_access_key  => ENV['S3_SECRET_ACCESS_KEY'],
-            :region                 => ENV['S3_REGION']
-          }
-        when 'Google'
-          {
-            :google_storage_access_key_id     => ENV['GOOGLE_STORAGE_ACCESS_KEY_ID'],
-            :google_storage_secret_access_key => ENV['GOOGLE_STORAGE_SECRET_ACCESS_KEY']
-          }
-        when 'Local'
-          {
-            :local_root => ENV['LOCAL_ROOT']
-          }
-        when 'Rackspace'
-          {
-            :rackspace_username => ENV['RACKSPACE_USERNAME'],
-            :rackspace_api_key  => ENV['RACKSPACE_API_KEY']
-          }
-        end
         @uploader.stub!(:fog_attributes).and_return({})
-        @uploader.stub!(:fog_credentials).and_return(fog_credentials.merge!(:provider => ENV['PROVIDER']))
-        @uploader.stub!(:fog_directory).and_return(ENV['CARRIERWAVE_TEST_DIRECTORY'])
+        @uploader.stub!(:fog_credentials).and_return(fog_credentials)
+        @uploader.stub!(:fog_directory).and_return(ENV['CARRIERWAVE_DIRECTORY'])
         @uploader.stub!(:fog_host).and_return(nil)
         @uploader.stub!(:fog_public).and_return(true)
         @uploader.stub!(:store_path).and_return('uploads/bar.txt')
 
         @storage = CarrierWave::Storage::Fog.new(@uploader)
-        @directory = @storage.connection.directories.new(:key => ENV['CARRIERWAVE_TEST_DIRECTORY'])
+        @directory = @storage.connection.directories.new(:key => ENV['CARRIERWAVE_DIRECTORY'])
         @file = CarrierWave::SanitizedFile.new(file_path('test.jpg'))
       end
 
@@ -60,7 +42,7 @@ if ENV['PROVIDER']
 
         context "without fog_host" do
           it "should have a public_url" do
-            pending if ENV['PROVIDER'] == 'Local'
+            pending if fog_credentials[:provider] == 'Local'
             @fog_file.public_url.should_not be_nil
           end
         end
@@ -98,7 +80,7 @@ if ENV['PROVIDER']
         end
 
         it "should have a public url" do
-          pending if ENV['PROVIDER'] == 'Local'
+          pending if fog_credentials[:provider] == 'Local'
           @fog_file.public_url.should_not be_nil
         end
 
@@ -124,7 +106,7 @@ if ENV['PROVIDER']
           end
 
           it "should be available at public URL" do
-            pending if ENV['PROVIDER'] == 'Local'
+            pending if Fog.mocking? || fog_credentials[:provider] == 'Local'
             open(@fog_file.public_url).read.should == 'this is stuff'
           end
         end
@@ -136,11 +118,66 @@ if ENV['PROVIDER']
           end
 
           it "should not be available at public URL" do
-            pending if ENV['PROVIDER'] == 'Local'
+            pending if fog_credentials[:provider] == 'Local'
             @fog_file.public_url.should be_nil
           end
         end
       end
     end
+  end
+end
+
+credentials = []
+if Fog.mocking?
+  mappings = {
+    'AWS'       => [:aws_access_key_id, :aws_secret_access_key],
+    'Google'    => [:google_storage_access_key_id, :google_storage_secret_access_key],
+#    'Local'     => [:local_root],
+#    'Rackspace' => [:rackspace_api_key, :rackspace_username]
+  }
+
+  for provider, keys in mappings
+    data = {:provider => provider}
+    for key in keys
+      data[key] = key.to_s
+    end
+    credentials << data
+  end
+else
+  Fog.credential = :carrierwave
+
+  mappings = {
+    'AWS'       => [:aws_access_key_id, :aws_secret_access_key],
+    'Google'    => [:google_storage_access_key_id, :google_storage_secret_access_key],
+    'Local'     => [:local_root],
+    'Rackspace' => [:rackspace_api_key, :rackspace_username]
+  }
+
+  for provider, keys in mappings
+    unless (creds = Fog.credentials.reject {|key, value| ![*keys].include?(key)}).empty?
+      data = {:provider => provider}
+      for key in keys
+        data[key] = creds[key]
+      end
+      credentials << data
+    end
+  end
+end
+
+ENV['CARRIERWAVE_DIRECTORY'] ||= "carrierwave#{Time.now.to_i}"
+
+for credential in credentials
+  fog_tests(credential)
+end
+
+at_exit do
+  # cleanup
+  for credential in credentials
+    storage = Fog::Storage.new(credential)
+    directory = storage.directories.new(:key => ENV['CARRIERWAVE_DIRECTORY'])
+    for file in directory.files
+      file.destroy
+    end
+    directory.destroy
   end
 end
