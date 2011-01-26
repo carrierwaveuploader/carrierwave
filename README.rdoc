@@ -9,7 +9,7 @@ It works well with Rack based web applications, such as Ruby on Rails.
 
 == Description
 
-* RDoc Documentation {available at Rubyforge}[http://carrierwave.rubyforge.org/rdoc].
+* RDoc Documentation {available via RubyDoc.info}[http://rubydoc.info/gems/carrierwave/frames].
 * Source code {hosted at GitHub}[http://github.com/jnicklas/carrierwave]
 * Please {report any issues}[http://github.com/jnicklas/carrierwave/issues] on GitHub
 * Please direct any questions at the {mailing list}[http://groups.google.com/group/carrierwave]
