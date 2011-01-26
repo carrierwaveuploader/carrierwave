@@ -1,3 +1,10 @@
+=== master (https://github.com/jnicklas/carrierwave/compare/0.5.1...master)
+
+* [changed] Use fog ~> 0.4, Fog::AWS::Storage.new -> Fog::Storage.new(:provider => 'AWS') [trevorturk]
+* [added] Added the s3_region configuration documentation to the README [mrsimo]
+* [fixed] Use class_attribute (inheritable attributes are deprecated) [stephencelis]
+* [fixed] Change readme to mention RubyDoc.info docs instead of outdated Rubyforge [trevorturk]
+
 === Version 0.5.1 2010-12-01
 
 * [changed] s3_access renamed to s3_access_policy [Jonas Nicklas]
