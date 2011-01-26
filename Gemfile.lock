@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    carrierwave (0.5.0)
+    carrierwave (0.5.1)
       activesupport (~> 3.0)
 
 GEM
