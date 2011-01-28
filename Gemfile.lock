@@ -69,15 +69,14 @@ GEM
       data_objects (= 0.10.2)
     erubis (2.6.6)
       abstract (>= 1.0.0)
-    excon (0.2.8)
+    excon (0.4.0)
     extlib (0.9.15)
-    fog (0.3.30)
+    fog (0.5.0)
       builder
-      excon (>= 0.2.8)
+      excon (>= 0.4.0)
       formatador (>= 0.0.16)
       json
       mime-types
-      named-parameters (>= 0.0.17)
       net-ssh (>= 2.0.23)
       nokogiri (>= 1.4.4)
       ruby-hmac
@@ -102,7 +101,6 @@ GEM
       mongo (= 1.0.9)
       tzinfo (~> 0.3.22)
       will_paginate (~> 3.0.pre)
-    named-parameters (0.0.17)
     net-ssh (2.0.23)
     nokogiri (1.4.4)
     polyglot (0.3.1)
@@ -153,7 +151,7 @@ DEPENDENCIES
   dm-migrations
   dm-sqlite-adapter
   dm-validations
-  fog (~> 0.3.30)
+  fog (~> 0.5.0)
   image_science
   json
   mini_magick (~> 2.3)
