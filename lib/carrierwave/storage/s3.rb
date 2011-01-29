@@ -123,10 +123,11 @@ module CarrierWave
         end
 
         def public_url
+          scheme = use_ssl? ? 'https' : 'http'
           if cnamed?
-            ["http://#{bucket}", path].compact.join('/')
+            ["#{scheme}://#{bucket}", path].compact.join('/')
           else
-            ["http://#{bucket}.s3.amazonaws.com", path].compact.join('/')
+            ["#{scheme}://#{bucket}.s3.amazonaws.com", path].compact.join('/')
           end
         end
 
@@ -166,6 +167,10 @@ module CarrierWave
         end
 
       private
+
+        def use_ssl?
+          @uploader.s3_use_ssl
+        end
 
         def cnamed?
           @uploader.s3_cnamed
