@@ -221,6 +221,17 @@ module CarrierWave
       @file.content_type.chomp if @file.respond_to?(:content_type) and @file.content_type
     end
 
+    ##
+    # Used to sanitize the file name. Public to allow overriding for non-latin characters.
+    #
+    # === Returns
+    #
+    # [Regexp] the regexp for sanitizing the file name
+    #
+    def sanitize_regexp
+      /[^a-zA-Z0-9\.\-\+_]/
+    end
+
   private
 
     def file=(file)
@@ -248,7 +259,7 @@ module CarrierWave
     def sanitize(name)
       name = name.gsub("\\", "/") # work-around for IE
       name = File.basename(name)
-      name = name.gsub(/[^a-zA-Z0-9\.\-\+_]/,"_")
+      name = name.gsub(sanitize_regexp,"_")
       name = "_#{name}" if name =~ /\A\.+\z/
       name = "unnamed" if name.size == 0
       return name.downcase

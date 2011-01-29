@@ -141,6 +141,25 @@ describe CarrierWave::SanitizedFile do
 
   end
 
+  describe '#filename with an overridden sanitize_regexp' do
+
+    before do
+      @sanitized_file = CarrierWave::SanitizedFile.new(nil)
+      @sanitized_file.stub(:sanitize_regexp).and_return(/[^a-zA-Z\.\-\+_]/)
+    end
+
+    it "should default to the original filename if it is valid" do
+      @sanitized_file.should_receive(:original_filename).at_least(:once).and_return("llama.jpg")
+      @sanitized_file.filename.should == "llama.jpg"
+    end
+
+    it "should remove illegal characters from a filename" do
+      @sanitized_file.should_receive(:original_filename).at_least(:once).and_return("123.jpg")
+      @sanitized_file.filename.should == "___.jpg"
+    end
+
+  end
+
   shared_examples_for "all valid sanitized files" do
 
     describe '#empty?' do
@@ -275,7 +294,7 @@ describe CarrierWave::SanitizedFile do
         new_file = @sanitized_file.copy_to(file_path('gurr.png'), 0755)
         new_file.should have_permissions(0755)
       end
-      
+
       it "should preserve the file's content type" do
         new_file = @sanitized_file.copy_to(file_path('gurr.png'))
         new_file.content_type.should ==(@sanitized_file.content_type)
