@@ -11,7 +11,7 @@ It works well with Rack based web applications, such as Ruby on Rails.
 
 * RDoc documentation {available on RubyDoc.info}[http://rubydoc.info/gems/carrierwave/frames]
 * Source code {available on GitHub}[http://github.com/jnicklas/carrierwave]
-* More information {available on the wiki}[https://github.com/jnicklas/carrierwave/wiki]
+* More information, known limitations, and how-tos {available on the wiki}[https://github.com/jnicklas/carrierwave/wiki]
 
 == Getting Help
 
