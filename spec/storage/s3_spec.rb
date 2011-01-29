@@ -176,31 +176,21 @@ if ENV['S3_SPEC']
       end
     end
 
-    describe 'public url' do
+    describe 'using http or https urls for amazon s3' do
       before do
         @uploader.stub!(:store_path).and_return('uploads/bar.txt')
         @uploader.stub!(:s3_access_policy).and_return(:public_read)
         @s3_file = @storage.store!(@file)
       end
 
-      context "with ssl enabled" do
-        before do
-          @uploader.stub!(:s3_use_ssl).and_return(true)
-        end
-
-        it 'should use https' do
-          URI.parse(@s3_file.url).scheme.should == 'https'
-        end
+      it 'should use https if ssl enabled' do
+        @uploader.stub!(:s3_use_ssl).and_return(true)
+        URI.parse(@s3_file.url).scheme.should == 'https'
       end
 
-      context "with ssl disabled" do
-        before do
-          @uploader.stub!(:s3_use_ssl).and_return(false)
-        end
-
-        it 'should use http' do
-          URI.parse(@s3_file.url).scheme.should == 'http'
-        end
+      it 'should use http if ssl disabled' do
+        @uploader.stub!(:s3_use_ssl).and_return(false)
+        URI.parse(@s3_file.url).scheme.should == 'http'
       end
     end
 
