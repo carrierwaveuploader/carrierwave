@@ -4,6 +4,7 @@
 * [changed] Use class_attribute (inheritable attributes are deprecated) [stephencelis]
 * [added] Added the s3_region configuration documentation to the README [mrsimo]
 * [fixed] Fixed an intermittent bug with ImageScience resize_to_fill method [LupineDev]
+* [fixed] DataMapper#save should remove the avatar if remove_avatar? returns true [wprater]
 
 === Version 0.5.1 2010-12-01
 
