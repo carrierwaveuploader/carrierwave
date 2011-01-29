@@ -38,8 +38,8 @@ module CarrierWave
     private
 
       def check_whitelist!(new_file)
-        ext = new_file.extension.to_s.downcase # downcase not really necessary, already done in SanitizedFile#sanitize, but well
-        if extension_white_list and not extension_white_list.find { |check| check.respond_to?(:to_str) ? check.to_str.downcase == ext : ext =~ /\A#{check}\z/i }
+        extension = new_file.extension.to_s
+        if extension_white_list and not extension_white_list.detect { |item| extension =~ /\A#{item}\z/i }
           raise CarrierWave::IntegrityError, "You are not allowed to upload #{new_file.extension.inspect} files, allowed types: #{extension_white_list.inspect}"
         end
       end

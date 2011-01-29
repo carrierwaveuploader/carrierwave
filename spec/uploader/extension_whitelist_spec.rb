@@ -39,27 +39,27 @@ describe CarrierWave::Uploader do
         @uploader.cache!(File.open(file_path('test.jpg')))
       }.should raise_error(CarrierWave::IntegrityError)
     end
-    
+
     it "should compare white list in a case insensitive manner" do
       @uploader.stub!(:extension_white_list).and_return(%w(jpg gif png))
       running {
         @uploader.cache!(File.open(file_path('case.JPG')))
       }.should_not raise_error(CarrierWave::IntegrityError)
     end
-    
+
     it "should ignore case of extensions provided by white list" do
       @uploader.stub!(:extension_white_list).and_return(%w(JPG GIF PNG))
       running {
         @uploader.cache!(File.open(file_path('test.jpg')))
       }.should_not raise_error(CarrierWave::IntegrityError)
-    end    
-    
+    end
+
     it "should accept and check regular expressions" do
       @uploader.stub!(:extension_white_list).and_return([/jpe?g/, 'gif', 'png'])
       running {
         @uploader.cache!(File.open(file_path('test.jpeg')))
-      }.should_not raise_error(CarrierWave::IntegrityError)      
-    end    
+      }.should_not raise_error(CarrierWave::IntegrityError)
+    end
   end
 
 end
