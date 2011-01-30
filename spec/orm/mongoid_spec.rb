@@ -23,7 +23,7 @@ class MongoUploader < CarrierWave::Uploader::Base; end
 
 class WhiteListUploader < CarrierWave::Uploader::Base
   def extension_white_list
-    %(txt)
+    %w(txt)
   end
 end
 
@@ -33,7 +33,7 @@ class ProcessingErrorUploader < CarrierWave::Uploader::Base
     raise CarrierWave::ProcessingError, "Ohh noez!"
   end
   def extension_white_list
-    %(jpg)
+    %w(jpg)
   end
 end
 

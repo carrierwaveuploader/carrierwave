@@ -111,7 +111,7 @@ describe CarrierWave::ActiveRecord do
         before do
           @uploader.class_eval do
             def extension_white_list
-              %(txt)
+              %w(txt)
             end
           end
           @event.image = stub_file('test.jpg')

@@ -93,7 +93,7 @@ describe CarrierWave::Mount do
       it "should fail silently if the image fails an integrity check" do
         @uploader.class_eval do
           def extension_white_list
-            %(txt)
+            %w(txt)
           end
         end
         @instance.image = stub_file('test.jpg')
@@ -358,7 +358,7 @@ describe CarrierWave::Mount do
       it "should be an error instance after an integrity check has failed" do
         @uploader.class_eval do
           def extension_white_list
-            %(txt)
+            %w(txt)
           end
         end
         @instance.image = stub_file('test.jpg')
@@ -457,7 +457,7 @@ describe CarrierWave::Mount do
     it "should raise an error if the image fails an integrity check" do
       @uploader.class_eval do
         def extension_white_list
-          %(txt)
+          %w(txt)
         end
       end
       running {
