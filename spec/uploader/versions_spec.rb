@@ -235,6 +235,18 @@ describe CarrierWave::Uploader do
         @uploader.recreate_versions!
         File.read(@uploader.thumb.path).should == "Contents changed"
       end
+
+      it "should recreate all versions if any are missing" do
+        @uploader.store!(@file)
+
+        File.exists?(@uploader.thumb.path).should == true
+        FileUtils.rm(@uploader.thumb.path)
+        File.exists?(@uploader.thumb.path).should == false
+
+        @uploader.recreate_versions!
+
+        File.exists?(@uploader.thumb.path).should == true
+      end
     end
 
     describe '#remove!' do

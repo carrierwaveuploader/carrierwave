@@ -199,21 +199,14 @@ if ENV['S3_SPEC']
       end
     end
 
-    describe "recreate_versions!" do
+    describe "#recreate_versions!" do
       before do
         @uploader_class = Class.new(CarrierWave::Uploader::Base)
         @uploader_class.class_eval{
           include CarrierWave::MiniMagick
           storage :s3
-
-          process :resize_to_fit => [30, 30]
-
           version :foo do
-            process :resize_to_fit => [20, 20]
-
-            version :bar do
-              process :resize_to_fit => [10, 10]
-            end
+            version :bar
           end
         }
 
@@ -235,14 +228,19 @@ if ENV['S3_SPEC']
         end
       end
 
-      it "should recreate versions without exception" do
-        lambda do
-          @versioned.recreate_versions!
+      it "should recreate versions stored remotely" do
+        @paths.each do |path|
+          @storage.connection.head_object(@bucket, "uploads/#{path}").status.should == 200
+        end
 
-          @paths.each do |path|
-            @storage.connection.head_object(@bucket, "uploads/#{path}").status.should == 200
-          end
-        end.should_not raise_error
+        @storage.connection.delete_object(@bucket, "uploads/#{@paths[1]}")
+        lambda { @storage.connection.head_object(@bucket, "uploads/#{@paths[1]}") }.should raise_error(Excon::Errors::NotFound)
+
+        @versioned.recreate_versions!
+
+        @paths.each do |path|
+          @storage.connection.head_object(@bucket, "uploads/#{path}").status.should == 200
+        end
       end
     end
 
