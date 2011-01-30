@@ -130,9 +130,15 @@ module CarrierWave
       end
 
       def cache_versions!(new_file)
+        # We might have processed the new_file argument after the callbacks were
+        # initialized, so get the actual file based off of the current state of
+        # our file
+        processed_parent = SanitizedFile.new :tempfile => self.file,
+          :filename => new_file.original_filename
+
         versions.each do |name, v|
           v.send(:cache_id=, cache_id)
-          v.cache!(new_file)
+          v.cache!(processed_parent)
         end
       end
 
