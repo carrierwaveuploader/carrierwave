@@ -205,6 +205,9 @@ if ENV['S3_SPEC']
         @uploader_class.class_eval{
           include CarrierWave::MiniMagick
           storage :s3
+
+          process :resize_to_fit => [10, 10]
+
           version :foo do
             version :bar
           end
