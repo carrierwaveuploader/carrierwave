@@ -199,18 +199,21 @@ if ENV['S3_SPEC']
       end
     end
 
-    describe "processing versions" do
-      before :each do
+    describe "recreate_versions!" do
+      before do
         @uploader_class = Class.new(CarrierWave::Uploader::Base)
         @uploader_class.class_eval{
           include CarrierWave::MiniMagick
           storage :s3
 
-          process :convert => 'png'
-          version :foo do
-            process :resize_to_fit => [200, 200]
+          process :resize_to_fit => [30, 30]
 
-            version :bar
+          version :foo do
+            process :resize_to_fit => [20, 20]
+
+            version :bar do
+              process :resize_to_fit => [10, 10]
+            end
           end
         }
 
@@ -219,15 +222,27 @@ if ENV['S3_SPEC']
         stub_s3_access @versioned.foo
         stub_s3_access @versioned.foo.bar
 
+        @paths = ['portrait.jpg', 'foo_portrait.jpg', 'foo_bar_portrait.jpg']
+
         @versioned.store! File.open(file_path('portrait.jpg'))
       end
 
       after do
-        FileUtils.rm_rf public_path
+        FileUtils.rm_rf(public_path)
+
+        @paths.each do |path|
+          @storage.connection.delete_object(@bucket, "uploads/#{path}")
+        end
       end
 
-      it "should reprocess versions without exception" do
-        running{ @versioned.recreate_versions! }.should_not raise_error
+      it "should recreate versions without exception" do
+        lambda do
+          @versioned.recreate_versions!
+
+          @paths.each do |path|
+            @storage.connection.head_object(@bucket, "uploads/#{path}").status.should == 200
+          end
+        end.should_not raise_error
       end
     end
 
