@@ -5,17 +5,22 @@ require 'open-uri'
 
 if ENV['S3_SPEC']
   describe CarrierWave::Storage::S3 do
+
+    def stub_s3_access mock
+      mock.stub!(:s3_access_key_id).and_return(ENV["S3_ACCESS_KEY_ID"])
+      mock.stub!(:s3_secret_access_key).and_return(ENV["S3_SECRET_ACCESS_KEY"])
+      mock.stub!(:s3_bucket).and_return(@bucket)
+      mock.stub!(:s3_access_policy).and_return(:public_read)
+      mock.stub!(:s3_cnamed).and_return(false)
+      mock.stub!(:s3_headers).and_return({'Expires' => 'Fri, 21 Jan 2021 16:51:06 GMT'})
+      mock.stub!(:s3_region).and_return(ENV["S3_REGION"] || 'us-east-1')
+      mock.stub!(:s3_use_ssl).and_return(false)
+    end
+
     before do
       @bucket = ENV['CARRIERWAVE_TEST_BUCKET']
       @uploader = mock('an uploader')
-      @uploader.stub!(:s3_access_key_id).and_return(ENV["S3_ACCESS_KEY_ID"])
-      @uploader.stub!(:s3_secret_access_key).and_return(ENV["S3_SECRET_ACCESS_KEY"])
-      @uploader.stub!(:s3_bucket).and_return(@bucket)
-      @uploader.stub!(:s3_access_policy).and_return(:public_read)
-      @uploader.stub!(:s3_cnamed).and_return(false)
-      @uploader.stub!(:s3_headers).and_return({'Expires' => 'Fri, 21 Jan 2021 16:51:06 GMT'})
-      @uploader.stub!(:s3_region).and_return(ENV["S3_REGION"] || 'us-east-1')
-      @uploader.stub!(:s3_use_ssl).and_return(false)
+      stub_s3_access @uploader
 
       @storage = CarrierWave::Storage::S3.new(@uploader)
       @file = CarrierWave::SanitizedFile.new(file_path('test.jpg'))
@@ -191,6 +196,38 @@ if ENV['S3_SPEC']
       it 'should use http if ssl disabled' do
         @uploader.stub!(:s3_use_ssl).and_return(false)
         URI.parse(@s3_file.url).scheme.should == 'http'
+      end
+    end
+
+    describe "processing versions" do
+      before :each do
+        @uploader_class = Class.new(CarrierWave::Uploader::Base)
+        @uploader_class.class_eval{
+          include CarrierWave::MiniMagick
+          storage :s3
+
+          process :convert => 'png'
+          version :foo do
+            process :resize_to_fit => [200, 200]
+
+            version :bar
+          end
+        }
+
+        @versioned = @uploader_class.new
+        stub_s3_access @versioned
+        stub_s3_access @versioned.foo
+        stub_s3_access @versioned.foo.bar
+
+        @versioned.store! File.open(file_path('portrait.jpg'))
+      end
+
+      after do
+        FileUtils.rm_rf public_path
+      end
+
+      it "should reprocess versions without exception" do
+        running{ @versioned.recreate_versions! }.should_not raise_error
       end
     end
 

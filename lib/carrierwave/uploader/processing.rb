@@ -9,7 +9,6 @@ module CarrierWave
 
       included do
         after :cache, :process!
-        after :recreate_versions, :process!
       end
 
       module ClassMethods
