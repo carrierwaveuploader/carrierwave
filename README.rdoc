@@ -127,10 +127,10 @@ make the record invalid instead. Otherwise, an error is raised.
 
 === Filenames and unicode chars
 
-Another security issue you should care for is the file names (see {Ruby On Rails Security Guide}
-[http://guides.rubyonrails.org/security.html#file-uploads]). By default, CarrierWave provides
-only English letters, arabic numerals and '-+_.' symbols as white-listed characters in
-the file name.
+Another security issue you should care for is the file names (see
+{Ruby On Rails Security Guide}[http://guides.rubyonrails.org/security.html#file-uploads]).
+By default, CarrierWave provides only English letters, arabic numerals and '-+_.' symbols as
+white-listed characters in the file name.
 
 If you want to support local scripts (Cyrillic letters, letters with diacritics and so on), you
 have to override +sanitize_regexp+ method. It should return regular expression which would match
