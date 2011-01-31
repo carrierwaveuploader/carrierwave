@@ -3,6 +3,7 @@
 require 'pathname'
 require 'active_support/core_ext/string/multibyte'
 
+
 module CarrierWave
 
   ##
