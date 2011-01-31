@@ -125,6 +125,38 @@ make the record invalid instead. Otherwise, an error is raised.
       end
     end
 
+=== Filenames and unicode chars
+
+Another security issue you should care for is the file names (see {Ruby On Rails Security Guide}
+[http://guides.rubyonrails.org/security.html#file-uploads]). By default, CarrierWave provides
+only English letters, arabic numerals and '-+_.' symbols as white-listed characters in
+the file name.
+
+If you want to support local scripts (Cyrillic letters, letters with diacritics and so on), you
+have to override +sanitize_regexp+ method. It should return regular expression which would match
+all *non*-allowed symbols.
+
+With Ruby 1.9 and higher you can simply write (as it has {Oniguruma}[http://oniguruma.rubyforge.org/oniguruma/]
+built-in):
+
+    class MyUploader < CarrierWave::Uploader::Base
+      def sanitize_regexp
+        /[^\p{L}\.\-\+_]/u
+      end
+    end
+
+With Ruby 1.8.* you have to manually specify all character ranges. For example, for files which may
+contain Russian letters:
+
+    class MyUploader < CarrierWave::Uploader::Base
+      def sanitize_regexp
+        /[^a-zа-яё0-9\.\-\+_]/ui
+      end
+    end
+
+Also make sure that allowing non-latin characters won't cause a compatibily issue with a third-party
+plugins or client-side software.
+
 == Adding versions
 
 Often you'll want to add different versions of the same file. The classic
