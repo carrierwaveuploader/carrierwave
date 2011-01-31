@@ -141,7 +141,7 @@ built-in):
 
     class MyUploader < CarrierWave::Uploader::Base
       def sanitize_regexp
-        /[^\p{L}\.\-\+_]/u
+        /[^[:word:]\.\-\+]/
       end
     end
 
@@ -150,7 +150,7 @@ contain Russian letters:
 
     class MyUploader < CarrierWave::Uploader::Base
       def sanitize_regexp
-        /[^a-zа-яё0-9\.\-\+_]/ui
+        /[^a-zA-Zа-яА-ЯёЁ0-9\.\-\+_]/u
       end
     end
 
