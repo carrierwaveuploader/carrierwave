@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require "image_science"
+require 'image_science'
 
 module CarrierWave
   module ImageScience

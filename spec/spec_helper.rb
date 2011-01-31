@@ -1,7 +1,7 @@
 # encoding: utf-8
 
-require "rubygems"
-require "bundler/setup"
+require 'rubygems'
+require 'bundler/setup'
 
 require 'tempfile'
 require 'time'
