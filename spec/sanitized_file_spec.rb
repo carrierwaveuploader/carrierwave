@@ -160,6 +160,36 @@ describe CarrierWave::SanitizedFile do
 
   end
 
+  describe '#some unicode filenames with an overridden sanitize_regexp' do
+
+    before do
+      @sanitized_file = CarrierWave::SanitizedFile.new(nil)
+      regexp = RUBY_VERSION >= '1.9' ? '[^[:word:]\.\-\+]' : '[^ёЁа-яА-Яa-zA-Zà-üÀ-Ü0-9\.\-\+_]'
+      @sanitized_file.stub(:sanitize_regexp).and_return(Regexp.new(regexp))
+    end
+
+    it "should default to the original filename if it is valid" do
+      @sanitized_file.should_receive(:original_filename).at_least(:once).and_return("тестовый.jpg")
+      @sanitized_file.filename.should == "тестовый.jpg"
+    end
+
+    it "should downcase characters properly" do
+      @sanitized_file.should_receive(:original_filename).at_least(:once).and_return("ТестоВый Ёжик.jpg")
+      @sanitized_file.filename.should == "тестовый_ёжик.jpg"
+    end
+
+    it "should downcase characters with diacritics properly" do
+      @sanitized_file.should_receive(:original_filename).at_least(:once).and_return("CONTRÔLE.jpg")
+      @sanitized_file.filename.should == "contrôle.jpg"
+    end
+
+    it "should remove illegal characters from a filename" do
+      @sanitized_file.should_receive(:original_filename).at_least(:once).and_return("⟲«Du côté des chars lourds»_123.doc")
+      @sanitized_file.filename.should == "__du_côté_des_chars_lourds__123.doc"
+    end
+
+  end
+
   shared_examples_for "all valid sanitized files" do
 
     describe '#empty?' do

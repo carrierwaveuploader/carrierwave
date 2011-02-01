@@ -1,5 +1,7 @@
 === master (https://github.com/jnicklas/carrierwave/compare/0.5.1...master)
 
+* [added] Sanitized_regexp documentation to the README [nashbridges]
+* [changed] Require active_support/core_ext/string/multibyte to fix downcasing unicode filenames during sanitizing [nashbridges]
 * [changed] Use fog ~> 0.4, Fog::AWS::Storage.new -> Fog::Storage.new(:provider => 'AWS') [trevorturk]
 * [changed] Use class_attribute (inheritable attributes are deprecated) [stephencelis]
 * [changed] extension_white_list no longer supports a single string, only an array of strings and/or Regexps [trevorturk]
