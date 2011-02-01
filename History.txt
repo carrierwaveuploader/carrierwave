@@ -1,6 +1,5 @@
 === master (https://github.com/jnicklas/carrierwave/compare/0.5.1...master)
 
-* [added] Sanitized_regexp documentation to the README [nashbridges]
 * [changed] Require active_support/core_ext/string/multibyte to fix downcasing unicode filenames during sanitizing [nashbridges]
 * [changed] Use fog ~> 0.4, Fog::AWS::Storage.new -> Fog::Storage.new(:provider => 'AWS') [trevorturk]
 * [changed] Use class_attribute (inheritable attributes are deprecated) [stephencelis]
@@ -9,6 +8,7 @@
 * [added] CarrierWave::SanitizedFile#sanitize_regexp public method to allow customizing [trevorturk]
 * [added] Ability to use https for Amazon S3 URLs if config.s3_use_ssl is true [recruitmilitary]
 * [added] The s3_region configuration documentation to the README [mrsimo]
+* [added] Sanitized_regexp documentation to the README [nashbridges]
 * [fixed] Reprocessing remotely stored files [alexcrichton]
 * [fixed] Nested versioning processing [alexcrichton]
 * [fixed] An intermittent bug with ImageScience resize_to_fill method [LupineDev]
