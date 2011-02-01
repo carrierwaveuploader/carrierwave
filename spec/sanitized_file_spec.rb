@@ -178,7 +178,7 @@ describe CarrierWave::SanitizedFile do
       @sanitized_file.filename.should == "тестовый_ёжик.jpg"
     end
 
-    it "should downcase characters properly" do
+    it "should downcase characters with diacritics properly" do
       @sanitized_file.should_receive(:original_filename).at_least(:once).and_return("CONTRÔLE.jpg")
       @sanitized_file.filename.should == "contrôle.jpg"
     end
