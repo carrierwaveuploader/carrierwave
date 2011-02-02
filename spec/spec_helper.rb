@@ -10,6 +10,8 @@ require 'logger'
 require 'carrierwave'
 require 'timecop'
 
+require 'storage/fog_helper'
+
 alias :running :lambda
 
 def file_path( *paths )
