@@ -9,16 +9,24 @@ unless ENV['FOG_MOCK'] == 'false'
   Fog.mock!
 end
 
+class FogSpecUploader < CarrierWave::Uploader::Base
+  storage :fog
+end
+
 def fog_tests(fog_credentials)
   describe CarrierWave::Storage::Fog do
     describe fog_credentials[:provider] do
       before do
-        @uploader = mock('an uploader')
-        @uploader.stub!(:fog_attributes).and_return({})
-        @uploader.stub!(:fog_credentials).and_return(fog_credentials)
-        @uploader.stub!(:fog_directory).and_return(ENV['CARRIERWAVE_DIRECTORY'])
-        @uploader.stub!(:fog_host).and_return(nil)
-        @uploader.stub!(:fog_public).and_return(true)
+        CarrierWave.configure do |config|
+          config.reset_config
+          config.fog_attributes  = {}
+          config.fog_credentials = fog_credentials
+          config.fog_directory   = ENV['CARRIERWAVE_DIRECTORY']
+          config.fog_host        = nil
+          config.fog_public      = true
+        end
+
+        @uploader = FogSpecUploader.new
         @uploader.stub!(:store_path).and_return('uploads/bar.txt')
 
         @storage = CarrierWave::Storage::Fog.new(@uploader)
@@ -127,6 +135,7 @@ def fog_tests(fog_credentials)
   end
 end
 
+# figure out what tests should be runnable (based on available credentials and mocks)
 credentials = []
 if Fog.mocking?
   mappings = {
@@ -166,10 +175,12 @@ end
 
 ENV['CARRIERWAVE_DIRECTORY'] ||= "carrierwave#{Time.now.to_i}"
 
+# run everything we have credentials for
 for credential in credentials
   fog_tests(credential)
 end
 
+# cleanup the directories and files we created
 at_exit do
   # cleanup
   for credential in credentials
