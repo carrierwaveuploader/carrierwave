@@ -121,8 +121,12 @@ module CarrierWave
             if @cf_container
               @cf_container
             else
-              @cf_container = cf_connection.create_container(container)
-              @cf_container.make_public
+              begin
+                @cf_container = cf_connection.container(container)
+              rescue NoSuchContainerException
+                @cf_container = cf_connection.create_container(container)
+                @cf_container.make_public
+              end
               @cf_container
             end
           end
