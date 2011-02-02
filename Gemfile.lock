@@ -71,7 +71,7 @@ GEM
       abstract (>= 1.0.0)
     excon (0.4.0)
     extlib (0.9.15)
-    fog (0.5.0)
+    fog (0.5.1)
       builder
       excon (>= 0.4.0)
       formatador (>= 0.0.16)
@@ -143,7 +143,6 @@ PLATFORMS
 
 DEPENDENCIES
   RubyInline
-  activesupport (~> 3.0)
   bson_ext (= 1.1.1)
   carrierwave!
   cucumber
@@ -151,7 +150,7 @@ DEPENDENCIES
   dm-migrations
   dm-sqlite-adapter
   dm-validations
-  fog (~> 0.5.0)
+  fog (~> 0.5.1)
   image_science
   json
   mini_magick (~> 2.3)
