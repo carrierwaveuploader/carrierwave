@@ -4,6 +4,7 @@
 * [changed] Use fog ~> 0.4, Fog::AWS::Storage.new -> Fog::Storage.new(:provider => 'AWS') [trevorturk]
 * [changed] Use class_attribute (inheritable attributes are deprecated) [stephencelis]
 * [changed] extension_white_list no longer supports a single string, only an array of strings and/or Regexps [trevorturk]
+* [changed] Rackspace Cloud Files: only create container if container does not exist [edmundsalvacion]
 * [added] Ability to specify a Regexp in the extension_white_list [lwe]
 * [added] CarrierWave::SanitizedFile#sanitize_regexp public method to allow customizing [trevorturk]
 * [added] Ability to use https for Amazon S3 URLs if config.s3_use_ssl is true [recruitmilitary]
