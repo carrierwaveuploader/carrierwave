@@ -3,19 +3,27 @@
 require 'spec_helper'
 require 'open-uri'
 
+class S3SpecUploader < CarrierWave::Uploader::Base
+  storage :s3
+end
+
 if ENV['S3_SPEC']
   describe CarrierWave::Storage::S3 do
     before do
       @bucket = ENV['CARRIERWAVE_TEST_BUCKET']
-      @uploader = mock('an uploader')
-      @uploader.stub!(:s3_access_key_id).and_return(ENV["S3_ACCESS_KEY_ID"])
-      @uploader.stub!(:s3_secret_access_key).and_return(ENV["S3_SECRET_ACCESS_KEY"])
-      @uploader.stub!(:s3_bucket).and_return(@bucket)
-      @uploader.stub!(:s3_access_policy).and_return(:public_read)
-      @uploader.stub!(:s3_cnamed).and_return(false)
-      @uploader.stub!(:s3_headers).and_return({'Expires' => 'Fri, 21 Jan 2021 16:51:06 GMT'})
-      @uploader.stub!(:s3_region).and_return(ENV["S3_REGION"] || 'us-east-1')
 
+      CarrierWave.configure do |config|
+        config.reset_config
+        config.s3_access_key_id     = ENV["S3_ACCESS_KEY_ID"]
+        config.s3_secret_access_key = ENV["S3_SECRET_ACCESS_KEY"]
+        config.s3_bucket            = @bucket
+        config.s3_access_policy     = :public_read
+        config.s3_cnamed            = false
+        config.s3_headers           = {'Expires' => 'Fri, 21 Jan 2021 16:51:06 GMT'}
+        config.s3_region            = ENV["S3_REGION"] || 'us-east-1'
+      end
+
+      @uploader = S3SpecUploader.new
       @uploader.stub!(:store_path).and_return('uploads/bar.txt')
 
       @storage = CarrierWave::Storage::S3.new(@uploader)
