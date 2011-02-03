@@ -16,6 +16,8 @@ if ENV['S3_SPEC']
       @uploader.stub!(:s3_headers).and_return({'Expires' => 'Fri, 21 Jan 2021 16:51:06 GMT'})
       @uploader.stub!(:s3_region).and_return(ENV["S3_REGION"] || 'us-east-1')
 
+      @uploader.stub!(:store_path).and_return('uploads/bar.txt')
+
       @storage = CarrierWave::Storage::S3.new(@uploader)
       @file = CarrierWave::SanitizedFile.new(file_path('test.jpg'))
       @directory = @storage.connection.directories.get(ENV['CARRIERWAVE_TEST_BUCKET']) || @storage.connection.directories.create(:key => ENV['CARRIERWAVE_TEST_BUCKET'])
@@ -42,7 +44,6 @@ if ENV['S3_SPEC']
 
     describe '#store!' do
       before do
-        @uploader.stub!(:store_path).and_return('uploads/bar.txt')
         @s3_file = @storage.store!(@file)
       end
 
@@ -89,7 +90,6 @@ if ENV['S3_SPEC']
     describe '#retrieve!' do
       before do
         @storage.connection.put_object(@bucket, "uploads/bar.txt", "A test, 1234", {'a-amz-acl' => 'public-read'})
-        @uploader.stub!(:store_path).with('bar.txt').and_return('uploads/bar.txt')
         @s3_file = @storage.retrieve!('bar.txt')
       end
 
@@ -118,7 +118,6 @@ if ENV['S3_SPEC']
     describe 'access policy' do
       context "with public read" do
         before do
-          @uploader.stub!(:store_path).and_return('uploads/bar.txt')
           @uploader.stub!(:s3_access_policy).and_return(:public_read)
           @s3_file = @storage.store!(@file)
         end
@@ -136,7 +135,6 @@ if ENV['S3_SPEC']
 
       context "with public read" do
         before do
-          @uploader.stub!(:store_path).and_return('uploads/bar.txt')
           @uploader.stub!(:s3_access_policy).and_return(:authenticated_read)
           @s3_file = @storage.store!(@file)
         end
@@ -162,7 +160,6 @@ if ENV['S3_SPEC']
 
     describe 's3 region' do
       before do
-        @uploader.stub!(:store_path).and_return('uploads/bar.txt')
         @s3_file = @storage.store!(@file)
       end
 
