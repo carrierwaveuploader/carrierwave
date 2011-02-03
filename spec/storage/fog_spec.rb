@@ -3,12 +3,6 @@
 require 'spec_helper'
 require 'open-uri'
 
-require 'fog'
-
-unless ENV['FOG_MOCK'] == 'false'
-  Fog.mock!
-end
-
 # figure out what tests should be runnable (based on available credentials and mocks)
 credentials = []
 if Fog.mocking?

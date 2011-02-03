@@ -18,6 +18,7 @@ if ENV['S3_SPEC']
 
       @storage = CarrierWave::Storage::S3.new(@uploader)
       @file = CarrierWave::SanitizedFile.new(file_path('test.jpg'))
+      @directory = @storage.connection.directories.get(ENV['CARRIERWAVE_TEST_BUCKET']) || @storage.connection.directories.create(:key => ENV['CARRIERWAVE_TEST_BUCKET'])
     end
 
     after do
@@ -75,8 +76,8 @@ if ENV['S3_SPEC']
       end
 
       it "should set headers" do
-        client = Net::HTTP.new("#{@bucket}.s3.amazonaws.com")
-        headers = client.request_head('/uploads/bar.txt')
+        pending if Fog.mocking?
+        headers = Excon.head("http://s3.amazonaws.com/#{@bucket}/uploads/bar.txt").headers
         headers["Expires"].should == 'Fri, 21 Jan 2021 16:51:06 GMT'
       end
 
@@ -123,10 +124,12 @@ if ENV['S3_SPEC']
         end
 
         it "should be available at public URL" do
+          pending if Fog.mocking?
           open(@s3_file.public_url).read.should == 'this is stuff'
         end
 
-        it "should be availabel at generic URL" do
+        it "should be available at generic URL" do
+          pending if Fog.mocking?
           open(@s3_file.url).read.should == 'this is stuff'
         end
       end
@@ -139,16 +142,19 @@ if ENV['S3_SPEC']
         end
 
         it "should be available at authenticated URL" do
+          pending if Fog.mocking?
           open(@s3_file.authenticated_url).read.should == 'this is stuff'
         end
 
         it "should not be available at public URL" do
+          pending if Fog.mocking?
           lambda do
             open(@s3_file.public_url)
           end.should raise_error(OpenURI::HTTPError, "403 Forbidden")
         end
 
         it "should be available at generic URL" do
+          pending if Fog.mocking?
           open(@s3_file.url).read.should == 'this is stuff'
         end
       end
