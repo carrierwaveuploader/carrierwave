@@ -14,7 +14,7 @@ shared_examples_for "a GridFS connection" do
       @grid.open('uploads/bar.txt', 'r').data.should == 'this is stuff'
     end
   
-    it "should not have a path" do
+    it "should have the same path that it was stored as" do
       @grid_fs_file.path.should == 'uploads/bar.txt'
     end
   
@@ -48,7 +48,7 @@ shared_examples_for "a GridFS connection" do
       @grid_fs_file.read.chomp.should == "A test, 1234"
     end
   
-    it "should not have a path" do
+    it "should have the same path that it was stored as" do
       @grid_fs_file.path.should == 'uploads/bar.txt'
     end
   
