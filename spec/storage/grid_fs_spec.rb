@@ -15,7 +15,7 @@ shared_examples_for "a GridFS connection" do
     end
   
     it "should not have a path" do
-      @grid_fs_file.path.should be_nil
+      @grid_fs_file.path.should == 'uploads/bar.txt'
     end
   
     it "should not have a URL" do
@@ -49,7 +49,7 @@ shared_examples_for "a GridFS connection" do
     end
   
     it "should not have a path" do
-      @grid_fs_file.path.should be_nil
+      @grid_fs_file.path.should == 'uploads/bar.txt'
     end
   
     it "should not have a URL unless set" do
@@ -66,7 +66,7 @@ shared_examples_for "a GridFS connection" do
       lambda {@grid.open('uploads/bar.txt', 'r')}.should raise_error(Mongo::GridFileNotFound)
     end
   end
-  
+
 end
 
 describe CarrierWave::Storage::GridFS do
@@ -89,6 +89,39 @@ describe CarrierWave::Storage::GridFS do
     end
   
     it_should_behave_like "a GridFS connection"
+
+    # Calling #recreate_versions! on uploaders has been known to fail on
+    # remotely hosted files. This is due to a variety of issues, but this test
+    # makes sure that there's no unnecessary errors during the process
+    describe "#recreate_versions!" do
+      before do
+        @uploader_class = Class.new(CarrierWave::Uploader::Base)
+        @uploader_class.class_eval{
+          include CarrierWave::MiniMagick
+          storage :grid_fs
+
+          process :resize_to_fit => [10, 10]
+        }
+
+        @versioned = @uploader_class.new
+        @versioned.stub!(:grid_fs_connection).and_return(@database)
+
+        @versioned.store! File.open(file_path('portrait.jpg'))
+      end
+
+      after do
+        FileUtils.rm_rf(public_path)
+      end
+
+      it "recreates versions stored remotely without error" do
+        lambda {
+          @versioned.recreate_versions!
+        }.should_not raise_error
+
+        @versioned.should be_present
+      end
+    end
+
   end
 
   context "when setting a connection manually" do
@@ -112,5 +145,5 @@ describe CarrierWave::Storage::GridFS do
   after do
     @grid.delete('uploads/bar.txt')
   end
-  
+
 end

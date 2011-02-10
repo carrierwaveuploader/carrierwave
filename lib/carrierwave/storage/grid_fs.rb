@@ -45,7 +45,7 @@ module CarrierWave
         end
 
         def path
-          nil
+          @path
         end
 
         def url
