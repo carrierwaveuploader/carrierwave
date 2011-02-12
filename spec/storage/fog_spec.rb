@@ -47,16 +47,3 @@ ENV['CARRIERWAVE_DIRECTORY'] ||= "carrierwave#{Time.now.to_i}"
 for credential in credentials
   fog_tests(credential)
 end
-
-# cleanup the directories and files we created
-at_exit do
-  # cleanup
-  for credential in credentials
-    storage = Fog::Storage.new(credential)
-    directory = storage.directories.new(:key => ENV['CARRIERWAVE_DIRECTORY'])
-    for file in directory.files
-      file.destroy
-    end
-    directory.destroy
-  end
-end

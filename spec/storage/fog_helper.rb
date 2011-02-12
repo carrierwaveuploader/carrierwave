@@ -1,7 +1,3 @@
-class FogSpecUploader < CarrierWave::Uploader::Base
-  storage :fog
-end
-
 def fog_tests(fog_credentials)
   describe CarrierWave::Storage::Fog do
     describe fog_credentials[:provider] do
@@ -15,7 +11,14 @@ def fog_tests(fog_credentials)
           config.fog_public      = true
         end
 
-        @uploader = FogSpecUploader.new
+        eval <<-RUBY
+class FogSpec#{fog_credentials[:provider]}Uploader < CarrierWave::Uploader::Base
+  storage :fog
+end
+        RUBY
+
+        # @uploader = FogSpecUploader.new
+        @uploader = eval("FogSpec#{fog_credentials[:provider]}Uploader")
         @uploader.stub!(:store_path).and_return('uploads/bar.txt')
 
         @storage = CarrierWave::Storage::Fog.new(@uploader)
