@@ -7,12 +7,16 @@ module CarrierWave
     ##
     # Uploads things to Rackspace Cloud Files webservices using the Rackspace libraries (cloudfiles gem). 
     # In order for CarrierWave to connect to Cloud Files, you'll need to specify an username, api key
-    # and container
+    # and container.  Optional arguments are config.cloud_files_snet (using the private internal 
+    # Rackspace network for communication) and config.cloud_files_auth_url (for connecting to Rackspace's 
+    # UK infrastructure or an OpenStack Swift installation)
     #
     #     CarrierWave.configure do |config|
     #       config.cloud_files_username = "xxxxxx"
     #       config.cloud_files_api_key = "xxxxxx"
     #       config.cloud_files_container = "my_container"
+    #       config.cloud_files_auth_url = "https://lon.auth.api.rackspacecloud.com/v1.0"
+    #       config.cloud_files_snet = true
     #     end
     #
     # You can optionally include your CDN host name in the configuration.
@@ -60,7 +64,12 @@ module CarrierWave
         # Remove the file from Cloud Files
         #
         def delete
-          cf_container.delete_object(@path)
+          begin
+            cf_container.delete_object(@path)
+          rescue ::CloudFiles::Exception::NoSuchObject
+            # If the file's not there, don't panic
+            nil
+          end
         end
 
         ##
@@ -75,7 +84,11 @@ module CarrierWave
           if @uploader.cloud_files_cdn_host
             "http://" + @uploader.cloud_files_cdn_host + "/" + @path
           else
-            cf_container.object(@path).public_url
+            begin
+              cf_container.object(@path).public_url
+            rescue ::CloudFiles::Exception::NoSuchObject
+              nil
+            end
           end
         end
 
@@ -114,7 +127,10 @@ module CarrierWave
           end
           
           def cf_connection
-            @cf_connection ||= ::CloudFiles::Connection.new(@uploader.cloud_files_username, @uploader.cloud_files_api_key)
+            config = {:username => @uploader.cloud_files_username, :api_key => @uploader.cloud_files_api_key}
+            config[:auth_url] = @uploader.cloud_files_auth_url if @uploader.respond_to?(:cloud_files_auth_url)
+            config[:snet] = @uploader.cloud_files_snet if @uploader.respond_to?(:cloud_files_snet)
+            @cf_connection ||= ::CloudFiles::Connection.new(config)
           end
 
           def cf_container
