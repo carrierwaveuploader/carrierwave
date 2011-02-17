@@ -372,6 +372,8 @@ You'll need to configure a bucket, access id and secret key like this in an init
       config.s3_secret_access_key = 'xxxxxx'
       config.s3_bucket = 'name_of_bucket'
     end
+    
+You'll need to create the bucket on Amazon S3 if it doesn't already exist.
 
 In your uploader, set the storage to :s3
 
