@@ -1,9 +1,5 @@
 = CarrierWave
 
-http://carrierwave.rubyforge.org
-
-== Summary
-
 This gem provides a simple and extremely flexible way to upload files from Ruby applications.
 It works well with Rack based web applications, such as Ruby on Rails.
 
