@@ -36,7 +36,7 @@ Feature: Mount an Uploader on ActiveRecord class
   #   Then there should be a file at 'public/uploads/bork.txt'
   #   When I reload the datamapper record
   #   Then the url for the column 'avatar' should be '/uploads/bork.txt'
-  # 
+  #
   # Scenario: store a file and delete the record
   #   When I assign the file 'fixtures/bork.txt' to the 'avatar' column
   #   And I retrieve the file later from the cache name for the column 'avatar'

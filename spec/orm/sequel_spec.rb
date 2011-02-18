@@ -12,11 +12,11 @@ describe CarrierWave::Sequel do
     uploader = Class.new(CarrierWave::Uploader::Base)
     klass.mount_uploader(:image, uploader)
     model = klass.new
-    [klass, uploader, model] 
+    [klass, uploader, model]
   end
 
   describe '.mount_uploader' do
-    
+
     before(:all) do
       DB.create_table :events do
         primary_key :id
@@ -28,7 +28,7 @@ describe CarrierWave::Sequel do
     after(:all) do
       DB.drop_table :events
     end
-    
+
     before(:each) do
       @class = Class.new(Sequel::Model)
       @class.set_dataset :events
@@ -36,78 +36,78 @@ describe CarrierWave::Sequel do
     end
 
     after(:each) { @class.delete }
-    
+
     describe '#image' do
-      
+
       it "should return blank uploader when nothing has been assigned" do
         @event.image.should be_blank
       end
-      
+
       it "should return blank uploader when an empty string has been assigned" do
         @event[:image] = ''
         @event.save
         @event.reload
         @event.image.should be_blank
       end
-      
+
       it "should retrieve a file from the storage if a value is stored in the database" do
         @event[:image] = 'test.jpeg'
         @event.save
         @event.reload
         @event.image.should be_an_instance_of(@uploader)
       end
-      
+
       it "should set the path to the store dir" do
         @event[:image] = 'test.jpeg'
         @event.save
         @event.reload
         @event.image.current_path.should == public_path('uploads/test.jpeg')
       end
-    
+
     end
-    
+
     describe '#image=' do
-      
+
       it "should cache a file" do
         @event.image = stub_file('test.jpeg')
         @event.image.should be_an_instance_of(@uploader)
       end
-      
+
       it "should write nothing to the database, to prevent overriden filenames to fail because of unassigned attributes" do
         @event[:image].should be_nil
       end
-      
+
       it "should copy a file into into the cache directory" do
         @event.image = stub_file('test.jpeg')
         @event.image.current_path.should =~ /^#{public_path('uploads/tmp')}/
       end
-      
+
       it "should do nothing when nil is assigned" do
         @event.image = nil
         @event.image.should be_blank
       end
-      
+
       it "should do nothing when an empty string is assigned" do
         @event.image = ''
         @event.image.should be_blank
       end
 
     end
-    
+
     describe '#save' do
-      
+
       it "should do nothing when no file has been assigned" do
         @event.save.should be_true
         @event.image.should be_blank
       end
-      
+
       it "should copy the file to the upload directory when a file has been assigned" do
         @event.image = stub_file('test.jpeg')
         @event.save.should be_true
         @event.image.should be_an_instance_of(@uploader)
         @event.image.current_path.should == public_path('uploads/test.jpeg')
       end
-      
+
       describe 'with validation' do
 
         before do
@@ -128,8 +128,8 @@ describe CarrierWave::Sequel do
           @event.image.should be_an_instance_of(@uploader)
           @event.image.current_path.should =~ /^#{public_path('uploads/tmp')}/
         end
-      end 
-     
+      end
+
       it "should assign the filename to the database" do
         @event.image = stub_file('test.jpeg')
         @event.save.should be_true
@@ -147,9 +147,9 @@ describe CarrierWave::Sequel do
         @event[:image].should == ''
       end
     end
-    
+
     describe 'with overriddent filename' do
-      
+
       describe '#save' do
 
         before do
@@ -178,6 +178,6 @@ describe CarrierWave::Sequel do
       end
 
     end
-    
+
   end
 end

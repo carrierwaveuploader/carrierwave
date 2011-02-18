@@ -5,7 +5,7 @@ module CarrierWave
   module Storage
 
     ##
-    # Uploads things to Rackspace Cloud Files webservices using the Rackspace libraries (cloudfiles gem). 
+    # Uploads things to Rackspace Cloud Files webservices using the Rackspace libraries (cloudfiles gem).
     # In order for CarrierWave to connect to Cloud Files, you'll need to specify an username, api key
     # and container
     #
@@ -33,7 +33,7 @@ module CarrierWave
         end
 
         ##
-        # Returns the current path/filename of the file on Cloud Files. 
+        # Returns the current path/filename of the file on Cloud Files.
         #
         # === Returns
         #
@@ -112,7 +112,7 @@ module CarrierWave
           def connection
             @base.connection
           end
-          
+
           def cf_connection
             @cf_connection ||= ::CloudFiles::Connection.new(@uploader.cloud_files_username, @uploader.cloud_files_api_key)
           end
@@ -130,7 +130,7 @@ module CarrierWave
               @cf_container
             end
           end
-          
+
 
       end
 

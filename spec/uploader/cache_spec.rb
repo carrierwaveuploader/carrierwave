@@ -8,7 +8,7 @@ describe CarrierWave::Uploader do
     @uploader_class = Class.new(CarrierWave::Uploader::Base)
     @uploader = @uploader_class.new
   end
-  
+
   after do
     FileUtils.rm_rf(public_path)
   end
@@ -86,13 +86,13 @@ describe CarrierWave::Uploader do
         @uploader.cache!(file_path('test.jpg'))
       }.should raise_error(CarrierWave::FormNotMultipart)
     end
-    
+
     it "should raise an error when trying to cache a pathname" do
       running {
         @uploader.cache!(Pathname.new(file_path('test.jpg')))
       }.should raise_error(CarrierWave::FormNotMultipart)
     end
-    
+
     it "should do nothing when trying to cache an empty file" do
       @uploader.cache!(nil)
     end
@@ -103,27 +103,27 @@ describe CarrierWave::Uploader do
       @uploader.cache!(File.open(file_path('test.jpg')))
       @uploader.should have_permissions(0777)
     end
-    
+
     describe "with ensuring multipart form deactivated" do
-    
+
       before do
         CarrierWave.configure do |config|
           config.ensure_multipart_form = false
         end
       end
-      
+
       it "should not raise an error when trying to cache a string" do
         running {
           @uploader.cache!(file_path('test.jpg'))
         }.should_not raise_error(CarrierWave::FormNotMultipart)
       end
-      
+
       it "should raise an error when trying to cache a pathname and " do
         running {
           @uploader.cache!(Pathname.new(file_path('test.jpg')))
         }.should_not raise_error(CarrierWave::FormNotMultipart)
       end
-      
+
     end
   end
 

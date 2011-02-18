@@ -2,14 +2,14 @@ Feature: uploader with nested versions
   In order to optimize performance for processing
   As a developer using CarrierWave
   I want to set nested versions
-  
+
   Background:
     Given an uploader class that uses the 'file' storage
     And that the uploader class has a version named 'thumb'
     And yo dawg, I put a version called 'mini' in your version called 'thumb'
     And yo dawg, I put a version called 'micro' in your version called 'thumb'
-    And an instance of that class 
-  
+    And an instance of that class
+
   Scenario: store a file
     When I store the file 'fixtures/bork.txt'
     Then there should be a file at 'public/uploads/bork.txt'
@@ -24,7 +24,7 @@ Feature: uploader with nested versions
     And the uploader's version 'thumb' should have the url '/uploads/thumb_bork.txt'
     And the uploader's nested version 'mini' nested in 'thumb' should have the url '/uploads/thumb_mini_bork.txt'
     And the uploader's nested version 'micro' nested in 'thumb' should have the url '/uploads/thumb_micro_bork.txt'
-  
+
   Scenario: cache a file and then store it
     When I cache the file 'fixtures/bork.txt'
     Then there should be a file called 'bork.txt' somewhere in a subdirectory of 'public/uploads/tmp'
@@ -41,7 +41,7 @@ Feature: uploader with nested versions
     And the uploader's version 'thumb' should have the url '/uploads/thumb_bork.txt'
     And the uploader's nested version 'mini' nested in 'thumb' should have the url '/uploads/thumb_mini_bork.txt'
     And the uploader's nested version 'micro' nested in 'thumb' should have the url '/uploads/thumb_micro_bork.txt'
-  
+
   Scenario: retrieving a file from cache then storing
     Given the file 'fixtures/bork.txt' is cached file at 'public/uploads/tmp/20090212-2343-8336-0348/bork.txt'
     Given the file 'fixtures/monkey.txt' is cached file at 'public/uploads/tmp/20090212-2343-8336-0348/thumb_bork.txt'

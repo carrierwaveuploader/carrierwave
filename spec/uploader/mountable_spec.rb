@@ -8,7 +8,7 @@ describe CarrierWave::Uploader do
     @uploader_class = Class.new(CarrierWave::Uploader::Base)
     @uploader = @uploader_class.new
   end
-  
+
   after do
     FileUtils.rm_rf(public_path)
   end

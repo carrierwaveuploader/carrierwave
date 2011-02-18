@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-unless defined? Magick 
+unless defined? Magick
   begin
     require 'rmagick'
   rescue LoadError
@@ -269,7 +269,7 @@ module CarrierWave
     end
 
   private
-  
+
     def destroy_image(image)
       image.destroy! if image.respond_to?(:destroy!)
     end
