@@ -36,7 +36,7 @@ if ENV['CLOUDFILES_SPEC']
 
       it "should have an Rackspace URL" do
         # Don't check if its ".cdn." or ".cdn2." because they change these URLs
-        @cloud_file.url.should =~ %r!http://(.*?).rackspacecloud.com/uploads/bar.txt!
+        @cloud_file.url.should =~ %r!http://(.*?).rackcdn.com/uploads/bar.txt!
       end
 
       it "should store the content type on Cloud Files" do
@@ -69,7 +69,7 @@ if ENV['CLOUDFILES_SPEC']
 
       it "should have an Rackspace URL" do
         # Don't check if its ".cdn." or ".cdn2." because they change these URLs
-        @cloud_file.url.should =~ %r!http://(.*?).rackspacecloud.com/uploads/bar.txt!
+        @cloud_file.url.should =~ %r!http://(.*?).rackcdn.com/uploads/bar.txt!
       end
 
       it "should allow for configured CDN urls" do
