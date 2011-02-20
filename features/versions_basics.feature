@@ -2,12 +2,12 @@ Feature: uploader with file storage and versions
   In order to be awesome
   As a developer using CarrierWave
   I want to upload files to the filesystem
-  
+
   Background:
     Given an uploader class that uses the 'file' storage
     And that the uploader class has a version named 'thumb'
-    And an instance of that class 
-  
+    And an instance of that class
+
   Scenario: store a file
     When I store the file 'fixtures/bork.txt'
     Then there should be a file at 'public/uploads/bork.txt'
@@ -16,7 +16,7 @@ Feature: uploader with file storage and versions
     And the file at 'public/uploads/thumb_bork.txt' should be identical to the file at 'fixtures/bork.txt'
     And the uploader should have the url '/uploads/bork.txt'
     And the uploader's version 'thumb' should have the url '/uploads/thumb_bork.txt'
-  
+
   Scenario: cache a file and then store it
     When I cache the file 'fixtures/bork.txt'
     Then there should be a file called 'bork.txt' somewhere in a subdirectory of 'public/uploads/tmp'
@@ -31,7 +31,7 @@ Feature: uploader with file storage and versions
     And the file at 'public/uploads/thumb_bork.txt' should be identical to the file at 'fixtures/bork.txt'
     And the uploader should have the url '/uploads/bork.txt'
     And the uploader's version 'thumb' should have the url '/uploads/thumb_bork.txt'
-  
+
   Scenario: retrieving a file from cache then storing
     Given the file 'fixtures/bork.txt' is cached file at 'public/uploads/tmp/20090212-2343-8336-0348/bork.txt'
     Given the file 'fixtures/monkey.txt' is cached file at 'public/uploads/tmp/20090212-2343-8336-0348/thumb_bork.txt'

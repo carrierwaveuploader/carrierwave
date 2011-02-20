@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.email = ["jonas.nicklas@gmail.com"]
   s.extra_rdoc_files = ["README.rdoc"]
   s.files = Dir.glob("{bin,lib}/**/*") + %w(README.rdoc)
-  s.homepage = %q{http://carrierwave.rubyforge.org}
+  s.homepage = %q{https://github.com/jnicklas/carrierwave}
   s.rdoc_options = ["--main", "README.rdoc"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{carrierwave}

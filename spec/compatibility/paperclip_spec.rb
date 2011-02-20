@@ -18,7 +18,7 @@ describe CarrierWave::Compatibility::Paperclip do
     @model.stub!(:id).and_return(23)
     @uploader = @uploader_class.new(@model, :monkey)
   end
-  
+
   after do
     FileUtils.rm_rf(public_path)
   end

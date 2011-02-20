@@ -35,12 +35,12 @@ describe CarrierWave::Uploader do
         @uploader.current_path.should be_nil
       end
     end
-    
+
     describe '#url' do
       it "should return the default url" do
         @uploader.url.should == 'http://someurl.example.com'
       end
-      
+
       it "should return the default url with version when given" do
         @uploader.url(:thumb).should == 'http://someurl.example.com/thumb'
       end
@@ -71,7 +71,7 @@ describe CarrierWave::Uploader do
         @uploader.cache!(File.open(file_path('test.jpg')))
         @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpg')
       end
-      
+
       it "should set the url" do
         @uploader.cache!(File.open(file_path('test.jpg')))
         @uploader.url.should_not == 'http://someurl.example.com'

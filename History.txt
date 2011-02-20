@@ -1,4 +1,4 @@
-=== master (https://github.com/jnicklas/carrierwave/compare/0.5.1...master)
+=== Version 0.5.2 2010-02-18
 
 * [changed] Require active_support/core_ext/string/multibyte to fix downcasing unicode filenames during sanitizing [nashbridges]
 * [changed] Use fog ~> 0.4, Fog::AWS::Storage.new -> Fog::Storage.new(:provider => 'AWS') [trevorturk]
