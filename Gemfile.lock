@@ -43,7 +43,7 @@ GEM
     bson (1.1.1)
     bson_ext (1.1.1)
     builder (2.1.2)
-    cloudfiles (1.4.10)
+    cloudfiles (1.4.12)
       mime-types (>= 1.16)
     cucumber (0.8.5)
       builder (~> 2.1.2)
@@ -147,7 +147,7 @@ DEPENDENCIES
   RubyInline
   bson_ext (= 1.1.1)
   carrierwave!
-  cloudfiles
+  cloudfiles (>= 1.4.12)
   cucumber
   dm-core
   dm-migrations
