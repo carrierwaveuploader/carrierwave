@@ -397,9 +397,9 @@ You'll need to configure a directory (also known as a bucket), access id and sec
 
     CarrierWave.configure do |config|
       config.fog_credentials = {
-        :provider                 => 'Google',
-        :google_access_key_id     => 'xxxxxx',
-        :google_secret_access_key => 'yyyyyy
+        :provider                         => 'Google',
+        :google_storage_access_key_id     => 'xxxxxx',
+        :google_storage_secret_access_key => 'yyyyyy
       }
       config.fog_directory = 'name_of_directory'
     end
