@@ -5,12 +5,14 @@ require 'open-uri'
 
 # figure out what tests should be runnable (based on available credentials and mocks)
 credentials = []
+
 if Fog.mocking?
   mappings = {
     'AWS'       => [:aws_access_key_id, :aws_secret_access_key],
     'Google'    => [:google_storage_access_key_id, :google_storage_secret_access_key],
-#    'Local'     => [:local_root],
-#    'Rackspace' => [:rackspace_api_key, :rackspace_username]
+    # pending fog mock support
+    # 'Local'     => [:local_root],
+    # 'Rackspace' => [:rackspace_api_key, :rackspace_username]
   }
 
   for provider, keys in mappings
