@@ -153,7 +153,7 @@ DEPENDENCIES
   dm-migrations
   dm-sqlite-adapter
   dm-validations
-  fog (~> 0.5.1)
+  fog (~> 0.5)
   image_science
   json
   mini_magick (~> 2.3)
