@@ -336,9 +336,9 @@ You can also pass in additional options, as documented fully in lib/storage/fog.
 
     CarrierWave.configure do |config|
       config.fog_credentials = {
+        :provider               => 'AWS', # required
         :aws_access_key_id      => 'xxxxxx', # required
         :aws_secret_access_key  => 'yyyyyy, # required
-        :provider               => 'AWS', # required
         :region                 => 'eu-west-1' # optional, defaults to 'us-east-1'
       }
       config.fog_directory  = 'name_of_directory' # required
@@ -355,32 +355,6 @@ In your uploader, set the storage to :fog
 
 That's it! You can still use the <code>CarrierWave::Uploader#url</code> method to return the url to the file on Amazon S3.
 
-== Using Google Storage for Developers
-
-Fog[http://github.com/geemus/fog] is used to support Google Storage for Developers. Ensure you have it installed:
-
-    gem install fog
-
-You'll need to configure a directory (also known as a bucket), access id and secret key like this in an initializer:
-
-    CarrierWave.configure do |config|
-      config.fog_credentials = {
-        :google_access_key_id      => 'xxxxxx',
-        :google_secret_access_key  => 'yyyyyy,
-        :provider => 'Google'
-      }
-      config.fog_directory = 'name_of_directory'
-    end
-
-In your uploader, set the storage to :fog
-
-    class AvatarUploader < CarrierWave::Uploader::Base
-      storage :fog
-    end
-
-That's it! You can still use the <code>CarrierWave::Uploader#url</code> method to return
-the url to the file on Google.
-
 == Using Rackspace Cloud Files
 
 Fog[http://github.com/geemus/fog] is used to support Rackspace Cloud Files. Ensure you have it installed:
@@ -391,9 +365,9 @@ You'll need to configure a directory (also known as a container), access id and 
 
     CarrierWave.configure do |config|
       config.fog_credentials = {
-        :provider => 'Rackspace',
-        :rackspace_api_key  => 'xxxxxx',
-        :rackspace_username => 'yyyyyy,
+        :provider           => 'Rackspace',
+        :rackspace_username => 'xxxxxx',
+        :rackspace_api_key  => 'yyyyyy'
       }
       config.fog_directory = 'name_of_directory'
     end
@@ -412,6 +386,32 @@ In your uploader, set the storage to :fog
 
 That's it! You can still use the <code>CarrierWave::Uploader#url</code> method to return
 the url to the file on Rackspace Cloud Files.
+
+== Using Google Storage for Developers
+
+Fog[http://github.com/geemus/fog] is used to support Google Storage for Developers. Ensure you have it installed:
+
+    gem install fog
+
+You'll need to configure a directory (also known as a bucket), access id and secret key like this in an initializer:
+
+    CarrierWave.configure do |config|
+      config.fog_credentials = {
+        :provider                 => 'Google',
+        :google_access_key_id     => 'xxxxxx',
+        :google_secret_access_key => 'yyyyyy
+      }
+      config.fog_directory = 'name_of_directory'
+    end
+
+In your uploader, set the storage to :fog
+
+    class AvatarUploader < CarrierWave::Uploader::Base
+      storage :fog
+    end
+
+That's it! You can still use the <code>CarrierWave::Uploader#url</code> method to return
+the url to the file on Google.
 
 == Using MongoDB's GridFS store
 
