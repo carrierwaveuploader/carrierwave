@@ -386,7 +386,7 @@ In your uploader, set the storage to :fog
       storage :fog
     end
 
-That's it! You can still use the <code>CarrierWave::Uploader#public_url</code> method to return
+That's it! You can still use the <code>CarrierWave::Uploader#url</code> method to return
 the url to the file on Google.
 
 == Using Rackspace Cloud Files
@@ -418,7 +418,7 @@ In your uploader, set the storage to :fog
       storage :fog
     end
 
-That's it! You can still use the <code>CarrierWave::Uploader#public_url</code> method to return
+That's it! You can still use the <code>CarrierWave::Uploader#url</code> method to return
 the url to the file on Rackspace Cloud Files.
 
 == Using MongoDB's GridFS store
