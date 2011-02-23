@@ -87,9 +87,10 @@ module CarrierWave
       #
       def cache!(new_file)
         new_file = CarrierWave::SanitizedFile.new(new_file)
-        raise CarrierWave::FormNotMultipart if new_file.is_path? && ensure_multipart_form
 
         unless new_file.empty?
+          raise CarrierWave::FormNotMultipart if new_file.is_path? && ensure_multipart_form
+
           with_callbacks(:cache, new_file) do
             self.cache_id = CarrierWave.generate_cache_id unless cache_id
 

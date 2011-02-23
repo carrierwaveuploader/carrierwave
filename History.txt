@@ -2,6 +2,7 @@
 * [changed] Cloud Files storage so delete and url return nil if object not found instead of exception [minter]
 * [added] cloud_files_auth_url and cloud_files_snet config options for Cloud Files [minter]
 * [fixed] Cloud Files storage tests to use the new url format [minter]
+* [fixed] Moved raising of FormNotMultipart farther down to avoid errors with nested attribute forms [trevorturk]
 
 === Version 0.5.2 2010-02-18
 
