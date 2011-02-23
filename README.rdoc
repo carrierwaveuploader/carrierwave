@@ -14,7 +14,7 @@ It works well with Rack based web applications, such as Ruby on Rails.
 * Please direct any questions to the {mailing list}[http://groups.google.com/group/carrierwave]
 * Please report any issues on the {issue tracker}[http://github.com/jnicklas/carrierwave/issues]
 
-== Getting Started
+== Installation
 
 Install the latest stable release:
 
@@ -27,7 +27,7 @@ In Rails, add it to your Gemfile:
 Note that CarrierWave is not compatible with Rails 2 as of version 0.5. If you want to use
 Rails 2, please use the latest gem in the 0.4.X series.
 
-== Quick Start
+== Getting Started
 
 Start off by generating an uploader:
 
@@ -148,7 +148,7 @@ contain Russian letters:
       end
     end
 
-Also make sure that allowing non-latin characters won't cause a compatibily issue with a third-party
+Also make sure that allowing non-latin characters won't cause a compatibly issue with a third-party
 plugins or client-side software.
 
 == Adding versions
@@ -271,7 +271,7 @@ this easily by overriding the +default_url+ method in your uploader:
 
 You might come to a situation where you want to retroactively change a version
 or add a new one. You can use the recreate_versions! method to recreate the
-versions from the base file. This uses a naive approach which will reupload and
+versions from the base file. This uses a naive approach which will re-upload and
 process all versions.
 
    instance = MyUploader.new
@@ -506,7 +506,7 @@ for the RMagick processor.
       process :resize_to_fill => [200, 200]
     end
 
-== Migrating
+== Migrating from Paperclip
 
 If you are using Paperclip, you can use the provided compatibility module:
 
@@ -515,19 +515,19 @@ If you are using Paperclip, you can use the provided compatibility module:
     end
 
 See the documentation for <code>CarrierWave::Compatibility::Paperclip</code> for more
-detaills.
+details.
 
 Be sure to use mount_on to specify the correct column:
 
     mount_uploader :avatar, AvatarUploader, :mount_on => :avatar_file_name
 
-Unfortunately AttachmentFoo differs too much in philosophy for there to be a
+Unfortunately attachment_fu differs too much in philosophy for there to be a
 sensible compatibility mode. Patches for migrating from other solutions will be
 happily accepted.
 
 == i18n
 
-The activerecord validations use the Rails i18n framework. Add these keys to
+The Active Record validations use the Rails i18n framework. Add these keys to
 your translations file:
 
     errors:
