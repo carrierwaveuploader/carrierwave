@@ -3,27 +3,32 @@
 require 'spec_helper'
 require 'open-uri'
 
+class S3SpecUploader < CarrierWave::Uploader::Base
+  storage :s3
+end
+
 if ENV['S3_SPEC']
   describe CarrierWave::Storage::S3 do
-
-    def stub_s3_access mock
-      mock.stub!(:s3_access_key_id).and_return(ENV["S3_ACCESS_KEY_ID"])
-      mock.stub!(:s3_secret_access_key).and_return(ENV["S3_SECRET_ACCESS_KEY"])
-      mock.stub!(:s3_bucket).and_return(@bucket)
-      mock.stub!(:s3_access_policy).and_return(:public_read)
-      mock.stub!(:s3_cnamed).and_return(false)
-      mock.stub!(:s3_headers).and_return({'Expires' => 'Fri, 21 Jan 2021 16:51:06 GMT'})
-      mock.stub!(:s3_region).and_return(ENV["S3_REGION"] || 'us-east-1')
-      mock.stub!(:s3_use_ssl).and_return(false)
-    end
-
     before do
       @bucket = ENV['CARRIERWAVE_TEST_BUCKET']
-      @uploader = mock('an uploader')
-      stub_s3_access @uploader
+
+      CarrierWave.configure do |config|
+        config.reset_config
+        config.s3_access_key_id     = ENV["S3_ACCESS_KEY_ID"]
+        config.s3_secret_access_key = ENV["S3_SECRET_ACCESS_KEY"]
+        config.s3_bucket            = @bucket
+        config.s3_access_policy     = :public_read
+        config.s3_cnamed            = false
+        config.s3_headers           = {'Expires' => 'Fri, 21 Jan 2021 16:51:06 GMT'}
+        config.s3_region            = ENV["S3_REGION"] || 'us-east-1'
+      end
+
+      @uploader = S3SpecUploader.new
+      @uploader.stub!(:store_path).and_return('uploads/bar.txt')
 
       @storage = CarrierWave::Storage::S3.new(@uploader)
       @file = CarrierWave::SanitizedFile.new(file_path('test.jpg'))
+      @directory = @storage.connection.directories.get(ENV['CARRIERWAVE_TEST_BUCKET']) || @storage.connection.directories.create(:key => ENV['CARRIERWAVE_TEST_BUCKET'])
     end
 
     after do
@@ -47,7 +52,6 @@ if ENV['S3_SPEC']
 
     describe '#store!' do
       before do
-        @uploader.stub!(:store_path).and_return('uploads/bar.txt')
         @s3_file = @storage.store!(@file)
       end
 
@@ -81,8 +85,8 @@ if ENV['S3_SPEC']
       end
 
       it "should set headers" do
-        client = Net::HTTP.new("#{@bucket}.s3.amazonaws.com")
-        headers = client.request_head('/uploads/bar.txt')
+        pending if Fog.mocking?
+        headers = Excon.head("http://s3.amazonaws.com/#{@bucket}/uploads/bar.txt").headers
         headers["Expires"].should == 'Fri, 21 Jan 2021 16:51:06 GMT'
       end
 
@@ -94,7 +98,6 @@ if ENV['S3_SPEC']
     describe '#retrieve!' do
       before do
         @storage.connection.put_object(@bucket, "uploads/bar.txt", "A test, 1234", {'a-amz-acl' => 'public-read'})
-        @uploader.stub!(:store_path).with('bar.txt').and_return('uploads/bar.txt')
         @s3_file = @storage.retrieve!('bar.txt')
       end
 
@@ -123,38 +126,41 @@ if ENV['S3_SPEC']
     describe 'access policy' do
       context "with public read" do
         before do
-          @uploader.stub!(:store_path).and_return('uploads/bar.txt')
           @uploader.stub!(:s3_access_policy).and_return(:public_read)
           @s3_file = @storage.store!(@file)
         end
 
         it "should be available at public URL" do
+          pending if Fog.mocking?
           open(@s3_file.public_url).read.should == 'this is stuff'
         end
 
-        it "should be availabel at generic URL" do
+        it "should be available at generic URL" do
+          pending if Fog.mocking?
           open(@s3_file.url).read.should == 'this is stuff'
         end
       end
 
       context "with public read" do
         before do
-          @uploader.stub!(:store_path).and_return('uploads/bar.txt')
           @uploader.stub!(:s3_access_policy).and_return(:authenticated_read)
           @s3_file = @storage.store!(@file)
         end
 
         it "should be available at authenticated URL" do
+          pending if Fog.mocking?
           open(@s3_file.authenticated_url).read.should == 'this is stuff'
         end
 
         it "should not be available at public URL" do
+          pending if Fog.mocking?
           lambda do
             open(@s3_file.public_url)
           end.should raise_error(OpenURI::HTTPError, "403 Forbidden")
         end
 
         it "should be available at generic URL" do
+          pending if Fog.mocking?
           open(@s3_file.url).read.should == 'this is stuff'
         end
       end
@@ -162,7 +168,6 @@ if ENV['S3_SPEC']
 
     describe 's3 region' do
       before do
-        @uploader.stub!(:store_path).and_return('uploads/bar.txt')
         @s3_file = @storage.store!(@file)
       end
 

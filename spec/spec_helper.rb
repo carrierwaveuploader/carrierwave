@@ -10,6 +10,13 @@ require 'logger'
 require 'carrierwave'
 require 'timecop'
 
+require 'fog'
+require 'storage/fog_helper'
+
+unless ENV['FOG_MOCK'] == 'false'
+  Fog.mock!
+end
+
 alias :running :lambda
 
 def file_path( *paths )
