@@ -359,7 +359,7 @@ Fog[http://github.com/geemus/fog] is used to support Amazon S3. Ensure you have 
 
     gem install fog
 
-You'll need to provide your fog_credentials and a fog_directory (a.k.a. Bucket) in an initializer.
+You'll need to provide your fog_credentials and a fog_directory (also known as a bucket) in an initializer.
 You can also pass in additional options, as documented fully in lib/storage/fog.rb. Here's a full example:
 
     CarrierWave.configure do |config|
