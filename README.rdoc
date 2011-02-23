@@ -331,15 +331,20 @@ Fog[http://github.com/geemus/fog] is used to support Amazon S3. Ensure you have 
 
     gem install fog
 
-You'll need to configure a directory (also known as a bucket), access id and secret key like this in an initializer:
+You'll need to provide your fog_credentials and a fog_directory (a.k.a. Bucket) in an initializer.
+You can also pass in additional options, as documented fully in lib/storage/fog.rb. Here's a full example:
 
     CarrierWave.configure do |config|
       config.fog_credentials = {
-        :aws_access_key_id      => 'xxxxxx',
-        :aws_secret_access_key  => 'yyyyyy,
-        :provider => 'AWS'
+        :aws_access_key_id      => 'xxxxxx', # required
+        :aws_secret_access_key  => 'yyyyyy, # required
+        :provider               => 'AWS', # required
+        :region                 => 'eu-west-1' # optional, defaults to 'us-east-1'
       }
-      config.fog_directory = 'name_of_directory'
+      config.fog_directory  = 'name_of_directory' # required
+      config.fog_host       = 'https://assets.example.com' # optional, defaults to the standard S3 url
+      config.fog_public     = false # optional, defaults to true
+      config.fog_attributes = {'Cache-Control' => 'max-age=315576000'} # optional, defaults to {}
     end
 
 In your uploader, set the storage to :fog
@@ -347,19 +352,6 @@ In your uploader, set the storage to :fog
     class AvatarUploader < CarrierWave::Uploader::Base
       storage :fog
     end
-
-You can specify a region. US Standard "us-east-1" is the default.
-
-    CarrierWave.configure do |config|
-      config.s3_region = 'eu-west-1'
-    end
-
-Available options are defined in Fog Storage[http://github.com/geemus/fog/blob/master/lib/fog/aws/storage.rb]
-
-    'eu-west-1' => 's3-eu-west-1.amazonaws.com'
-    'us-east-1' => 's3.amazonaws.com'
-    'ap-southeast-1' => 's3-ap-southeast-1.amazonaws.com'
-    'us-west-1' => 's3-us-west-1.amazonaws.com'
 
 That's it! You can still use the <code>CarrierWave::Uploader#url</code> method to return the url to the file on Amazon S3.
 
