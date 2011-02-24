@@ -11,12 +11,13 @@ if ENV['CLOUDFILES_SPEC']
       @uploader = mock('an uploader')
       @uploader.stub!(:cloud_files_username).and_return(ENV["CLOUD_FILES_USER_NAME"])
       @uploader.stub!(:cloud_files_api_key).and_return(ENV["CLOUD_FILES_API_KEY"])
-      @uploader.stub!(:cloud_files_container).and_return(ENV['CARRIERWAVE_TEST_CONTAINER'])
+      @uploader.stub!(:cloud_files_container).and_return(ENV['CARRIERWAVE_DIRECTORY'])
       @uploader.stub!(:cloud_files_cdn_host).and_return(nil) # Unless configured below
       @storage = CarrierWave::Storage::CloudFiles.new(@uploader)
       @file = stub_tempfile('test.jpg', 'application/xml')
 
       @cf = CloudFiles::Connection.new(ENV["CLOUD_FILES_USER_NAME"], ENV["CLOUD_FILES_API_KEY"])
+      @cf.create_container(ENV['CARRIERWAVE_DIRECTORY']) unless @cf.container_exists?(ENV['CARRIERWAVE_DIRECTORY'])
       @container = @cf.container(@uploader.cloud_files_container)
     end
 

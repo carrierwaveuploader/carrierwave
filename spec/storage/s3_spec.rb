@@ -10,7 +10,7 @@ end
 if ENV['S3_SPEC']
   describe CarrierWave::Storage::S3 do
     before do
-      @bucket = ENV['CARRIERWAVE_TEST_BUCKET']
+      @bucket = ENV['CARRIERWAVE_DIRECTORY']
 
       CarrierWave.configure do |config|
         config.reset_config
@@ -29,7 +29,7 @@ if ENV['S3_SPEC']
       @storage = CarrierWave::Storage::S3.new(@uploader)
       @file = CarrierWave::SanitizedFile.new(file_path('test.jpg'))
 
-      @storage.connection.directories.get(ENV['CARRIERWAVE_TEST_BUCKET']) || @storage.connection.directories.create(:key => ENV['CARRIERWAVE_TEST_BUCKET'])
+      @storage.connection.directories.get(ENV['CARRIERWAVE_DIRECTORY']) || @storage.connection.directories.create(:key => ENV['CARRIERWAVE_DIRECTORY'])
     end
 
     after do

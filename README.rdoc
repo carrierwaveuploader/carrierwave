@@ -602,23 +602,18 @@ You should now be able to run the tests:
 
     bundle exec rake
 
-You can also run the remote specs for Amazon S3 and Rackspace Cloud Files like so:
+You can also run the remote specs by creating a ~/.fog file:
 
-    FOG_MOCK=false S3_SPEC=true CARRIERWAVE_TEST_BUCKET= S3_ACCESS_KEY_ID= S3_SECRET_ACCESS_KEY= bundle exec rake
-    FOG_MOCK=false CLOUDFILES_SPEC=true CLOUD_FILES_USER_NAME= CLOUD_FILES_API_KEY= CARRIERWAVE_TEST_CONTAINER= bundle exec rake
+    :carrierwave:
+      :aws_access_key_id: xxx
+      :aws_secret_access_key: yyy
+      :rackspace_username: xxx
+      :rackspace_api_key: yyy
+      :google_storage_access_key_id: xxx
+      :google_storage_secret_access_key: yyy
 
-You can also run the remote specs for the Fog storage provider by creating a ~/.fog file:
+And then running the following, providing your credentials again (hopefully this is only temporary):
 
-  :carrierwave:
-    :aws_access_key_id: xxx
-    :aws_secret_access_key: yyy
-    :rackspace_username: xxx
-    :rackspace_api_key: yyy
-    :google_storage_access_key_id: xxx
-    :google_storage_secret_access_key: yyy
-
-...and running the following:
-
-  FOG_MOCK=false bundle exec rake
+    FOG_MOCK=false S3_SPEC=true CLOUDFILES_SPEC=true S3_ACCESS_KEY_ID= S3_SECRET_ACCESS_KEY= CLOUD_FILES_USER_NAME= CLOUD_FILES_API_KEY= bundle exec rake
 
 Issues are reported on GitHub, pull requests are very welcome!

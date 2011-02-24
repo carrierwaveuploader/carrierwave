@@ -17,6 +17,8 @@ unless ENV['FOG_MOCK'] == 'false'
   Fog.mock!
 end
 
+ENV['CARRIERWAVE_DIRECTORY'] ||= "carrierwave#{Time.now.to_i}"
+
 alias :running :lambda
 
 def file_path( *paths )

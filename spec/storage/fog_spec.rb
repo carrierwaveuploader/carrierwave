@@ -43,8 +43,6 @@ else
   end
 end
 
-ENV['CARRIERWAVE_DIRECTORY'] ||= "carrierwave#{Time.now.to_i}"
-
 # run everything we have credentials for
 for credential in credentials
   fog_tests(credential)
