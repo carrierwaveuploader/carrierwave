@@ -74,5 +74,19 @@ describe CarrierWave::Uploader::Download do
     end
   end
 
-end
+  describe '#download! with an overridden process_uri method' do
+    before do
+      @uploader_class.class_eval do
+        def process_uri(uri)
+          raise CarrierWave::DownloadError
+        end
+      end
+    end
 
+    it "should allow overriding the process_uri method" do
+      running {
+        @uploader.download!('http://www.example.com/test/file.png')
+      }.should raise_error(CarrierWave::DownloadError)
+    end
+  end
+end
