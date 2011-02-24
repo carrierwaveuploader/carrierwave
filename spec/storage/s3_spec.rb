@@ -28,7 +28,8 @@ if ENV['S3_SPEC']
 
       @storage = CarrierWave::Storage::S3.new(@uploader)
       @file = CarrierWave::SanitizedFile.new(file_path('test.jpg'))
-      @directory = @storage.connection.directories.get(ENV['CARRIERWAVE_TEST_BUCKET']) || @storage.connection.directories.create(:key => ENV['CARRIERWAVE_TEST_BUCKET'])
+
+      @storage.connection.directories.get(ENV['CARRIERWAVE_TEST_BUCKET']) || @storage.connection.directories.create(:key => ENV['CARRIERWAVE_TEST_BUCKET'])
     end
 
     after do
@@ -219,12 +220,7 @@ if ENV['S3_SPEC']
         }
 
         @versioned = @uploader_class.new
-        stub_s3_access @versioned
-        stub_s3_access @versioned.foo
-        stub_s3_access @versioned.foo.bar
-
         @paths = ['portrait.jpg', 'foo_portrait.jpg', 'foo_bar_portrait.jpg']
-
         @versioned.store! File.open(file_path('portrait.jpg'))
       end
 
