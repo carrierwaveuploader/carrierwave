@@ -6,7 +6,7 @@ It works well with Rack based web applications, such as Ruby on Rails.
 == Warning
 
 The following instructions are not valid for the currently release gem (v0.5.2).
-If you're using the gem version, please refer to {the 0.5.2 readme}https://github.com/jnicklas/carrierwave/tree/v0.5.2 instead.
+If you're using the gem version, please refer to {the 0.5.2 readme}[https://github.com/jnicklas/carrierwave/tree/v0.5.2] instead.
 
 == Information
 
