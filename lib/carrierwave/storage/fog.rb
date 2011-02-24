@@ -241,7 +241,7 @@ module CarrierWave
         #
         def public_url
           if host = @uploader.fog_host
-            host << '/' << path
+            "#{host}/#{path}"
           else
             # avoid a get by just using local reference
             directory.files.new(:key => path).public_url

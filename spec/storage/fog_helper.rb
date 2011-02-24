@@ -45,12 +45,28 @@ end
             pending if fog_credentials[:provider] == 'Local'
             @fog_file.public_url.should_not be_nil
           end
+
+          it "should have a url" do
+            pending if fog_credentials[:provider] == 'Local'
+            @fog_file.url.should_not be_nil
+          end
         end
 
         context "with fog_host" do
-          it "should have a fog_host rooted url" do
+          it "should have a fog_host rooted public_url" do
             @uploader.stub!(:fog_host).and_return('http://foo.bar')
             @fog_file.public_url.should == 'http://foo.bar/uploads/bar.txt'
+          end
+
+          it "should have a fog_host rooted url" do
+            @uploader.stub!(:fog_host).and_return('http://foo.bar')
+            @fog_file.url.should == 'http://foo.bar/uploads/bar.txt'
+          end
+
+          it "should always have the same fog_host rooted url" do
+            @uploader.stub!(:fog_host).and_return('http://foo.bar')
+            @fog_file.url.should == 'http://foo.bar/uploads/bar.txt'
+            @fog_file.url.should == 'http://foo.bar/uploads/bar.txt'
           end
         end
 
