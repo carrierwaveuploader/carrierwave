@@ -122,6 +122,32 @@ describe CarrierWave::Storage::GridFS do
       end
     end
 
+
+   describe "resize_to_fill" do
+      before do
+        @uploader_class = Class.new(CarrierWave::Uploader::Base)
+        @uploader_class.class_eval{
+          include CarrierWave::MiniMagick
+          storage :grid_fs
+        }
+        
+        @versioned = @uploader_class.new
+        @versioned.stub!(:grid_fs_connection).and_return(@database)
+
+        @versioned.store! File.open(file_path('portrait.jpg'))
+      end
+
+      after do
+        FileUtils.rm_rf(public_path)
+      end
+
+      it "resizes the file with out error" do
+        lambda {
+          @versioned.resize_to_fill(200, 200)
+        }.should_not raise_error
+ 
+      end
+    end
   end
 
   context "when setting a connection manually" do
