@@ -371,7 +371,7 @@ You can also pass in additional options, as documented fully in lib/storage/fog.
       config.fog_credentials = {
         :provider               => 'AWS', # required
         :aws_access_key_id      => 'xxxxxx', # required
-        :aws_secret_access_key  => 'yyyyyy, # required
+        :aws_secret_access_key  => 'yyyyyy', # required
         :region                 => 'eu-west-1' # optional, defaults to 'us-east-1'
       }
       config.fog_directory  = 'name_of_directory' # required
@@ -432,7 +432,7 @@ You'll need to configure a directory (also known as a bucket), access id and sec
       config.fog_credentials = {
         :provider                         => 'Google',
         :google_storage_access_key_id     => 'xxxxxx',
-        :google_storage_secret_access_key => 'yyyyyy
+        :google_storage_secret_access_key => 'yyyyyy'
       }
       config.fog_directory = 'name_of_directory'
     end
