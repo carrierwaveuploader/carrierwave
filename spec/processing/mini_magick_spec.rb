@@ -11,6 +11,7 @@ describe CarrierWave::MiniMagick do
     @instance = @klass.new
     FileUtils.cp(file_path('landscape.jpg'), file_path('landscape_copy.jpg'))
     @instance.stub(:current_path).and_return(file_path('landscape_copy.jpg'))
+    @instance.stub(:cached?).and_return true
   end
 
   after do

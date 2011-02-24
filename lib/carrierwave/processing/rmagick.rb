@@ -244,6 +244,7 @@ module CarrierWave
     # [CarrierWave::ProcessingError] if manipulation failed.
     #
     def manipulate!(options={})
+      cache_stored_file! if !cached?
       image = ::Magick::Image.read(current_path)
 
       frames = if image.size > 1

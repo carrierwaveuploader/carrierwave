@@ -34,6 +34,8 @@ module CarrierWave
     # [height (Integer)] the height to scale the image to
     #
     def resize_to_fit(new_width, new_height)
+      cache_stored_file! if !cached?
+
       ::ImageScience.with_image(self.current_path) do |img|
         width, height = extract_dimensions(img.width, img.height, new_width, new_height)
         img.resize( width, height ) do |file|
@@ -55,6 +57,8 @@ module CarrierWave
     # [height (Integer)] the height to scale the image to
     #
     def resize_to_fill(new_width, new_height)
+      cache_stored_file! if !cached?
+
       ::ImageScience.with_image(self.current_path) do |img|
         width, height = extract_dimensions_for_crop(img.width, img.height, new_width, new_height)
         x_offset, y_offset = extract_placement_for_crop(width, height, new_width, new_height)
@@ -97,6 +101,8 @@ module CarrierWave
     # [height (Integer)] the height to scale the image to
     #
     def resize_to_limit(new_width, new_height)
+      cache_stored_file! if !cached?
+
       ::ImageScience.with_image(self.current_path) do |img|
         if img.width > new_width or img.height > new_height
           resize_to_fit(new_width, new_height)

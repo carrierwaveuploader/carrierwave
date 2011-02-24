@@ -64,6 +64,19 @@ module CarrierWave
       end
 
       ##
+      # Caches the remotely stored file
+      #
+      # This is useful when about to process images. Most processing solutions
+      # require the file to be stored on the local filesystem.
+      #
+      def cache_stored_file!
+        sanitized = SanitizedFile.new :tempfile => StringIO.new(file.read),
+          :filename => File.basename(path)
+
+        cache! sanitized
+      end
+
+      ##
       # Returns a String which uniquely identifies the currently cached file for later retrieval
       #
       # === Returns

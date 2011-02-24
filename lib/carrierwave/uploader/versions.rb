@@ -115,16 +115,14 @@ module CarrierWave
       #
       def recreate_versions!
         # Some files could possibly not be stored on the local disk. This
-        # doesn't play nicely with processing. To fix this, we create a new
-        # file with the same original filename and we call file.read to get the
-        # data for the file and then store that.
+        # doesn't play nicely with processing. Make sure that we're only
+        # processing a cached file
         #
         # The call to store! will trigger the necessary callbacks to both
         # process this version and all sub-versions
-        local_file = SanitizedFile.new :tempfile => StringIO.new(file.read),
-          :filename => File.basename(path)
+        cache_stored_file! if !cached?
 
-        store! local_file
+        store!
       end
 
     private
