@@ -17,8 +17,10 @@ class FogSpec#{fog_credentials[:provider]}Uploader < CarrierWave::Uploader::Base
 end
         RUBY
 
+        @provider = fog_credentials[:provider]
+
         # @uploader = FogSpecUploader.new
-        @uploader = eval("FogSpec#{fog_credentials[:provider]}Uploader")
+        @uploader = eval("FogSpec#{@provider}Uploader")
         @uploader.stub!(:store_path).and_return('uploads/bar.txt')
 
         @storage = CarrierWave::Storage::Fog.new(@uploader)
@@ -135,6 +137,11 @@ end
           it "should not be available at public URL" do
             pending if fog_credentials[:provider] == 'Local'
             @fog_file.public_url.should be_nil
+          end
+
+          it "should have an authenticated_url" do
+            pending unless ['AWS', 'Google'].include?(@provider)
+            @fog_file.authenticated_url.should_not be_nil
           end
         end
       end
