@@ -71,11 +71,11 @@ GEM
       data_objects (= 0.10.2)
     erubis (2.6.6)
       abstract (>= 1.0.0)
-    excon (0.4.0)
+    excon (0.5.6)
     extlib (0.9.15)
-    fog (0.5.1)
+    fog (0.5.3)
       builder
-      excon (>= 0.4.0)
+      excon (>= 0.5.2)
       formatador (>= 0.0.16)
       json
       mime-types
@@ -87,7 +87,7 @@ GEM
       trollop (~> 1.16.2)
     i18n (0.4.1)
     image_science (1.2.1)
-    json (1.4.6)
+    json (1.5.1)
     json_pure (1.4.6)
     mail (2.2.5)
       activesupport (>= 2.3.6)

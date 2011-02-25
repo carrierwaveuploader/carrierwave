@@ -113,7 +113,6 @@ end
       describe 'fog_public' do
         after do
           @directory.files.get('uploads/bar.txt').destroy
-          @directory.destroy
         end
 
         context "true" do
@@ -135,6 +134,7 @@ end
 
           it "should not be available at public URL" do
             pending if fog_credentials[:provider] == 'Local'
+            pending if fog_credentials[:provider] == 'Rackspace'
             @fog_file.public_url.should be_nil
           end
         end
