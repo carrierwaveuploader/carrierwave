@@ -16,6 +16,7 @@ module CarrierWave
         add_config :s3_headers
         add_config :s3_region
         add_config :s3_use_ssl
+        add_config :s3_authentication_timeout
         add_config :cloud_files_username
         add_config :cloud_files_api_key
         add_config :cloud_files_container
@@ -134,6 +135,7 @@ module CarrierWave
             config.s3_headers = {}
             config.s3_access_policy = :public_read
             config.s3_region = 'us-east-1'
+            config.s3_authentication_timeout = 600
             config.grid_fs_database = 'carrierwave'
             config.grid_fs_host = 'localhost'
             config.grid_fs_port = 27017

@@ -132,7 +132,7 @@ module CarrierWave
         end
 
         def authenticated_url
-          connection.get_object_url(bucket, path, Time.now + 60 * 10)
+          connection.get_object_url(bucket, path, Time.now + authentication_timeout)
         end
 
         def store(file)
@@ -182,6 +182,10 @@ module CarrierWave
 
         def bucket
           @uploader.s3_bucket
+        end
+
+        def authentication_timeout
+          @uploader.s3_authentication_timeout
         end
 
         def connection
