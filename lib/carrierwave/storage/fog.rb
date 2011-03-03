@@ -150,7 +150,7 @@ module CarrierWave
         # [String] value of content-type
         #
         def content_type
-          @content_type
+          @content_type || file.content_type
         end
 
         ##
@@ -222,10 +222,9 @@ module CarrierWave
         #
         # [Boolean] true on success or raises error
         def store(new_file)
-          self.content_type ||= new_file.content_type
           @file = directory.files.create({
             :body         => new_file.read,
-            :content_type => content_type,
+            :content_type => @content_type,
             :key          => path,
             :public       => @uploader.fog_public
           }.merge(@uploader.fog_attributes))
@@ -304,11 +303,7 @@ module CarrierWave
         # [Fog::#{provider}::File] file data from remote service
         #
         def file
-          @file ||= begin
-            file = directory.files.get(path)
-            self.content_type = file.content_type
-            file
-          end
+          @file ||= directory.files.get(path)
         end
 
       end
