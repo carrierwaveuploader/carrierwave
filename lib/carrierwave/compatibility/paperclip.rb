@@ -77,17 +77,17 @@ module CarrierWave
       end
 
       def mappings
-        {
-          :rails_root   => lambda{|u, f| Rails.root },
-          :rails_env    => lambda{|u, f| Rails.env },
-          :class        => lambda{|u, f| u.model.class.name.underscore.pluralize},
-          :id           => lambda{|u, f| u.model.id },
-          :id_partition => lambda{|u, f| ("%09d" % u.model.id).scan(/\d{3}/).join("/")},
-          :attachment   => lambda{|u, f| u.mounted_as.to_s.downcase.pluralize },
-          :style        => lambda{|u, f| u.paperclip_style },
-          :basename     => lambda{|u, f| f.gsub(/#{File.extname(f)}$/, "") },
-          :extension    => lambda{|u, f| File.extname(f).gsub(/^\.+/, "")}
-        }
+        [
+          [:rails_root   , lambda{|u, f| Rails.root }],
+          [:rails_env    , lambda{|u, f| Rails.env }],
+          [:class        , lambda{|u, f| u.model.class.name.underscore.pluralize}],
+          [:id_partition , lambda{|u, f| ("%09d" % u.model.id).scan(/\d{3}/).join("/")}],
+          [:id           , lambda{|u, f| u.model.id }],
+          [:attachment   , lambda{|u, f| u.mounted_as.to_s.downcase.pluralize }],
+          [:style        , lambda{|u, f| u.paperclip_style }],
+          [:basename     , lambda{|u, f| f.gsub(/#{File.extname(f)}$/, "") }],
+          [:extension    , lambda{|u, f| File.extname(f).gsub(/^\.+/, "")}]
+        ]
       end
 
     end # Paperclip

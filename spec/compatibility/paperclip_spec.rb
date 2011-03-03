@@ -42,6 +42,11 @@ describe CarrierWave::Compatibility::Paperclip do
       @uploader.stub!(:paperclip_path).and_return("/foo/:id/bar")
       @uploader.store_path("monkey.png").should == "/foo/23/bar"
     end
+
+    it "should interpolate the id partition" do
+      @uploader.stub!(:paperclip_path).and_return("/foo/:id_partition/bar")
+      @uploader.store_path("monkey.png").should == "/foo/000/000/023/bar"
+    end
   end
 
 end
