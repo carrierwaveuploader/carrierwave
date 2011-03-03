@@ -71,7 +71,7 @@ module CarrierWave
       #
       def cache_stored_file!
         sanitized = SanitizedFile.new :tempfile => StringIO.new(file.read),
-          :filename => File.basename(path)
+          :filename => File.basename(path), :content_type => file.content_type
 
         cache! sanitized
       end
