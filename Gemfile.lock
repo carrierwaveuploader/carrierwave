@@ -73,9 +73,9 @@ GEM
       abstract (>= 1.0.0)
     excon (0.5.6)
     extlib (0.9.15)
-    fog (0.5.3)
+    fog (0.6.0)
       builder
-      excon (>= 0.5.2)
+      excon (>= 0.5.5)
       formatador (>= 0.0.16)
       json
       mime-types
@@ -153,7 +153,7 @@ DEPENDENCIES
   dm-migrations
   dm-sqlite-adapter
   dm-validations
-  fog (~> 0.5)
+  fog (~> 0.6)
   image_science
   json
   mini_magick (~> 2.3)
