@@ -21,7 +21,7 @@ end
 
         # @uploader = FogSpecUploader.new
         @uploader = eval("FogSpec#{@provider}Uploader")
-        @uploader.stub!(:store_path).and_return('uploads/bar.txt')
+        @uploader.stub!(:store_path).and_return('uploads/test.jpg')
 
         @storage = CarrierWave::Storage::Fog.new(@uploader)
         @directory = @storage.connection.directories.new(:key => ENV['CARRIERWAVE_DIRECTORY'])
@@ -35,21 +35,21 @@ end
 
       describe '#store!' do
         before do
-          @uploader.stub!(:store_path).and_return('uploads/bar.txt')
+          @uploader.stub!(:store_path).and_return('uploads/test.jpg')
           @fog_file = @storage.store!(@file)
         end
 
         it "should upload the file" do
-          @directory.files.get('uploads/bar.txt').body.should == 'this is stuff'
+          @directory.files.get('uploads/test.jpg').body.should == 'this is stuff'
         end
 
         it "should have a path" do
-          @fog_file.path.should == 'uploads/bar.txt'
+          @fog_file.path.should == 'uploads/test.jpg'
         end
 
         it "should have a content_type" do
           @fog_file.content_type.should == 'image/jpeg'
-          @directory.files.get('uploads/bar.txt').content_type.should == 'image/jpeg'
+          @directory.files.get('uploads/test.jpg').content_type.should == 'image/jpeg'
         end
 
         context "without fog_host" do
@@ -67,18 +67,18 @@ end
         context "with fog_host" do
           it "should have a fog_host rooted public_url" do
             @uploader.stub!(:fog_host).and_return('http://foo.bar')
-            @fog_file.public_url.should == 'http://foo.bar/uploads/bar.txt'
+            @fog_file.public_url.should == 'http://foo.bar/uploads/test.jpg'
           end
 
           it "should have a fog_host rooted url" do
             @uploader.stub!(:fog_host).and_return('http://foo.bar')
-            @fog_file.url.should == 'http://foo.bar/uploads/bar.txt'
+            @fog_file.url.should == 'http://foo.bar/uploads/test.jpg'
           end
 
           it "should always have the same fog_host rooted url" do
             @uploader.stub!(:fog_host).and_return('http://foo.bar')
-            @fog_file.url.should == 'http://foo.bar/uploads/bar.txt'
-            @fog_file.url.should == 'http://foo.bar/uploads/bar.txt'
+            @fog_file.url.should == 'http://foo.bar/uploads/test.jpg'
+            @fog_file.url.should == 'http://foo.bar/uploads/test.jpg'
           end
         end
 
@@ -88,15 +88,15 @@ end
 
         it "should be deletable" do
           @fog_file.delete
-          @directory.files.head('uploads/bar.txt').should == nil
+          @directory.files.head('uploads/test.jpg').should == nil
         end
       end
 
       describe '#retrieve!' do
         before do
-          @directory.files.create(:key => 'uploads/bar.txt', :body => 'A test, 1234', :public => true)
-          @uploader.stub!(:store_path).with('bar.txt').and_return('uploads/bar.txt')
-          @fog_file = @storage.retrieve!('bar.txt')
+          @directory.files.create(:key => 'uploads/test.jpg', :body => 'A test, 1234', :public => true)
+          @uploader.stub!(:store_path).with('test.jpg').and_return('uploads/test.jpg')
+          @fog_file = @storage.retrieve!('test.jpg')
         end
 
         it "should retrieve the file contents" do
@@ -104,7 +104,7 @@ end
         end
 
         it "should have a path" do
-          @fog_file.path.should == 'uploads/bar.txt'
+          @fog_file.path.should == 'uploads/test.jpg'
         end
 
         it "should have a public url" do
@@ -118,7 +118,7 @@ end
 
         it "should be deletable" do
           @fog_file.delete
-          @directory.files.head('uploads/bar.txt').should == nil
+          @directory.files.head('uploads/test.jpg').should == nil
         end
       end
 
