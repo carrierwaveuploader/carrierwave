@@ -25,7 +25,9 @@ end
 
         @storage = CarrierWave::Storage::Fog.new(@uploader)
         @directory = @storage.connection.directories.new(:key => ENV['CARRIERWAVE_DIRECTORY'])
-        @file = CarrierWave::SanitizedFile.new(file_path('test.jpg'))
+
+        @file = CarrierWave::SanitizedFile.new :tempfile => StringIO.new(File.open(file_path('test.jpg')).read),
+          :filename => File.basename('test.jpg'), :content_type => 'image/jpeg'
       end
 
       describe '#store!' do
@@ -40,6 +42,11 @@ end
 
         it "should have a path" do
           @fog_file.path.should == 'uploads/bar.txt'
+        end
+
+        it "should have a content_type" do
+          @fog_file.content_type.should == 'image/jpeg'
+          @directory.files.get('uploads/bar.txt').content_type.should == 'image/jpeg'
         end
 
         context "without fog_host" do
