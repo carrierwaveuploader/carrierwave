@@ -19,9 +19,11 @@ module CarrierWave
     # [:fog_credentials]  credentials for service
     # [:fog_directory]    specifies name of directory to store data in
     #
-    # [:fog_attributes]   (optional) additional attributes to set on files
-    # [:fog_host]         (optional) non-default host to serve files from
-    # [:fog_public]       (optional) public readability, defaults to true
+    # [:fog_attributes]                   (optional) additional attributes to set on files
+    # [:fog_host]                         (optional) non-default host to serve files from
+    # [:fog_public]                       (optional) public readability, defaults to true
+    # [:fog_authenticated_url_expiration] (optional) time (in seconds) that authenticated urls
+    #   will be valid, when fog_public is false and provider is AWS or Google, defaults to 600
     #
     #
     # AWS credentials contain the following keys:
@@ -136,7 +138,7 @@ module CarrierWave
             # avoid a get by using local references
             local_directory = connection.directories.new(:key => @uploader.fog_directory)
             local_file = local_directory.files.new(:key => path)
-            local_file.url(::Fog::Time.now + @uploader.fog_authentication_timeout)
+            local_file.url(::Fog::Time.now + @uploader.fog_authenticated_url_expiration)
           else
             nil
           end
