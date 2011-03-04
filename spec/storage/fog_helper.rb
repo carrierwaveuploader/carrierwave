@@ -26,8 +26,11 @@ end
         @storage = CarrierWave::Storage::Fog.new(@uploader)
         @directory = @storage.connection.directories.new(:key => ENV['CARRIERWAVE_DIRECTORY'])
 
-        @file = CarrierWave::SanitizedFile.new :tempfile => StringIO.new(File.open(file_path('test.jpg')).read),
-          :filename => File.basename('test.jpg'), :content_type => 'image/jpeg'
+        @file = CarrierWave::SanitizedFile.new(
+          :tempfile => StringIO.new(File.open(file_path('test.jpg')).read),
+          :filename => 'test.jpg',
+          :content_type => 'image/jpeg'
+        )
       end
 
       describe '#store!' do
@@ -120,13 +123,19 @@ end
       end
 
       describe 'fog_public' do
-        after do
-          @directory.files.get('uploads/bar.txt').destroy
-        end
 
         context "true" do
           before do
+            directory_key = "#{ENV['CARRIERWAVE_DIRECTORY']}public"
+            @directory = @storage.connection.directories.new(:key => directory_key)
+            @uploader.stub!(:fog_directory).and_return(directory_key)
+            @uploader.stub!(:store_path).and_return('uploads/public.txt')
             @fog_file = @storage.store!(@file)
+          end
+
+          after do
+            @directory.files.new(:key => 'uploads/public.txt').destroy
+            @directory.destroy
           end
 
           it "should be available at public URL" do
@@ -137,8 +146,17 @@ end
 
         context "false" do
           before do
+            directory_key = "#{ENV['CARRIERWAVE_DIRECTORY']}private"
+            @directory = @storage.connection.directories.new(:key => directory_key)
+            @uploader.stub!(:fog_directory).and_return(directory_key)
             @uploader.stub!(:fog_public).and_return(false)
+            @uploader.stub!(:store_path).and_return('uploads/private.txt')
             @fog_file = @storage.store!(@file)
+          end
+
+          after do
+            @directory.files.new(:key => 'uploads/private.txt').destroy
+            @directory.destroy
           end
 
           it "should not be available at public URL" do
@@ -152,6 +170,13 @@ end
           end
         end
       end
+
+      context 'finished' do
+        it "should destroy the directory" do # hack, but after never does what/when I want
+          @directory.destroy
+        end
+      end
+
     end
   end
 end
