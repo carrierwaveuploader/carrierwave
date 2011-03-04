@@ -136,7 +136,7 @@ module CarrierWave
             # avoid a get by using local references
             local_directory = connection.directories.new(:key => @uploader.fog_directory)
             local_file = local_directory.files.new(:key => path)
-            local_file.url(::Fog::Time.now + 60 * 10)
+            local_file.url(::Fog::Time.now + @uploader.fog_authentication_timeout)
           else
             nil
           end

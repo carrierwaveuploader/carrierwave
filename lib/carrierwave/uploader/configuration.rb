@@ -42,6 +42,7 @@ module CarrierWave
         add_config :fog_directory
         add_config :fog_host
         add_config :fog_public
+        add_config :fog_authentication_timeout
 
         # Mounting
         add_config :ignore_integrity_errors
@@ -142,6 +143,7 @@ module CarrierWave
             config.fog_attributes = {}
             config.fog_credentials = {}
             config.fog_public = true
+            config.fog_authentication_timeout = 600
             config.store_dir = 'uploads'
             config.cache_dir = 'uploads/tmp'
             config.delete_tmp_file_after_storage = true
