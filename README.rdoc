@@ -394,7 +394,7 @@ Fog[http://github.com/geemus/fog] is used to support Rackspace Cloud Files. Ensu
 
     gem install fog
 
-You'll need to configure a directory (also known as a container), access id and secret key like this in an initializer:
+You'll need to configure a directory (also known as a container), username and api key like this in an initializer:
 
     CarrierWave.configure do |config|
       config.fog_credentials = {
@@ -426,7 +426,7 @@ Fog[http://github.com/geemus/fog] is used to support Google Storage for Develope
 
     gem install fog
 
-You'll need to configure a directory (also known as a bucket), access id and secret key like this in an initializer:
+You'll need to configure a directory (also known as a bucket), access key id and secret access key like this in an initializer:
 
     CarrierWave.configure do |config|
       config.fog_credentials = {
