@@ -16,8 +16,8 @@ If you're using the gem version, please refer to {the 0.5.2 readme}[https://gith
 
 == Getting Help
 
-* Please direct any questions to the {mailing list}[http://groups.google.com/group/carrierwave]
-* Please report any issues on the {issue tracker}[http://github.com/jnicklas/carrierwave/issues]
+* Please ask the {Groogle Group}[http://groups.google.com/group/carrierwave] for help if you have any questions.
+* Please report bugs on the {issue tracker}[http://github.com/jnicklas/carrierwave/issues] but read the "getting help" section in the wiki first.
 
 == Installation
 
