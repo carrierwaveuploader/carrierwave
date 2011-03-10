@@ -80,7 +80,7 @@ describe CarrierWave::Uploader do
     it "should return a hash including a cached URL of a version" do
       @uploader_class.version :thumb
       @uploader.cache!(File.open(file_path('test.jpg')))
-      JSON.parse(@uploader.to_json)['versions']['thumb']['url'].should == '/uploads/tmp/20071201-1234-345-2255/thumb_test.jpg'
+      JSON.parse(@uploader.to_json)['thumb']['url'].should == '/uploads/tmp/20071201-1234-345-2255/thumb_test.jpg'
     end
   end
 
