@@ -26,11 +26,7 @@ module CarrierWave
       #
       def as_json(options = nil)
         h = { :url => url }
-        versions.each do |name, version|
-          h[version.version_name] = {}
-          h[version.version_name]['url'] = version.url
-        end
-        h
+        h.merge Hash[versions.map { |name, version| [name, { url: version.url }] }]
       end
 
     end # Url
