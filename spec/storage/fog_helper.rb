@@ -6,7 +6,7 @@ def fog_tests(fog_credentials)
           config.reset_config
           config.fog_attributes  = {}
           config.fog_credentials = fog_credentials
-          config.fog_directory   = ENV['CARRIERWAVE_DIRECTORY']
+          config.fog_directory   = CARRIERWAVE_DIRECTORY
           config.fog_host        = nil
           config.fog_public      = true
         end
@@ -24,7 +24,7 @@ end
         @uploader.stub!(:store_path).and_return('uploads/test.jpg')
 
         @storage = CarrierWave::Storage::Fog.new(@uploader)
-        @directory = @storage.connection.directories.new(:key => ENV['CARRIERWAVE_DIRECTORY'])
+        @directory = @storage.connection.directories.new(:key => CARRIERWAVE_DIRECTORY)
 
         @file = CarrierWave::SanitizedFile.new(
           :tempfile => StringIO.new(File.open(file_path('test.jpg')).read),
@@ -54,13 +54,15 @@ end
 
         context "without fog_host" do
           it "should have a public_url" do
-            pending if fog_credentials[:provider] == 'Local'
-            @fog_file.public_url.should_not be_nil
+            unless fog_credentials[:provider] == 'Local'
+              @fog_file.public_url.should_not be_nil
+            end
           end
 
           it "should have a url" do
-            pending if fog_credentials[:provider] == 'Local'
-            @fog_file.url.should_not be_nil
+            unless fog_credentials[:provider] == 'Local'
+              @fog_file.url.should_not be_nil
+            end
           end
         end
 
@@ -108,8 +110,9 @@ end
         end
 
         it "should have a public url" do
-          pending if fog_credentials[:provider] == 'Local'
-          @fog_file.public_url.should_not be_nil
+          unless fog_credentials[:provider] == 'Local'
+            @fog_file.public_url.should_not be_nil
+          end
         end
 
         it "should return filesize" do
@@ -126,7 +129,7 @@ end
 
         context "true" do
           before do
-            directory_key = "#{ENV['CARRIERWAVE_DIRECTORY']}public"
+            directory_key = "#{CARRIERWAVE_DIRECTORY}public"
             @directory = @storage.connection.directories.new(:key => directory_key)
             @uploader.stub!(:fog_directory).and_return(directory_key)
             @uploader.stub!(:store_path).and_return('uploads/public.txt')
@@ -139,14 +142,15 @@ end
           end
 
           it "should be available at public URL" do
-            pending if Fog.mocking? || fog_credentials[:provider] == 'Local'
-            open(@fog_file.public_url).read.should == 'this is stuff'
+            unless Fog.mocking? || fog_credentials[:provider] == 'Local'
+              open(@fog_file.public_url).read.should == 'this is stuff'
+            end
           end
         end
 
         context "false" do
           before do
-            directory_key = "#{ENV['CARRIERWAVE_DIRECTORY']}private"
+            directory_key = "#{CARRIERWAVE_DIRECTORY}private"
             @directory = @storage.connection.directories.new(:key => directory_key)
             @uploader.stub!(:fog_directory).and_return(directory_key)
             @uploader.stub!(:fog_public).and_return(false)
@@ -160,13 +164,15 @@ end
           end
 
           it "should not be available at public URL" do
-            pending if fog_credentials[:provider] == 'Local'
-            @fog_file.public_url.should be_nil
+            unless fog_credentials[:provider] == 'Local'
+              @fog_file.public_url.should be_nil
+            end
           end
 
           it "should have an authenticated_url" do
-            pending unless ['AWS', 'Google'].include?(@provider)
-            @fog_file.authenticated_url.should_not be_nil
+            if ['AWS', 'Google'].include?(@provider)
+              @fog_file.authenticated_url.should_not be_nil
+            end
           end
         end
       end

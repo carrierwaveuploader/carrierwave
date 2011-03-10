@@ -7,10 +7,10 @@ class S3SpecUploader < CarrierWave::Uploader::Base
   storage :s3
 end
 
-if ENV['S3_SPEC']
+if ENV['REMOTE'] == 'true'
   describe CarrierWave::Storage::S3 do
     before do
-      @bucket = ENV['CARRIERWAVE_DIRECTORY']
+      @bucket = "#{CARRIERWAVE_DIRECTORY}s3"
 
       CarrierWave.configure do |config|
         config.reset_config
@@ -29,11 +29,11 @@ if ENV['S3_SPEC']
       @storage = CarrierWave::Storage::S3.new(@uploader)
       @file = CarrierWave::SanitizedFile.new(file_path('test.jpg'))
 
-      @storage.connection.directories.get(ENV['CARRIERWAVE_DIRECTORY']) || @storage.connection.directories.create(:key => ENV['CARRIERWAVE_DIRECTORY'])
+      @storage.connection.directories.get(@bucket) || @storage.connection.directories.create(:key => @bucket)
     end
 
     after do
-      @storage.connection.delete_object(@bucket, 'uploads/bar.txt')
+      @storage.connection.delete_object(@bucket, 'uploads/bar.txt') unless @finished
     end
 
     describe 'general setup' do
@@ -248,5 +248,11 @@ if ENV['S3_SPEC']
       end
     end
 
+    describe 'finished' do
+      it "should delete the bucket when finished" do
+        @finished = true
+        @storage.connection.delete_bucket(@bucket)
+      end
+    end
   end
 end

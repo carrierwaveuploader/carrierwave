@@ -2,23 +2,32 @@
 
 require 'spec_helper'
 
-if ENV['CLOUDFILES_SPEC']
+if ENV['REMOTE'] == 'true'
   require 'cloudfiles'
   require 'net/http'
 
+  class CloudfilesSpecUploader < CarrierWave::Uploader::Base
+    storage :cloud_files
+  end
+
   describe CarrierWave::Storage::CloudFiles do
     before do
-      @uploader = mock('an uploader')
-      @uploader.stub!(:cloud_files_username).and_return(ENV["CLOUD_FILES_USER_NAME"])
-      @uploader.stub!(:cloud_files_api_key).and_return(ENV["CLOUD_FILES_API_KEY"])
-      @uploader.stub!(:cloud_files_container).and_return(ENV['CARRIERWAVE_DIRECTORY'])
-      @uploader.stub!(:cloud_files_cdn_host).and_return(nil) # Unless configured below
+      @container_name = "#{CARRIERWAVE_DIRECTORY}cloudfiles"
+      @connection = CloudFiles::Connection.new(ENV["CLOUD_FILES_USER_NAME"], ENV["CLOUD_FILES_API_KEY"])
+      @connection.create_container(@container_name) unless @connection.container_exists?(@container_name)
+      @container = @connection.container(@container_name)
+      @container.make_public
+
+      CarrierWave.configure do |config|
+        config.reset_config
+        config.cloud_files_username = ENV["CLOUD_FILES_USER_NAME"]
+        config.cloud_files_api_key = ENV["CLOUD_FILES_API_KEY"]
+        config.cloud_files_container = @container_name
+      end
+
+      @uploader = CloudfilesSpecUploader.new
       @storage = CarrierWave::Storage::CloudFiles.new(@uploader)
       @file = stub_tempfile('test.jpg', 'application/xml')
-
-      @cf = CloudFiles::Connection.new(ENV["CLOUD_FILES_USER_NAME"], ENV["CLOUD_FILES_API_KEY"])
-      @cf.create_container(ENV['CARRIERWAVE_DIRECTORY']) unless @cf.container_exists?(ENV['CARRIERWAVE_DIRECTORY'])
-      @container = @cf.container(@uploader.cloud_files_container)
     end
 
     describe '#store!' do
@@ -84,6 +93,10 @@ if ENV['CLOUDFILES_SPEC']
       end
     end
 
-
+    describe 'finished' do
+      it "should delete the container when finished" do
+        @connection.delete_container(@container_name)
+      end
+    end
   end
 end
