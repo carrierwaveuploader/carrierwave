@@ -589,16 +589,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 == Development
 
-In order to setup a development environment and run the specs, you'll
-need to install bundler:
+You'll need to install bundler and the gem dependencies:
 
     gem install bundler
-
-And then install the dependencies:
-
     bundle install
 
-You should now be able to run the tests:
+You should now be able to run the local tests:
 
     bundle exec rake
 
@@ -612,8 +608,10 @@ You can also run the remote specs by creating a ~/.fog file:
       :google_storage_access_key_id: xxx
       :google_storage_secret_access_key: yyy
 
-And then running the following, providing your credentials again (hopefully this is only temporary):
+You should now be able to run the remote tests:
 
-    REMOTE=true S3_ACCESS_KEY_ID= S3_SECRET_ACCESS_KEY= CLOUD_FILES_USER_NAME= CLOUD_FILES_API_KEY= bundle exec rake
+    REMOTE=true bundle exec rake
+
+Please test with the latest Ruby 1.8.x and 1.9.x versions using RVM if possible.
 
 Issues are reported on GitHub, and pull requests are very welcome!

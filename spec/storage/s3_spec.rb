@@ -11,11 +11,12 @@ if ENV['REMOTE'] == 'true'
   describe CarrierWave::Storage::S3 do
     before do
       @bucket = "#{CARRIERWAVE_DIRECTORY}s3"
+      @credentials = FOG_CREDENTIALS.select {|c| c[:provider] == 'AWS'}.first
 
       CarrierWave.configure do |config|
         config.reset_config
-        config.s3_access_key_id     = ENV["S3_ACCESS_KEY_ID"]
-        config.s3_secret_access_key = ENV["S3_SECRET_ACCESS_KEY"]
+        config.s3_access_key_id     = @credentials[:aws_access_key_id]
+        config.s3_secret_access_key = @credentials[:aws_secret_access_key]
         config.s3_bucket            = @bucket
         config.s3_access_policy     = :public_read
         config.s3_cnamed            = false

@@ -12,16 +12,17 @@ if ENV['REMOTE'] == 'true'
 
   describe CarrierWave::Storage::CloudFiles do
     before do
+      @credentials = FOG_CREDENTIALS.select {|c| c[:provider] == 'Rackspace'}.first
       @container_name = "#{CARRIERWAVE_DIRECTORY}cloudfiles"
-      @connection = CloudFiles::Connection.new(ENV["CLOUD_FILES_USER_NAME"], ENV["CLOUD_FILES_API_KEY"])
+      @connection = CloudFiles::Connection.new(@credentials[:rackspace_username], @credentials[:rackspace_api_key])
       @connection.create_container(@container_name) unless @connection.container_exists?(@container_name)
       @container = @connection.container(@container_name)
       @container.make_public
 
       CarrierWave.configure do |config|
         config.reset_config
-        config.cloud_files_username = ENV["CLOUD_FILES_USER_NAME"]
-        config.cloud_files_api_key = ENV["CLOUD_FILES_API_KEY"]
+        config.cloud_files_username = @credentials[:rackspace_username]
+        config.cloud_files_api_key = @credentials[:rackspace_api_key]
         config.cloud_files_container = @container_name
       end
 
