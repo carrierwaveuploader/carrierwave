@@ -85,6 +85,12 @@ elsif defined?(Rails)
       initializer "carrierwave.setup_paths" do
         CarrierWave.root = Rails.root.join(Rails.public_path).to_s
       end
+
+      initializer "carrierwave.active_record" do
+        ActiveSupport.on_load :active_record do
+          require 'carrierwave/orm/activerecord'
+        end
+      end
     end
   end
 
@@ -94,8 +100,6 @@ elsif defined?(Sinatra)
 
 end
 
-
-require 'carrierwave/orm/activerecord' if defined?(ActiveRecord)
 require 'carrierwave/orm/datamapper' if defined?(DataMapper)
 require 'carrierwave/orm/sequel' if defined?(Sequel)
 require 'carrierwave/orm/mongoid' if defined?(Mongoid)
