@@ -7,6 +7,7 @@
 * [fixed] Moved raising of FormNotMultipart farther down to avoid errors with nested attribute forms [trevorturk]
 * [fixed] original_filename of remote uploads should be calculated from final (possibly redirected) URL [brady8]
 * [fixed] Fix calling :process! on files stored in remote solutions [alexcrichton]
+* [fixed] Fix paperclip compatibility mappings [valakirka]
 
 === Version 0.5.2 2010-02-18
 
