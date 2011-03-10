@@ -30,7 +30,7 @@ In Rails, add it to your Gemfile:
     gem 'carrierwave'
 
 Note that CarrierWave is not compatible with Rails 2 as of version 0.5. If you want to use
-Rails 2, please use the latest gem in the 0.4.X series.
+Rails 2, please use the 0.4-stable branch on GitHub.
 
 == Getting Started
 
