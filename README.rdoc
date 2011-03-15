@@ -95,6 +95,12 @@ automatically be stored when the record is saved.
     u.avatar.url # => '/url/to/file.png'
     u.avatar.current_path # => 'path/to/file.png'
 
+If using DataMapper, make sure to disable auto_validation on the mounted column.
+
+If using Mongoid, note that embedded documents files aren't saved when parent documents are saved.
+You must explicitly call save on embedded documents in order to save their attached files.
+You can read more about this {here}[https://github.com/jnicklas/carrierwave/issues#issue/81]
+
 == Changing the storage directory
 
 In order to change where uploaded files are put, just override the +store_dir+
@@ -308,7 +314,7 @@ If you're using Rails, create an initializer for this:
 
     config/initializers/carrierwave.rb
 
-== Testing CarrierWave
+== Testing with CarrierWave
 
 It's a good idea to test you uploaders in isolation. In order to speed up your
 tests, it's recommended to switch off processing in your tests, and to use the
