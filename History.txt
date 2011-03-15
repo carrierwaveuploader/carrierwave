@@ -4,6 +4,7 @@
 * [added] cloud_files_auth_url and cloud_files_snet config options for Cloud Files [minter]
 * [added] process_uri method that can be overridden in your uploader to support downloads from non-standard urls [trevorturk]
 * [added] version urls to json output [karb]
+* [added] Active Record marks uploader column as changed when changed [josevalim]
 * [fixed] Cloud Files storage tests to use the new url format [minter]
 * [fixed] Moved raising of FormNotMultipart farther down to avoid errors with nested attribute forms [trevorturk]
 * [fixed] original_filename of remote uploads should be calculated from final (possibly redirected) URL [brady8]
