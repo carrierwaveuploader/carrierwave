@@ -220,6 +220,18 @@ describe CarrierWave::ActiveRecord do
         @event[:image].should == ''
       end
 
+      it "should mark image as changed when saving a new image" do
+        @event.image_changed?.should be_false
+        @event.image = stub_file("test.jpeg")
+        @event.image_changed?.should be_true
+        @event.save
+        @event.reload
+        @event.image_changed?.should be_false
+        @event.image = stub_file("test.jpg")
+        @event.image_changed?.should be_true
+        @event.changed_for_autosave?.should be_true
+      end
+
     end
 
     describe '#destroy' do
