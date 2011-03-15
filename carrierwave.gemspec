@@ -43,4 +43,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "timecop"
   s.add_development_dependency "json"
   s.add_development_dependency "cloudfiles", [">= 1.4.12"]
+  s.add_development_dependency "sham_rack"
 end

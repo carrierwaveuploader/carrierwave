@@ -17,7 +17,7 @@ module CarrierWave
         end
 
         def original_filename
-          File.basename((file.respond_to?(:base_uri) ? file.base_uri : @uri).path)
+          File.basename(file.base_uri.path)
         end
 
         def respond_to?(*args)
@@ -73,4 +73,3 @@ module CarrierWave
     end # Download
   end # Uploader
 end # CarrierWave
-

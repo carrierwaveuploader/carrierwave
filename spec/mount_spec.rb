@@ -215,45 +215,50 @@ describe CarrierWave::Mount do
       end
     end
 
-    describe '#remote_image_url' do
+    describe 'with ShamRack' do
+
       before do
-        Kernel.stub!(:open).and_return('Response Body')
+        sham_rack_app = ShamRack.at('www.example.com').stub
+        sham_rack_app.register_resource('/test.jpg', File.read(file_path('test.jpg')), 'image/jpg')
       end
 
-      it "should return nil" do
-        @instance.remote_image_url.should be_nil
+      after do
+        ShamRack.unmount_all
       end
 
-      it "should return previously cached URL" do
-        @instance.remote_image_url = 'http://www.example.com/funky/monkey.png'
-        @instance.remote_image_url.should == 'http://www.example.com/funky/monkey.png'
-      end
-    end
+      describe '#remote_image_url' do
+        it "should return nil" do
+          @instance.remote_image_url.should be_nil
+        end
 
-    describe '#remote_image_url=' do
-      before do
-        Kernel.stub!(:open).and_return('Response Body')
-      end
-
-      it "should do nothing when nil is assigned" do
-        @instance.remote_image_url = nil
-        @instance.image.should be_blank
+        it "should return previously cached URL" do
+          @instance.remote_image_url = 'http://www.example.com/test.jpg'
+          @instance.remote_image_url.should == 'http://www.example.com/test.jpg'
+        end
       end
 
-      it "should do nothing when an empty string is assigned" do
-        @instance.remote_image_url = ''
-        @instance.image.should be_blank
-      end
+      describe '#remote_image_url=' do
 
-      it "retrieve from cache when a cache name is assigned" do
-        @instance.remote_image_url = 'http://www.example.com/funky/monkey.png'
-        @instance.image.current_path.should =~ /monkey.png$/
-      end
+        it "should do nothing when nil is assigned" do
+          @instance.remote_image_url = nil
+          @instance.image.should be_blank
+        end
 
-      it "should not write over a previously assigned file" do
-        @instance.image = stub_file('test.jpg')
-        @instance.remote_image_url = '19990512-1202-123-1234/monkey.jpg'
-        @instance.image.current_path.should =~ /test.jpg$/
+        it "should do nothing when an empty string is assigned" do
+          @instance.remote_image_url = ''
+          @instance.image.should be_blank
+        end
+
+        it "retrieve from cache when a cache name is assigned" do
+          @instance.remote_image_url = 'http://www.example.com/test.jpg'
+          @instance.image.current_path.should =~ /test.jpg$/
+        end
+
+        it "should not write over a previously assigned file" do
+          @instance.image = stub_file('portrait.jpg')
+          @instance.remote_image_url = 'http://www.example.com/test.jpg'
+          @instance.image.current_path.should =~ /portrait.jpg$/
+        end
       end
     end
 

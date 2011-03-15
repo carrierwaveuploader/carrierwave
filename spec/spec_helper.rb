@@ -10,6 +10,7 @@ require 'logger'
 require 'carrierwave'
 require 'timecop'
 require 'open-uri'
+require 'sham_rack'
 
 require 'fog'
 require 'storage/fog_helper'
