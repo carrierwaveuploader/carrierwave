@@ -24,24 +24,24 @@ Gem::Specification.new do |s|
 
   s.add_dependency("activesupport", ["~> 3.0"])
 
-  s.add_development_dependency "rails", ["~> 3.0"]
-  s.add_development_dependency "rspec", ["~> 1.3"]
-  s.add_development_dependency "fog", ["~> 0.6"]
-  s.add_development_dependency "cucumber"
-  s.add_development_dependency "sqlite3-ruby"
-  s.add_development_dependency "dm-core"
-  s.add_development_dependency "dm-validations"
-  s.add_development_dependency "dm-migrations"
-  s.add_development_dependency "dm-sqlite-adapter"
-  s.add_development_dependency "sequel"
-  s.add_development_dependency "rmagick"
-  s.add_development_dependency "RubyInline"
-  s.add_development_dependency "image_science"
-  s.add_development_dependency "mini_magick", ["~> 2.3"]
-  s.add_development_dependency "bson_ext", ["= 1.1.1"]
-  s.add_development_dependency "mongoid", ["= 2.0.0.beta.19"]
-  s.add_development_dependency "timecop"
-  s.add_development_dependency "json"
-  s.add_development_dependency "cloudfiles", [">= 1.4.12"]
-  s.add_development_dependency "sham_rack"
+  s.add_development_dependency "rails", ["3.0.5"]
+  s.add_development_dependency "rspec", ["1.3.0"]
+  s.add_development_dependency "fog", ["0.6.0"]
+  s.add_development_dependency "cucumber", ["0.8.5"]
+  s.add_development_dependency "sqlite3", ["1.3.3"]
+  s.add_development_dependency "dm-core", ["1.0.0"]
+  s.add_development_dependency "dm-validations", ["1.0.0"]
+  s.add_development_dependency "dm-migrations", ["1.0.0"]
+  s.add_development_dependency "dm-sqlite-adapter", ["1.0.0"]
+  s.add_development_dependency "sequel", ["3.14.0"]
+  s.add_development_dependency "rmagick", ["2.13.1"]
+  s.add_development_dependency "RubyInline", ["3.8.4"]
+  s.add_development_dependency "image_science", ["1.2.1"]
+  s.add_development_dependency "mini_magick", ["2.3"]
+  s.add_development_dependency "bson_ext", ["1.2.4"]
+  s.add_development_dependency "mongoid", ["2.0.0.beta.19"]
+  s.add_development_dependency "timecop", ["0.3.5"]
+  s.add_development_dependency "json", ["1.5.1"]
+  s.add_development_dependency "cloudfiles", ["1.4.12"]
+  s.add_development_dependency "sham_rack", ["1.3.3"]
 end
