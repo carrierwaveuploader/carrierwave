@@ -148,7 +148,7 @@ module CarrierWave
     #
     def read
       if is_path?
-        File.open(@file, "rb").read
+        File.open(@file, "rb") {|file| file.read}
       else
         @file.rewind if @file.respond_to?(:rewind)
         @file.read
