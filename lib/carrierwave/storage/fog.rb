@@ -31,7 +31,7 @@ module CarrierWave
     # [:aws_access_key_id]
     # [:aws_secret_access_key]
     # [:region]                 (optional) defaults to 'us-east-1'
-    #   :region should be one of ['eu-west-1', 'us-east-1', 'ap-southeast-1', 'us-west-1']
+    #   :region should be one of ['eu-west-1', 'us-east-1', 'ap-southeast-1', 'us-west-1', 'ap-northeast-1']
     #
     #
     # Google credentials contain the following keys:
