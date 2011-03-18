@@ -159,7 +159,7 @@ contain Russian letters:
       end
     end
 
-Also make sure that allowing non-latin characters won't cause a compatibly issue with a third-party
+Also make sure that allowing non-latin characters won't cause a compatibility issue with a third-party
 plugins or client-side software.
 
 == Adding versions
