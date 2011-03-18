@@ -10,6 +10,7 @@
 * [fixed] original_filename of remote uploads should be calculated from final (possibly redirected) URL [brady8]
 * [fixed] Fix calling :process! on files stored in remote solutions [alexcrichton]
 * [fixed] Fix paperclip compatibility mappings [valakirka]
+* [fixed] Ensure temporary files can be deleted on Windows [Eleo]
 
 === Version 0.5.2 2010-02-18
 
