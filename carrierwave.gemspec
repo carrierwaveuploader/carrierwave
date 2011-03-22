@@ -26,7 +26,7 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency "rails", ["3.0.5"]
   s.add_development_dependency "rspec", ["1.3.0"]
-  s.add_development_dependency "fog", ["0.7.0"]
+  s.add_development_dependency "fog", ["0.7.1"]
   s.add_development_dependency "cucumber", ["0.8.5"]
   s.add_development_dependency "sqlite3", ["1.3.3"]
   s.add_development_dependency "dm-core", ["1.0.0"]
