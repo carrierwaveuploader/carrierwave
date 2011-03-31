@@ -82,7 +82,8 @@ module CarrierWave
         #
         def url
           if @uploader.cloud_files_cdn_host
-            "http://" + @uploader.cloud_files_cdn_host + "/" + @path
+            scheme = @uploader.cloud_files_use_ssl ? "https" : "http"
+            "#{scheme}://" + @uploader.cloud_files_cdn_host + "/" + @path
           else
             begin
               cf_container.object(@path).public_url

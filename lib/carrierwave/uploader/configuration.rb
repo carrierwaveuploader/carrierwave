@@ -23,6 +23,7 @@ module CarrierWave
         add_config :cloud_files_cdn_host
         add_config :cloud_files_auth_url
         add_config :cloud_files_snet
+        add_config :cloud_files_use_ssl
         add_config :grid_fs_connection
         add_config :grid_fs_database
         add_config :grid_fs_host

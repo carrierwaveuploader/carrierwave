@@ -94,6 +94,23 @@ if ENV['REMOTE'] == 'true'
       end
     end
 
+    describe 'using http or https urls for cloud file' do
+      before do
+        @uploader.stub!(:store_path).and_return('uploads/bar.txt')
+        @cloud_file = @storage.store!(@file)
+      end
+
+      it 'should use https if ssl enabled' do
+        @uploader.stub!(:cloud_files_use_ssl).and_return(true)
+        URI.parse(@cloud_file.url).scheme.should == 'https'
+      end
+
+      it 'should use http if ssl disabled' do
+        @uploader.stub!(:cloud_files_use_ssl).and_return(false)
+        URI.parse(@cloud_file.url).scheme.should == 'http'
+      end
+    end
+
     describe 'finished' do
       it "should delete the container when finished" do
         @connection.delete_container(@container_name)
