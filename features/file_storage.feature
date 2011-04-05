@@ -2,16 +2,16 @@ Feature: uploader with file storage
   In order to be awesome
   As a developer using CarrierWave
   I want to upload files to the filesystem
-  
+
   Background:
     Given an uploader class that uses the 'file' storage
-    And an instance of that class    
-  
+    And an instance of that class
+
   Scenario: store a file
     When I store the file 'fixtures/bork.txt'
     Then there should be a file at 'public/uploads/bork.txt'
     And the file at 'public/uploads/bork.txt' should be identical to the file at 'fixtures/bork.txt'
-  
+
   Scenario: store two files in succession
     When I store the file 'fixtures/bork.txt'
     Then there should be a file at 'public/uploads/bork.txt'
@@ -19,7 +19,7 @@ Feature: uploader with file storage
     When I store the file 'fixtures/monkey.txt'
     Then there should be a file at 'public/uploads/monkey.txt'
     And the file at 'public/uploads/monkey.txt' should be identical to the file at 'fixtures/monkey.txt'
-  
+
   Scenario: cache a file and then store it
     When I cache the file 'fixtures/bork.txt'
     Then there should be a file called 'bork.txt' somewhere in a subdirectory of 'public/uploads/tmp'
@@ -28,7 +28,7 @@ Feature: uploader with file storage
     When I store the file
     Then there should be a file at 'public/uploads/bork.txt'
     And the file at 'public/uploads/bork.txt' should be identical to the file at 'fixtures/bork.txt'
-  
+
   Scenario: retrieving a file from cache then storing
     Given the file 'fixtures/bork.txt' is cached file at 'public/uploads/tmp/20090212-2343-8336-0348/bork.txt'
     When I retrieve the cache name '20090212-2343-8336-0348/bork.txt' from the cache

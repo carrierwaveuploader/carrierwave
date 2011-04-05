@@ -2,13 +2,13 @@ Feature: uploader with file storage and overriden filename
   In order to customize the filaname of uploaded files
   As a developer using CarrierWave
   I want to upload files to the filesystem with an overriden filename and different verions
-  
+
   Background:
     Given an uploader class that uses the 'file' storage
     And that the uploader class has a version named 'thumb'
     And that the uploader has the filename overridden to 'grark.png'
     And an instance of that class
-  
+
     Scenario: store a file
       When I store the file 'fixtures/bork.txt'
       Then there should be a file at 'public/uploads/grark.png'

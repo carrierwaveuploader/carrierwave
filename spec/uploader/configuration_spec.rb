@@ -33,7 +33,7 @@ describe CarrierWave::Uploader::Base do
       @uploader_class.foo_bar.should == 'monkey'
     end
   end
-  
+
   describe ".storage" do
     it "should set the storage if an argument is given" do
       storage = mock('some kind of storage')
@@ -64,15 +64,15 @@ describe CarrierWave::Uploader::Base do
       subclass.storage.should == CarrierWave::Storage::File
     end
   end
-  
-  
+
+
   describe '.add_config' do
     it "should add a class level accessor" do
       @uploader_class.add_config :foo_bar
       @uploader_class.foo_bar = 'foo'
       @uploader_class.foo_bar.should == 'foo'
     end
-    
+
     ['foo', :foo, 45, ['foo', :bar]].each do |val|
       it "should be inheritable for a #{val.class}" do
         @uploader_class.add_config :foo_bar
@@ -88,14 +88,14 @@ describe CarrierWave::Uploader::Base do
         @uploader_class.foo_bar.should == val
       end
     end
-    
-    
+
+
     it "should add an instance level accessor" do
       @uploader_class.add_config :foo_bar
       @uploader_class.foo_bar = 'foo'
       @uploader_class.new.foo_bar.should == 'foo'
     end
-    
+
     it "should add a convenient in-class setter" do
       @uploader_class.add_config :foo_bar
       @uploader_class.foo_bar "monkey"

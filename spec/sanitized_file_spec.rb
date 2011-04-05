@@ -141,6 +141,55 @@ describe CarrierWave::SanitizedFile do
 
   end
 
+  describe '#filename with an overridden sanitize_regexp' do
+
+    before do
+      @sanitized_file = CarrierWave::SanitizedFile.new(nil)
+      @sanitized_file.stub(:sanitize_regexp).and_return(/[^a-zA-Z\.\-\+_]/)
+    end
+
+    it "should default to the original filename if it is valid" do
+      @sanitized_file.should_receive(:original_filename).at_least(:once).and_return("llama.jpg")
+      @sanitized_file.filename.should == "llama.jpg"
+    end
+
+    it "should remove illegal characters from a filename" do
+      @sanitized_file.should_receive(:original_filename).at_least(:once).and_return("123.jpg")
+      @sanitized_file.filename.should == "___.jpg"
+    end
+
+  end
+
+  describe '#some unicode filenames with an overridden sanitize_regexp' do
+
+    before do
+      @sanitized_file = CarrierWave::SanitizedFile.new(nil)
+      regexp = RUBY_VERSION >= '1.9' ? '[^[:word:]\.\-\+]' : '[^ёЁа-яА-Яa-zA-Zà-üÀ-Ü0-9\.\-\+_]'
+      @sanitized_file.stub(:sanitize_regexp).and_return(Regexp.new(regexp))
+    end
+
+    it "should default to the original filename if it is valid" do
+      @sanitized_file.should_receive(:original_filename).at_least(:once).and_return("тестовый.jpg")
+      @sanitized_file.filename.should == "тестовый.jpg"
+    end
+
+    it "should downcase characters properly" do
+      @sanitized_file.should_receive(:original_filename).at_least(:once).and_return("ТестоВый Ёжик.jpg")
+      @sanitized_file.filename.should == "тестовый_ёжик.jpg"
+    end
+
+    it "should downcase characters with diacritics properly" do
+      @sanitized_file.should_receive(:original_filename).at_least(:once).and_return("CONTRÔLE.jpg")
+      @sanitized_file.filename.should == "contrôle.jpg"
+    end
+
+    it "should remove illegal characters from a filename" do
+      @sanitized_file.should_receive(:original_filename).at_least(:once).and_return("⟲«Du côté des chars lourds»_123.doc")
+      @sanitized_file.filename.should == "__du_côté_des_chars_lourds__123.doc"
+    end
+
+  end
+
   shared_examples_for "all valid sanitized files" do
 
     describe '#empty?' do
@@ -275,7 +324,7 @@ describe CarrierWave::SanitizedFile do
         new_file = @sanitized_file.copy_to(file_path('gurr.png'), 0755)
         new_file.should have_permissions(0755)
       end
-      
+
       it "should preserve the file's content type" do
         new_file = @sanitized_file.copy_to(file_path('gurr.png'))
         new_file.content_type.should ==(@sanitized_file.content_type)

@@ -87,18 +87,18 @@ describe CarrierWave::Uploader do
       @uploader.store!(@file)
       @uploader.file.should == @stored_file
     end
-    
+
     it "should delete the old file" do
       @uploader.cache!(@file)
       @uploader.file.should_receive(:delete).and_return(true)
       @uploader.store!
     end
-    
+
     context "with the delete_tmp_file_after_storage option set to false" do
       before do
         @uploader_class.delete_tmp_file_after_storage = false
       end
-      
+
       it "should not delete the old file" do
         @uploader.cache!(@file)
         @uploader.file.should_not_receive(:delete).and_return(true)
@@ -165,7 +165,7 @@ describe CarrierWave::Uploader do
       @uploader.file.should == @stored_file
     end
   end
-  
+
   describe 'with an overridden filename' do
     before do
       @uploader_class.class_eval do
@@ -179,7 +179,7 @@ describe CarrierWave::Uploader do
       @path = ::File.expand_path(@uploader.store_path, @uploader.root)
       File.exist?(@path).should be_true
     end
-    
+
     it "should not create new files if there is no file" do
       @uploader.store!(nil)
       @path = ::File.expand_path(@uploader.store_path, @uploader.root)

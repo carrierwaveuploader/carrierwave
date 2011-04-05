@@ -5,7 +5,7 @@ Given /^a datamapper class that has a '([^\']*)' column$/ do |column|
     include DataMapper::Resource
 
     storage_names[:default] = 'users'
-    
+
     property :id, DataMapper::Types::Serial
     property column.to_sym, String
   end

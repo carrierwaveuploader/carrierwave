@@ -1,7 +1,7 @@
 # encoding: utf-8
 
-require "rubygems"
-require "bundler/setup"
+require 'rubygems'
+require 'bundler/setup'
 
 require 'tempfile'
 require 'time'
@@ -9,6 +9,19 @@ require 'logger'
 
 require 'carrierwave'
 require 'timecop'
+require 'open-uri'
+require 'sham_rack'
+
+require 'fog'
+require 'storage/fog_helper'
+
+unless ENV['REMOTE'] == 'true'
+  Fog.mock!
+end
+
+require 'fog_credentials' # after Fog.mock!
+
+CARRIERWAVE_DIRECTORY = "carrierwave#{Time.now.to_i}" unless defined?(CARRIERWAVE_DIRECTORY)
 
 alias :running :lambda
 

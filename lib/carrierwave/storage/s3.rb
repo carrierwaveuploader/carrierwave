@@ -123,17 +123,18 @@ module CarrierWave
         end
 
         def public_url
+          scheme = use_ssl? ? 'https' : 'http'
           if cname
-            ["http://#{cname}", path].compact.join('/')
+            ["#{scheme}://#{cname}", path].compact.join('/')
           elsif cnamed?
-            ["http://#{bucket}", path].compact.join('/')
+            ["#{scheme}://#{bucket}", path].compact.join('/')
           else
-            ["http://#{bucket}.s3.amazonaws.com", path].compact.join('/')
+            ["#{scheme}://#{bucket}.s3.amazonaws.com", path].compact.join('/')
           end
         end
 
         def authenticated_url
-          connection.get_object_url(bucket, path, Time.now + 60 * 10)
+          connection.get_object_url(bucket, path, Time.now + authentication_timeout)
         end
 
         def store(file)
@@ -173,6 +174,10 @@ module CarrierWave
           @uploader.s3_cname
         end
 
+        def use_ssl?
+          @uploader.s3_use_ssl
+        end
+
         def cnamed?
           @uploader.s3_cnamed
         end
@@ -183,6 +188,10 @@ module CarrierWave
 
         def bucket
           @uploader.s3_bucket
+        end
+
+        def authentication_timeout
+          @uploader.s3_authentication_timeout
         end
 
         def connection
@@ -223,10 +232,11 @@ module CarrierWave
       end
 
       def connection
-        @connection ||= Fog::AWS::Storage.new(
-          :aws_access_key_id => uploader.s3_access_key_id,
-          :aws_secret_access_key => uploader.s3_secret_access_key,
-          :region => uploader.s3_region
+        @connection ||= ::Fog::Storage.new(
+          :aws_access_key_id      => uploader.s3_access_key_id,
+          :aws_secret_access_key  => uploader.s3_secret_access_key,
+          :provider               => 'AWS',
+          :region                 => uploader.s3_region
         )
       end
 

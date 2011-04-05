@@ -42,10 +42,10 @@ describe CarrierWave::ActiveRecord do
       # My god, what a horrible, horrible solution, but AR validations don't work
       # unless the class has a name. This is the best I could come up with :S
       $arclass += 1
-      eval <<-RUBY
-        class Event#{$arclass} < Event; end
-        @class = Event#{$arclass}
-      RUBY
+      @class = Class.new(Event)
+      # AR validations don't work unless the class has a name, and
+      # anonymous classes can be named by assigning them to a constant
+      Object.const_set("Event#{$arclass}", @class)
       @class.table_name = "events"
       @uploader = Class.new(CarrierWave::Uploader::Base)
       @class.mount_uploader(:image, @uploader)
@@ -111,7 +111,7 @@ describe CarrierWave::ActiveRecord do
         before do
           @uploader.class_eval do
             def extension_white_list
-              %(txt)
+              %w(txt)
             end
           end
           @event.image = stub_file('test.jpg')
@@ -218,6 +218,18 @@ describe CarrierWave::ActiveRecord do
         @event.reload
         @event.image.should be_blank
         @event[:image].should == ''
+      end
+
+      it "should mark image as changed when saving a new image" do
+        @event.image_changed?.should be_false
+        @event.image = stub_file("test.jpeg")
+        @event.image_changed?.should be_true
+        @event.save
+        @event.reload
+        @event.image_changed?.should be_false
+        @event.image = stub_file("test.jpg")
+        @event.image_changed?.should be_true
+        @event.changed_for_autosave?.should be_true
       end
 
     end

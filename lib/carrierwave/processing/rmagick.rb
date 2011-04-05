@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-unless defined? Magick 
+unless defined? Magick
   begin
     require 'rmagick'
   rescue LoadError
@@ -244,6 +244,7 @@ module CarrierWave
     # [CarrierWave::ProcessingError] if manipulation failed.
     #
     def manipulate!(options={})
+      cache_stored_file! if !cached?
       image = ::Magick::Image.read(current_path)
 
       frames = if image.size > 1
@@ -269,7 +270,7 @@ module CarrierWave
     end
 
   private
-  
+
     def destroy_image(image)
       image.destroy! if image.respond_to?(:destroy!)
     end

@@ -7,6 +7,7 @@ require File.join(File.dirname(__FILE__), 'datamapper')
 
 require 'spec'
 require 'carrierwave'
+require 'sham_rack'
 
 alias :running :lambda
 

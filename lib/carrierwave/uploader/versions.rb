@@ -114,9 +114,15 @@ module CarrierWave
       # versions if their parameters somehow have changed.
       #
       def recreate_versions!
-        with_callbacks(:recreate_versions, file) do
-          versions.each { |name, v| v.store!(file) }
-        end
+        # Some files could possibly not be stored on the local disk. This
+        # doesn't play nicely with processing. Make sure that we're only
+        # processing a cached file
+        #
+        # The call to store! will trigger the necessary callbacks to both
+        # process this version and all sub-versions
+        cache_stored_file! if !cached?
+
+        store!
       end
 
     private
@@ -130,9 +136,15 @@ module CarrierWave
       end
 
       def cache_versions!(new_file)
+        # We might have processed the new_file argument after the callbacks were
+        # initialized, so get the actual file based off of the current state of
+        # our file
+        processed_parent = SanitizedFile.new :tempfile => self.file,
+          :filename => new_file.original_filename
+
         versions.each do |name, v|
           v.send(:cache_id=, cache_id)
-          v.cache!(new_file)
+          v.cache!(processed_parent)
         end
       end
 

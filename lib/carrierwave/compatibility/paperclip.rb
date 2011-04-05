@@ -11,7 +11,7 @@ module CarrierWave
     #
     #     class MyUploader < CarrierWave::Uploader::Base
     #       include CarrierWave::Compatibility::Paperclip
-    #       
+    #
     #       def paperclip_path
     #         ":rails_root/public/uploads/:id/:attachment/:style_:basename.:extension"
     #       end
@@ -20,23 +20,23 @@ module CarrierWave
     # ---
     #
     # This file contains code taken from Paperclip
-    # 
+    #
     # LICENSE
-    # 
+    #
     # The MIT License
-    # 
+    #
     # Copyright (c) 2008 Jon Yurek and thoughtbot, inc.
-    # 
+    #
     # Permission is hereby granted, free of charge, to any person obtaining a copy
     # of this software and associated documentation files (the "Software"), to deal
     # in the Software without restriction, including without limitation the rights
     # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
     # copies of the Software, and to permit persons to whom the Software is
     # furnished to do so, subject to the following conditions:
-    # 
+    #
     # The above copyright notice and this permission notice shall be included in
     # all copies or substantial portions of the Software.
-    # 
+    #
     # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
     # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
     # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -77,17 +77,17 @@ module CarrierWave
       end
 
       def mappings
-        {
-          :rails_root   => lambda{|u, f| Rails.root },
-          :rails_env    => lambda{|u, f| Rails.env },
-          :class        => lambda{|u, f| u.model.class.name.underscore.pluralize},
-          :id           => lambda{|u, f| u.model.id },
-          :id_partition => lambda{|u, f| ("%09d" % u.model.id).scan(/\d{3}/).join("/")},
-          :attachment   => lambda{|u, f| u.mounted_as.to_s.downcase.pluralize },
-          :style        => lambda{|u, f| u.paperclip_style },
-          :basename     => lambda{|u, f| f.gsub(/#{File.extname(f)}$/, "") },
-          :extension    => lambda{|u, f| File.extname(f).gsub(/^\.+/, "")}
-        }
+        [
+          [:rails_root   , lambda{|u, f| Rails.root }],
+          [:rails_env    , lambda{|u, f| Rails.env }],
+          [:class        , lambda{|u, f| u.model.class.name.underscore.pluralize}],
+          [:id_partition , lambda{|u, f| ("%09d" % u.model.id).scan(/\d{3}/).join("/")}],
+          [:id           , lambda{|u, f| u.model.id }],
+          [:attachment   , lambda{|u, f| u.mounted_as.to_s.downcase.pluralize }],
+          [:style        , lambda{|u, f| u.paperclip_style }],
+          [:basename     , lambda{|u, f| f.gsub(/#{File.extname(f)}$/, "") }],
+          [:extension    , lambda{|u, f| File.extname(f).gsub(/^\.+/, "")}]
+        ]
       end
 
     end # Paperclip

@@ -2,7 +2,7 @@
 
 require 'fileutils'
 require 'active_support/core_ext/object/blank'
-require 'active_support/core_ext/class/inheritable_attributes'
+require 'active_support/core_ext/class/attribute'
 require 'active_support/concern'
 
 module CarrierWave
@@ -35,6 +35,7 @@ module CarrierWave
   module Storage
     autoload :Abstract, 'carrierwave/storage/abstract'
     autoload :File, 'carrierwave/storage/file'
+    autoload :Fog, 'carrierwave/storage/fog'
     autoload :S3, 'carrierwave/storage/s3'
     autoload :GridFS, 'carrierwave/storage/grid_fs'
     autoload :RightS3, 'carrierwave/storage/right_s3'
@@ -84,6 +85,12 @@ elsif defined?(Rails)
       initializer "carrierwave.setup_paths" do
         CarrierWave.root = Rails.root.join(Rails.public_path).to_s
       end
+
+      initializer "carrierwave.active_record" do
+        ActiveSupport.on_load :active_record do
+          require 'carrierwave/orm/activerecord'
+        end
+      end
     end
   end
 
@@ -93,8 +100,6 @@ elsif defined?(Sinatra)
 
 end
 
-
-require 'carrierwave/orm/activerecord' if defined?(ActiveRecord)
 require 'carrierwave/orm/datamapper' if defined?(DataMapper)
 require 'carrierwave/orm/sequel' if defined?(Sequel)
 require 'carrierwave/orm/mongoid' if defined?(Mongoid)

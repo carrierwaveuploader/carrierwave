@@ -13,11 +13,11 @@ module CarrierWave
 
       class RemoteFile
         def initialize(uri)
-          @uri = URI.parse(URI.escape(uri))
+          @uri = uri
         end
 
         def original_filename
-          File.basename(@uri.path)
+          File.basename(file.base_uri.path)
         end
 
         def respond_to?(*args)
@@ -52,13 +52,24 @@ module CarrierWave
       #
       def download!(uri)
         unless uri.blank?
-          file = RemoteFile.new(uri)
+          processed_uri = process_uri(uri)
+          file = RemoteFile.new(processed_uri)
           raise CarrierWave::DownloadError, "trying to download a file which is not served over HTTP" unless file.http?
-          cache!(file) 
+          cache!(file)
         end
+      end
+
+      ##
+      # Processes the given URL by parsing and escaping it. Public to allow overriding.
+      #
+      # === Parameters
+      #
+      # [url (String)] The URL where the remote file is stored
+      #
+      def process_uri(uri)
+        URI.parse(URI.escape(uri))
       end
 
     end # Download
   end # Uploader
 end # CarrierWave
-

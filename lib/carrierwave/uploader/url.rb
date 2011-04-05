@@ -22,10 +22,11 @@ module CarrierWave
       ##
       # === Returns
       #
-      # [String] A JSON serializtion containing this uploader's URL
+      # [String] A JSON serialization containing this uploader's URL(s)
       #
       def as_json(options = nil)
-        { :url => url }
+        h = { :url => url }
+        h.merge Hash[versions.map { |name, version| [name, { :url => version.url }] }]
       end
 
     end # Url

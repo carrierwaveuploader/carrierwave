@@ -249,6 +249,7 @@ module CarrierWave
     # [CarrierWave::ProcessingError] if manipulation failed.
     #
     def manipulate!
+      cache_stored_file! if !cached?
       image = ::MiniMagick::Image.open(current_path)
       image = yield(image)
       image.write(current_path)

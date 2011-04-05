@@ -80,7 +80,7 @@ module CarrierWave
     #
     # [image_url]               Returns the url to the uploaded file
     #
-    # [image_cache]             Returns a string that identifies the cache location of the file 
+    # [image_cache]             Returns a string that identifies the cache location of the file
     # [image_cache=]            Retrieves the file from the cache based on the given cache name
     #
     # [remote_image_url]        Returns previously cached remote url
@@ -106,7 +106,7 @@ module CarrierWave
     # [&block (Proc)]                     customize anonymous uploaders
     #
     # === Options
-    # 
+    #
     # [:mount_on => Symbol] if the name of the column to be serialized to differs you can override it using this option
     # [:ignore_integrity_errors => Boolean] if set to true, integrity errors will result in caching failing silently
     # [:ignore_processing_errors => Boolean] if set to true, processing errors will result in caching failing silently
@@ -273,7 +273,7 @@ module CarrierWave
           record.write_uploader(serialization_column, uploader.identifier)
         end
       end
-      
+
       def identifier
         record.read_uploader(serialization_column)
       end
@@ -311,7 +311,7 @@ module CarrierWave
       def remote_url=(url)
         unless uploader.cached?
           @remote_url = url
-          uploader.download!(url) 
+          uploader.download!(url)
         end
       end
 
@@ -342,7 +342,7 @@ module CarrierWave
       end
 
     private
-      
+
       def option(name)
         record.class.uploader_option(column, name)
       end

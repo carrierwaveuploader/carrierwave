@@ -11,7 +11,7 @@ module CarrierWave
     # connection or you reuse an existing connection.
     #
     # Creating a connection looks something like this:
-    # 
+    #
     #     CarrierWave.configure do |config|
     #       config.storage = :grid_fs
     #       config.grid_fs_host = "your-host.com"
@@ -23,7 +23,7 @@ module CarrierWave
     #     end
     #
     #   In the above example your documents url will look like:
-    #   
+    #
     #      http://your-app.com/images/:document-identifier-here
     #
     # When you already have a Mongo connection object (for example through Mongoid)
@@ -45,7 +45,7 @@ module CarrierWave
         end
 
         def path
-          nil
+          @path
         end
 
         def url
@@ -61,7 +61,7 @@ module CarrierWave
         end
 
         def write(file)
-          grid.open(@uploader.store_path, 'w', :content_type => file.content_type) do |f| 
+          grid.open(@uploader.store_path, 'w', :content_type => file.content_type) do |f|
             f.write(file.read)
           end
         end
@@ -73,7 +73,7 @@ module CarrierWave
         def content_type
           grid.open(@path, 'r').content_type
         end
-        
+
         def file_length
           grid.open(@path, 'r').file_length
         end
@@ -92,7 +92,7 @@ module CarrierWave
             db
           end
         end
-        
+
         def grid
           @grid ||= Mongo::GridFileSystem.new(database)
         end

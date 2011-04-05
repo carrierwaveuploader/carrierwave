@@ -98,6 +98,31 @@ describe CarrierWave::Uploader do
         @uploader.thumb.micro.version_name.should == :thumb_micro
       end
 
+      it "should process nested versions" do
+        @uploader_class.class_eval {
+          include CarrierWave::MiniMagick
+
+          version :rotated do
+            process :rotate
+
+            version :boxed do
+              process :resize_to_fit => [200, 200]
+            end
+          end
+
+          def rotate
+            manipulate! do |img|
+              img.rotate 90
+              img
+            end
+          end
+        }
+        @uploader.cache! File.open(file_path('portrait.jpg'))
+
+        @uploader.should have_dimensions(233, 337)
+        @uploader.rotated.should have_dimensions(337, 233)
+        @uploader.rotated.boxed.should have_dimensions(200, 138)
+      end
     end
 
   end
@@ -209,6 +234,18 @@ describe CarrierWave::Uploader do
         File.read(@uploader.thumb.path).should_not == "Contents changed"
         @uploader.recreate_versions!
         File.read(@uploader.thumb.path).should == "Contents changed"
+      end
+
+      it "should recreate all versions if any are missing" do
+        @uploader.store!(@file)
+
+        File.exists?(@uploader.thumb.path).should == true
+        FileUtils.rm(@uploader.thumb.path)
+        File.exists?(@uploader.thumb.path).should == false
+
+        @uploader.recreate_versions!
+
+        File.exists?(@uploader.thumb.path).should == true
       end
     end
 
