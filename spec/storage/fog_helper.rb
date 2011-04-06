@@ -163,12 +163,6 @@ end
             @directory.destroy
           end
 
-          it "should not be available at public URL" do
-            unless fog_credentials[:provider] == 'Local'
-              @fog_file.public_url.should be_nil
-            end
-          end
-
           it "should have an authenticated_url" do
             if ['AWS', 'Google'].include?(@provider)
               @fog_file.authenticated_url.should_not be_nil

@@ -247,8 +247,16 @@ module CarrierWave
           if host = @uploader.fog_host
             "#{host}/#{path}"
           else
-            # avoid a get by just using local reference
-            directory.files.new(:key => path).public_url
+            # AWS/Google optimized for speed over correctness
+            case @uploader.fog_credentials[:provider]
+            when 'AWS'
+              "https://s3.amazonaws.com/#{@uploader.fog_directory}/#{path}"
+            when 'Google'
+              "https://commondatastorage.googleapis.com/#{@uploader.fog_directory}/#{path}"
+            else
+              # avoid a get by just using local reference
+              directory.files.new(:key => path).public_url
+            end
           end
         end
 
