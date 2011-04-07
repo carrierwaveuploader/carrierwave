@@ -341,14 +341,14 @@ module CarrierWave
         uploader.remove!
       end
 
+      def serialization_column
+        option(:mount_on) || column
+      end
+
     private
 
       def option(name)
         record.class.uploader_option(column, name)
-      end
-
-      def serialization_column
-        option(:mount_on) || column
       end
 
     end # Mounter
