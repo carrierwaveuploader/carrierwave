@@ -125,6 +125,31 @@ make the record invalid instead. Otherwise, an error is raised.
       end
     end
 
+=== Validating Uploads
+
+Standard active model validations can be used to ensure a file is uploaded.
+
+   mount_uploader :avatar, AvatarUploader 
+
+   validate_presence_of :avatar
+
+CarrierWave also supplies additional validations, such as validating the integrity of an uploaded file.
+
+    validates_integrity_of :avatar
+
+or validating that the file was sucessfully processed
+
+    validates_processing_of
+
+The validations use translated error messages and can be changed using i18n localization
+
+    en:
+      errors:
+        messages:
+          carrierwave_processing_error: failed to be processed
+          carrierwave_integrity_error: is not an allowed file type
+
+
 === Filenames and unicode chars
 
 Another security issue you should care for is the file names (see
