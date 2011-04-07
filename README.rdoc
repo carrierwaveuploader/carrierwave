@@ -139,7 +139,7 @@ CarrierWave also supplies additional validations, such as validating the integri
 
 or validating that the file was sucessfully processed
 
-    validates_processing_of
+    validates_processing_of :avatar
 
 The validations use translated error messages and can be changed using i18n localization
 
