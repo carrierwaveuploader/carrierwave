@@ -174,7 +174,8 @@ module CarrierWave
         # [Boolean] true for success or raises error
         #
         def delete
-          file.destroy
+          # avoid a get by just using local reference
+          directory.files.new(:key => path).destroy
         end
 
         ##
