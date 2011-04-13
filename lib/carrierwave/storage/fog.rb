@@ -17,7 +17,7 @@ module CarrierWave
     # You need to setup some options to configure your usage:
     #
     # [:fog_credentials]  credentials for service
-    # [:fog_directory]    specifies name of directory to store data in
+    # [:fog_directory]    specifies name of directory to store data in, assumed to already exist
     #
     # [:fog_attributes]                   (optional) additional attributes to set on files
     # [:fog_host]                         (optional) non-default host to serve files from
@@ -292,7 +292,7 @@ module CarrierWave
         end
 
         ##
-        # lookup directory containing file
+        # local reference to directory containing file
         #
         # === Returns
         #
@@ -300,7 +300,7 @@ module CarrierWave
         #
         def directory
           @directory ||= begin
-            connection.directories.get(@uploader.fog_directory) || connection.directories.create(
+            connection.directories.new(
               :key    => @uploader.fog_directory,
               :public => @uploader.fog_public
             )

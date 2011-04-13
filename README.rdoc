@@ -366,6 +366,7 @@ Fog[http://github.com/geemus/fog] is used to support Amazon S3. Ensure you have 
     gem install fog
 
 You'll need to provide your fog_credentials and a fog_directory (also known as a bucket) in an initializer.
+For the sake of performance it is assumed that the directory already exists, so please create it if need be.
 You can also pass in additional options, as documented fully in lib/storage/fog.rb. Here's a full example:
 
     CarrierWave.configure do |config|
@@ -395,7 +396,8 @@ Fog[http://github.com/geemus/fog] is used to support Rackspace Cloud Files. Ensu
 
     gem install fog
 
-You'll need to configure a directory (also known as a container), username and api key like this in an initializer:
+You'll need to configure a directory (also known as a container), username and api key in the initializer.
+For the sake of performance it is assumed that the directory already exists, so please create it if need be.
 
     CarrierWave.configure do |config|
       config.fog_credentials = {
@@ -427,7 +429,8 @@ Fog[http://github.com/geemus/fog] is used to support Google Storage for Develope
 
     gem install fog
 
-You'll need to configure a directory (also known as a bucket), access key id and secret access key like this in an initializer:
+You'll need to configure a directory (also known as a bucket), access key id and secret access key in the initialiazer.
+For the sake of performance it is assumed that the directory already exists, so please create it if need be.
 
     CarrierWave.configure do |config|
       config.fog_credentials = {
