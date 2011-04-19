@@ -147,8 +147,8 @@ module CarrierWave
             config.store_dir = 'uploads'
             config.cache_dir = 'uploads/tmp'
             config.delete_tmp_file_after_storage = true
-            config.ignore_integrity_errors = true
-            config.ignore_processing_errors = true
+            config.ignore_processing_errors = config.ignore_integrity_errors =
+                (defined?(Rails) ? Rails.env.production? : true)
             config.validate_integrity = true
             config.validate_processing = true
             config.root = CarrierWave.root
