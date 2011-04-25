@@ -29,7 +29,7 @@ module CarrierWave
         # [name (#to_sym)] name of the version
         # [&block (Proc)] a block to eval on this version of the uploader
         #
-        def version(name, &block)
+        def version(name, options = {}, &block)
           name = name.to_sym
           unless versions[name]
             versions[name] = Class.new(self)
@@ -41,6 +41,7 @@ module CarrierWave
               end
             RUBY
           end
+          versions[name].use_original_image! if options[:use_original_image]
           versions[name].class_eval(&block) if block
           versions[name]
         end
@@ -52,6 +53,22 @@ module CarrierWave
         #
         def versions
           @versions ||= {}
+        end
+
+        ##
+        # Tells this version to use the original image as a base for processing
+        # 
+        def use_original_image!
+          @use_original_image = true
+        end
+
+        ##
+        # === Returns
+        # 
+        # [Boolean] true if this version is supposed to fall back to the original image as a base for processing
+        # 
+        def use_original_image?
+          !!@use_original_image
         end
 
       end # ClassMethods
@@ -144,7 +161,7 @@ module CarrierWave
 
         versions.each do |name, v|
           v.send(:cache_id=, cache_id)
-          v.cache!(processed_parent)
+          v.cache!(v.class.use_original_image? ? new_file : processed_parent)
         end
       end
 

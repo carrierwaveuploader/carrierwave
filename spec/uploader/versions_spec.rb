@@ -127,6 +127,64 @@ describe CarrierWave::Uploader do
 
   end
 
+  context 'with use_original_image ' do
+
+    describe "#use_original_image?" do
+
+      before do
+        @uploader_class.class_eval {
+          include CarrierWave::MiniMagick
+
+          process :resize_to_fit => [200, 200]
+          version :untouched
+        }
+      end
+
+      it "should leave version image untouched when using use_original_image? returns true" do
+        @uploader.untouched.class.stub!(:use_original_image?).and_return(true)
+        @uploader.cache! File.open(file_path('portrait.jpg'))
+
+        @uploader.should have_dimensions(138,200)
+        @uploader.untouched.should have_dimensions(233,337)
+      end
+
+      it "should use resized version image use_original_image? returns false" do
+        @uploader.cache! File.open(file_path('portrait.jpg'))
+
+        @uploader.should have_dimensions(138,200)
+        @uploader.untouched.should have_dimensions(138,200)
+      end
+    end
+
+    describe "#use_original_image!" do
+
+      before do
+        @uploader_class.version :untouched do
+          use_original_image!
+        end
+      end
+
+      it "should tell the version class to use_original_image" do
+        @uploader.untouched.class.use_original_image?.should be_true
+      end
+
+      it "should not effect the base uploader" do
+        @uploader.untouched.class.use_original_image?.should be_true
+        @uploader_class.use_original_image?.should be_false
+      end
+    end
+
+    describe "use_original_image option on version method" do
+
+      it "should tell the version class to use_original_image" do
+        @uploader_class.version :untouched
+        @uploader.untouched.class.should_receive :use_original_image!
+        @uploader_class.version :untouched, :use_original_image => true
+      end
+
+    end
+  end
+
   describe 'with a version' do
     before do
       @uploader_class.version(:thumb)
