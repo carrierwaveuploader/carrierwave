@@ -127,12 +127,21 @@ module CarrierWave
 
     private
 
+      ##
+      # This method encapsulates the logic for joining a version_name and a filename.
+      # If you need to provide something custom in your Uploader this method can be
+      # overridden.
+      # 
+      def version_filename_from(filename)
+        [version_name, filename].compact.join('_')
+      end
+
       def full_filename(for_file)
-        [version_name, super(for_file)].compact.join('_')
+        version_filename_from(super(for_file))
       end
 
       def full_original_filename
-        [version_name, super].compact.join('_')
+        version_filename_from(super)
       end
 
       def cache_versions!(new_file)
