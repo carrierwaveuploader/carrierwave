@@ -166,6 +166,12 @@ module CarrierWave
           end
         end
 
+        # when file not yet uploaded, size will be zero
+        def empty?
+          self.size.zero?
+        end
+        alias_method :blank?, :empty?
+
       private
 
         def use_ssl?
