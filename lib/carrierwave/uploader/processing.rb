@@ -41,6 +41,7 @@ module CarrierWave
         #       process :sepiatone, :vignette
         #       process :scale => [200, 200]
         #       process :scale => [200, 200], :if => :image?
+        #       process :sepiatone, :if => :image?
         #
         #       def sepiatone
         #         ...
@@ -61,6 +62,11 @@ module CarrierWave
         #     end
         #
         def process(*args)
+          if !args.first.is_a?(Hash) && args.last.is_a?(Hash)
+            conditions = args.pop
+            args.map!{ |arg| {arg => nil}.merge(conditions) }
+          end
+
           args.each do |arg|
             if arg.is_a?(Hash)
               condition = arg.delete(:if)
