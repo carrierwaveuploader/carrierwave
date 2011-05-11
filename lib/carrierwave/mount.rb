@@ -65,10 +65,11 @@ module CarrierWave
     #     @user.image.url # => '/some_url.png'
     #
     # It is also possible (but not recommended) to ommit the uploader, which
-    # will create an anonymous uploader class. Passing a block to this method
-    # makes it possible to customize it. This can be convenient for brevity,
-    # but if there is any significatnt logic in the uploader, you should do
-    # the right thing and have it in its own file.
+    # will create an anonymous uploader class. 
+    #
+    # Passing a block makes it possible to customize the uploader. This can be
+    # convenient for brevity, but if there is any significatnt logic in the
+    # uploader, you should do the right thing and have it in its own file.
     #
     # === Added instance methods
     #
@@ -138,9 +139,12 @@ module CarrierWave
     #     end
     #
     def mount_uploader(column, uploader=nil, options={}, &block)
-      unless uploader
-        uploader = Class.new(CarrierWave::Uploader::Base)
+      if block_given?
+        uploader ||= CarrierWave::Uploader::Base
+        uploader = Class.new(uploader)
         uploader.class_eval(&block)
+      else
+        uploader ||= Class.new(CarrierWave::Uploader::Base)
       end
 
       uploaders[column.to_sym] = uploader
