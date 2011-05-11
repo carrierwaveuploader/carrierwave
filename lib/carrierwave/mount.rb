@@ -140,8 +140,7 @@ module CarrierWave
     #
     def mount_uploader(column, uploader=nil, options={}, &block)
       if block_given?
-        uploader ||= CarrierWave::Uploader::Base
-        uploader = Class.new(uploader)
+        uploader = Class.new(uploader || CarrierWave::Uploader::Base)
         uploader.class_eval(&block)
       else
         uploader ||= Class.new(CarrierWave::Uploader::Base)
