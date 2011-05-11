@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency("activesupport", ["~> 3.0"])
 
-  s.add_development_dependency "rails", ["3.0.5"]
+  s.add_development_dependency "rails", ["3.0.7"]
   s.add_development_dependency "rspec", ["1.3.0"]
   s.add_development_dependency "excon", ["0.6.1"]
   s.add_development_dependency "fog", ["0.7.2"]
