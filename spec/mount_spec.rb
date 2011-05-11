@@ -42,6 +42,44 @@ describe CarrierWave::Mount do
       @subclass_instance.image.should be_an_instance_of(@uploader)
     end
 
+    describe "expected behavior with subclassed uploaders" do
+      before do
+        @class = Class.new
+        @class.send(:extend, CarrierWave::Mount)
+        @uploader1 = Class.new(CarrierWave::Uploader::Base)
+        @uploader1.process :rotate
+        @uploader1.version :thumb do
+          process :compress
+        end
+        @uploader2 = Class.new(@uploader1)
+        @uploader2.process :shrink
+        @uploader2.version :secret do
+          process :encrypt
+        end
+        @class.mount_uploader(:image1, @uploader1)
+        @class.mount_uploader(:image2, @uploader2)
+        @instance = @class.new
+      end
+
+      it "should inherit defined versions" do
+        @instance.image1.should respond_to(:thumb)
+        @instance.image2.should respond_to(:thumb)
+      end
+
+      it "should not inherit versions defined in subclasses" do
+        @instance.image1.should_not respond_to(:secret)
+        @instance.image2.should respond_to(:secret)
+      end
+
+      it "should inherit defined processors properly" do
+        @uploader1.processors.should == [[:rotate, [], nil]]
+        @uploader2.processors.should == [[:rotate, [], nil], [:shrink, [], nil]]
+        @uploader1.versions[:thumb].processors.should == [[:compress, [], nil]]
+        @uploader2.versions[:thumb].processors.should == [[:compress, [], nil]]
+        @uploader2.versions[:secret].processors.should == [[:encrypt, [], nil]]
+      end
+    end
+
     describe '#image' do
 
       it "should return a blank uploader when nothing has been assigned" do
@@ -466,6 +504,10 @@ describe CarrierWave::Mount do
         @class = Class.new
         @class.send(:extend, CarrierWave::Mount)
         @uploader = Class.new(CarrierWave::Uploader::Base)
+        @uploader.version :thumb do
+          version :mini
+          version :maxi
+        end
         @class.mount_uploader(:image, @uploader) do
           def fish
             'blub'
@@ -480,6 +522,12 @@ describe CarrierWave::Mount do
 
       it "should apply any custom modifications to the instance" do
         @instance.image.fish.should == "blub"
+      end
+
+      it "should apply any custom modifications to all defined versions" do
+        @instance.image.thumb.fish.should == "blub"
+        @instance.image.thumb.mini.fish.should == "blub"
+        @instance.image.thumb.maxi.fish.should == "blub"
       end
 
       it "should not apply any custom modifications to the uploader class" do

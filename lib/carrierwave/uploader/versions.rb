@@ -8,6 +8,12 @@ module CarrierWave
       include CarrierWave::Uploader::Callbacks
 
       included do
+        class_inheritable_accessor :versions, :instance_reader => false, :instance_writer => false
+        self.versions = {}
+
+        class_inheritable_accessor :version_names, :instance_reader => false, :instance_writer => false
+        self.version_names = []
+
         after :cache, :cache_versions!
         after :store, :store_versions!
         after :remove, :remove_versions!
@@ -16,10 +22,6 @@ module CarrierWave
       end
 
       module ClassMethods
-
-        def version_names
-          @version_names ||= []
-        end
 
         ##
         # Adds a new version to this uploader
@@ -33,27 +35,26 @@ module CarrierWave
           name = name.to_sym
           unless versions[name]
             versions[name] = Class.new(self)
-            versions[name].version_names.push(*version_names)
             versions[name].version_names.push(name)
             class_eval <<-RUBY
               def #{name}
                 versions[:#{name}]
               end
             RUBY
+            # as the processors get the output from the previous processors as their 
+            # input we must not stack the processors here
+            versions[name].processors.clear
           end
           versions[name].class_eval(&block) if block
           versions[name]
         end
 
-        ##
-        # === Returns
-        #
-        # [Hash{Symbol => Class}] a list of versions available for this uploader
-        #
-        def versions
-          @versions ||= {}
+        def recursively_apply_block_to_versions(&block)
+          versions.each do |name, klass|
+            klass.class_eval(&block)
+            klass.recursively_apply_block_to_versions(&block)
+          end
         end
-
       end # ClassMethods
 
       ##
