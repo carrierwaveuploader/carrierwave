@@ -27,14 +27,14 @@ describe CarrierWave::Uploader do
       Timecop.freeze(Time.utc(2007, 12, 6, 10, 12)) do
         @uploader_class.clean_cached_files!
       end
-      Dir.glob("#{@cache_dir}/*").should have(1).element
+      Dir.glob("#{@cache_dir}/*").size.should == 1
     end
 
     it "should be aliased on the CarrierWave module" do
       Timecop.freeze(Time.utc(2007, 12, 6, 10, 12)) do
         CarrierWave.clean_cached_files!
       end
-      Dir.glob("#{@cache_dir}/*").should have(1).element
+      Dir.glob("#{@cache_dir}/*").size.should == 1
     end
   end
 

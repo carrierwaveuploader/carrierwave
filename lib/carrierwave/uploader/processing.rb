@@ -64,7 +64,7 @@ module CarrierWave
         def process(*args)
           if !args.first.is_a?(Hash) && args.last.is_a?(Hash)
             conditions = args.pop
-            args.map!{ |arg| {arg => nil}.merge(conditions) }
+            args.map!{ |arg| {arg => []}.merge(conditions) }
           end
 
           args.each do |arg|
