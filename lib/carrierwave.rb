@@ -3,6 +3,7 @@
 require 'fileutils'
 require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/class/attribute'
+require 'active_support/core_ext/class/inheritable_attributes'
 require 'active_support/concern'
 require 'active_support/memoizable'
 

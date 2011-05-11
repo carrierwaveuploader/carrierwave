@@ -8,21 +8,13 @@ module CarrierWave
       include CarrierWave::Uploader::Callbacks
 
       included do
+        class_inheritable_accessor :processors, :instance_reader => false, :instance_writer => false
+        self.processors = []
+
         after :cache, :process!
       end
 
       module ClassMethods
-
-        ##
-        # Lists processor callbacks declared
-        #
-        # === Returns
-        #
-        # [Array[Array[Symbol, Array, Symbol]]] a list of processor callbacks which have been declared for this uploader
-        #
-        def processors
-          @processors ||= []
-        end
 
         ##
         # Adds a processor callback which applies operations as a file is uploaded.
@@ -64,7 +56,7 @@ module CarrierWave
         def process(*args)
           if !args.first.is_a?(Hash) && args.last.is_a?(Hash)
             conditions = args.pop
-            args.map!{ |arg| {arg => nil}.merge(conditions) }
+            args.map!{ |arg| {arg => []}.merge(conditions) }
           end
 
           args.each do |arg|

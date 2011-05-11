@@ -142,6 +142,7 @@ module CarrierWave
       if block_given?
         uploader = Class.new(uploader || CarrierWave::Uploader::Base)
         uploader.class_eval(&block)
+        uploader.recursively_apply_block_to_versions(&block)
       else
         uploader ||= Class.new(CarrierWave::Uploader::Base)
       end
