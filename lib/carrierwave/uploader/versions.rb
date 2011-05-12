@@ -146,6 +146,13 @@ module CarrierWave
 
     private
 
+      def set_active_versions!(new_file)
+        @active_versions = versions.reject do |name, uploader|
+          condition = self.class.versions[name][:options][:if]
+          condition && !send(condition, new_file)
+        end
+      end
+
       def full_filename(for_file)
         [version_name, super(for_file)].compact.join('_')
       end
@@ -155,24 +162,22 @@ module CarrierWave
       end
 
       def cache_versions!(new_file)
+        set_active_versions!(new_file)
+
         # We might have processed the new_file argument after the callbacks were
         # initialized, so get the actual file based off of the current state of
         # our file
         processed_parent = SanitizedFile.new :tempfile => self.file,
           :filename => new_file.original_filename
 
-        versions.each do |name, v|
+        @active_versions.each do |name, v|
           v.send(:cache_id=, cache_id)
           v.cache!(processed_parent)
         end
       end
 
       def store_versions!(new_file)
-        filtered_versions = versions.reject do |name, uploader|
-          condition = self.class.versions[name][:options][:if]
-          condition && !send(condition, new_file)
-        end
-        filtered_versions.each { |name, v| v.store!(new_file) }
+        @active_versions.each { |name, v| v.store!(new_file) }
       end
 
       def remove_versions!
