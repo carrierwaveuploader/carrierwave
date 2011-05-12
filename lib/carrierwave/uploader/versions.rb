@@ -29,7 +29,22 @@ module CarrierWave
         # === Parameters
         #
         # [name (#to_sym)] name of the version
+        # [options (Hash)] optional options hash
         # [&block (Proc)] a block to eval on this version of the uploader
+        #
+        # === Examples
+        #
+        #     class MyUploader < CarrierWave::Uploader::Base
+        #
+        #       version :thumb do
+        #         process :scale => [200, 200]
+        #       end
+        #
+        #       version :preview, :if => :image? do
+        #         process :scale => [200, 200]
+        #       end
+        #
+        #     end
         #
         def version(name, options = {}, &block)
           name = name.to_sym
