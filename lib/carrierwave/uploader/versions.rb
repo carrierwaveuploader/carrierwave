@@ -31,11 +31,14 @@ module CarrierWave
         # [name (#to_sym)] name of the version
         # [&block (Proc)] a block to eval on this version of the uploader
         #
-        def version(name, &block)
+        def version(name, options = {}, &block)
           name = name.to_sym
           unless versions[name]
-            versions[name] = Class.new(self)
-            versions[name].version_names.push(name)
+            versions[name] = {
+              :uploader => Class.new(self),
+              :options => options,
+            }
+            versions[name][:uploader].version_names.push(name)
             class_eval <<-RUBY
               def #{name}
                 versions[:#{name}]
@@ -43,16 +46,16 @@ module CarrierWave
             RUBY
             # as the processors get the output from the previous processors as their 
             # input we must not stack the processors here
-            versions[name].processors.clear
+            versions[name][:uploader].processors.clear
           end
-          versions[name].class_eval(&block) if block
+          versions[name][:uploader].class_eval(&block) if block
           versions[name]
         end
 
         def recursively_apply_block_to_versions(&block)
-          versions.each do |name, klass|
-            klass.class_eval(&block)
-            klass.recursively_apply_block_to_versions(&block)
+          versions.each do |name, version|
+            version[:uploader].class_eval(&block)
+            version[:uploader].recursively_apply_block_to_versions(&block)
           end
         end
       end # ClassMethods
@@ -67,8 +70,8 @@ module CarrierWave
       def versions
         return @versions if @versions
         @versions = {}
-        self.class.versions.each do |name, klass|
-          @versions[name] = klass.new(model, mounted_as)
+        self.class.versions.each do |name, version|
+          @versions[name] = version[:uploader].new(model, mounted_as)
         end
         @versions
       end
@@ -150,7 +153,11 @@ module CarrierWave
       end
 
       def store_versions!(new_file)
-        versions.each { |name, v| v.store!(new_file) }
+        filtered_versions = versions.reject do |name, uploader|
+          condition = self.class.versions[name][:options][:if]
+          condition && !send(condition, new_file)
+        end
+        filtered_versions.each { |name, v| v.store!(new_file) }
       end
 
       def remove_versions!
