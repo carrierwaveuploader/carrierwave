@@ -50,5 +50,16 @@ describe CarrierWave::Uploader do
       @uploader.size.should == 13
     end
   end
+  
+  describe "#md5" do
+    it "should be zero by default" do
+      @uploader.md5.should == 0
+    end
+
+    it "should get the md5 of a cached file" do
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      @uploader.md5.should == 13
+    end
+  end
 
 end

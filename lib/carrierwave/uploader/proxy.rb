@@ -57,6 +57,18 @@ module CarrierWave
         file.respond_to?(:size) ? file.size : 0
       end
 
+      ##
+      # Fetches the MD5 Digest of the currently stored/cached file
+      #
+      # === Returns
+      #
+      # [Integer] MD5 Digest of the file
+      #
+      def md5
+        require 'digest/md5'
+        Digest::MD5 file.read
+      end
+
     end # Proxy
   end # Uploader
 end # CarrierWave
