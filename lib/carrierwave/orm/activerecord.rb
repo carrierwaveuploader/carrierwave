@@ -30,7 +30,8 @@ module CarrierWave
 
       class_eval <<-RUBY, __FILE__, __LINE__+1
         def #{column}=(new_file)
-          #{column}_will_change!
+          column = _mounter(:#{column}).serialization_column
+          send(:"\#{column}_will_change!")
           super
         end
       RUBY
