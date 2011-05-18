@@ -1,3 +1,11 @@
+=== Version 0.5.4 2011-05-18
+
+* [changed] Fog: Performance enhancements for AWS and Google [geemus]
+* [changed] Fog: Try to use subdomain public url on s3 [geemus]
+* [changed] Memoize CarrierWave::Mounter#option for increased performance [ingemar]
+* [changed] Relax development gem dependency versions where possible and fix tests [trevorturk]
+* [changed] Upgrade to RSpec 2 [jnicklas]
+
 === Version 0.5.3 2011-03-22
 
 * [changed] Cloud Files storage so delete and url return nil if object not found instead of exception [minter]
