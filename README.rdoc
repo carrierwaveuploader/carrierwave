@@ -61,7 +61,7 @@ Most of the time you are going to want to use CarrierWave together with an ORM.
 It is quite simple to mount uploaders on columns in your model, so you can
 simply assign files and get going:
 
-=== ActiveRecord, DataMapper, Sequel, Mongoid
+=== ActiveRecord, Sequel, Mongoid
 
 Make sure you are loading CarrierWave after loading your ORM, otherwise you'll
 need to require the relevant extension manually, e.g.:
@@ -89,8 +89,6 @@ automatically be stored when the record is saved.
     u.save!
     u.avatar.url # => '/url/to/file.png'
     u.avatar.current_path # => 'path/to/file.png'
-
-If using DataMapper, make sure to disable auto_validation on the mounted column.
 
 If using Mongoid, note that embedded documents files aren't saved when parent documents are saved.
 You must explicitly call save on embedded documents in order to save their attached files.
@@ -129,7 +127,7 @@ make the record invalid instead. Otherwise, an error is raised.
 
 Standard active model validations can be used to ensure a file is uploaded.
 
-   mount_uploader :avatar, AvatarUploader 
+   mount_uploader :avatar, AvatarUploader
 
    validate_presence_of :avatar
 
