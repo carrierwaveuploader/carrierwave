@@ -134,9 +134,9 @@ describe CarrierWave::SanitizedFile do
       @sanitized_file.filename.should == "_."
     end
 
-    it "should downcase uppercase filenames" do
+    it "should maintain uppercase filenames" do
       @sanitized_file.should_receive(:original_filename).at_least(:once).and_return("DSC4056.JPG")
-      @sanitized_file.filename.should == "dsc4056.jpg"
+      @sanitized_file.filename.should == "DSC4056.JPG"
     end
 
   end
@@ -175,17 +175,12 @@ describe CarrierWave::SanitizedFile do
 
     it "should downcase characters properly" do
       @sanitized_file.should_receive(:original_filename).at_least(:once).and_return("ТестоВый Ёжик.jpg")
-      @sanitized_file.filename.should == "тестовый_ёжик.jpg"
-    end
-
-    it "should downcase characters with diacritics properly" do
-      @sanitized_file.should_receive(:original_filename).at_least(:once).and_return("CONTRÔLE.jpg")
-      @sanitized_file.filename.should == "contrôle.jpg"
+      @sanitized_file.filename.should == "ТестоВый_Ёжик.jpg"
     end
 
     it "should remove illegal characters from a filename" do
       @sanitized_file.should_receive(:original_filename).at_least(:once).and_return("⟲«Du côté des chars lourds»_123.doc")
-      @sanitized_file.filename.should == "__du_côté_des_chars_lourds__123.doc"
+      @sanitized_file.filename.should == "__Du_côté_des_chars_lourds__123.doc"
     end
 
   end
