@@ -5,9 +5,7 @@ require 'spec_helper'
 describe CarrierWave::SanitizedFile do
 
   before do
-    unless File.exists?(file_path('llama.jpg'))
-      FileUtils.cp(file_path('test.jpg'), file_path('llama.jpg'))
-    end
+    FileUtils.cp(file_path('test.jpg'), file_path('llama.jpg'))
   end
 
   after(:all) do
