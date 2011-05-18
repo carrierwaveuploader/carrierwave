@@ -109,7 +109,7 @@ module CarrierWave
   end
 end
 
-Spec::Runner.configure do |config|
+RSpec.configure do |config|
   config.include CarrierWave::Test::Matchers
   config.include CarrierWave::Test::MockFiles
   config.include CarrierWave::Test::MockStorage

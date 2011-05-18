@@ -513,7 +513,7 @@ describe CarrierWave::Mount do
 
     describe '#image' do
       it "should retrieve a file from the storage if a value is stored in the database" do
-        @instance.should_receive(:read_uploader).at_least(:once).with(:monkey).twice.and_return('test.jpg')
+        @instance.should_receive(:read_uploader).at_least(:once).with(:monkey).and_return('test.jpg')
         @instance.image.should be_an_instance_of(@uploader)
         @instance.image.current_path.should == public_path('uploads/test.jpg')
       end
