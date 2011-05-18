@@ -41,11 +41,11 @@ module CarrierWave
         # This only works as long as you haven't done anything funky with your cache_dir.
         # It's recommended that you keep cache files in one place only.
         #
-        def clean_cached_files!
+        def clean_cached_files!(seconds=60*60*24)
           Dir.glob(File.expand_path(File.join(cache_dir, '*'), CarrierWave.root)).each do |dir|
             time = dir.scan(/(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})/).first.map { |t| t.to_i }
             time = Time.utc(*time)
-            if time < (Time.now.utc - (60*60*24))
+            if time < (Time.now.utc - seconds)
               FileUtils.rm_rf(dir)
             end
           end
