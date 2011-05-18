@@ -16,8 +16,9 @@ describe CarrierWave::Uploader do
   describe '.version' do
     it "should add it to .versions" do
       @uploader_class.version :thumb
-      @uploader_class.versions[:thumb].should be_a(Class)
-      @uploader_class.versions[:thumb].ancestors.should include(@uploader_class)
+      @uploader_class.versions[:thumb].should be_a(Hash)
+      @uploader_class.versions[:thumb][:uploader].should be_a(Class)
+      @uploader_class.versions[:thumb][:uploader].ancestors.should include(@uploader_class)
     end
 
     it "should add an accessor which returns the version" do
@@ -72,8 +73,8 @@ describe CarrierWave::Uploader do
           "llama"
         end
       end
-      @uploader_class.version(:thumb).monkey.should == "monkey"
-      @uploader_class.version(:thumb).llama.should == "llama"
+      @uploader_class.version(:thumb)[:uploader].monkey.should == "monkey"
+      @uploader_class.version(:thumb)[:uploader].llama.should == "llama"
     end
 
     describe 'with nested versions' do
@@ -172,7 +173,8 @@ describe CarrierWave::Uploader do
     describe '#store!' do
       before do
         @uploader_class.storage = mock_storage('base')
-        @uploader_class.version(:thumb).storage = mock_storage('thumb')
+        @uploader_class.version(:thumb)[:uploader].storage = mock_storage('thumb')
+        @uploader_class.version(:preview)[:uploader].storage = mock_storage('preview')
 
         @file = File.open(file_path('test.jpg'))
 
@@ -184,14 +186,22 @@ describe CarrierWave::Uploader do
         @thumb_stored_file.stub!(:path).and_return('/path/to/somewhere/thumb')
         @thumb_stored_file.stub!(:url).and_return('http://www.example.com/thumb')
 
+        @preview_stored_file = mock('a preview version of a stored file')
+        @preview_stored_file.stub!(:path).and_return('/path/to/somewhere/preview')
+        @preview_stored_file.stub!(:url).and_return('http://www.example.com/preview')
+
         @storage = mock('a storage engine')
         @storage.stub!(:store!).and_return(@base_stored_file)
 
         @thumb_storage = mock('a storage engine for thumbnails')
         @thumb_storage.stub!(:store!).and_return(@thumb_stored_file)
 
+        @preview_storage = mock('a storage engine for previews')
+        @preview_storage.stub!(:store!).and_return(@preview_stored_file)
+
         @uploader_class.storage.stub!(:new).with(@uploader).and_return(@storage)
-        @uploader_class.version(:thumb).storage.stub!(:new).with(@uploader.thumb).and_return(@thumb_storage)
+        @uploader_class.version(:thumb)[:uploader].storage.stub!(:new).and_return(@thumb_storage)
+        @uploader_class.version(:preview)[:uploader].storage.stub!(:new).and_return(@preview_storage)
       end
 
       it "should set the current path for the version" do
@@ -220,6 +230,21 @@ describe CarrierWave::Uploader do
         @uploader.store!
       end
 
+      it "should process conditional versions if the condition method returns true" do
+        @uploader_class.version(:preview)[:options][:if] = :true?
+        @uploader.should_receive(:true?).with(@file).once.and_return(true)
+        @uploader.thumb.should_receive(:store!).with(@file)
+        @uploader.preview.should_receive(:store!).with(@file)
+        @uploader.store!(@file)
+      end
+
+      it "should not process conditional versions if the condition method returns false" do
+        @uploader_class.version(:preview)[:options][:if] = :false?
+        @uploader.should_receive(:false?).with(@file).once.and_return(false)
+        @uploader.thumb.should_receive(:store!).with(@file)
+        @uploader.preview.should_not_receive(:store!)
+        @uploader.store!(@file)
+       end
     end
 
     describe '#recreate_versions!' do
@@ -252,7 +277,7 @@ describe CarrierWave::Uploader do
     describe '#remove!' do
       before do
         @uploader_class.storage = mock_storage('base')
-        @uploader_class.version(:thumb).storage = mock_storage('thumb')
+        @uploader_class.version(:thumb)[:uploader].storage = mock_storage('thumb')
 
         @file = File.open(file_path('test.jpg'))
 
@@ -266,7 +291,7 @@ describe CarrierWave::Uploader do
         @thumb_storage.stub!(:store!).and_return(@thumb_stored_file)
 
         @uploader_class.storage.stub!(:new).with(@uploader).and_return(@storage)
-        @uploader_class.version(:thumb).storage.stub!(:new).with(@uploader.thumb).and_return(@thumb_storage)
+        @uploader_class.version(:thumb)[:uploader].storage.stub!(:new).with(@uploader.thumb).and_return(@thumb_storage)
 
         @base_stored_file.stub!(:delete)
         @thumb_stored_file.stub!(:delete)
@@ -298,7 +323,7 @@ describe CarrierWave::Uploader do
     describe '#retrieve_from_store!' do
       before do
         @uploader_class.storage = mock_storage('base')
-        @uploader_class.version(:thumb).storage = mock_storage('thumb')
+        @uploader_class.version(:thumb)[:uploader].storage = mock_storage('thumb')
 
         @file = File.open(file_path('test.jpg'))
 
@@ -317,7 +342,7 @@ describe CarrierWave::Uploader do
         @thumb_storage.stub!(:retrieve!).and_return(@thumb_stored_file)
 
         @uploader_class.storage.stub!(:new).with(@uploader).and_return(@storage)
-        @uploader_class.version(:thumb).storage.stub!(:new).with(@uploader.thumb).and_return(@thumb_storage)
+        @uploader_class.version(:thumb)[:uploader].storage.stub!(:new).with(@uploader.thumb).and_return(@thumb_storage)
       end
 
       it "should set the current path" do
