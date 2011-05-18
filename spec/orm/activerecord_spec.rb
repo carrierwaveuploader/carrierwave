@@ -322,4 +322,31 @@ describe CarrierWave::ActiveRecord do
 
   end
 
+  describe '#mount_uploader with :mount_on => :monkey' do
+
+    before(:all) { TestMigration.up }
+    after(:all) { TestMigration.down }
+    after { Event.delete_all }
+
+    before do
+      @class = Class.new(Event)
+      @class.table_name = "events"
+      @uploader = Class.new(CarrierWave::Uploader::Base)
+      @class.mount_uploader(:avatar, @uploader, :mount_on => :image)
+      @event = @class.new
+    end
+
+    describe '#avatar=' do
+
+      it "should cache a file" do
+        @event.avatar = stub_file('test.jpeg')
+        @event.save
+        @event.reload
+        @event.avatar.should be_an_instance_of(@uploader)
+        @event.image.should == 'test.jpeg'
+      end
+
+    end
+  end
+
 end
