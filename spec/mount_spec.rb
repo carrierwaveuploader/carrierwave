@@ -412,16 +412,12 @@ describe CarrierWave::Mount do
 
   end
 
-  describe '#mount_uploader with a block' do
+  describe '#mount_uploader without an uploader' do
 
     before do
       @class = Class.new
       @class.send(:extend, CarrierWave::Mount)
-      @class.mount_uploader(:image) do
-        def monkey
-          'blah'
-        end
-      end
+      @class.mount_uploader(:image)
       @instance = @class.new
     end
 
@@ -439,12 +435,57 @@ describe CarrierWave::Mount do
         @instance.image.current_path.should == public_path('uploads/test.jpg')
       end
 
+    end
+
+  end
+
+  describe '#mount_uploader with a block' do
+    describe 'and no uploader given' do
+      before do
+        @class = Class.new
+        @class.send(:extend, CarrierWave::Mount)
+        @class.mount_uploader(:image) do
+          def monkey
+            'blah'
+          end
+        end
+        @instance = @class.new
+      end
+
+      it "should return an instance of a subclass of CarrierWave::Uploader::Base" do
+        @instance.image.should be_a(CarrierWave::Uploader::Base)
+      end
+
       it "should apply any custom modifications" do
         @instance.image.monkey.should == "blah"
       end
-
     end
 
+    describe 'and an uploader given' do
+      before do
+        @class = Class.new
+        @class.send(:extend, CarrierWave::Mount)
+        @uploader = Class.new(CarrierWave::Uploader::Base)
+        @class.mount_uploader(:image, @uploader) do
+          def fish
+            'blub'
+          end
+        end
+        @instance = @class.new
+      end
+
+      it "should return an instance of the uploader specified" do
+        @instance.image.should be_a_kind_of(@uploader)
+      end
+
+      it "should apply any custom modifications to the instance" do
+        @instance.image.fish.should == "blub"
+      end
+
+      it "should not apply any custom modifications to the uploader class" do
+        @uploader.new.should_not respond_to(:fish)
+      end
+    end
   end
 
   describe '#mount_uploader with :ignore_integrity_errors => false' do
