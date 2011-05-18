@@ -3,9 +3,6 @@
 require 'rubygems'
 require 'bundler/setup'
 
-require 'sqlite3/sqlite3_native'
-require 'sqlite3'
-
 require 'tempfile'
 require 'time'
 require 'logger'
@@ -14,6 +11,9 @@ require 'carrierwave'
 require 'timecop'
 require 'open-uri'
 require 'sham_rack'
+
+require 'sqlite3/sqlite3_native' # not sure why, but we need to require in this order for sequel_spec
+require 'sqlite3'
 
 require 'fog'
 require 'storage/fog_helper'
