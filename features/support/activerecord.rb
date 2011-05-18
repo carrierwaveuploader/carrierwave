@@ -1,5 +1,9 @@
 # encoding: utf-8
 
+# not sure why we need to do this
+require 'sqlite3/sqlite3_native'
+require 'sqlite3'
+
 require 'active_record'
 require 'carrierwave/mount'
 require 'carrierwave/orm/activerecord'

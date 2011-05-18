@@ -12,7 +12,8 @@ require 'timecop'
 require 'open-uri'
 require 'sham_rack'
 
-require 'sqlite3/sqlite3_native' # not sure why, but we need to require in this order for sequel_spec
+# not sure why we need to do this
+require 'sqlite3/sqlite3_native'
 require 'sqlite3'
 
 require 'fog'
