@@ -30,7 +30,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "fog"
   s.add_development_dependency "cucumber"
   s.add_development_dependency "sqlite3"
-  s.add_development_dependency "sequel"
   s.add_development_dependency "rmagick"
   s.add_development_dependency "RubyInline"
   s.add_development_dependency "image_science"
