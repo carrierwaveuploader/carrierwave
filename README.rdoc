@@ -11,7 +11,7 @@ It works well with Rack based web applications, such as Ruby on Rails.
 
 == Getting Help
 
-* Please ask the {Groogle Group}[http://groups.google.com/group/carrierwave] for help if you have any questions.
+* Please ask the {Google Group}[http://groups.google.com/group/carrierwave] for help if you have any questions.
 * Please report bugs on the {issue tracker}[http://github.com/jnicklas/carrierwave/issues] but read the "getting help" section in the wiki first.
 
 == Installation

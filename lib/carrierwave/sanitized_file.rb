@@ -135,8 +135,6 @@ module CarrierWave
       @file.nil? || self.size.nil? || self.size.zero?
     end
 
-    alias_method :blank?, :empty?
-
     ##
     # === Returns
     #
