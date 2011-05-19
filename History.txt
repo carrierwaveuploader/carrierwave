@@ -1,3 +1,18 @@
+=== Unreleased https://github.com/jnicklas/carrierwave/compare/v0.5.4...master
+
+* [BREAKING CHANGE] Extracted DataMapper support into a separate gem (carrierwave-datamapper) [jnicklas]
+* [BREAKING CHANGE] Extracted Sequel support into a separate gem (carrierwave-sequel) [jnicklas]
+* [changed] Don't downcase filenames by default [bensie]
+* [changed] Orm mount modules default uploader to nil [jnicklas]
+* [changed] Remove alias_method :blank? from SanitizedFile to for performance re: issue #298 [trevorturk]
+* [added] conditional processing of versions [gucki]
+* [added] Added _identifier to retrieve identifier/filename [jnicklas]
+* [added] clean_cached_files! clears all files older than 24 hours by default, but time frame can now be customized [cover]
+* [fixed] Active Record's will_change! method works when mount_on option is used [indrekj]
+* [fixed] Fixed problem with accepting URL uploads when the URL was already escaped [cover]
+* [fixed] Fixed ability to override sanitize_regexp [trevorturk]
+* [fixed] Fix that cached and then remote-uploaded file should have content_type [trevorturk]
+
 === Version 0.5.4 2011-05-18
 
 * [changed] Fog: Performance enhancements for AWS and Google [geemus]
