@@ -40,4 +40,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "json"
   s.add_development_dependency "cloudfiles"
   s.add_development_dependency "sham_rack"
+  s.add_development_dependency "SystemTimer"
 end
