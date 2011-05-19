@@ -232,18 +232,18 @@ describe CarrierWave::Uploader do
 
       it "should process conditional versions if the condition method returns true" do
         @uploader_class.version(:preview)[:options][:if] = :true?
-        @uploader.should_receive(:true?).with(@file).once.and_return(true)
-        @uploader.thumb.should_receive(:store!).with(@file)
-        @uploader.preview.should_receive(:store!).with(@file)
+        @uploader.should_receive(:true?).once.and_return(true)
         @uploader.store!(@file)
+        @uploader.thumb.should be_present
+        @uploader.preview.should be_present
       end
 
       it "should not process conditional versions if the condition method returns false" do
         @uploader_class.version(:preview)[:options][:if] = :false?
-        @uploader.should_receive(:false?).with(@file).once.and_return(false)
-        @uploader.thumb.should_receive(:store!).with(@file)
-        @uploader.preview.should_not_receive(:store!)
+        @uploader.should_receive(:false?).once.and_return(false)
         @uploader.store!(@file)
+        @uploader.thumb.should be_present
+        @uploader.preview.should be_blank
        end
     end
 
