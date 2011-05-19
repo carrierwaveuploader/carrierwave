@@ -29,30 +29,48 @@ module CarrierWave
         # === Parameters
         #
         # [name (#to_sym)] name of the version
+        # [options (Hash)] optional options hash
         # [&block (Proc)] a block to eval on this version of the uploader
         #
-        def version(name, &block)
+        # === Examples
+        #
+        #     class MyUploader < CarrierWave::Uploader::Base
+        #
+        #       version :thumb do
+        #         process :scale => [200, 200]
+        #       end
+        #
+        #       version :preview, :if => :image? do
+        #         process :scale => [200, 200]
+        #       end
+        #
+        #     end
+        #
+        def version(name, options = {}, &block)
           name = name.to_sym
           unless versions[name]
-            versions[name] = Class.new(self)
-            versions[name].version_names.push(name)
+            versions[name] = {
+              :uploader => Class.new(self),
+              :options => options,
+            }
+            versions[name][:uploader].version_names.push(name)
             class_eval <<-RUBY
               def #{name}
                 versions[:#{name}]
               end
             RUBY
-            # as the processors get the output from the previous processors as their 
+            # as the processors get the output from the previous processors as their
             # input we must not stack the processors here
-            versions[name].processors.clear
+            versions[name][:uploader].processors.clear
           end
-          versions[name].class_eval(&block) if block
+          versions[name][:uploader].class_eval(&block) if block
           versions[name]
         end
 
         def recursively_apply_block_to_versions(&block)
-          versions.each do |name, klass|
-            klass.class_eval(&block)
-            klass.recursively_apply_block_to_versions(&block)
+          versions.each do |name, version|
+            version[:uploader].class_eval(&block)
+            version[:uploader].recursively_apply_block_to_versions(&block)
           end
         end
       end # ClassMethods
@@ -67,8 +85,8 @@ module CarrierWave
       def versions
         return @versions if @versions
         @versions = {}
-        self.class.versions.each do |name, klass|
-          @versions[name] = klass.new(model, mounted_as)
+        self.class.versions.each do |name, version|
+          @versions[name] = version[:uploader].new(model, mounted_as)
         end
         @versions
       end
@@ -128,6 +146,13 @@ module CarrierWave
 
     private
 
+      def active_versions
+        versions.select do |name, uploader|
+          condition = self.class.versions[name][:options][:if]
+          not condition or send(condition, file)
+        end
+      end
+
       def full_filename(for_file)
         [version_name, super(for_file)].compact.join('_')
       end
@@ -143,14 +168,14 @@ module CarrierWave
         processed_parent = SanitizedFile.new :tempfile => self.file,
           :filename => new_file.original_filename
 
-        versions.each do |name, v|
+        active_versions.each do |name, v|
           v.send(:cache_id=, cache_id)
           v.cache!(processed_parent)
         end
       end
 
       def store_versions!(new_file)
-        versions.each { |name, v| v.store!(new_file) }
+        active_versions.each { |name, v| v.store!(new_file) }
       end
 
       def remove_versions!
