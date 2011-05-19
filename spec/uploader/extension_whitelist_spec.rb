@@ -68,6 +68,13 @@ describe CarrierWave::Uploader do
       }.should_not raise_error(CarrierWave::IntegrityError)
     end
 
+    it "should ignore case of extensions provided by white list when filename case differs" do
+      @uploader.stub!(:extension_white_list).and_return(%w(jpg))
+      running {
+        @uploader.cache!(File.open(file_path('test.JPG')))
+      }.should_not raise_error(CarrierWave::IntegrityError)
+    end
+
     it "should accept and check regular expressions" do
       @uploader.stub!(:extension_white_list).and_return([/jpe?g/, 'gif', 'png'])
       running {
