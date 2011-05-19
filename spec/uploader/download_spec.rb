@@ -121,4 +121,17 @@ describe CarrierWave::Uploader::Download do
       }.should raise_error(CarrierWave::DownloadError)
     end
   end
+
+  describe '#process_uri' do
+    let(:uri) { "http://www.example.com/test%20image.jpg" }
+
+    it 'should unescape and then escape the given uri' do
+      unescaped_uri = URI.unescape(uri)
+      @uploader.process_uri(unescaped_uri).should == @uploader.process_uri(uri)
+    end
+
+    it 'should parse the given uri' do
+      @uploader.process_uri(uri).should == URI.parse(uri)
+    end
+  end
 end
