@@ -130,7 +130,16 @@ module CarrierWave
         with_callbacks(:retrieve_from_cache, cache_name) do
           self.cache_id, self.original_filename = cache_name.to_s.split('/', 2)
           @filename = original_filename
-          @file = CarrierWave::SanitizedFile.new(cache_path)
+
+          if File.exist?(cache_path) && defined?(MIME::Types)
+            @file = SanitizedFile.new(
+              :tempfile => cache_path,
+              :filename => @filename,
+              :content_type => MIME::Types.of(File.basename(cache_path))[0].content_type
+            )
+          else
+            @file = CarrierWave::SanitizedFile.new(cache_path)
+          end
         end
       end
 
