@@ -151,7 +151,7 @@ module CarrierWave
       end
 
       def original_filename=(filename)
-        raise CarrierWave::InvalidParameter, "invalid filename" unless filename =~ /\A[a-z0-9\.\-\+_]+\z/i
+        raise CarrierWave::InvalidParameter, "invalid filename" if filename =~ CarrierWave::SanitizedFile.sanitize_regexp
         @original_filename = filename
       end
 
