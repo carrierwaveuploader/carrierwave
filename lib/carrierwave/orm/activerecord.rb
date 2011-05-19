@@ -11,7 +11,7 @@ module CarrierWave
     ##
     # See +CarrierWave::Mount#mount_uploader+ for documentation
     #
-    def mount_uploader(column, uploader, options={}, &block)
+    def mount_uploader(column, uploader=nil, options={}, &block)
       super
 
       alias_method :read_uploader, :read_attribute
