@@ -54,14 +54,14 @@ describe CarrierWave::Uploader do
       }.should raise_error(CarrierWave::IntegrityError)
     end
 
-    it "should compare white list in a case insensitive manner" do
+    it "should compare white list in a case insensitive manner when capitalized extension provided" do
       @uploader.stub!(:extension_white_list).and_return(%w(jpg gif png))
       running {
         @uploader.cache!(File.open(file_path('case.JPG')))
       }.should_not raise_error(CarrierWave::IntegrityError)
     end
 
-    it "should ignore case of extensions provided by white list" do
+    it "should compare white list in a case insensitive manner when lowercase extension provided" do
       @uploader.stub!(:extension_white_list).and_return(%w(JPG GIF PNG))
       running {
         @uploader.cache!(File.open(file_path('test.jpg')))

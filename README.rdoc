@@ -137,20 +137,12 @@ all *non*-allowed symbols.
 With Ruby 1.9 and higher you can simply write (as it has {Oniguruma}[http://oniguruma.rubyforge.org/oniguruma/]
 built-in):
 
-    class MyUploader < CarrierWave::Uploader::Base
-      def sanitize_regexp
-        /[^[:word:]\.\-\+]/
-      end
-    end
+		CarrierWave::SanitizedFile.sanitize_regexp = /[^[:word:]\.\-\+]/
 
 With Ruby 1.8.* you have to manually specify all character ranges. For example, for files which may
 contain Russian letters:
 
-    class MyUploader < CarrierWave::Uploader::Base
-      def sanitize_regexp
-        /[^a-zA-Zа-яА-ЯёЁ0-9\.\-\+_]/u
-      end
-    end
+		CarrierWave::SanitizedFile.sanitize_regexp = /[^a-zA-Zа-яА-ЯёЁ0-9\.\-\+_]/u
 
 Also make sure that allowing non-latin characters won't cause a compatibility issue with a third-party
 plugins or client-side software.

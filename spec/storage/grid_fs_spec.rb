@@ -18,6 +18,10 @@ shared_examples_for "a GridFS connection" do
       @grid_fs_file.path.should == 'uploads/bar.txt'
     end
 
+    it "should read the contents of the file" do
+      @grid_fs_file.read.should == "this is stuff"
+    end
+
     it "should not have a URL" do
       @grid_fs_file.url.should be_nil
     end
@@ -130,7 +134,7 @@ describe CarrierWave::Storage::GridFS do
           include CarrierWave::MiniMagick
           storage :grid_fs
         }
-        
+
         @versioned = @uploader_class.new
         @versioned.stub!(:grid_fs_connection).and_return(@database)
 
@@ -145,7 +149,7 @@ describe CarrierWave::Storage::GridFS do
         lambda {
           @versioned.resize_to_fill(200, 200)
         }.should_not raise_error
- 
+
       end
     end
   end
