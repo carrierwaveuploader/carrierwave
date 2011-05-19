@@ -448,6 +448,13 @@ describe CarrierWave::Mount do
       end
     end
 
+    describe '#image_identifier' do
+      it "should return the identifier from the mounted column" do
+        @instance.should_receive(:read_uploader).with(:image).and_return("test.jpg")
+        @instance.image_identifier.should == 'test.jpg'
+      end
+    end
+
   end
 
   describe '#mount_uploader without an uploader' do

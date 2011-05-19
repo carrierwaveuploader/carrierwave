@@ -199,6 +199,7 @@ describe CarrierWave::ActiveRecord do
         @event.save.should be_true
         @event.reload
         @event[:image].should == 'test.jpeg'
+        @event.image_identifier.should == 'test.jpeg'
       end
 
       it "should preserve the image when nothing is assigned" do
@@ -208,6 +209,7 @@ describe CarrierWave::ActiveRecord do
         @event.foo = "bar"
         @event.save.should be_true
         @event[:image].should == 'test.jpeg'
+        @event.image_identifier.should == 'test.jpeg'
       end
 
       it "should remove the image if remove_image? returns true" do
@@ -218,6 +220,7 @@ describe CarrierWave::ActiveRecord do
         @event.reload
         @event.image.should be_blank
         @event[:image].should == ''
+        @event.image_identifier.should == ''
       end
 
       it "should mark image as changed when saving a new image" do
@@ -319,7 +322,6 @@ describe CarrierWave::ActiveRecord do
       end
 
     end
-
   end
 
   describe '#mount_uploader with :mount_on => :monkey' do

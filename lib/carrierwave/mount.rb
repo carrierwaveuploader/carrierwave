@@ -65,7 +65,7 @@ module CarrierWave
     #     @user.image.url # => '/some_url.png'
     #
     # It is also possible (but not recommended) to ommit the uploader, which
-    # will create an anonymous uploader class. 
+    # will create an anonymous uploader class.
     #
     # Passing a block makes it possible to customize the uploader. This can be
     # convenient for brevity, but if there is any significatnt logic in the
@@ -98,6 +98,7 @@ module CarrierWave
     # [image_processing_error]  Returns an error object if the last file to be assigned caused a processing error
     #
     # [write_image_identifier]  Uses the write_uploader method to set the identifier.
+    # [image_identifier]        Reads out the identifier of the file
     #
     # === Parameters
     #
@@ -228,6 +229,10 @@ module CarrierWave
 
         def write_#{column}_identifier
           _mounter(:#{column}).write_identifier
+        end
+
+        def #{column}_identifier
+          _mounter(:#{column}).identifier
         end
 
       RUBY
