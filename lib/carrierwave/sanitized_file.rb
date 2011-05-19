@@ -16,6 +16,14 @@ module CarrierWave
   class SanitizedFile
 
     attr_accessor :file
+    
+    class << self
+      attr_writer :sanitize_regexp
+      
+      def sanitize_regexp
+        @sanitize_regexp ||= /[^a-zA-Z0-9\.\-\+_]/
+      end
+    end
 
     def initialize(file)
       self.file = file
@@ -230,7 +238,7 @@ module CarrierWave
     # [Regexp] the regexp for sanitizing the file name
     #
     def sanitize_regexp
-      /[^a-zA-Z0-9\.\-\+_]/
+      CarrierWave::SanitizedFile.sanitize_regexp
     end
 
   private
@@ -263,7 +271,7 @@ module CarrierWave
       name = name.gsub(sanitize_regexp,"_")
       name = "_#{name}" if name =~ /\A\.+\z/
       name = "unnamed" if name.size == 0
-      return name.mb_chars.downcase.to_s
+      return name.mb_chars.to_s
     end
 
     def split_extension(filename)

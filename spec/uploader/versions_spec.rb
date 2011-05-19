@@ -247,6 +247,14 @@ describe CarrierWave::Uploader do
 
         File.exists?(@uploader.thumb.path).should == true
       end
+
+      it "should not change the case of versions" do
+        @file = File.open(file_path('Uppercase.jpg'))
+        @uploader.store!(@file)
+        @uploader.thumb.path.should == public_path('uploads/thumb_Uppercase.jpg')
+        @uploader.recreate_versions!
+        @uploader.thumb.path.should == public_path('uploads/thumb_Uppercase.jpg')
+      end
     end
 
     describe '#remove!' do
