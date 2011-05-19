@@ -59,7 +59,7 @@ module CarrierWave
                 versions[:#{name}]
               end
             RUBY
-            # as the processors get the output from the previous processors as their 
+            # as the processors get the output from the previous processors as their
             # input we must not stack the processors here
             versions[name][:uploader].processors.clear
           end
@@ -146,10 +146,10 @@ module CarrierWave
 
     private
 
-      def set_active_versions!(new_file)
-        @active_versions = versions.reject do |name, uploader|
+      def active_versions
+        versions.select do |name, uploader|
           condition = self.class.versions[name][:options][:if]
-          condition && !send(condition, new_file)
+          not condition or send(condition, file)
         end
       end
 
@@ -162,22 +162,20 @@ module CarrierWave
       end
 
       def cache_versions!(new_file)
-        set_active_versions!(new_file)
-
         # We might have processed the new_file argument after the callbacks were
         # initialized, so get the actual file based off of the current state of
         # our file
         processed_parent = SanitizedFile.new :tempfile => self.file,
           :filename => new_file.original_filename
 
-        @active_versions.each do |name, v|
+        active_versions.each do |name, v|
           v.send(:cache_id=, cache_id)
           v.cache!(processed_parent)
         end
       end
 
       def store_versions!(new_file)
-        @active_versions.each { |name, v| v.store!(new_file) }
+        active_versions.each { |name, v| v.store!(new_file) }
       end
 
       def remove_versions!
