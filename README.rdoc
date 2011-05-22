@@ -94,7 +94,7 @@ If using Mongoid, note that embedded documents files aren't saved when parent do
 You must explicitly call save on embedded documents in order to save their attached files.
 You can read more about this {here}[https://github.com/jnicklas/carrierwave/issues#issue/81]
 
-== DataMapper, Sequel
+=== DataMapper, Sequel
 
 Other ORM support has been extracted into separate gems. Learn more:
 
