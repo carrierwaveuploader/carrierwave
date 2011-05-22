@@ -98,8 +98,10 @@ You can read more about this {here}[https://github.com/jnicklas/carrierwave/issu
 
 Other ORM support has been extracted into separate gems. Learn more:
 
-* {DataMapper}[https://github.com/jnicklas/carrierwave-datamapper]
-* {Sequel}[https://github.com/jnicklas/carrierwave-sequel]
+* {carrierwave-datamapper}[https://github.com/jnicklas/carrierwave-datamapper]
+* {carrierwave-sequel}[https://github.com/jnicklas/carrierwave-sequel]
+
+There are more extensions listed in {the wiki}[https://github.com/jnicklas/carrierwave/wiki]
 
 == Changing the storage directory
 
