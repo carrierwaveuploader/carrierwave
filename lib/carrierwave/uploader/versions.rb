@@ -49,8 +49,21 @@ module CarrierWave
         def version(name, options = {}, &block)
           name = name.to_sym
           unless versions[name]
+            uploader = Class.new(self)
+            uploader.enable_processing = nil
+
+            # Versions have a different enable_processing method
+            # which uses the value of the parent if not explicitly set
+            uploader.class_eval <<-RUBY, __FILE__, __LINE__ + 1
+              def self.enable_processing(value=nil)
+                self.enable_processing = value if value
+                return @enable_processing unless @enable_processing.nil?
+                superclass.enable_processing
+              end
+            RUBY
+
             versions[name] = {
-              :uploader => Class.new(self),
+              :uploader => uploader,
               :options => options,
             }
             versions[name][:uploader].version_names.push(name)
