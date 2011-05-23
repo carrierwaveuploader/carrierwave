@@ -356,6 +356,11 @@ CarrierWave comes with some RSpec matchers which you may find useful:
       end
     end
 
+Setting the enable_processing flag on an uploader will prevent any of the versions from processing as well.
+Processing can be enabled for a single version by setting the processing flag on the version like so:
+
+    @uploader.thumb.enable_processing = true
+
 == Using Amazon S3
 
 Fog[http://github.com/geemus/fog] is used to support Amazon S3. Ensure you have it installed:
