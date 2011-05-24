@@ -73,7 +73,7 @@ describe CarrierWave::Uploader do
       thumb.enable_processing.should be_false
     end
 
-    it "should return it's own value for enable processing if set" do
+    it "should return its own value for enable processing if set" do
       @uploader_class.enable_processing = false
       thumb = (@uploader_class.version :thumb)[:uploader]
       thumb.enable_processing = true

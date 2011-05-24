@@ -50,16 +50,17 @@ module CarrierWave
           name = name.to_sym
           unless versions[name]
             uploader = Class.new(self)
-            uploader.enable_processing = nil
 
-            # Redefine the enable processing method for Versions so 
-            # that they get the value from the parent class unless 
-            # explicitly overwritten
+            # Define the enable_processing method for versions so they get the
+            # value from the parent class unless explicitly overwritten
             uploader.class_eval <<-RUBY, __FILE__, __LINE__ + 1
               def self.enable_processing(value=nil)
                 self.enable_processing = value if value
-                return @enable_processing unless @enable_processing.nil?
-                superclass.enable_processing
+                if !@enable_processing.nil?
+                  @enable_processing
+                else
+                  superclass.enable_processing
+                end
               end
             RUBY
 
