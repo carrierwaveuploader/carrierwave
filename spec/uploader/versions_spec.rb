@@ -62,6 +62,24 @@ describe CarrierWave::Uploader do
       @uploader.thumb.store_dir.should == public_path('monkey/apache')
     end
 
+    it "should not initially have a value for enable processing" do
+      thumb = (@uploader_class.version :thumb)[:uploader]
+      thumb.instance_variable_get('@enable_processing').should be_nil
+    end
+
+    it "should return the enable processing value of the parent" do
+      @uploader_class.enable_processing = false
+      thumb = (@uploader_class.version :thumb)[:uploader]
+      thumb.enable_processing.should be_false
+    end
+
+    it "should return it's own value for enable processing if set" do
+      @uploader_class.enable_processing = false
+      thumb = (@uploader_class.version :thumb)[:uploader]
+      thumb.enable_processing = true
+      thumb.enable_processing.should be_true
+    end
+
     it "should reopen the same class when called multiple times" do
       @uploader_class.version :thumb do
         def self.monkey
