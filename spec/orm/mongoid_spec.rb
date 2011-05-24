@@ -78,7 +78,8 @@ describe CarrierWave::Mongoid do
 
       before do
         mongo_user_klass = reset_mongo_class
-        @document = mongo_user_klass.new(:image_filename => "test.jpg")
+        @document = mongo_user_klass.new
+        @document[:image] = "test.jpg"
         @document.save
         @doc = MongoUser.first
       end
@@ -128,7 +129,7 @@ describe CarrierWave::Mongoid do
       end
 
       it "should write nothing to the database, to prevent overriden filenames to fail because of unassigned attributes" do
-        @doc.image_filename.should be_nil
+        @doc[:image].should be_nil
       end
 
       it "should copy a file into into the cache directory" do
@@ -224,7 +225,7 @@ describe CarrierWave::Mongoid do
       it "saves the filename in the database" do
         @doc.image = stub_file('test.jpg')
         @doc.save
-        @doc.image_filename.should == 'test.jpg'
+        @doc[:image].should == 'test.jpg'
       end
 
       context "when remove_image? is true" do
@@ -236,7 +237,7 @@ describe CarrierWave::Mongoid do
           @doc.save
           @doc.reload
           @doc.image.should be_blank
-          @doc.image_filename.should == ''
+          @doc[:image].should == ''
         end
 
       end

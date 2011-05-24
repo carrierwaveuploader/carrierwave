@@ -10,7 +10,7 @@ module CarrierWave
     # See +CarrierWave::Mount#mount_uploader+ for documentation
     #
     def mount_uploader(column, uploader=nil, options={}, &block)
-      options[:mount_on] ||= "#{column}_filename"
+      options[:mount_on] ||= column
       field options[:mount_on]
 
       super
