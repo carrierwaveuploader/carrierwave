@@ -235,8 +235,21 @@ module CarrierWave
           _mounter(:#{column}).identifier
         end
 
-      RUBY
+        def store_previous_model_for_#{column}
+          serialization_column = _mounter(:#{column}).serialization_column
 
+          if #{column}.remove_previously_stored_files_after_update && send(:"\#{serialization_column}_changed?")
+            @previous_model_for_#{column} = self.class.find(to_key.first)
+          end
+        end
+
+        def remove_previously_stored_#{column}
+          if @previous_model_for_#{column} && @previous_model_for_#{column}.#{column}.path != #{column}.path
+            @previous_model_for_#{column}.#{column}.remove!
+          end
+        end
+
+      RUBY
     end
 
     module Extension

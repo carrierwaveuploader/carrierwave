@@ -32,7 +32,7 @@ $arclass = 0
 
 describe CarrierWave::ActiveRecord do
 
-  describe '.mount_uploader' do
+  describe '#mount_uploader' do
 
     before(:all) { TestMigration.up }
     after(:all) { TestMigration.down }
@@ -324,7 +324,7 @@ describe CarrierWave::ActiveRecord do
     end
   end
 
-  describe '#mount_uploader with :mount_on => :monkey' do
+  describe '#mount_uploader with mount_on' do
 
     before(:all) { TestMigration.up }
     after(:all) { TestMigration.down }
@@ -351,4 +351,209 @@ describe CarrierWave::ActiveRecord do
     end
   end
 
+  describe '#mount_uploader removing old files' do
+
+    before(:all) { TestMigration.up }
+    after(:all) { TestMigration.down }
+
+    before do
+      @class = Class.new(Event)
+      @class.table_name = "events"
+      @uploader = Class.new(CarrierWave::Uploader::Base)
+      @class.mount_uploader(:image, @uploader)
+      @event = @class.new
+      @event.image = stub_file('old.jpeg')
+      @event.save.should be_true
+      File.exists?(public_path('uploads/old.jpeg')).should be_true
+    end
+
+    after do
+      FileUtils.rm_rf(file_path("uploads"))
+    end
+
+    describe 'normally' do
+      it "should remove old file if old file had a different path" do
+        @event.image = stub_file('new.jpeg')
+        @event.save.should be_true
+        File.exists?(public_path('uploads/new.jpeg')).should be_true
+        File.exists?(public_path('uploads/old.jpeg')).should be_false
+      end
+
+      it "should not remove old file if old file had a different path but config is false" do
+        @uploader.stub!(:remove_previously_stored_files_after_update).and_return(false)
+        @event.image = stub_file('new.jpeg')
+        @event.save.should be_true
+        File.exists?(public_path('uploads/new.jpeg')).should be_true
+        File.exists?(public_path('uploads/old.jpeg')).should be_true
+      end
+
+      it "should not remove file if old file had the same path" do
+        @event.image = stub_file('old.jpeg')
+        @event.save.should be_true
+        File.exists?(public_path('uploads/old.jpeg')).should be_true
+      end
+
+      it "should not remove file if validations fail on save" do
+        @class.validate { |r| r.errors.add :textfile, "FAIL!" }
+        @event.image = stub_file('new.jpeg')
+        @event.save.should be_false
+        File.exists?(public_path('uploads/old.jpeg')).should be_true
+      end
+    end
+
+    describe 'with an overriden filename' do
+      before do
+        @uploader.class_eval do
+          def filename
+            model.foo + File.extname(super)
+          end
+        end
+
+        @event.image = stub_file('old.jpeg')
+        @event.foo = "test"
+        @event.save.should be_true
+        File.exists?(public_path('uploads/test.jpeg')).should be_true
+        @event.image.read.should == "this is stuff"
+      end
+
+      it "should not remove file if old file had the same dynamic path" do
+        @event.image = stub_file('test.jpeg')
+        @event.save.should be_true
+        File.exists?(public_path('uploads/test.jpeg')).should be_true
+      end
+
+      it "should remove old file if old file had a different dynamic path" do
+        @event.foo = "new"
+        @event.image = stub_file('test.jpeg')
+        @event.save.should be_true
+        File.exists?(public_path('uploads/new.jpeg')).should be_true
+        File.exists?(public_path('uploads/test.jpeg')).should be_false
+      end
+    end
+  end
+
+  describe '#mount_uploader removing old files with versions' do
+
+    before(:all) { TestMigration.up }
+    after(:all) { TestMigration.down }
+
+    before do
+      @class = Class.new(Event)
+      @class.table_name = "events"
+      @uploader = Class.new(CarrierWave::Uploader::Base)
+      @uploader.version :thumb
+      @class.mount_uploader(:image, @uploader)
+      @event = @class.new
+      @event.image = stub_file('old.jpeg')
+      @event.save.should be_true
+      File.exists?(public_path('uploads/old.jpeg')).should be_true
+      File.exists?(public_path('uploads/thumb_old.jpeg')).should be_true
+    end
+
+    after do
+      FileUtils.rm_rf(file_path("uploads"))
+    end
+
+    it "should remove old file if old file had a different path" do
+      @event.image = stub_file('new.jpeg')
+      @event.save.should be_true
+      File.exists?(public_path('uploads/new.jpeg')).should be_true
+      File.exists?(public_path('uploads/thumb_new.jpeg')).should be_true
+      File.exists?(public_path('uploads/old.jpeg')).should be_false
+      File.exists?(public_path('uploads/thumb_old.jpeg')).should be_false
+    end
+
+    it "should not remove file if old file had the same path" do
+      @event.image = stub_file('old.jpeg')
+      @event.save.should be_true
+      File.exists?(public_path('uploads/old.jpeg')).should be_true
+      File.exists?(public_path('uploads/thumb_old.jpeg')).should be_true
+    end
+  end
+
+  describe '#mount_uploader removing old files with multiple uploaders' do
+
+    before(:all) { TestMigration.up }
+    after(:all) { TestMigration.down }
+
+    before do
+      @class = Class.new(Event)
+      @class.table_name = "events"
+      @uploader1 = Class.new(CarrierWave::Uploader::Base)
+      @class.mount_uploader(:image, @uploader)
+      @uploader = Class.new(CarrierWave::Uploader::Base)
+      @class.mount_uploader(:textfile, @uploader)
+      @event = @class.new
+      @event.image = stub_file('old.jpeg')
+      @event.textfile = stub_file('old.txt')
+      @event.save.should be_true
+      File.exists?(public_path('uploads/old.jpeg')).should be_true
+      File.exists?(public_path('uploads/old.txt')).should be_true
+    end
+
+    after do
+      FileUtils.rm_rf(file_path("uploads"))
+    end
+
+    it "should remove old file1 and file2 if old file1 and file2 had a different paths" do
+      @event.image = stub_file('new.jpeg')
+      @event.textfile = stub_file('new.txt')
+      @event.save.should be_true
+      File.exists?(public_path('uploads/new.jpeg')).should be_true
+      File.exists?(public_path('uploads/old.jpeg')).should be_false
+      File.exists?(public_path('uploads/new.txt')).should be_true
+      File.exists?(public_path('uploads/old.txt')).should be_false
+    end
+
+    it "should remove old file1 but not file2 if old file1 had a different path but old file2 has the same path" do
+      @event.image = stub_file('new.jpeg')
+      @event.textfile = stub_file('old.txt')
+      @event.save.should be_true
+      File.exists?(public_path('uploads/new.jpeg')).should be_true
+      File.exists?(public_path('uploads/old.jpeg')).should be_false
+      File.exists?(public_path('uploads/old.txt')).should be_true
+    end
+
+    it "should not remove file1 or file2 if file1 and file2 have the same paths" do
+      @event.image = stub_file('old.jpeg')
+      @event.textfile = stub_file('old.txt')
+      @event.save.should be_true
+      File.exists?(public_path('uploads/old.jpeg')).should be_true
+      File.exists?(public_path('uploads/old.txt')).should be_true
+    end
+  end
+
+  describe '#mount_uploader removing old files with with mount_on' do
+
+    before(:all) { TestMigration.up }
+    after(:all) { TestMigration.down }
+
+    before do
+      @class = Class.new(Event)
+      @class.table_name = "events"
+      @uploader = Class.new(CarrierWave::Uploader::Base)
+      @class.mount_uploader(:avatar, @uploader, :mount_on => :image)
+      @event = @class.new
+      @event.avatar = stub_file('old.jpeg')
+      @event.save.should be_true
+      File.exists?(public_path('uploads/old.jpeg')).should be_true
+    end
+
+    after do
+      FileUtils.rm_rf(file_path("uploads"))
+    end
+
+    it "should remove old file if old file had a different path" do
+      @event.avatar = stub_file('new.jpeg')
+      @event.save.should be_true
+      File.exists?(public_path('uploads/new.jpeg')).should be_true
+      File.exists?(public_path('uploads/old.jpeg')).should be_false
+    end
+
+    it "should not remove file if old file had the same path" do
+      @event.avatar = stub_file('old.jpeg')
+      @event.save.should be_true
+      File.exists?(public_path('uploads/old.jpeg')).should be_true
+    end
+  end
 end
