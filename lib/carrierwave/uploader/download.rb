@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require 'open-uri'
+require 'cgi'
 
 module CarrierWave
   module Uploader
@@ -67,7 +68,7 @@ module CarrierWave
       # [url (String)] The URL where the remote file is stored
       #
       def process_uri(uri)
-        URI.parse(URI.escape(URI.unescape(uri)))
+        URI.parse( URI.encode( URI.escape(URI.unescape(uri)) , '[]') )
       end
 
     end # Download
