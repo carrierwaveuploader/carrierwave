@@ -123,7 +123,7 @@ describe CarrierWave::Uploader::Download do
   end
 
   describe '#process_uri' do
-    let(:uri) { "http://www.example.com/test%20image.jpg" }
+    let(:uri) { "http://www.example.com/test%20image%5B2%5D.jpg" }
 
     it 'should unescape and then escape the given uri' do
       unescaped_uri = URI.unescape(uri)
