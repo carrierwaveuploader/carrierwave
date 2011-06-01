@@ -11,7 +11,7 @@ module CarrierWave
         class_inheritable_accessor :versions, :instance_reader => false, :instance_writer => false
         self.versions = {}
 
-        class_inheritable_accessor :version_names, :instance_reader => false, :instance_writer => false
+        class_attribute :version_names, :instance_writer => false
         self.version_names = []
 
         after :cache, :cache_versions!
@@ -54,6 +54,7 @@ module CarrierWave
             # Define the enable_processing method for versions so they get the
             # value from the parent class unless explicitly overwritten
             uploader.class_eval <<-RUBY, __FILE__, __LINE__ + 1
+              self.version_names += []
               def self.enable_processing(value=nil)
                 self.enable_processing = value if value
                 if !@enable_processing.nil?
