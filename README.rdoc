@@ -54,8 +54,9 @@ You can use your uploader class to store and retrieve files like this:
 
 CarrierWave gives you a +store+ for permanent storage, and a +cache+ for
 temporary storage. You can use different stores, at the moment a filesystem
-store, an Amazon S3 store, a Rackspace Cloud Files store, and a store for
-MongoDB's GridFS are bundled.
+store, an Amazon S3 store (via Fog), a Rackspace Cloud Files store (via Fog),
+a Google Storage for Developers store (via Fog),
+and a store for MongoDB's GridFS are bundled.
 
 Most of the time you are going to want to use CarrierWave together with an ORM.
 It is quite simple to mount uploaders on columns in your model, so you can
@@ -319,6 +320,14 @@ file storage. In Rails you could do that by adding an initializer with:
       end
     end
 
+If you are using Fog[http://github.com/geemus/fog] as your storage mechanism, you can simply tell Fog[http://github.com/geemus/fog]
+to mock out calls to the cloud storage provider:
+
+    Fog.mock!
+    Fog.credentials_path = Rails.root.join('config/fog_credentials.yml')
+    connection = Fog::Storage.new(:provider => 'AWS')
+    connection.directories.create(:key => 'my_bucket')
+
 If you need to test your processing, you should test it in isolation, and enable
 processing only for those tests that need it.
 
@@ -384,6 +393,28 @@ You can also pass in additional options, as documented fully in lib/carrierwave/
       config.fog_attributes = {'Cache-Control'=>'max-age=315576000'}  # optional, defaults to {}
     end
 
+Alternately, you can use a standard Fog configuration file to store your aws_access_key_id and
+aws_secret_access_key.  The format of the Fog configuration file looks like:
+
+    default:
+      aws_access_key_id: 'xxx'       # required
+      aws_secret_access_key: 'yyy'       # required
+      region: 'us-east-1'  # optional, defaults to 'us-east-1'
+
+You can then use the following code to configure CarrierWave:
+
+    Fog.credentials_path = Rails.root.join('config/fog_credentials.yml')
+
+    CarrierWave.configure do |config|
+      config.fog_credentials = {
+          :provider => 'AWS'
+      }
+      config.fog_directory = "name_of_directory" # required
+      config.fog_host       = 'https://assets.example.com'            # optional, defaults to nil
+      config.fog_public     = false                                   # optional, defaults to true
+      config.fog_attributes = {'Cache-Control'=>'max-age=315576000'}  # optional, defaults to {}
+    end
+
 In your uploader, set the storage to :fog
 
     class AvatarUploader < CarrierWave::Uploader::Base
@@ -408,6 +439,24 @@ For the sake of performance it is assumed that the directory already exists, so 
         :rackspace_api_key  => 'yyyyyy'
       }
       config.fog_directory = 'name_of_directory'
+    end
+
+Alternately, you can use a standard Fog configuration file to store your rackspace_username and
+rackspace_api_key.  The format of the Fog configuration file looks like:
+
+    default:
+      rackspace_username: 'xxxxxx'       # required
+      rackspace_api_key: 'yyyyyy'       # required
+
+You can then use the following code to configure CarrierWave:
+
+    Fog.credentials_path = Rails.root.join('config/fog_credentials.yml')
+
+    CarrierWave.configure do |config|
+      config.fog_credentials = {
+          :provider => 'Rackspace'
+      }
+      config.fog_directory = "name_of_directory" # required
     end
 
 You can optionally include your CDN host name in the configuration.
@@ -441,6 +490,24 @@ For the sake of performance it is assumed that the directory already exists, so 
         :google_storage_secret_access_key => 'yyyyyy'
       }
       config.fog_directory = 'name_of_directory'
+    end
+
+Alternately, you can use a standard Fog configuration file to store your google_storage_access_key_id and
+google_storage_secret_access_key.  The format of the Fog configuration file looks like:
+
+    default:
+      google_storage_access_key_id: 'xxxxxx'       # required
+      google_storage_secret_access_key: 'yyyyyy'       # required
+
+You can then use the following code to configure CarrierWave:
+
+    Fog.credentials_path = Rails.root.join('config/fog_credentials.yml')
+
+    CarrierWave.configure do |config|
+      config.fog_credentials = {
+          :provider => 'Google'
+      }
+      config.fog_directory = "name_of_directory" # required
     end
 
 In your uploader, set the storage to :fog
