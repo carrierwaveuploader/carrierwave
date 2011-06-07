@@ -76,6 +76,7 @@ module CarrierWave
             RUBY
             # as the processors get the output from the previous processors as their
             # input we must not stack the processors here
+            versions[name][:uploader].processors = versions[name][:uploader].processors.dup
             versions[name][:uploader].processors.clear
           end
           versions[name][:uploader].class_eval(&block) if block
