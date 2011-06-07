@@ -5,7 +5,7 @@ module CarrierWave
       extend ActiveSupport::Concern
 
       included do
-        class_inheritable_accessor :_storage, :instance_reader => false, :instance_writer => false
+        class_attribute :_storage, :instance_writer => false
 
         add_config :root
         add_config :permissions
