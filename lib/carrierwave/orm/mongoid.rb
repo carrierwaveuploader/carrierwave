@@ -1,31 +1,7 @@
 # encoding: utf-8
 
 require 'mongoid'
-require 'mongoid/dirty'
 require 'carrierwave/validations/active_model'
-
-module Mongoid #:nodoc:
-  module Dirty #:nodoc:
-    def attribute_will_change!(name) #:nodoc:
-      begin
-        value = __send__(name)
-        value = value.duplicable? ? value.clone : value
-      rescue TypeError, NoMethodError
-      end
-
-      @modifications[name] = value
-    end
-
-    module ClassMethods #:nodoc:
-      def add_dirty_methods_with_will_change(name)
-        add_dirty_methods_without_will_change(name)
-        define_method("#{name}_will_change!") { attribute_will_change!(name) } unless instance_methods.include?("#{name}_will_change!") || instance_methods.include?(:"#{name}_will_change!")
-      end
-
-      alias_method_chain :add_dirty_methods, :will_change
-    end
-  end
-end
 
 module CarrierWave
   module Mongoid
@@ -56,8 +32,21 @@ module CarrierWave
       class_eval <<-RUBY, __FILE__, __LINE__+1
         def #{column}=(new_file)
           column = _mounter(:#{column}).serialization_column
-          send(:"\#{column}_will_change!")
+
+          # Note (Didier L.): equivalent of the <column>_will_change! ActiveModel method
+          begin
+            value = __send__(column)
+            value = value.duplicable? ? value.clone : value
+          rescue TypeError, NoMethodError
+          end
+          @modifications[column] = value
+
           super
+        end
+
+        def #{column}_changed?
+          column = _mounter(:#{column}).serialization_column
+          send(:"\#{column}_changed?")
         end
       RUBY
 

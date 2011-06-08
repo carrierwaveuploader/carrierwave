@@ -240,6 +240,18 @@ describe CarrierWave::Mongoid do
 
       end
 
+      it "should mark image as changed when saving a new image" do
+        @doc.image_changed?.should be_false
+        @doc.image = stub_file("test.jpeg")
+        @doc.image_changed?.should be_true
+        @doc.save
+        @doc.reload
+        @doc.image_changed?.should be_false
+        @doc.image = stub_file("test.jpg")
+        @doc.image_changed?.should be_true
+        # @doc.changed_for_autosave?.should be_true
+      end
+
     end
 
   end
