@@ -11,7 +11,7 @@ module CarrierWave
         class_inheritable_accessor :versions, :instance_reader => false, :instance_writer => false
         self.versions = {}
 
-        class_inheritable_accessor :version_names, :instance_reader => false, :instance_writer => false
+        class_attribute :version_names, :instance_writer => false
         self.version_names = []
 
         after :cache, :cache_versions!
@@ -68,7 +68,7 @@ module CarrierWave
               :uploader => uploader,
               :options => options,
             }
-            versions[name][:uploader].version_names.push(name)
+            versions[name][:uploader].version_names += [name]
             class_eval <<-RUBY
               def #{name}
                 versions[:#{name}]
