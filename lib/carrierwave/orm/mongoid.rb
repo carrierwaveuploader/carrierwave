@@ -23,9 +23,42 @@ module CarrierWave
       validates_integrity_of  column if uploader_option(column.to_sym, :validate_integrity)
       validates_processing_of column if uploader_option(column.to_sym, :validate_processing)
 
-      after_save "store_#{column}!".to_sym
-      before_save "write_#{column}_identifier".to_sym
-      after_destroy "remove_#{column}!".to_sym
+      after_save      :"store_#{column}!"
+      before_save     :"write_#{column}_identifier"
+      after_destroy   :"remove_#{column}!"
+      before_update   :"store_previous_model_for_#{column}"
+      after_save      :"remove_previously_stored_#{column}"
+
+      class_eval <<-RUBY, __FILE__, __LINE__+1
+        def #{column}=(new_file)
+          column = _mounter(:#{column}).serialization_column
+
+          # Note (Didier L.): equivalent of the <column>_will_change! ActiveModel method
+          begin
+            value = __send__(column)
+            value = value.duplicable? ? value.clone : value
+          rescue TypeError, NoMethodError
+          end
+          @modifications[column] = value
+
+          super
+        end
+
+        def #{column}_changed?
+          column = _mounter(:#{column}).serialization_column
+          send(:"\#{column}_changed?")
+        end
+
+        def find_previous_model_for_#{column}
+          if self.embedded?
+            self._parent.reload.send(self.metadata.key).find(to_key.first)
+          else
+            self.class.find(to_key.first)
+          end
+        end
+
+      RUBY
+
     end
   end # Mongoid
 end # CarrierWave
