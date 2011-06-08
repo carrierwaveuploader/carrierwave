@@ -126,7 +126,7 @@ describe CarrierWave::Mongoid do
         @doc.image.should be_an_instance_of(MongoUploader)
       end
 
-      it "should write nothing to the database, to prdoc overriden filenames to fail because of unassigned attributes" do
+      it "should write nothing to the database, to prevent overriden filenames to fail because of unassigned attributes" do
         @doc.image_filename.should be_nil
       end
 
