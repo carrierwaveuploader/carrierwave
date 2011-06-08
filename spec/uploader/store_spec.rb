@@ -105,6 +105,24 @@ describe CarrierWave::Uploader do
         @uploader.store!
       end
     end
+    
+    it "should delete the old cache_id" do
+      @uploader.cache!(@file)
+      @uploader.should_receive(:delete_cache_id)
+      @uploader.store!
+    end
+    
+    context "with the delete_cache_id_after_storage option set to false" do
+      before do
+        @uploader_class.delete_cache_id_after_storage = false
+      end
+
+      it "should not delete the old cache_id" do
+        @uploader.cache!(@file)
+        @uploader.should_not_receive(:delete_cache_id)
+        @uploader.store!
+      end
+    end
 
     it "should do nothing when trying to store an empty file" do
       @uploader.store!(nil)
