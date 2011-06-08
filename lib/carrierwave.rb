@@ -100,6 +100,11 @@ elsif defined?(Sinatra)
 
   CarrierWave.root = Sinatra::Application.public
 
+elsif defined?(Padrino)
+
+  CarrierWave.root = Padrino.root('public')
+  require 'carrierwave/orm/activerecord' if defined?(ActiveRecord)
+
 end
 
 require 'carrierwave/orm/datamapper' if defined?(DataMapper)
