@@ -54,6 +54,7 @@ module CarrierWave
             # Define the enable_processing method for versions so they get the
             # value from the parent class unless explicitly overwritten
             uploader.class_eval <<-RUBY, __FILE__, __LINE__ + 1
+              self.version_names += []
               def self.enable_processing(value=nil)
                 self.enable_processing = value if value
                 if !@enable_processing.nil?
