@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = ["README.rdoc"]
   s.files = Dir.glob("{bin,lib}/**/*") + %w(README.rdoc)
   s.homepage = %q{https://github.com/jnicklas/carrierwave}
-  s.rdoc_options = ["--main", "README.rdoc"]
+  # s.rdoc_options = ["--main", "README.md"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{carrierwave}
   s.rubygems_version = %q{1.3.5}
