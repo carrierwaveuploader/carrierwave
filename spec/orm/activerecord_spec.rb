@@ -479,10 +479,10 @@ describe CarrierWave::ActiveRecord do
     before do
       @class = Class.new(Event)
       @class.table_name = "events"
-      @uploader1 = Class.new(CarrierWave::Uploader::Base)
-      @class.mount_uploader(:image, @uploader)
       @uploader = Class.new(CarrierWave::Uploader::Base)
-      @class.mount_uploader(:textfile, @uploader)
+      @class.mount_uploader(:image, @uploader)
+      @uploader1 = Class.new(CarrierWave::Uploader::Base)
+      @class.mount_uploader(:textfile, @uploader1)
       @event = @class.new
       @event.image = stub_file('old.jpeg')
       @event.textfile = stub_file('old.txt')
