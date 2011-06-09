@@ -26,8 +26,6 @@ module CarrierWave
     # specified in the smaller dimension but will not be larger than the
     # specified values.
     #
-    # See even http://www.imagemagick.org/RMagick/doc/image3.html#resize_to_fit
-    #
     # === Parameters
     #
     # [width (Integer)] the width to scale the image to
@@ -48,8 +46,6 @@ module CarrierWave
     # Resize the image to fit within the specified dimensions while retaining
     # the aspect ratio of the original image. If necessary, crop the image in
     # the larger dimension.
-    #
-    # See even http://www.imagemagick.org/RMagick/doc/image3.html#resize_to_fill
     #
     # === Parameters
     #
