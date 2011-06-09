@@ -5,14 +5,14 @@ $:.unshift lib unless $:.include?(lib)
 require 'carrierwave/version'
 
 Gem::Specification.new do |s|
-  s.name = "carrierwave"
+  s.name = "locomotive_carrierwave"
   s.version = CarrierWave::VERSION
 
-  s.authors = ["Jonas Nicklas"]
+  s.authors = ["Jonas Nicklas", "Didier Lafforgue"]
   s.date = Date.today
   s.description = "Upload files in your Ruby applications, map them to a range of ORMs, store them on different backends."
   s.summary = "Ruby file upload library"
-  s.email = ["jonas.nicklas@gmail.com"]
+  s.email = ["jonas.nicklas@gmail.com", "didier@nocoffee.fr"]
   s.extra_rdoc_files = ["README.rdoc"]
   s.files = Dir.glob("{bin,lib}/**/*") + %w(README.rdoc)
   s.homepage = %q{https://github.com/jnicklas/carrierwave}
