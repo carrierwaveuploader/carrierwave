@@ -13,10 +13,10 @@ Gem::Specification.new do |s|
   s.description = "Upload files in your Ruby applications, map them to a range of ORMs, store them on different backends."
   s.summary = "Ruby file upload library"
   s.email = ["jonas.nicklas@gmail.com"]
-  s.extra_rdoc_files = ["README.rdoc"]
-  s.files = Dir.glob("{bin,lib}/**/*") + %w(README.rdoc)
+  s.extra_rdoc_files = ["README.md"]
+  s.files = Dir.glob("{bin,lib}/**/*") + %w(README.md)
   s.homepage = %q{https://github.com/jnicklas/carrierwave}
-  s.rdoc_options = ["--main", "README.rdoc"]
+  s.rdoc_options = ["--main"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{carrierwave}
   s.rubygems_version = %q{1.3.5}
