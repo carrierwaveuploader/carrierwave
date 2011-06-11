@@ -48,6 +48,15 @@ module CarrierWave
           column = _mounter(:#{column}).serialization_column
           send(:"\#{column}_changed?")
         end
+
+        def find_previous_model_for_#{column}
+          if self.embedded?
+            self._parent.reload.send(self.metadata.key).find(to_key.first)
+          else
+            self.class.find(to_key.first)
+          end
+        end
+
       RUBY
 
     end
