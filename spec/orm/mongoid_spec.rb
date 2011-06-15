@@ -197,6 +197,13 @@ describe CarrierWave::Mongoid do
 
   describe "#save" do
 
+    it "after it was initialized with params" do
+      doc = reset_mongo_class.new(:image => stub_file('test.jpg'))
+      doc.save
+      doc.image.should be_an_instance_of(MongoUploader)
+      doc.image.current_path.should == public_path('uploads/test.jpg')
+    end
+
     before do
       mongo_user_klass = reset_mongo_class
       @doc = mongo_user_klass.new
