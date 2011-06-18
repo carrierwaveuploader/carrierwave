@@ -21,21 +21,6 @@ describe CarrierWave::Uploader do
       @uploader_class.versions[:thumb][:uploader].ancestors.should include(@uploader_class)
     end
 
-    it "should only assign versions to parent" do
-      @uploader_class.version :large
-      @uploader_class.version :thumb do
-        version :mini do
-          version :micro
-        end
-      end
-
-      @uploader_class.versions.keys.should =~ [:large, :thumb]
-      @uploader.large.versions.should be_empty
-      @uploader.thumb.versions.keys.should == [:mini]
-      @uploader.thumb.mini.versions.keys.should == [:micro]
-      @uploader.thumb.mini.micro.versions.should be_empty
-    end
-
     it "should add an accessor which returns the version" do
       @uploader_class.version :thumb
       @uploader.thumb.should be_a(@uploader_class)
