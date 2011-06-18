@@ -183,6 +183,46 @@ describe CarrierWave::SanitizedFile do
 
   end
 
+  describe "#content_type" do
+
+    it "preserves original content_type" do
+      @sanitized_file = CarrierWave::SanitizedFile.new(:content_type => 'image/png')
+      @sanitized_file.content_type.should == 'image/png'
+    end
+
+  end
+
+  describe "#content_type=" do
+
+    it "sets content_type" do
+      @sanitized_file = CarrierWave::SanitizedFile.new(:content_type => 'image/png')
+      @sanitized_file.content_type = 'text/html'
+      @sanitized_file.content_type.should == 'text/html'
+    end
+
+  end
+
+  describe "#original_content_type" do
+
+    it "returns original content_type after it's updated" do
+      @sanitized_file = CarrierWave::SanitizedFile.new(:content_type => 'image/png')
+      @sanitized_file.content_type = 'text/html'
+      @sanitized_file.original_content_type.should == 'image/png'
+    end
+
+    it "returns nil if content_type has not been updated" do
+      @sanitized_file = CarrierWave::SanitizedFile.new(:content_type => 'image/png')
+      @sanitized_file.original_content_type.should be_nil
+    end
+
+    it "returns #original_content_type if defined for file" do
+      file = mock('file', :content_type => 'text/html', :original_content_type => 'image/png')
+      @sanitized_file = CarrierWave::SanitizedFile.new(file)
+      @sanitized_file.original_content_type.should == 'image/png'
+    end
+
+  end
+
   shared_examples_for "all valid sanitized files" do
 
     describe '#empty?' do

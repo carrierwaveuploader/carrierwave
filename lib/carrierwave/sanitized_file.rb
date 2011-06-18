@@ -217,6 +217,22 @@ module CarrierWave
     end
 
     ##
+    # Returns the original content_type, which only gets set if content_type is updated..
+    #
+    # === Returns
+    #
+    # [String] the original content_type
+    #
+    def original_content_type
+      return @original_content_type if @original_content_type
+      if @file and @file.respond_to?(:original_content_type)
+        @file.original_content_type
+      else
+        nil
+      end
+    end
+
+    ##
     # Returns the content type of the file.
     #
     # === Returns
@@ -226,6 +242,18 @@ module CarrierWave
     def content_type
       return @content_type if @content_type
       @file.content_type.chomp if @file.respond_to?(:content_type) and @file.content_type
+    end
+
+    ##
+    # Sets the content type of the file.
+    #
+    # === Returns
+    #
+    # [String] the content type of the file
+    #
+    def content_type=(type)
+      @original_content_type = @content_type
+      @content_type = type
     end
 
     ##
