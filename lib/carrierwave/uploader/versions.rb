@@ -8,10 +8,20 @@ module CarrierWave
       include CarrierWave::Uploader::Callbacks
 
       included do
-        class_inheritable_accessor :versions, :instance_reader => false, :instance_writer => false
-        self.versions = {}
+        ##
+        # Add configuration options for versions
+        # class_inheritable_accessor was deprecated in Rails 3.1 and removed for 3.2.
+        # class_attribute was added in 3.0, but doesn't support omitting the instance_reader until 3.0.10
+        # For max compatibility, always use class_inheritable_accessor when possible
+        if respond_to?(:class_inheritable_accessor)
+          ActiveSupport::Deprecation.silence do
+            class_inheritable_accessor :versions, :version_names, :instance_reader => false, :instance_writer => false
+          end
+        else
+          class_attribute :versions, :version_names, :instance_reader => false, :instance_writer => false
+        end
 
-        class_attribute :version_names, :instance_writer => false
+        self.versions = {}
         self.version_names = []
 
         after :cache, :cache_versions!
@@ -50,6 +60,7 @@ module CarrierWave
           name = name.to_sym
           unless versions[name]
             uploader = Class.new(self)
+            uploader.versions = {}
 
             # Define the enable_processing method for versions so they get the
             # value from the parent class unless explicitly overwritten
@@ -64,11 +75,16 @@ module CarrierWave
               end
             RUBY
 
-            versions[name] = {
+            # Add the current version hash to class attribute :versions
+            current_version = {}
+            current_version[name] = {
               :uploader => uploader,
-              :options => options,
+              :options  => options
             }
+            self.versions = versions.merge(current_version)
+
             versions[name][:uploader].version_names += [name]
+
             class_eval <<-RUBY
               def #{name}
                 versions[:#{name}]
