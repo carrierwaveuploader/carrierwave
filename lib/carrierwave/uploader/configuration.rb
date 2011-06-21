@@ -32,6 +32,7 @@ module CarrierWave
         add_config :grid_fs_username
         add_config :grid_fs_password
         add_config :grid_fs_access_url
+        add_config :grid_fs_delete_old
         add_config :store_dir
         add_config :cache_dir
         add_config :enable_processing
@@ -138,6 +139,7 @@ module CarrierWave
             config.grid_fs_database = 'carrierwave'
             config.grid_fs_host = 'localhost'
             config.grid_fs_port = 27017
+            config.grid_fs_delete_old = false
             config.fog_attributes = {}
             config.fog_credentials = {}
             config.fog_public = true
