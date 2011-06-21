@@ -541,6 +541,16 @@ class AvatarUploader < CarrierWave::Uploader::Base
 end
 ```
 
+By default, GridFS won't delete old versions of the file. So if you're going to be rewriting files often, 
+you could end up with a lot of old versions piling up. Enable `config.grid_fs_delete_old` to remove old versions upon 
+writing new file. Refer to [GridFS API](http://api.mongodb.org/ruby/current/file.GridFS.html) for further details.
+
+``` ruby
+CarrierWave.configure do |config|
+  config.grid_fs_delete_old = true
+end
+```
+
 Since GridFS doesn't make the files available via HTTP, you'll need to stream
 them yourself. In Rails for example, you could use the `send_data` method. You
 can tell CarrierWave the URL you will serve your images from, allowing it to
