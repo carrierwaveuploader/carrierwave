@@ -37,6 +37,7 @@ module CarrierWave
   autoload :RMagick, 'carrierwave/processing/rmagick'
   autoload :ImageScience, 'carrierwave/processing/image_science'
   autoload :MiniMagick, 'carrierwave/processing/mini_magick'
+  autoload :MimeTypes, 'carrierwave/processing/mime_types'
   autoload :VERSION, 'carrierwave/version'
 
   module Storage
