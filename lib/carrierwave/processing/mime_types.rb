@@ -18,7 +18,7 @@ module CarrierWave
   # You can now use the provided helper:
   #
   #     class MyUploader < CarrierWave::Uploader::Base
-  #       include Carrierwave::MimeTypes
+  #       include CarrierWave::MimeTypes
   #
   #       process :set_content_type
   #     end
