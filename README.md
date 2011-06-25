@@ -569,6 +569,8 @@ The RMagick module gives you a few methods, like
 `CarrierWave::RMagick#resize_to_fill` which manipulate the image file in some
 way. You can set a `process` callback, which will call that method any time a
 file is uploaded.
+There is a demonstration of convert here.
+Convert will only work if the file has the same file extension, thus the use of the filename method.
 
 ``` ruby
 class AvatarUploader < CarrierWave::Uploader::Base
@@ -578,7 +580,7 @@ class AvatarUploader < CarrierWave::Uploader::Base
   process :convert => 'png'
 
   def filename
-    super + '.png'
+    super.chomp(File.extname(super)) + '.png'
   end
 end
 ```
