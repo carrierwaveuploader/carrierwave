@@ -40,9 +40,10 @@ module CarrierWave
           rescue TypeError, NoMethodError
           end
           setup_modifications
-          @modifications[column] = value
 
-          super
+          super.tap do
+            @modifications[column] = [value, __send__(column)]
+          end
         end
 
         def #{column}_changed?
