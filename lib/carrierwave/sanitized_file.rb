@@ -16,10 +16,10 @@ module CarrierWave
   class SanitizedFile
 
     attr_accessor :file
-    
+
     class << self
       attr_writer :sanitize_regexp
-      
+
       def sanitize_regexp
         @sanitize_regexp ||= /[^a-zA-Z0-9\.\-\+_]/
       end
@@ -226,6 +226,17 @@ module CarrierWave
     def content_type
       return @content_type if @content_type
       @file.content_type.chomp if @file.respond_to?(:content_type) and @file.content_type
+    end
+
+    ##
+    # Sets the content type of the file.
+    #
+    # === Returns
+    #
+    # [String] the content type of the file
+    #
+    def content_type=(type)
+      @content_type = type
     end
 
     ##

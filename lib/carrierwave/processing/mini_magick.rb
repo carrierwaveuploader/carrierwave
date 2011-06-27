@@ -129,12 +129,9 @@ module CarrierWave
     end
 
     ##
-    # From the RMagick documentation: "Resize the image to fit within the
-    # specified dimensions while retaining the original aspect ratio. The
-    # image may be shorter or narrower than specified in the smaller dimension
-    # but will not be larger than the specified values."
-    #
-    # See even http://www.imagemagick.org/RMagick/doc/image3.html#resize_to_fit
+    # Resize the image to fit within the specified dimensions while retaining
+    # the original aspect ratio. The image may be shorter or narrower than
+    # specified in the smaller dimension but will not be larger than the specified values.
     #
     # === Parameters
     #
@@ -154,15 +151,9 @@ module CarrierWave
     end
 
     ##
-    # From the RMagick documentation: "Resize the image to fit within the
-    # specified dimensions while retaining the aspect ratio of the original
-    # image. If necessary, crop the image in the larger dimension."
-    #
-    # See even http://www.imagemagick.org/RMagick/doc/image3.html#resize_to_fill
-    #
-    # and
-    #
-    # http://www.clipclip.org/clips/detail/4365/jerrett-net-»-crop_resized-in-rmagick
+    # Resize the image to fit within the specified dimensions while retaining
+    # the aspect ratio of the original image. If necessary, crop the image in the
+    # larger dimension.
     #
     # === Parameters
     #
@@ -229,7 +220,7 @@ module CarrierWave
     end
 
     ##
-    # Manipulate the image with RMagick. This method will load up an image
+    # Manipulate the image with MiniMagick. This method will load up an image
     # and then pass each of its frames to the supplied block. It will then
     # save the image to disk.
     #

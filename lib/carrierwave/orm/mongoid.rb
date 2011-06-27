@@ -39,6 +39,7 @@ module CarrierWave
             value = value.duplicable? ? value.clone : value
           rescue TypeError, NoMethodError
           end
+          setup_modifications
           @modifications[column] = value
 
           super

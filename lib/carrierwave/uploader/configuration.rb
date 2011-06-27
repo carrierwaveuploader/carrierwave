@@ -5,7 +5,7 @@ module CarrierWave
       extend ActiveSupport::Concern
 
       included do
-        class_inheritable_accessor :_storage, :instance_reader => false, :instance_writer => false
+        class_attribute :_storage, :instance_writer => false
 
         add_config :root
         add_config :permissions
@@ -37,6 +37,7 @@ module CarrierWave
         add_config :enable_processing
         add_config :ensure_multipart_form
         add_config :delete_tmp_file_after_storage
+        add_config :delete_cache_id_after_storage
         add_config :remove_previously_stored_files_after_update
 
         # fog
@@ -144,6 +145,7 @@ module CarrierWave
             config.store_dir = 'uploads'
             config.cache_dir = 'uploads/tmp'
             config.delete_tmp_file_after_storage = true
+            config.delete_cache_id_after_storage = true
             config.remove_previously_stored_files_after_update = true
             config.ignore_integrity_errors = true
             config.ignore_processing_errors = true

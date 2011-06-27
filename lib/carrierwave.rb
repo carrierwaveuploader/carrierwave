@@ -3,7 +3,12 @@
 require 'fileutils'
 require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/class/attribute'
-require 'active_support/core_ext/class/inheritable_attributes'
+
+begin
+  require 'active_support/core_ext/class/inheritable_attributes'
+rescue LoadError
+end
+
 require 'active_support/concern'
 require 'active_support/memoizable'
 
@@ -32,6 +37,7 @@ module CarrierWave
   autoload :RMagick, 'carrierwave/processing/rmagick'
   autoload :ImageScience, 'carrierwave/processing/image_science'
   autoload :MiniMagick, 'carrierwave/processing/mini_magick'
+  autoload :MimeTypes, 'carrierwave/processing/mime_types'
   autoload :VERSION, 'carrierwave/version'
 
   module Storage

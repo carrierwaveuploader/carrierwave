@@ -8,7 +8,7 @@ module CarrierWave
       include CarrierWave::Uploader::Callbacks
 
       included do
-        class_inheritable_accessor :processors, :instance_reader => false, :instance_writer => false
+        class_attribute :processors, :instance_writer => false
         self.processors = []
 
         after :cache, :process!
@@ -63,10 +63,10 @@ module CarrierWave
             if arg.is_a?(Hash)
               condition = arg.delete(:if)
               arg.each do |method, args|
-                processors.push([method, args, condition])
+                self.processors += [[method, args, condition]]
               end
             else
-              processors.push([arg, [], nil])
+              self.processors += [[arg, [], nil]]
             end
           end
         end

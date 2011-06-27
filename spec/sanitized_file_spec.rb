@@ -183,6 +183,21 @@ describe CarrierWave::SanitizedFile do
 
   end
 
+  describe "#content_type" do
+    it "preserves file's content_type" do
+      @sanitized_file = CarrierWave::SanitizedFile.new(:content_type => 'image/png')
+      @sanitized_file.content_type.should == 'image/png'
+    end
+  end
+
+  describe "#content_type=" do
+    it "sets content_type" do
+      @sanitized_file = CarrierWave::SanitizedFile.new(:content_type => 'image/png')
+      @sanitized_file.content_type = 'text/html'
+      @sanitized_file.content_type.should == 'text/html'
+    end
+  end
+
   shared_examples_for "all valid sanitized files" do
 
     describe '#empty?' do
@@ -320,7 +335,7 @@ describe CarrierWave::SanitizedFile do
 
       it "should preserve the file's content type" do
         new_file = @sanitized_file.copy_to(file_path('gurr.png'))
-        new_file.content_type.should ==(@sanitized_file.content_type)
+        new_file.content_type.should == @sanitized_file.content_type
       end
 
     end
