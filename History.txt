@@ -1,4 +1,4 @@
-=== Unreleased https://github.com/jnicklas/carrierwave/compare/v0.5.4...master
+=== Version 0.5.5 2011-07-09
 
 * [BREAKING CHANGE] Extracted DataMapper support into a separate gem (carrierwave-datamapper) [jnicklas]
 * [BREAKING CHANGE] Extracted Sequel support into a separate gem (carrierwave-sequel) [jnicklas]
