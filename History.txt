@@ -5,13 +5,20 @@
 * [changed] Don't downcase filenames by default [bensie]
 * [changed] Orm mount modules default uploader to nil [jnicklas]
 * [changed] Remove alias_method :blank? from SanitizedFile to for performance re: issue #298 [trevorturk]
-* [added] conditional processing of versions [gucki]
+* [added] Conditional processing of versions [gucki]
+* [added] Remove Remove previously stored files after Active Record mounted uploader update re: issue #75 [trevorturk]
+* [added] Remove Remove previously stored files after Mongoid mounted uploader update re: issue #75 [did]
 * [added] Added _identifier to retrieve identifier/filename [jnicklas]
 * [added] clean_cached_files! clears all files older than 24 hours by default, but time frame can now be customized [cover]
+* [added] Versions now implement an enable_processing method which uses the parent when no value is set [mariovisic]
+* [added] Delete cache_id garbage dirs, closes GH issue #338 [clyfe]
+* [added] Added CarrierWave::MimeTypes processor for more advanced content-type guessing [JangoSteve]
 * [fixed] Active Record's will_change! method works when mount_on option is used [indrekj]
 * [fixed] Fixed problem with accepting URL uploads when the URL was already escaped [cover]
 * [fixed] Fixed ability to override sanitize_regexp [trevorturk]
 * [fixed] Fix that cached and then remote-uploaded file should have content_type [trevorturk]
+* [fixed] Fix validates_size/length_of in Rails 3.0.6 and above, closes #342 [bensie]
+* [fixed] Various Active Support compatibility updates [slbug, bensie, et al]
 
 === Version 0.5.4 2011-05-18
 
