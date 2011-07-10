@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require 'active_support/deprecation'
+
 module CarrierWave
   module Uploader
     module Versions
