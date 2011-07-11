@@ -140,6 +140,26 @@ describe CarrierWave::Uploader do
       end
     end
 
+    context "when the old cache_id directory is not empty" do
+      before do
+        @uploader.cache!(@file)
+        cache_path = @uploader.send(:cache_path) # WARNING: violating private
+        @cache_id_dir = File.dirname(cache_path)
+        @existing_file = File.join(@cache_id_dir, "exsting_file.txt")
+        File.open(@existing_file, "wb"){|f| f << "I exist"}
+      end
+
+      it "should not delete the old cache_id" do
+        @uploader.store!
+        File.should be_directory(@cache_id_dir)
+      end
+
+      it "should not delete other existing files in old cache_id dir" do
+        @uploader.store!
+        File.should exist @existing_file
+      end
+    end
+
     it "should do nothing when trying to store an empty file" do
       @uploader.store!(nil)
     end

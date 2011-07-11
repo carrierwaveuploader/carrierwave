@@ -71,7 +71,15 @@ module CarrierWave
       def delete_cache_id
         if @cache_id
           path = File.expand_path(File.join(cache_dir, @cache_id), CarrierWave.root)
-          FileUtils.rm_rf(path) if File.exists?(path) && File.directory?(path)
+          begin
+            Dir.rmdir(path)
+          rescue Errno::ENOENT
+            # Ignore: path does not exist
+          rescue Errno::ENOTDIR
+            # Ignore: path is not a dir
+          rescue Errno::ENOTEMPTY, Errno::EEXIST
+            # Ignore: dir is not empty
+          end
         end
       end
 
