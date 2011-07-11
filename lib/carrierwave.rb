@@ -100,6 +100,4 @@ elsif defined?(Sinatra)
 
 end
 
-require 'carrierwave/orm/datamapper' if defined?(DataMapper)
-require 'carrierwave/orm/sequel' if defined?(Sequel)
 require 'carrierwave/orm/mongoid' if defined?(Mongoid)
