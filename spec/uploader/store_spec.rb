@@ -127,8 +127,16 @@ describe CarrierWave::Uploader do
 
       it "should not delete the old cache_id" do
         @uploader.cache!(@file)
-        @uploader.should_not_receive(:delete_cache_id)
+        cache_path = @uploader.send(:cache_path) # WARNING: violating private
+        cache_id_dir = File.dirname(cache_path)
+        cache_parent_dir = File.split(cache_id_dir).first
+        File.should be_directory(cache_parent_dir)
+        File.should be_directory(cache_id_dir)
+
         @uploader.store!
+
+        File.should be_directory(cache_parent_dir)
+        File.should be_directory(cache_id_dir)
       end
     end
 
