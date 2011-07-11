@@ -70,7 +70,7 @@ module CarrierWave
       #
       def delete_cache_id
         if @cache_id
-          path = File.join(cache_dir, @cache_id)
+          path = File.expand_path(File.join(cache_dir, @cache_id), CarrierWave.root)
           FileUtils.rm_rf(path) if File.exists?(path) && File.directory?(path)
         end
       end
