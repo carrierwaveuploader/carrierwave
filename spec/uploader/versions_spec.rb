@@ -28,7 +28,9 @@ describe CarrierWave::Uploader do
           version :micro
         end
       end
-      @uploader_class.versions.keys.should == [:large, :thumb]
+      @uploader_class.versions.should have(2).versions
+      @uploader_class.versions.should include :large
+      @uploader_class.versions.should include :thumb
       @uploader.large.versions.should be_empty
       @uploader.thumb.versions.keys.should == [:mini]
       @uploader.thumb.mini.versions.keys.should == [:micro]
