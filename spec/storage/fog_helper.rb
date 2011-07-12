@@ -24,7 +24,7 @@ end
         @uploader.stub!(:store_path).and_return('uploads/test.jpg')
 
         @storage = CarrierWave::Storage::Fog.new(@uploader)
-        @directory = @storage.connection.directories.get(CARRIERWAVE_DIRECTORY) || @storage.connection.directories.create(:key => CARRIERWAVE_DIRECTORY)
+        @directory = @storage.connection.directories.get(CARRIERWAVE_DIRECTORY) || @storage.connection.directories.create(:key => CARRIERWAVE_DIRECTORY, :public => true)
 
         @file = CarrierWave::SanitizedFile.new(
           :tempfile => StringIO.new(File.open(file_path('test.jpg')).read),
@@ -146,7 +146,7 @@ end
         context "true" do
           before do
             directory_key = "#{CARRIERWAVE_DIRECTORY}public"
-            @directory = @storage.connection.directories.create(:key => directory_key)
+            @directory = @storage.connection.directories.create(:key => directory_key, :public => true)
             @uploader.stub!(:fog_directory).and_return(directory_key)
             @uploader.stub!(:store_path).and_return('uploads/public.txt')
             @fog_file = @storage.store!(@file)

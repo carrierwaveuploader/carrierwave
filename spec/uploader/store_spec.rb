@@ -108,8 +108,16 @@ describe CarrierWave::Uploader do
     
     it "should delete the old cache_id" do
       @uploader.cache!(@file)
-      @uploader.should_receive(:delete_cache_id)
+      cache_path = @uploader.send(:cache_path) # WARNING: violating private
+      cache_id_dir = File.dirname(cache_path)
+      cache_parent_dir = File.split(cache_id_dir).first
+      File.should be_directory(cache_parent_dir)
+      File.should be_directory(cache_id_dir)
+
       @uploader.store!
+
+      File.should be_directory(cache_parent_dir)
+      File.should_not be_directory(cache_id_dir)
     end
     
     context "with the delete_cache_id_after_storage option set to false" do
@@ -119,8 +127,36 @@ describe CarrierWave::Uploader do
 
       it "should not delete the old cache_id" do
         @uploader.cache!(@file)
-        @uploader.should_not_receive(:delete_cache_id)
+        cache_path = @uploader.send(:cache_path) # WARNING: violating private
+        cache_id_dir = File.dirname(cache_path)
+        cache_parent_dir = File.split(cache_id_dir).first
+        File.should be_directory(cache_parent_dir)
+        File.should be_directory(cache_id_dir)
+
         @uploader.store!
+
+        File.should be_directory(cache_parent_dir)
+        File.should be_directory(cache_id_dir)
+      end
+    end
+
+    context "when the old cache_id directory is not empty" do
+      before do
+        @uploader.cache!(@file)
+        cache_path = @uploader.send(:cache_path) # WARNING: violating private
+        @cache_id_dir = File.dirname(cache_path)
+        @existing_file = File.join(@cache_id_dir, "exsting_file.txt")
+        File.open(@existing_file, "wb"){|f| f << "I exist"}
+      end
+
+      it "should not delete the old cache_id" do
+        @uploader.store!
+        File.should be_directory(@cache_id_dir)
+      end
+
+      it "should not delete other existing files in old cache_id dir" do
+        @uploader.store!
+        File.should exist @existing_file
       end
     end
 
