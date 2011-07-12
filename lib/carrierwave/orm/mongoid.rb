@@ -32,18 +32,8 @@ module CarrierWave
       class_eval <<-RUBY, __FILE__, __LINE__+1
         def #{column}=(new_file)
           column = _mounter(:#{column}).serialization_column
-
-          # Note (Didier L.): equivalent of the <column>_will_change! ActiveModel method
-          begin
-            value = __send__(column)
-            value = value.duplicable? ? value.clone : value
-          rescue TypeError, NoMethodError
-          end
-          setup_modifications
-
-          super.tap do
-            @modifications[column] = [value, __send__(column)]
-          end
+          send(:"\#{column}_will_change!")
+          super
         end
 
         def #{column}_changed?
