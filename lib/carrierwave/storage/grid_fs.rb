@@ -61,7 +61,7 @@ module CarrierWave
         end
 
         def write(file)
-          grid.open(@uploader.store_path, 'w', :content_type => file.content_type) do |f|
+          grid.open(@uploader.store_path, 'w', :content_type => file.content_type, :delete_old => @uploader.grid_fs_delete_old) do |f|
             f.write(file.read)
           end
         end

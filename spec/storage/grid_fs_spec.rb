@@ -7,6 +7,7 @@ shared_examples_for "a GridFS connection" do
   describe '#store!' do
     before do
       @uploader.stub!(:store_path).and_return('uploads/bar.txt')
+      @uploader.stub!(:grid_fs_delete_old).and_return(false)
       @grid_fs_file = @storage.store!(@file)
     end
 
@@ -174,6 +175,17 @@ describe CarrierWave::Storage::GridFS do
 
   after do
     @grid.delete('uploads/bar.txt')
+  end
+
+end
+
+describe 'CarrierWave::Storage::GridFS config' do
+  before do
+    @uploader = Class.new(CarrierWave::Uploader::Base).new
+  end
+
+  it "should default to false" do
+    @uploader.grid_fs_delete_old.should == false
   end
 
 end
