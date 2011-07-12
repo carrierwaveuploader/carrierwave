@@ -1,3 +1,10 @@
+=== Version 0.5.6 2001-07-12
+
+* [fixed] Remove cache file and directories after storing [scottwb]
+* [fixed] Add missing active_support/deprecation require [trevorturk]
+* [fixed] Remove redundant requires of sequel and datamapper [solnic]
+* [fixed] Running tests with REMOTE=true [geemus]
+
 === Version 0.5.5 2011-07-09
 
 * [BREAKING CHANGE] Extracted DataMapper support into a separate gem (carrierwave-datamapper) [jnicklas]
