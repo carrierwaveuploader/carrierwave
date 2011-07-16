@@ -59,8 +59,8 @@ module CarrierWave
     extend ActiveSupport::Concern
 
     module ClassMethods
-      def convert(format)
-        process :convert => format
+      def convert(format, rename=false)
+        process :convert => [format, rename]
       end
 
       def resize_to_limit(width, height)
@@ -97,8 +97,8 @@ module CarrierWave
     #
     #     image.convert(:png)
     #
-    def convert(format)
-      manipulate! do |img|
+    def convert(format, rename=false)
+      manipulate!(:format => format, :rename => rename) do |img|
         img.format(format.to_s.downcase)
         img = yield(img) if block_given?
         img
@@ -239,11 +239,12 @@ module CarrierWave
     #
     # [CarrierWave::ProcessingError] if manipulation failed.
     #
-    def manipulate!
+    def manipulate!(options={})
       cache_stored_file! if !cached?
       image = ::MiniMagick::Image.open(current_path)
       image = yield(image)
       image.write(current_path)
+      file.move_to current_path.chomp(File.extname(current_path)) + ".#{options[:format]}" if options[:format] && options[:rename]
       ::MiniMagick::Image.open(current_path)
     rescue ::MiniMagick::Error, ::MiniMagick::Invalid => e
       raise CarrierWave::ProcessingError.new("Failed to manipulate with MiniMagick, maybe it is not an image? Original Error: #{e}")
