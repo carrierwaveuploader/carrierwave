@@ -58,13 +58,13 @@ module CarrierWave
           with_callbacks(:store, new_file) do
             new_file = storage.store!(@file)
             @file.delete if delete_tmp_file_after_storage
-            delete_cache_id if delete_cache_id_after_storage
+            delete_cache_id
             @file = new_file
             @cache_id = nil
           end
         end
       end
-      
+
       ##
       # Deletes a cache id (tmp dir in cache)
       #

@@ -104,26 +104,6 @@ describe CarrierWave::Uploader do
         @uploader.file.should_not_receive(:delete).and_return(true)
         @uploader.store!
       end
-    end
-    
-    it "should delete the old cache_id" do
-      @uploader.cache!(@file)
-      cache_path = @uploader.send(:cache_path) # WARNING: violating private
-      cache_id_dir = File.dirname(cache_path)
-      cache_parent_dir = File.split(cache_id_dir).first
-      File.should be_directory(cache_parent_dir)
-      File.should be_directory(cache_id_dir)
-
-      @uploader.store!
-
-      File.should be_directory(cache_parent_dir)
-      File.should_not be_directory(cache_id_dir)
-    end
-    
-    context "with the delete_cache_id_after_storage option set to false" do
-      before do
-        @uploader_class.delete_cache_id_after_storage = false
-      end
 
       it "should not delete the old cache_id" do
         @uploader.cache!(@file)
@@ -138,6 +118,20 @@ describe CarrierWave::Uploader do
         File.should be_directory(cache_parent_dir)
         File.should be_directory(cache_id_dir)
       end
+    end
+
+    it "should delete the old cache_id" do
+      @uploader.cache!(@file)
+      cache_path = @uploader.send(:cache_path) # WARNING: violating private
+      cache_id_dir = File.dirname(cache_path)
+      cache_parent_dir = File.split(cache_id_dir).first
+      File.should be_directory(cache_parent_dir)
+      File.should be_directory(cache_id_dir)
+
+      @uploader.store!
+
+      File.should be_directory(cache_parent_dir)
+      File.should_not be_directory(cache_id_dir)
     end
 
     context "when the old cache_id directory is not empty" do
