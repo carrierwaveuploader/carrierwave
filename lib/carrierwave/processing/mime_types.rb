@@ -43,7 +43,7 @@ module CarrierWave
     #
     def set_content_type(override=false)
       if override || file.content_type.blank? || file.content_type == 'application/octet-stream'
-        new_content_type = ::MIME::Types.type_for(file.original_filename).first.to_s
+        new_content_type = ::MIME::Types.type_for(current_path).first.to_s
         if file.respond_to?(:content_type=)
           file.content_type = new_content_type
         else

@@ -71,8 +71,8 @@ module CarrierWave
     extend ActiveSupport::Concern
 
     module ClassMethods
-      def convert(format)
-        process :convert => format
+      def convert(format, rename=false)
+        process :convert => [format, rename]
       end
 
       def resize_to_limit(width, height)
@@ -109,8 +109,8 @@ module CarrierWave
     #
     #     image.convert(:png)
     #
-    def convert(format)
-      manipulate!(:format => format)
+    def convert(format, rename=false)
+      manipulate!(:format => format, :rename => rename)
     end
 
     ##
@@ -261,6 +261,7 @@ module CarrierWave
 
       if options[:format]
         frames.write("#{options[:format]}:#{current_path}")
+        file.move_to current_path.chomp(File.extname(current_path)) + ".#{options[:format]}" if options[:rename]
       else
         frames.write(current_path)
       end
