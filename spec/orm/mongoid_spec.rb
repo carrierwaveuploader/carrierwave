@@ -448,7 +448,60 @@ describe CarrierWave::Mongoid do
         @embedded_doc.save.should be_false
         File.exists?(public_path('uploads/old.jpeg')).should be_true
       end
-  
+
+      describe 'with double embedded documents' do
+
+        before do
+          @double_embedded_doc_class = define_mongo_class('MongoItem') do
+            include Mongoid::Document
+            mount_uploader :image, @uploader
+            embedded_in :mongo_location
+          end
+    
+          @embedded_doc_class.class_eval do
+            embeds_many :mongo_items
+          end
+    
+          @doc = @class.new
+          @embedded_doc = @doc.mongo_locations.build
+          @embedded_doc.image = stub_file('old.jpeg')
+          @embedded_doc.save.should be_true
+
+          @double_embedded_doc = @embedded_doc.mongo_items.build
+          @double_embedded_doc.image = stub_file('old.jpeg')
+          @double_embedded_doc.save.should be_true
+        end
+
+        it "should remove old file if old file had a different path" do
+          @double_embedded_doc.image = stub_file('new.jpeg')
+          @double_embedded_doc.save.should be_true
+          File.exists?(public_path('uploads/new.jpeg')).should be_true
+          File.exists?(public_path('uploads/old.jpeg')).should be_false
+        end
+    
+        it "should not remove old file if old file had a different path but config is false" do
+          @double_embedded_doc.image.stub!(:remove_previously_stored_files_after_update).and_return(false)
+          @double_embedded_doc.image = stub_file('new.jpeg')
+          @double_embedded_doc.save.should be_true
+          File.exists?(public_path('uploads/new.jpeg')).should be_true
+          File.exists?(public_path('uploads/old.jpeg')).should be_true
+        end
+    
+        it "should not remove file if old file had the same path" do
+          @double_embedded_doc.image = stub_file('old.jpeg')
+          @double_embedded_doc.save.should be_true
+          File.exists?(public_path('uploads/old.jpeg')).should be_true
+        end
+    
+        it "should not remove file if validations fail on save" do
+          @double_embedded_doc_class.validate { |r| r.errors.add :textfile, "FAIL!" }
+          @double_embedded_doc.image = stub_file('new.jpeg')
+          @double_embedded_doc.save.should be_false
+          File.exists?(public_path('uploads/old.jpeg')).should be_true
+        end
+
+      end
+
     end
   end
   
