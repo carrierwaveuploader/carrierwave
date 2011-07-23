@@ -1,4 +1,9 @@
-=== Version 0.5.6 2001-07-12
+=== Unreleased https://github.com/jnicklas/carrierwave/compare/v0.5.6...master
+
+* [changed] Combine delete_tmp_file_after_storage and delete_cache_id_after_storage options [bensie]
+* [fixed] Fixed exception when nested or double-embedded Mongoid documents are saved [potatosalad]
+
+=== Version 0.5.6 2011-07-12
 
 * [fixed] Remove cache file and directories after storing [scottwb]
 * [fixed] Add missing active_support/deprecation require [trevorturk]
