@@ -344,12 +344,11 @@ module CarrierWave
       end
 
       def store!
-        unless uploader.blank?
-          if remove?
-            uploader.remove!
-          else
-            uploader.store!
-          end
+        return true if uploader.blank?
+        if remove?
+          uploader.remove!
+        else
+          uploader.store!
         end
       end
 
