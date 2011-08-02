@@ -33,16 +33,23 @@ module CarrierWave
         def #{column}=(new_file)
           column = _mounter(:#{column}).serialization_column
 
-          # Note (Didier L.): equivalent of the <column>_will_change! ActiveModel method
-          begin
-            value = __send__(column)
-            value = value.duplicable? ? value.clone : value
-          rescue TypeError, NoMethodError
-          end
-          setup_modifications
+          # Note (potatosalad): compatibility for mongoid < 2.1
+          if self.respond_to?(:setup_modifications)
+            # Note (Didier L.): equivalent of the <column>_will_change! ActiveModel method
+            begin
+              value = __send__(column)
+              value = value.duplicable? ? value.clone : value
+            rescue TypeError, NoMethodError
+            end
+            setup_modifications
 
-          super.tap do
-            @modifications[column] = [value, __send__(column)]
+            super.tap do
+              @modifications[column] = [value, __send__(column)]
+            end
+          else
+            # Note (potatosalad): compatibility for mongoid >= 2.1
+            send(:"\#{column}_will_change!")
+            super
           end
         end
 
