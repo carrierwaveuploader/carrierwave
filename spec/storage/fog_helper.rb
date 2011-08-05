@@ -94,22 +94,6 @@ end
         end
       end
 
-      describe '#cache! and then #store!' do
-        before do
-          CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
-          @uploader_instance = @uploader.new
-          @uploader_instance.cache!(File.open(file_path('test.jpg')))
-          @uploader_instance.retrieve_from_cache!('20071201-1234-345-2255/test.jpg')
-          @file = @uploader_instance.file
-          @storage.store!(@file)
-        end
-
-        it "should have a content_type" do
-          @uploader_instance.file.content_type.should == 'image/jpeg'
-          @directory.files.get('uploads/test.jpg').content_type.should == 'image/jpeg'
-        end
-      end
-
       describe '#retrieve!' do
         before do
           @directory.files.create(:key => 'uploads/test.jpg', :body => 'A test, 1234', :public => true)
