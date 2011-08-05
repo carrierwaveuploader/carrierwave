@@ -1,6 +1,7 @@
 === Unreleased https://github.com/jnicklas/carrierwave/compare/v0.5.6...master
 
 * [changed] Combine delete_tmp_file_after_storage and delete_cache_id_after_storage options [bensie]
+* [changed] cached and then remote-uploaded file will have no content_type, use CarrierWave::MimeTypes processor instead [trevorturk]
 * [fixed] Fixed exception when nested or double-embedded Mongoid documents are saved [potatosalad]
 
 === Version 0.5.6 2011-07-12
