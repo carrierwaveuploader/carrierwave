@@ -292,10 +292,10 @@ describe CarrierWave::Mount do
           @instance.image.current_path.should =~ /test.jpg$/
         end
 
-        it "should not write over a previously assigned file" do
+        it "should write over a previously assigned file" do
           @instance.image = stub_file('portrait.jpg')
           @instance.remote_image_url = 'http://www.example.com/test.jpg'
-          @instance.image.current_path.should =~ /portrait.jpg$/
+          @instance.image.current_path.should =~ /test.jpg$/
         end
       end
     end

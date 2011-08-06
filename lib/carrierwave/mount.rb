@@ -337,10 +337,8 @@ module CarrierWave
       end
 
       def remote_url=(url)
-        unless uploader.cached?
-          @remote_url = url
-          uploader.download!(url)
-        end
+        @remote_url = url
+        uploader.download!(url)
       end
 
       def store!
