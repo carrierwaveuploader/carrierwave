@@ -102,6 +102,7 @@ u.avatar = File.open('somewhere')
 u.save!
 u.avatar.url # => '/url/to/file.png'
 u.avatar.current_path # => 'path/to/file.png'
+u.avatar_identifier # => 'file.png'
 ```
 
 If using Mongoid, note that embedded documents files aren't saved when parent documents are saved.
