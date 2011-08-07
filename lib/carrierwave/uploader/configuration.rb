@@ -38,6 +38,7 @@ module CarrierWave
         add_config :ensure_multipart_form
         add_config :delete_tmp_file_after_storage
         add_config :remove_previously_stored_files_after_update
+        add_config :write_over_a_previously_assigned_file_when_retrieving_file_from_remote_url
 
         # fog
         add_config :fog_attributes
@@ -152,6 +153,7 @@ module CarrierWave
             config.root = CarrierWave.root
             config.enable_processing = true
             config.ensure_multipart_form = true
+            config.write_over_a_previously_assigned_file_when_retrieving_file_from_remote_url = false
           end
         end
       end

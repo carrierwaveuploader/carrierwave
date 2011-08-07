@@ -297,6 +297,13 @@ describe CarrierWave::Mount do
           @instance.remote_image_url = 'http://www.example.com/test.jpg'
           @instance.image.current_path.should =~ /portrait.jpg$/
         end
+
+        it "should write over a previously assigned file if corresponding option is set to true" do
+          @uploader.stub!(:write_over_a_previously_assigned_file_when_retrieving_file_from_remote_url).and_return(true)
+          @instance.image = stub_file('portrait.jpg')
+          @instance.remote_image_url = 'http://www.example.com/test.jpg'
+          @instance.image.current_path.should =~ /test.jpg$/
+        end
       end
     end
 

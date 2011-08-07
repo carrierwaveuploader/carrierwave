@@ -337,7 +337,7 @@ module CarrierWave
       end
 
       def remote_url=(url)
-        unless uploader.cached?
+        unless uploader.cached? && !option(:write_over_a_previously_assigned_file_when_retrieving_file_from_remote_url)
           @remote_url = url
           uploader.download!(url)
         end
