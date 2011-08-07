@@ -79,6 +79,35 @@ describe CarrierWave::ActiveRecord do
         @event.image.current_path.should == public_path('uploads/test.jpeg')
       end
 
+      it "should return valid JSON when to_json is called when image is nil" do
+        @event[:image].should be_nil
+
+        JSON.parse(@event.to_json)["event#{$arclass}"]["image"].should == {"url"=>nil}
+      end
+
+      it "should return valid JSON when to_json is called when image is present" do
+        @event[:image] = 'test.jpeg'
+        @event.save
+        @event.reload
+
+        JSON.parse(@event.to_json)["event#{$arclass}"]["image"].should == {"url"=>"/uploads/test.jpeg"}
+      end
+
+      # FIXME to_xml should work like to_json
+      it "should return valid XML when to_xml is called when image is nil" do
+        @event[:image].should be_nil
+
+        Hash.from_xml(@event.to_xml)["event#{$arclass}"].should == {"textfile"=>nil, "foo"=>nil}
+      end
+
+      # FIXME to_xml should work like to_json
+      it "should return valid XML when to_xml is called when image is present" do
+        @event[:image] = 'test.jpeg'
+        @event.save
+        @event.reload
+
+        Hash.from_xml(@event.to_xml)["event#{$arclass}"]["image"].should == "test.jpeg"
+      end
     end
 
     describe '#image=' do
