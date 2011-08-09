@@ -279,6 +279,18 @@ describe CarrierWave::Uploader do
         @uploader.thumb.should be_present
         @uploader.preview.should be_blank
        end
+
+       it "should not cache file twice when store! called with a file" do
+         @uploader_class.process :banana
+         @uploader.thumb.class.process :banana
+
+         @uploader.should_receive(:banana).at_least(:once).at_most(:once).and_return(true)
+         @uploader.thumb.should_receive(:banana).at_least(:once).at_most(:once).and_return(true)
+
+         @uploader.store!(@file)
+         @uploader.store_path.should == 'uploads/test.jpg'
+         @uploader.thumb.store_path.should == 'uploads/thumb_test.jpg'
+       end
     end
 
     describe '#recreate_versions!' do

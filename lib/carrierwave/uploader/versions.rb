@@ -26,6 +26,9 @@ module CarrierWave
         self.versions = {}
         self.version_names = []
 
+        attr_accessor :parent_cache_id
+
+        after :cache, :assign_parent_cache_id
         after :cache, :cache_versions!
         after :store, :store_versions!
         after :remove, :remove_versions!
@@ -179,6 +182,11 @@ module CarrierWave
       end
 
     private
+      def assign_parent_cache_id(file)
+        active_versions.each do |name, uploader|
+          uploader.parent_cache_id = @cache_id
+        end
+      end
 
       def active_versions
         versions.select do |name, uploader|
