@@ -287,7 +287,10 @@ describe CarrierWave::Uploader do
          @uploader.should_receive(:banana).at_least(:once).at_most(:once).and_return(true)
          @uploader.thumb.should_receive(:banana).at_least(:once).at_most(:once).and_return(true)
          
+#         puts '-------'
          @uploader.store!(@file)
+#         puts '-------'
+                  
          @uploader.store_path.should == 'uploads/test.jpg'
          @uploader.thumb.store_path.should == 'uploads/thumb_test.jpg'
        end
