@@ -21,15 +21,13 @@ module CarrierWave
     #
     def uploaders
       @uploaders ||= {}
-      @uploaders = superclass.uploaders.merge(@uploaders)
-    rescue NoMethodError
+      @uploaders = superclass.uploaders.merge(@uploaders) if superclass.respond_to?(:uploaders)
       @uploaders
     end
 
     def uploader_options
       @uploader_options ||= {}
-      @uploader_options = superclass.uploader_options.merge(@uploader_options)
-    rescue NoMethodError
+      @uploader_options = superclass.uploader_options.merge(@uploader_options) if superclass.respond_to?(:uploader_options)
       @uploader_options
     end
 
