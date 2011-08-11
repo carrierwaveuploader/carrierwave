@@ -487,6 +487,21 @@ class AvatarUploader < CarrierWave::Uploader::Base
 end
 ```
 
+The UK Rackspace Cloud doesn’t have the same auth server as the US Cloud.
+In case you are using Rackspace UK, you have to adjust the Auth URL:
+
+``` ruby
+CarrierWave.configure do |config|
+  config.fog_credentials = {
+    :provider           => 'Rackspace',
+    :rackspace_username => 'xxxxxx',
+    :rackspace_api_key  => 'yyyyyy'
+    :rackspace_auth_url => 'lon.auth.api.rackspacecloud.com'
+  }
+  config.fog_directory = 'name_of_directory'
+end
+```
+
 That's it! You can still use the `CarrierWave::Uploader#url` method to return
 the url to the file on Rackspace Cloud Files.
 
