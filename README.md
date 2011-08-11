@@ -479,26 +479,18 @@ of this information.
 config.fog_host = "c000000.cdn.rackspacecloud.com"
 ```
 
+The UK Rackspace Cloud doesn’t have the same auth server as the US Cloud.
+In case you are using Rackspace UK, you have to adjust the Auth URL:
+
+``` ruby
+config.rackspace_auth_url = 'lon.auth.api.rackspacecloud.com'
+```
+
 In your uploader, set the storage to :fog
 
 ``` ruby
 class AvatarUploader < CarrierWave::Uploader::Base
   storage :fog
-end
-```
-
-The UK Rackspace Cloud doesn’t have the same auth server as the US Cloud.
-In case you are using Rackspace UK, you have to adjust the Auth URL:
-
-``` ruby
-CarrierWave.configure do |config|
-  config.fog_credentials = {
-    :provider           => 'Rackspace',
-    :rackspace_username => 'xxxxxx',
-    :rackspace_api_key  => 'yyyyyy'
-    :rackspace_auth_url => 'lon.auth.api.rackspacecloud.com'
-  }
-  config.fog_directory = 'name_of_directory'
 end
 ```
 
