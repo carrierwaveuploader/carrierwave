@@ -558,18 +558,6 @@ end
 Check out the manipulate! method, which makes it easy for you to write your own
 manipulation methods.
 
-## Using ImageScience
-
-ImageScience works the same way as RMagick.
-
-``` ruby
-class AvatarUploader < CarrierWave::Uploader::Base
-  include CarrierWave::ImageScience
-
-  process :resize_to_fill => [200, 200]
-end
-```
-
 ## Using MiniMagick
 
 MiniMagick is similar to RMagick but performs all the operations using the 'mogrify'
