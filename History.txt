@@ -1,4 +1,4 @@
-=== Unreleased https://github.com/jnicklas/carrierwave/compare/v0.5.6...master
+=== Version 0.5.7 2011-08-12
 
 * [BREAKING CHANGE] Extracted Mongoid support into a separate gem (carrierwave-mongoid) [jnicklas]
 * [BREAKING CHANGE] Remove ImageScience support due to lack maintenance and 1.9.2 compatibility [jnicklas]
