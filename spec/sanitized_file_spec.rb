@@ -162,8 +162,8 @@ describe CarrierWave::SanitizedFile do
 
     before do
       @sanitized_file = CarrierWave::SanitizedFile.new(nil)
-      regexp = RUBY_VERSION >= '1.9' ? '[^[:word:]\.\-\+]' : '[^ёЁа-яА-Яa-zA-Zà-üÀ-Ü0-9\.\-\+_]'
-      @sanitized_file.stub(:sanitize_regexp).and_return(Regexp.new(regexp))
+      regexp = RUBY_VERSION >= '1.9' ? Regexp.new('[^[:word:]\.\-\+]') : /[^éôёЁа-яА-Яa-zA-Zà-üÀ-Ü0-9\.\-\+_]/u
+      @sanitized_file.stub(:sanitize_regexp).and_return(regexp)
     end
 
     it "should default to the original filename if it is valid" do
