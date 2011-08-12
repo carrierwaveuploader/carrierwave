@@ -1,8 +1,13 @@
 === Unreleased https://github.com/jnicklas/carrierwave/compare/v0.5.6...master
 
-* [changed] Combine delete_tmp_file_after_storage and delete_cache_id_after_storage options [bensie]
-* [changed] cached and then remote-uploaded file will have no content_type, use CarrierWave::MimeTypes processor instead [trevorturk]
+* [BREAKING CHANGE] Extracted Mongoid support into a separate gem (carrierwave-mongoid) [jnicklas]
+* [BREAKING CHANGE] Remove ImageScience support due to lack maintenance and 1.9.2 compatibility [jnicklas]
+* [BREAKING CHANGE] Combine delete_tmp_file_after_storage and delete_cache_id_after_storage options [bensie]
+* [changed] Cached and then remote-uploaded file will no longer have a content_type, please use CarrierWave::MimeTypes processor instead [trevorturk]
+* [changed] Allow writing over a previously assigned file when retrieving a remote file [Florent2]
 * [fixed] Fixed exception when nested or double-embedded Mongoid documents are saved [potatosalad]
+* [fixed] Fixed that store! can call process! twice [gzigzigzeo]
+* [fixed] Performance enhancements by reducing use of rescue [jamescook]
 
 === Version 0.5.6 2011-07-12
 
