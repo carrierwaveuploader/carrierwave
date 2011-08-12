@@ -5,6 +5,7 @@ require 'spec_helper'
 describe CarrierWave::Uploader do
 
   before do
+    FileUtils.rm_rf(public_path)
     @uploader_class = Class.new(CarrierWave::Uploader::Base)
     @uploader = @uploader_class.new
   end
