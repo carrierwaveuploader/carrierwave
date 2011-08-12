@@ -59,15 +59,14 @@ uploader.retrieve_from_store!('my_file.png')
 ```
 
 CarrierWave gives you a `store` for permanent storage, and a `cache` for
-temporary storage. You can use different stores, at the moment a filesystem
-store, an Amazon S3 store, a Rackspace Cloud Files store, and a store for
-MongoDB's GridFS are bundled.
+temporary storage. You can use different stores, including filesystem
+and cloud storage.
 
 Most of the time you are going to want to use CarrierWave together with an ORM.
 It is quite simple to mount uploaders on columns in your model, so you can
 simply assign files and get going:
 
-### ActiveRecord, Mongoid
+### ActiveRecord
 
 Make sure you are loading CarrierWave after loading your ORM, otherwise you'll
 need to require the relevant extension manually, e.g.:
@@ -90,8 +89,6 @@ class User
 end
 ```
 
-This works the same with all supported ORMs.
-
 Now you can cache files by assigning them to the attribute, they will
 automatically be stored when the record is saved.
 
@@ -105,15 +102,12 @@ u.avatar.current_path # => 'path/to/file.png'
 u.avatar_identifier # => 'file.png'
 ```
 
-If using Mongoid, note that embedded documents files aren't saved when parent documents are saved.
-You must explicitly call save on embedded documents in order to save their attached files.
-You can read more about this [here](https://github.com/jnicklas/carrierwave/issues#issue/81)
+### DataMapper, Mongoid, Sequel
 
-### DataMapper, Sequel
-
-Other ORM support has been extracted into separate gems. Learn more:
+Other ORM support has been extracted into separate gems:
 
 * [carrierwave-datamapper](https://github.com/jnicklas/carrierwave-datamapper)
+* [carrierwave-mongoid](https://github.com/jnicklas/carrierwave-mongoid)
 * [carrierwave-sequel](https://github.com/jnicklas/carrierwave-sequel)
 
 There are more extensions listed in [the wiki](https://github.com/jnicklas/carrierwave/wiki)
@@ -527,38 +521,6 @@ end
 
 That's it! You can still use the `CarrierWave::Uploader#url` method to return
 the url to the file on Google.
-
-## Using MongoDB's GridFS store
-
-You'll need to configure the database and host to use:
-
-``` ruby
-CarrierWave.configure do |config|
-  config.grid_fs_database = 'my_mongo_database'
-  config.grid_fs_host = 'mongo.example.com'
-end
-```
-
-The defaults are 'carrierwave' and 'localhost'.
-
-And then in your uploader, set the storage to `:grid_fs`:
-
-``` ruby
-class AvatarUploader < CarrierWave::Uploader::Base
-  storage :grid_fs
-end
-```
-
-Since GridFS doesn't make the files available via HTTP, you'll need to stream
-them yourself. In Rails for example, you could use the `send_data` method. You
-can tell CarrierWave the URL you will serve your images from, allowing it to
-generate the correct URL, by setting eg:
-
-``` ruby
-CarrierWave.configure do |config|
-  config.grid_fs_access_url = "/image/show"
-end
-```
 
 ## Using RMagick
 
