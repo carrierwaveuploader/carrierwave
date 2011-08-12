@@ -107,5 +107,3 @@ elsif defined?(Sinatra)
   CarrierWave.root = Sinatra::Application.public
 
 end
-
-require 'carrierwave/orm/mongoid' if defined?(Mongoid)
