@@ -1,8 +1,10 @@
 # encoding: utf-8
 
-# not sure why we need to do this
-require 'sqlite3/sqlite3_native'
-require 'sqlite3'
+unless defined?(JRUBY_VERSION)
+  # not sure why we need to do this
+  require 'sqlite3/sqlite3_native'
+  require 'sqlite3'
+end
 
 require 'active_record'
 require 'carrierwave/mount'
