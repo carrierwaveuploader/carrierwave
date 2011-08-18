@@ -7,3 +7,7 @@ rvm:
  - jruby
  - rbx
  - rbx-2.0
+
+branches:
+  only:
+    - jruby-sqlite3
