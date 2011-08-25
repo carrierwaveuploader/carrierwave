@@ -124,10 +124,14 @@ module CarrierWave
 
         def public_url
           scheme = use_ssl? ? 'https' : 'http'
-          if cnamed?
-            ["#{scheme}://#{bucket}", path].compact.join('/')
+          if use_ssl?
+            ["#{scheme}://s3.amazonaws.com", "#{bucket}", path].join("/")
           else
-            ["#{scheme}://#{bucket}.s3.amazonaws.com", path].compact.join('/')
+            if cnamed?
+              ["#{scheme}://#{bucket}", path].compact.join('/')
+            else
+              ["#{scheme}://#{bucket}.s3.amazonaws.com", path].compact.join('/')
+            end
           end
         end
 

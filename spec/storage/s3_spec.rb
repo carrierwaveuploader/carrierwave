@@ -80,6 +80,14 @@ if ENV['REMOTE'] == 'true'
           @s3_file.url.should == 'http://foo.bar/uploads/bar.txt'
         end
       end
+      
+      context "with ssl enabled" do
+        it "should use the long form of the url with the path" do
+          @uploader.stub!(:s3_bucket).and_return('foo.bar')
+          @uploader.stub!(:s3_use_ssl).and_return(true)
+          @s3_file.url.should == 'https://s3.amazonaws.com/foo.bar/uploads/bar.txt'
+        end
+      end
 
       it "should be deletable" do
         @s3_file.delete
