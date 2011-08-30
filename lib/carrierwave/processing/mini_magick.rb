@@ -32,16 +32,15 @@ module CarrierWave
   #     class MyUploader < CarrierWave::Uploader::Base
   #       include CarrierWave::MiniMagick
   #
-  #       process :do_stuff => 10.0
+  #       process :radial_blur => 10
   #
-  #       def do_stuff(blur_factor)
+  #       def radial_blur(amount)
   #         manipulate! do |img|
-  #           img = img.sepiatone
-  #           img = img.auto_orient
-  #           img = img.radial_blur blur_factor
+  #           img.radial_blur(amount)
+  #           img = yield(img) if block_given?
+  #           img
   #         end
   #       end
-  #     end
   #
   # === Note
   #
