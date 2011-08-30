@@ -217,6 +217,48 @@ class MyUploader < CarrierWave::Uploader::Base
 end
 ```
 
+## File Content-Types
+
+CarrierWave tries to determine a file's content-type automatically. This is
+done by attempting to call `content_type` on the file, and examining the
+file's extension. If neither approach results in an estimated content-type,
+CarrierWave leaves the file's content-type as `nil`.
+
+In Rails applications, form params usually provide the file's content-type.
+CarrierWave will pick up that content-type automatically, and pass to the
+storage service (Eg: Fog).
+
+### Setting Specific Content-Types
+
+If you're finding that your files' content-type is not being set correctly,
+you can configure your uploaders to use `CarrierWave::MimeTypes`. This will
+examine the file's contents and determine the correct content-type. To do
+this, first require `carrierwave/processing/mime_types`. Eg:
+
+``` ruby
+require 'carrierwave/processing/mime_types'
+```
+
+Next, include `CarrierWave::MimeTypes` in your uploader, and add the 
+_set_content_type_ processor to your uploader. Eg:
+
+``` ruby
+class MyUploader < CarrierWave::Uploader::Base
+  include CarrierWave::MimeTypes
+
+  processor :set_content_type
+end
+```
+
+In Rails applications, the `require` is often put in an initializer.
+
+Note that this adds a dependency on the [mime gem](http://rubygems.org/gems/mime) .
+
+Typically, this should only matter if:
+
+1. You care about the content-type.
+2. You're storing your files in a Fog-backed storage service, such as S3.
+
 ## Making uploads work across form redisplays
 
 Often you'll notice that uploaded files disappear when a validation fails.
