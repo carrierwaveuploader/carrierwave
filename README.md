@@ -173,7 +173,7 @@ plugins or client-side software.
 
 ## Setting the content type
 
-If care about the content type of your files and notice that it's not being set
+If you care about the content type of your files and notice that it's not being set
 as expected, you can configure your uploaders to use `CarrierWave::MimeTypes`.
 This adds a dependency on the [mime-types](http://rubygems.org/gems/mime-types) gem,
 but is recommended when using fog, and fog already has a dependency on mime-types.
