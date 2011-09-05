@@ -8,7 +8,7 @@ module CarrierWave
         class_attribute :_storage, :instance_writer => false
 
         add_config :root
-        add_config :base_url
+        add_config :base_path
         add_config :permissions
         add_config :storage_engines
         add_config :s3_access_policy
@@ -151,7 +151,7 @@ module CarrierWave
             config.validate_integrity = true
             config.validate_processing = true
             config.root = CarrierWave.root
-            config.base_url = CarrierWave.base_url
+            config.base_path = CarrierWave.base_path
             config.enable_processing = true
             config.ensure_multipart_form = true
           end
