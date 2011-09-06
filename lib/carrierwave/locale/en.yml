@@ -2,4 +2,4 @@ en:
   errors:
     messages:
       carrierwave_processing_error: failed to be processed
-      carrierwave_integrity_error: is not an allowed file type
+      carrierwave_integrity_error: is not of an allowed file type
