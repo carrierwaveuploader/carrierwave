@@ -48,4 +48,16 @@ describe CarrierWave::MimeTypes do
 
   end
 
+  describe "test errors" do
+    context "invalid mime type" do
+      before do
+        @instance.file.content_type = nil
+        # TODO: somehow force a ::MIME::InvalidContentType error when set_content_type is called.
+      end
+
+      it "should raise a MIME::InvalidContentType error" do
+        # lambda {@instance.set_content_type}.should raise_exception(::MIME::InvalidContentType, /^Failed to process file with MIME::Types, maybe not valid content-type\? Original Error:/)
+      end
+    end
+  end
 end
