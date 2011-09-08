@@ -184,7 +184,7 @@ require 'carrierwave/processing/mime_types'
 class MyUploader < CarrierWave::Uploader::Base
   include CarrierWave::MimeTypes
 
-  processor :set_content_type
+  process :set_content_type
 end
 ```
 
