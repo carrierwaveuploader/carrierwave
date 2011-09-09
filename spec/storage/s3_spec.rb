@@ -66,18 +66,32 @@ if ENV['REMOTE'] == 'true'
       end
 
       context "without cnamed bucket" do
-        it "should have a Euro supported Amazon URL" do
+        it "should have a Euro supported Amazon URL for http" do
           @uploader.stub!(:s3_cnamed).and_return(false)
           @uploader.stub!(:s3_bucket).and_return('foo.bar')
           @s3_file.url.should == "http://foo.bar.s3.amazonaws.com/uploads/bar.txt"
         end
+
+        it "should return a Amazon URL without subdomain for https" do
+          @uploader.stub!(:s3_cnamed).and_return(true)
+          @uploader.stub!(:s3_bucket).and_return('foo.bar')
+          @uploader.stub!(:s3_use_ssl).and_return(true)
+          @s3_file.url.should == "https://s3.amazonaws.com/foo.bar/uploads/bar.txt"
+        end
       end
 
       context "with cnamed bucket" do
-        it "should have a CNAMED URL" do
+        it "should have a CNAMED URL for http" do
           @uploader.stub!(:s3_cnamed).and_return(true)
           @uploader.stub!(:s3_bucket).and_return('foo.bar')
           @s3_file.url.should == 'http://foo.bar/uploads/bar.txt'
+        end
+
+        it "should return a Amazon URL without subdomain for https" do
+          @uploader.stub!(:s3_cnamed).and_return(true)
+          @uploader.stub!(:s3_bucket).and_return('foo.bar')
+          @uploader.stub!(:s3_use_ssl).and_return(true)
+          @s3_file.url.should == "https://s3.amazonaws.com/foo.bar/uploads/bar.txt"
         end
       end
 
