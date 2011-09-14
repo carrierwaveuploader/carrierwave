@@ -3,6 +3,8 @@
 module CarrierWave
   module Uploader
     module Url
+      extend ActiveSupport::Concern
+      include CarrierWave::Uploader::Configuration
 
       ##
       # === Returns
@@ -13,7 +15,7 @@ module CarrierWave
         if file.respond_to?(:url) and not file.url.blank?
           file.url
         elsif current_path
-          File.expand_path(current_path).gsub(File.expand_path(root), '')
+          (base_path || "") + File.expand_path(current_path).gsub(File.expand_path(root), '')
         end
       end
 
