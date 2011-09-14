@@ -106,8 +106,7 @@ module CarrierWave
             end
 
             def #{name}
-              value = self.class.#{name}
-              value.instance_of?(Proc) ? value.call : value
+              self.class.#{name}
             end
           RUBY
         end
@@ -150,7 +149,7 @@ module CarrierWave
             config.ignore_processing_errors = true
             config.validate_integrity = true
             config.validate_processing = true
-            config.root = lambda { CarrierWave.root }
+            config.root = CarrierWave.root
             config.enable_processing = true
             config.ensure_multipart_form = true
           end
