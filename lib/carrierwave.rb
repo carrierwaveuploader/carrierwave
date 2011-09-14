@@ -15,7 +15,7 @@ require 'active_support/memoizable'
 module CarrierWave
 
   class << self
-    attr_accessor :root
+    attr_accessor :root, :base_path
 
     def configure(&block)
       CarrierWave::Uploader::Base.configure(&block)
@@ -92,6 +92,7 @@ elsif defined?(Rails)
     class Railtie < Rails::Railtie
       initializer "carrierwave.setup_paths" do
         CarrierWave.root = Rails.root.join(Rails.public_path).to_s
+        CarrierWave.base_path = ENV['RAILS_RELATIVE_URL_ROOT']
       end
 
       initializer "carrierwave.active_record" do
