@@ -4,6 +4,5 @@ rvm:
  - 1.9.3
  - ruby-head
  - ree
- - jruby
  - rbx
  - rbx-2.0
