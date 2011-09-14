@@ -18,10 +18,6 @@ describe CarrierWave::Uploader do
 
   describe '#root' do
 
-    it "should default to the config option" do
-      @uploader.root.should == public_path
-    end
-    
     it "should default to the current value of CarrierWave.root" do
       @uploader.root.should be_nil
       CarrierWave.root = public_path
