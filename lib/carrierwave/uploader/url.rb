@@ -32,14 +32,12 @@ module CarrierWave
       end
 
       ##
-      # FIXME to_xml should work like to_json, but this is the best we've been able to do so far.
-      # This hack fixes issue #337.
-      #
       # === Returns
       #
-      # [nil]
+      # [XML] the locations where this file and versions are accessible via a url
       #
       def to_xml(options = nil)
+        JSON.parse(self.to_json).to_xml
       end
 
     end # Url

@@ -93,14 +93,12 @@ describe CarrierWave::ActiveRecord do
         JSON.parse(@event.to_json)["event#{$arclass}"]["image"].should == {"url"=>"/uploads/test.jpeg"}
       end
 
-      # FIXME to_xml should work like to_json
       it "should return valid XML when to_xml is called when image is nil" do
         @event[:image].should be_nil
 
-        Hash.from_xml(@event.to_xml)["event#{$arclass}"].except("id").should == {"textfile"=>nil, "foo"=>nil}
+        Hash.from_xml(@event.to_xml)["event#{$arclass}"]["image"].should == nil
       end
 
-      # FIXME to_xml should work like to_json
       it "should return valid XML when to_xml is called when image is present" do
         @event[:image] = 'test.jpeg'
         @event.save
