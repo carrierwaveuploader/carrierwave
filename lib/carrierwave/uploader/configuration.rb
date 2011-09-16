@@ -40,6 +40,9 @@ module CarrierWave
         add_config :delete_tmp_file_after_storage
         add_config :remove_previously_stored_files_after_update
 
+        # file
+        add_config :file_directory
+
         # fog
         add_config :fog_attributes
         add_config :fog_credentials
@@ -138,6 +141,7 @@ module CarrierWave
             config.grid_fs_database = 'carrierwave'
             config.grid_fs_host = 'localhost'
             config.grid_fs_port = 27017
+            config.file_directory = '.'
             config.fog_attributes = {}
             config.fog_credentials = {}
             config.fog_public = true
