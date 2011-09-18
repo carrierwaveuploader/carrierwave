@@ -97,7 +97,7 @@ describe CarrierWave::ActiveRecord do
       it "should return valid XML when to_xml is called when image is nil" do
         @event[:image].should be_nil
 
-        Hash.from_xml(@event.to_xml)["event#{$arclass}"].should == {"textfile"=>nil, "id"=>nil, "foo"=>nil}
+        Hash.from_xml(@event.to_xml)["event#{$arclass}"].except("id").should == {"textfile"=>nil, "foo"=>nil}
       end
 
       # FIXME to_xml should work like to_json

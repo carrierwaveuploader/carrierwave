@@ -3,6 +3,8 @@
 This gem provides a simple and extremely flexible way to upload files from Ruby applications.
 It works well with Rack based web applications, such as Ruby on Rails.
 
+[![Build Status](https://secure.travis-ci.org/jnicklas/carrierwave.png)](http://travis-ci.org/jnicklas/carrierwave)
+
 ## Information
 
 * RDoc documentation [available on RubyDoc.info](http://rubydoc.info/gems/carrierwave/frames)
@@ -173,7 +175,7 @@ plugins or client-side software.
 
 ## Setting the content type
 
-If care about the content type of your files and notice that it's not being set
+If you care about the content type of your files and notice that it's not being set
 as expected, you can configure your uploaders to use `CarrierWave::MimeTypes`.
 This adds a dependency on the [mime-types](http://rubygems.org/gems/mime-types) gem,
 but is recommended when using fog, and fog already has a dependency on mime-types.
@@ -184,7 +186,7 @@ require 'carrierwave/processing/mime_types'
 class MyUploader < CarrierWave::Uploader::Base
   include CarrierWave::MimeTypes
 
-  processor :set_content_type
+  process :set_content_type
 end
 ```
 
