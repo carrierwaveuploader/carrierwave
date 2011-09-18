@@ -143,26 +143,52 @@ describe CarrierWave::ActiveRecord do
               %w(txt)
             end
           end
-          @event.image = stub_file('test.jpg')
-        end
-
-        it "should make the record invalid when an integrity error occurs" do
-          @event.should_not be_valid
         end
 
         it "should use I18n for integrity error messages" do
+          # Localize the error message to Dutch
+          change_locale_and_store_translations(:nl, :errors => {
+            :messages => {
+              :extension_white_list_error => "Het opladen van %{extension} bestanden is niet toe gestaan. Geaccepteerde types: %{allowed_types}"
+            }
+          }) do
+            # Assigning image triggers check_whitelist! and thus should be inside change_locale_and_store_translations
+            @event.image = stub_file('test.jpg')
+            @event.should_not be_valid
+            @event.valid?
+            @event.errors[:image].should == ['Het opladen van "jpg" bestanden is niet toe gestaan. Geaccepteerde types: ["txt"]']
+          end
+        end
+      end
+
+      context 'when validating processing' do
+        before do
+          @uploader.class_eval do
+            process :monkey
+            def monkey
+              raise CarrierWave::ProcessingError
+            end
+          end
+          @event.image = stub_file('test.jpg')
+        end
+
+        it "should make the record invalid when a processing error occurs" do
+          @event.should_not be_valid
+        end
+
+        it "should use I18n for processing errors without messages" do
           @event.valid?
-          @event.errors[:image].should == ['is not an allowed file type']
+          @event.errors[:image].should == ['failed to be processed']
 
           change_locale_and_store_translations(:pt, :activerecord => {
             :errors => {
               :messages => {
-                :carrierwave_integrity_error => 'tipo de imagem não permitido.'
+                :carrierwave_processing_error => 'falha ao processar imagem.'
               }
             }
           }) do
             @event.should_not be_valid
-            @event.errors[:image].should == ['tipo de imagem não permitido.']
+            @event.errors[:image].should == ['falha ao processar imagem.']
           end
         end
       end
@@ -182,9 +208,9 @@ describe CarrierWave::ActiveRecord do
           @event.should_not be_valid
         end
 
-        it "should use I18n for processing error messages" do
+        it "should use the error's messages for processing errors with messages" do
           @event.valid?
-          @event.errors[:image].should == ['failed to be processed']
+          @event.errors[:image].should == ['Ohh noez!']
 
           change_locale_and_store_translations(:pt, :activerecord => {
             :errors => {
@@ -194,11 +220,10 @@ describe CarrierWave::ActiveRecord do
             }
           }) do
             @event.should_not be_valid
-            @event.errors[:image].should == ['falha ao processar imagem.']
+            @event.errors[:image].should == ['Ohh noez!']
           end
         end
       end
-
     end
 
     describe '#save' do
