@@ -227,7 +227,7 @@ module CarrierWave
         def store(new_file)
           @content_type ||= new_file.content_type
           @file = directory.files.create({
-            :body         => new_file.read,
+            :body         => new_file.exists? ? new_file.to_file : new_file.read,
             :content_type => @content_type,
             :key          => path,
             :public       => @uploader.fog_public
