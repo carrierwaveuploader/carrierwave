@@ -224,6 +224,7 @@ module CarrierWave
     # [File] a File object representing the SanitizedFile
     #
     def to_file
+      return @file if @file.is_a?(File)
       File.open(@file) if exists?
     end
 
