@@ -383,6 +383,20 @@ describe CarrierWave::SanitizedFile do
         File.exists?(@sanitized_file.path).should be_false
       end
     end
+
+    describe '#to_file' do
+      it "should return a File object" do
+        @sanitized_file.to_file.should be_a(File)
+      end
+
+      it "should have the same path as the SanitizedFile" do
+        @sanitized_file.to_file.path.should == @sanitized_file.path
+      end
+
+      it "should have the same contents as the SantizedFile" do
+        @sanitized_file.to_file.read.should == @sanitized_file.read
+      end
+    end
   end
 
   describe "with a valid Hash" do
@@ -467,6 +481,12 @@ describe CarrierWave::SanitizedFile do
     describe '#delete' do
       it "should not raise an error" do
         running { @sanitized_file.delete }.should_not raise_error
+      end
+    end
+
+    describe '#to_file' do
+      it "should be nil" do
+        @sanitized_file.to_file.should be_nil
       end
     end
 
@@ -614,6 +634,12 @@ describe CarrierWave::SanitizedFile do
         running { @empty.delete }.should_not raise_error
       end
     end
+
+    describe '#to_file' do
+      it "should be nil" do
+        @empty.to_file.should be_nil
+      end
+    end
   end
 
   describe "that is an empty string" do
@@ -678,6 +704,12 @@ describe CarrierWave::SanitizedFile do
     describe '#delete' do
       it "should not raise an error" do
         running { @empty.delete }.should_not raise_error
+      end
+    end
+
+    describe '#to_file' do
+      it "should be nil" do
+        @empty.to_file.should be_nil
       end
     end
   end
