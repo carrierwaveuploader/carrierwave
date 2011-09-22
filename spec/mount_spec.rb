@@ -407,7 +407,7 @@ describe CarrierWave::Mount do
         @instance.image = stub_file('test.jpg')
         e = @instance.image_integrity_error
         e.should be_an_instance_of(CarrierWave::IntegrityError)
-        e.message.grep(/^You are not allowed to upload/).should be_true
+        e.message.lines.grep(/^You are not allowed to upload/).should be_true
       end
     end
 
