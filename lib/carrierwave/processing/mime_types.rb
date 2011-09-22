@@ -51,7 +51,7 @@ module CarrierWave
         end
       end
     rescue ::MIME::InvalidContentType => e
-      raise CarrierWave::ProcessingError.new("Failed to process file with MIME::Types, maybe not valid content-type? Original Error: #{e}")
+      raise CarrierWave::ProcessingError, I18n.translate(:"errors.messages.mime_types_processing_error", :e => e)
     end
 
   end # MimeTypes
