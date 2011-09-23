@@ -225,7 +225,7 @@ module CarrierWave
     #
     def to_file
       return @file if @file.is_a?(File)
-      File.open(@file) if exists?
+      File.open(path) if exists?
     end
 
     ##
