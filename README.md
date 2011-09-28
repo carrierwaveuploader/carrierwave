@@ -489,7 +489,7 @@ This is *highly* recommended, as without it every request requires a lookup
 of this information.
 
 ``` ruby
-config.fog_host = "c000000.cdn.rackspacecloud.com"
+config.fog_host = "http://c000000.cdn.rackspacecloud.com"
 ```
 
 The UK Rackspace Cloud doesn’t have the same auth server as the US Cloud.
