@@ -105,6 +105,12 @@ elsif defined?(Rails)
 
 elsif defined?(Sinatra)
 
-  CarrierWave.root = Sinatra::Application.public
+  CarrierWave.root = if Sinatra::Application.respond_to?(:public_folder)
+    # Sinatra >= 1.3
+    Sinatra::Application.public_folder
+  else
+    # Sinatra < 1.3
+    Sinatra::Application.public
+  end
 
 end
