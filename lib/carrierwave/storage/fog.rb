@@ -225,12 +225,13 @@ module CarrierWave
         #
         # [Boolean] true on success or raises error
         def store(new_file)
+          delete if self.exists?
           @content_type ||= new_file.content_type
           @file = directory.files.create({
-            :body         => new_file.read,
-            :content_type => @content_type,
-            :key          => path,
-            :public       => @uploader.fog_public
+              :body => new_file.read,
+              :content_type => @content_type,
+              :key => path,
+              :public => @uploader.fog_public
           }.merge(@uploader.fog_attributes))
           true
         end
@@ -250,19 +251,19 @@ module CarrierWave
           else
             # AWS/Google optimized for speed over correctness
             case @uploader.fog_credentials[:provider]
-            when 'AWS'
-              # if directory is a valid subdomain, use that style for access
-              if @uploader.fog_directory.to_s =~ /^(?:[a-z]|\d(?!\d{0,2}(?:\.\d{1,3}){3}$))(?:[a-z0-9]|\.(?![\.\-])|\-(?![\.])){1,61}[a-z0-9]$/
-                "https://#{@uploader.fog_directory}.s3.amazonaws.com/#{path}"
+              when 'AWS'
+                # if directory is a valid subdomain, use that style for access
+                if @uploader.fog_directory.to_s =~ /^(?:[a-z]|\d(?!\d{0,2}(?:\.\d{1,3}){3}$))(?:[a-z0-9]|\.(?![\.\-])|\-(?![\.])){1,61}[a-z0-9]$/
+                  "https://#{@uploader.fog_directory}.s3.amazonaws.com/#{path}"
+                else
+                  # directory is not a valid subdomain, so use path style for access
+                  "https://s3.amazonaws.com/#{@uploader.fog_directory}/#{path}"
+                end
+              when 'Google'
+                "https://commondatastorage.googleapis.com/#{@uploader.fog_directory}/#{path}"
               else
-                # directory is not a valid subdomain, so use path style for access
-                "https://s3.amazonaws.com/#{@uploader.fog_directory}/#{path}"
-              end
-            when 'Google'
-              "https://commondatastorage.googleapis.com/#{@uploader.fog_directory}/#{path}"
-            else
-              # avoid a get by just using local reference
-              directory.files.new(:key => path).public_url
+                # avoid a get by just using local reference
+                directory.files.new(:key => path).public_url
             end
           end
         end
@@ -284,7 +285,18 @@ module CarrierWave
           end
         end
 
-      private
+        ##
+        # Return if the remote file exists
+        #
+        # === Returns
+        #
+        # [Boolean] true if the file exists
+        #
+        def exists?
+          !file.nil?
+        end
+
+        private
 
         ##
         # connection to service
@@ -307,8 +319,8 @@ module CarrierWave
         def directory
           @directory ||= begin
             connection.directories.new(
-              :key    => @uploader.fog_directory,
-              :public => @uploader.fog_public
+                :key => @uploader.fog_directory,
+                    :public => @uploader.fog_public
             )
           end
         end
