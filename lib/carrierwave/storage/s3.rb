@@ -132,7 +132,7 @@ module CarrierWave
         end
 
         def authenticated_url
-          connection.get_object_url(bucket, path, Time.now + authentication_timeout)
+          connection.get_object_https_url(bucket, path, Time.now + authentication_timeout)
         end
 
         def store(file)
