@@ -509,7 +509,33 @@ describe CarrierWave::SanitizedFile do
     end
 
   end
+  
+  describe "with a valid File object and an empty file" do
+    before do
+      FileUtils.cp(file_path('test.jpg'), file_path('llama.jpg'))
+      FileUtils.rm file_path('llama.jpg')
+      FileUtils.touch file_path('llama.jpg')
+      @sanitized_file = CarrierWave::SanitizedFile.new(stub_file('llama.jpg', 'image/jpeg'))
+      @sanitized_file.should_not be_empty
+    end
 
+    it_should_behave_like "all valid sanitized files that are stored on disk"
+
+    describe '#is_path?' do
+      it "should be false" do
+        @sanitized_file.is_path?.should be_false
+      end
+    end
+
+    describe '#path' do
+      it "should return the path of the file" do
+        @sanitized_file.path.should_not be_nil
+        @sanitized_file.path.should == file_path('llama.jpg')
+      end
+    end
+
+  end
+  
   describe "with a valid path" do
     before do
       FileUtils.cp(file_path('test.jpg'), file_path('llama.jpg'))
