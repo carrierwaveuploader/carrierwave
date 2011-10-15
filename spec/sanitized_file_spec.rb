@@ -32,14 +32,6 @@ describe CarrierWave::SanitizedFile do
       @sanitized_file.should be_empty
     end
 
-    it "should be empty for a file with a zero size" do
-      FileUtils.rm file_path('llama.jpg')
-      FileUtils.touch file_path('llama.jpg')
-
-      @sanitized_file = CarrierWave::SanitizedFile.new(File.open(file_path('llama.jpg')))
-      @sanitized_file.should be_empty
-    end
-
   end
 
   describe '#original_filename' do
