@@ -27,6 +27,7 @@ module CarrierWave
         add_config :store_dir
         add_config :cache_dir
         add_config :enable_processing
+        add_config :remove_previously_stored_files_after_update
 
         # Mounting
         add_config :ignore_integrity_errors
@@ -34,7 +35,7 @@ module CarrierWave
         add_config :validate_integrity
         add_config :validate_processing
         add_config :mount_on
-        
+
         configure do |config|
           config.permissions = 0644
           config.storage_engines = {
@@ -54,6 +55,7 @@ module CarrierWave
           config.grid_fs_port = 27017
           config.store_dir = 'uploads'
           config.cache_dir = 'uploads/tmp'
+          config.remove_previously_stored_files_after_update = true
           config.ignore_integrity_errors = true
           config.ignore_processing_errors = true
           config.validate_integrity = true
