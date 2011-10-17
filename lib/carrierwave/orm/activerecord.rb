@@ -22,6 +22,8 @@ module CarrierWave
       after_save "store_#{column}!"
       before_save "write_#{column}_identifier"
       after_destroy "remove_#{column}!"
+      before_update :"store_previous_model_for_#{column}"
+      after_save :"remove_previously_stored_#{column}"
     end
 
     ##
