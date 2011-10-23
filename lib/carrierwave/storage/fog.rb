@@ -226,6 +226,7 @@ module CarrierWave
         # [Boolean] true on success or raises error
         def store(new_file)
           fog_file = new_file.to_file
+          delete if self.exists?
           @content_type ||= new_file.content_type
           @file = directory.files.create({
             :body         => fog_file ? fog_file : new_file.read,
@@ -283,6 +284,17 @@ module CarrierWave
           else
             public_url
           end
+        end
+
+        ##
+        # Return if the remote file exists
+        #
+        # === Returns
+        #
+        # [Boolean] true if the file exists
+        #
+        def exists?
+          !file.nil?
         end
 
       private
