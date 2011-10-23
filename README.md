@@ -236,6 +236,38 @@ class MyUploader < CarrierWave::Uploader::Base
 end
 ```
 
+### Conditional versions
+
+Occasionally you want to restrict the creation of versions on certain
+properties within the model or based on the picture itself.
+
+``` ruby
+class MyUploader < CarrierWave::Uploader::Base
+
+  version :human, :if => :is_human?
+  version :monkey, :if => :is_monkey?
+  version :banner, :if => :is_landscape?
+
+protected
+
+  def is_human? picture
+    model.can_program?(:ruby)
+  end
+  
+  def is_monkey? picture
+    model.favorite_food == 'banana'
+  end
+  
+  def is_landscape? picture
+    image = MiniMagick::Image.open(picture.path)
+    image[:width] > image[:height]
+  end
+  
+end
+```
+
+The `model` variable points to the instance object the uploader is attached to.
+
 ## Making uploads work across form redisplays
 
 Often you'll notice that uploaded files disappear when a validation fails.
