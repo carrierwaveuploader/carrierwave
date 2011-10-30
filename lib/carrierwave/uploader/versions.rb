@@ -27,9 +27,9 @@ module CarrierWave
         self.version_names = []
 
         attr_accessor :parent_cache_id
-        attr_accessor :create_version_type
+        attr_accessor :create_type
 
-        before :create_versions, :assign_create_version_type
+        before :create_versions, :assign_create_type
 
         after :cache, :assign_parent_cache_id
         after :cache, :cache_versions!
@@ -37,7 +37,7 @@ module CarrierWave
         after :remove, :remove_versions!
         after :retrieve_from_cache, :retrieve_versions_from_cache!
         after :retrieve_from_store, :retrieve_versions_from_store!
-        after :create_versions, :assign_nil_to_create_version_type
+        after :create_versions, :assign_nil_to_create_type
       end
 
       module ClassMethods
@@ -222,10 +222,10 @@ module CarrierWave
         end
       end
 
-      def recursively_set_create_version_type_to_versions
+      def recursively_set_create_type_to_versions
         versions.each do |name, uploader|
-          uploader.create_version_type = @create_version_type
-          uploader.recursively_set_create_version_type_to_versions
+          uploader.create_type = @create_type
+          uploader.recursively_set_create_type_to_versions
         end
       end
 
@@ -245,8 +245,8 @@ module CarrierWave
 
       def type_condition(name, uploader)
         type = self.class.versions[name][:options][:type]
-        if uploader.create_version_type.present?
-          (uploader.create_version_type.include? type) || (uploader.create_version_type.include? :all)
+        if uploader.create_type.present?
+          (uploader.create_type.include? type) || (uploader.create_type.include? :all)
         else
           type.blank?
         end
@@ -289,13 +289,13 @@ module CarrierWave
         versions.each { |name, v| v.retrieve_from_store!(identifier) }
       end
 
-      def assign_create_version_type(*args)
-        @create_version_type = args.compact
-        recursively_set_create_version_type_to_versions
+      def assign_create_type(*args)
+        @create_type = args.compact
+        recursively_set_create_type_to_versions
       end
 
-      def assign_nil_to_create_version_type(*args)
-        assign_create_version_type(nil)
+      def assign_nil_to_create_type(*args)
+        assign_create_type(nil)
       end
 
     end # Versions

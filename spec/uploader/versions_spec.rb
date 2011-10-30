@@ -293,35 +293,35 @@ describe CarrierWave::Uploader do
         @uploader.thumb.store_path.should == 'uploads/thumb_test.jpg'
       end
 
-      it "should process version with type included to instance variable @create_version_type" do
+      it "should process version with type included to instance variable @create_type" do
         @uploader_class.version(:thumb)[:options][:type] = :delayed
-        @uploader.thumb.instance_variable_set('@create_version_type', [:delayed])
+        @uploader.thumb.instance_variable_set('@create_type', [:delayed])
         @uploader.store!(@file)
         @uploader.thumb.should be_present
       end
 
-      it "should process versions without type if @create_version_type is not set" do
+      it "should process versions without type if @create_type is not set" do
         @uploader_class.version(:thumb)[:options][:type].should be_nil
-        @uploader.thumb.instance_variable_get('@create_version_type').should be_nil
+        @uploader.thumb.instance_variable_get('@create_type').should be_nil
         @uploader.store!(@file)
         @uploader.thumb.should be_present
       end
 
-      it "should process all versions if the @create_version_type set to [:all]" do
+      it "should process all versions if the @create_type set to [:all]" do
         @uploader_class.version(:preview)[:options][:type] = :my_version
         @uploader_class.version(:thumb)[:options][:type].should be_nil
-        @uploader.thumb.instance_variable_set('@create_version_type', [:all])
-        @uploader.preview.instance_variable_set('@create_version_type', [:all])
+        @uploader.thumb.instance_variable_set('@create_type', [:all])
+        @uploader.preview.instance_variable_set('@create_type', [:all])
         @uploader.store!(@file)
         @uploader.thumb.should be_present
         @uploader.preview.should be_present
       end
 
-      it "should process versions with types included in @create_version_type" do
+      it "should process versions with types included in @create_type" do
         @uploader_class.version(:preview)[:options][:type] = :my_version
         @uploader_class.version(:thumb)[:options][:type]= :delayed
-        @uploader.thumb.instance_variable_set('@create_version_type', [:my_version, :delayed])
-        @uploader.preview.instance_variable_set('@create_version_type', [:my_version, :delayed])
+        @uploader.thumb.instance_variable_set('@create_type', [:my_version, :delayed])
+        @uploader.preview.instance_variable_set('@create_type', [:my_version, :delayed])
         @uploader.store!(@file)
         @uploader.thumb.should be_present
         @uploader.preview.should be_present
@@ -589,7 +589,7 @@ describe CarrierWave::Uploader do
           File.exists?(@uploader.preview.big.path).should == true
         end
 
-        it "should assign nil to create_version_type variable" do
+        it "should assign nil to create_type variable" do
           @uploader_class.class_eval {
             version :preview, :type => :delayed do
               version :middle, :type => :my_type
@@ -598,9 +598,9 @@ describe CarrierWave::Uploader do
           }
           @uploader.store!(@file)
           @uploader.create_versions!(:all)
-          @uploader.preview.create_version_type.should be_blank
-          @uploader.preview.middle.create_version_type.should be_blank
-          @uploader.preview.big.create_version_type.should be_blank
+          @uploader.preview.create_type.should be_blank
+          @uploader.preview.middle.create_type.should be_blank
+          @uploader.preview.big.create_type.should be_blank
         end
 
       end
