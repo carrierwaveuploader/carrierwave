@@ -23,7 +23,11 @@ module CarrierWave
       #
       def store!(file)
         path = ::File.expand_path(uploader.store_path, uploader.root)
-        file.copy_to(path, uploader.permissions)
+        if uploader.move_into_store
+          file.move_to(path, uploader.permissions)
+        else
+          file.copy_to(path, uploader.permissions)
+        end
       end
 
       ##

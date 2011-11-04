@@ -181,6 +181,7 @@ module CarrierWave
       end
       chmod!(new_path, permissions)
       self.file = new_path
+      self
     end
 
     ##

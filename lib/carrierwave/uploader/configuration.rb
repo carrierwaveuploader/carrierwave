@@ -38,6 +38,8 @@ module CarrierWave
         add_config :enable_processing
         add_config :ensure_multipart_form
         add_config :delete_tmp_file_after_storage
+        add_config :move_into_cache
+        add_config :move_into_store
         add_config :remove_previously_stored_files_after_update
 
         # fog
@@ -145,6 +147,8 @@ module CarrierWave
             config.store_dir = 'uploads'
             config.cache_dir = 'uploads/tmp'
             config.delete_tmp_file_after_storage = true
+            config.move_into_cache = false
+            config.move_into_store = false
             config.remove_previously_stored_files_after_update = true
             config.ignore_integrity_errors = true
             config.ignore_processing_errors = true
