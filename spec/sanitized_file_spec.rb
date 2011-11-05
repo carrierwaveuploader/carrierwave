@@ -279,6 +279,10 @@ describe CarrierWave::SanitizedFile do
         @sanitized_file.should have_permissions(0755)
       end
 
+      it "should return itself" do
+        @sanitized_file.move_to(file_path('gurr.png')).should == @sanitized_file
+      end
+
     end
 
     describe '#copy_to' do

@@ -133,6 +133,69 @@ describe CarrierWave::Uploader do
       end
 
     end
+
+    describe "with the move_to_cache option" do
+      
+      before do
+        ## make a copy
+        file = file_path('test.jpg')
+        tmpfile = file_path("test_move.jpeg")
+        FileUtils.rm_f(tmpfile)
+        FileUtils.cp(file, File.join(File.dirname(file), "test_move.jpeg"))
+        @tmpfile = File.open(tmpfile)
+
+        ## stub
+        CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+
+        @cached_path = public_path('uploads/tmp/20071201-1234-345-2255/test_move.jpeg')
+        @uploader_class.permissions = 777
+      end
+
+      after do
+        FileUtils.rm_f(@tmpfile)
+      end
+
+      context "set to true" do
+        before do
+          @uploader_class.move_to_cache = true
+        end
+
+        it "should move it from the upload dir to the tmp dir" do
+          original_path = @tmpfile.path
+          @uploader.cache!(@tmpfile)
+          @uploader.file.path.should == @cached_path
+          File.exist?(@cached_path).should be_true
+          File.exist?(original_path).should be_false
+        end
+
+        it "should use move_to() during cache!()" do
+          CarrierWave::SanitizedFile.any_instance.should_receive(:move_to).with(@cached_path, 777)
+          CarrierWave::SanitizedFile.any_instance.should_not_receive(:copy_to)
+          @uploader.cache!(@tmpfile)
+        end
+      end
+
+      context "set to false" do
+        before do
+          @uploader_class.move_to_cache = false
+        end
+
+        it "should copy it from the upload dir to the tmp dir" do
+          original_path = @tmpfile.path
+          @uploader.cache!(@tmpfile)
+          @uploader.file.path.should == @cached_path
+          File.exist?(@cached_path).should be_true
+          File.exist?(original_path).should be_true
+        end
+
+        it "should use copy_to() during cache!()" do
+          CarrierWave::SanitizedFile.any_instance.should_receive(:copy_to).with(@cached_path, 777)
+          CarrierWave::SanitizedFile.any_instance.should_not_receive(:move_to)
+          @uploader.cache!(@tmpfile)
+        end
+      end
+      
+    end
   end
 
   describe '#retrieve_from_cache!' do
