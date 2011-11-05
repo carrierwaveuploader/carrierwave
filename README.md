@@ -669,6 +669,29 @@ errors:
     carrierwave_integrity_error: 'Not an image.'
 ```
 
+## Large files
+
+By default, CarrierWave copies an uploaded file twice, first copying the file into the cache, then
+copying the file into the store.  For large files, this can be prohibitively time consuming.
+
+You may change this behavior by overriding either or both of the `move_to_cache` and 
+`move_to_store` methods:
+
+``` ruby
+class MyUploader < CarrierWave::Uploader::Base
+  def move_to_cache
+    true
+  end
+  def move_to_store
+    true
+  end
+end
+```
+
+When the `move_to_cache` and/or `move_to_store` methods return true, files will be moved (instead of copied) to the cache and store respectively.
+
+This has only been tested with the local filesystem store.
+
 ## Contributing to CarrierWave
 
 CarrierWave thrives on a large number of [contributors](https://github.com/jnicklas/carrierwave/contributors),
