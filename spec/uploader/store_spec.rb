@@ -327,7 +327,7 @@ describe CarrierWave::Uploader do
 
   end
   
-  describe "#store! with the move_into_store option" do
+  describe "#store! with the move_to_store option" do
     
     before do
       @file = File.open(file_path('test.jpg'))
@@ -337,7 +337,7 @@ describe CarrierWave::Uploader do
                 
     context "set to true" do
       before do
-        @uploader_class.move_into_store = true
+        @uploader_class.move_to_store = true
       end
       
       it "should move it from the tmp dir to the store dir" do
@@ -369,7 +369,7 @@ describe CarrierWave::Uploader do
         
     context "set to false" do
       before do
-        @uploader_class.move_into_store = false
+        @uploader_class.move_to_store = false
       end
 
       it "should use copy_to() during store!()" do

@@ -134,7 +134,7 @@ describe CarrierWave::Uploader do
 
     end
 
-    describe "with the move_into_cache option" do
+    describe "with the move_to_cache option" do
       
       before do
         ## make a copy
@@ -157,7 +157,7 @@ describe CarrierWave::Uploader do
 
       context "set to true" do
         before do
-          @uploader_class.move_into_cache = true
+          @uploader_class.move_to_cache = true
         end
 
         it "should move it from the upload dir to the tmp dir" do
@@ -177,7 +177,7 @@ describe CarrierWave::Uploader do
 
       context "set to false" do
         before do
-          @uploader_class.move_into_cache = false
+          @uploader_class.move_to_cache = false
         end
 
         it "should copy it from the upload dir to the tmp dir" do

@@ -110,7 +110,7 @@ module CarrierWave
             @filename = new_file.filename
             self.original_filename = new_file.filename
 
-            if move_into_cache
+            if move_to_cache
               @file = new_file.move_to(cache_path, permissions)
             else
               @file = new_file.copy_to(cache_path, permissions)
