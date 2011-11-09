@@ -86,7 +86,7 @@ add_column :users, :avatar, :string
 Open your model file and mount the uploader:
 
 ``` ruby
-class User
+class User < ActiveRecord::Base
   mount_uploader :avatar, AvatarUploader
 end
 ```
