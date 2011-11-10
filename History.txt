@@ -1,3 +1,12 @@
+=== Version 0.5.8 2011-11-10
+
+* [added] Allow custom error messages [bartt]
+* [added] Add config.base_path to use as a prefix for uploader URLs [die-antwort]
+* [added] Support fog streaming uploads [chrisdurtschi]
+* [added] Support `move_to` in addition to the default `copy_to` when using the cache [jasonydes]
+* [fixed] Support for Sinatra 1.3 (with backward compatibility) [bensie]
+* [fixed] Fog get_object_url deprecated, use get_object_https_url or get_object_http_url
+
 === Version 0.5.7 2011-08-12
 
 * [BREAKING CHANGE] Extracted Mongoid support into a separate gem (carrierwave-mongoid) [jnicklas]
