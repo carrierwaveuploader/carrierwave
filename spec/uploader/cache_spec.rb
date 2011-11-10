@@ -135,7 +135,7 @@ describe CarrierWave::Uploader do
     end
 
     describe "with the move_to_cache option" do
-      
+
       before do
         ## make a copy
         file = file_path('test.jpg')
@@ -152,7 +152,7 @@ describe CarrierWave::Uploader do
       end
 
       after do
-        FileUtils.rm_f(@tmpfile)
+        FileUtils.rm_f(@tmpfile.path)
       end
 
       context "set to true" do
@@ -194,7 +194,7 @@ describe CarrierWave::Uploader do
           @uploader.cache!(@tmpfile)
         end
       end
-      
+
     end
   end
 
