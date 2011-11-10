@@ -5,7 +5,7 @@
 * [added] Support fog streaming uploads [chrisdurtschi]
 * [added] Support `move_to` in addition to the default `copy_to` when using the cache [jasonydes]
 * [fixed] Support for Sinatra 1.3 (with backward compatibility) [bensie]
-* [fixed] Fog get_object_url deprecated, use get_object_https_url or get_object_http_url
+* [fixed] Fog get_object_url deprecated, use get_object_https_url or get_object_http_url [scottmessinger]
 
 === Version 0.5.7 2011-08-12
 
