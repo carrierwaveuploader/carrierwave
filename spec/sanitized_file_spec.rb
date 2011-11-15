@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require 'spec_helper'
+require 'mime/types'
 
 describe CarrierWave::SanitizedFile do
 
@@ -187,6 +188,15 @@ describe CarrierWave::SanitizedFile do
     it "preserves file's content_type" do
       @sanitized_file = CarrierWave::SanitizedFile.new(:content_type => 'image/png')
       @sanitized_file.content_type.should == 'image/png'
+    end
+    
+    it "should handle Mime::Type object" do 
+      @file = File.open(file_path('sponsored.doc'))
+      @file.stub!(:content_type).and_return(MIME::Type.new('application/msword'))
+      @sanitized_file = CarrierWave::SanitizedFile.new(@file)
+      @sanitized_file.stub!(:file).and_return(@file)
+      lambda { @sanitized_file.content_type }.should_not raise_error
+      @sanitized_file.content_type.should == 'application/msword'
     end
   end
 
