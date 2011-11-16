@@ -19,7 +19,9 @@ module CarrierWave
         end
       end
 
-      alias_method :to_s, :url
+      def to_s
+        url || ''
+      end
 
       ##
       # === Returns

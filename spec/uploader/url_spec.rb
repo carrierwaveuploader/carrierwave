@@ -99,8 +99,8 @@ describe CarrierWave::Uploader do
       CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
     end
 
-    it "should default to nil" do
-      @uploader.to_s.should be_nil
+    it "should default to empty space" do
+      @uploader.to_s.should == ''
     end
 
     it "should get the directory relative to public, prepending a slash" do
