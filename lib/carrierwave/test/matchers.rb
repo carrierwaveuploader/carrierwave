@@ -182,7 +182,7 @@ module CarrierWave
         end
       end
 
-      def be_no_height_than(height)
+      def be_no_taller_than(height)
         BeNoTallerThan.new(height)
       end
 
