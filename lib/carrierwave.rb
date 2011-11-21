@@ -10,7 +10,6 @@ rescue LoadError
 end
 
 require 'active_support/concern'
-require 'active_support/memoizable'
 
 module CarrierWave
 
