@@ -21,6 +21,7 @@ describe CarrierWave::Uploader::Download do
       sham_rack_app = ShamRack.at('www.example.com').stub
       sham_rack_app.register_resource('/test.jpg', File.read(file_path('test.jpg')), 'image/jpg')
       sham_rack_app.register_resource('/test%20with%20spaces/test.jpg', File.read(file_path('test.jpg')), 'image/jpg')
+      sham_rack_app.register_resource('/TgFCbMcysSV0v3-JJyvP02lfjh-XzbRxjsNpECoDJEsnoUUro9me195pWTE597xl6p6vDjo5sn5bGMjS40MRwMIsAsbNpqKfqdO19xvFbyPrVeXrkUMDeF_YjMUPXeVkRGdE3nGkK2zgwBCMAMMu2aU06Vod1FvslJaoasIFwqqF_jzolk2ot8nXlwTFvXt82CAV-a6gwqXFFdIfwRlCSF3gLGlfuPqSPzPxamwyDhzcJaf-eSMrsLE1-YA4BUZmEwD9hDKWusnpQ4jqGEbPBP5BKkM-HWPmxkVzkcQahtvQnlA.jpg', File.read(file_path('test.jpg')), 'image/jpg')
 
       ShamRack.at("www.redirect.com") do |env|
         [301, {'Content-Type'=>'text/html', 'Location'=>"http://www.example.com/test.jpg"}, ['Redirecting']]
@@ -36,9 +37,19 @@ describe CarrierWave::Uploader::Download do
       @uploader.file.should be_an_instance_of(CarrierWave::SanitizedFile)
     end
 
-    it "should not raise error on a remote file with a long filename" do
-      long_url = 'http://lh6.googleusercontent.com/public/TgFCbMcysSV0v3-JJyvP02lfjh-XzbRxjsNpECoDJEsnoUUro9me195pWTE597xl6p6vDjo5sn5bGMjS40MRwMIsAsbNpqKfqdO19xvFbyPrVeXrkUMDeF_YjMUPXeVkRGdE3nGkK2zgwBCMAMMu2aU06Vod1FvslJaoasIFwqqF_jzolk2ot8nXlwTFvXt82CAV-a6gwqXFFdIfwRlCSF3gLGlfuPqSPzPxamwyDhzcJaf-eSMrsLE1-YA4BUZmEwD9hDKWusnpQ4jqGEbPBP5BKkM-HWPmxkVzkcQahtvQnlA'
-      expect { @uploader.download!(long_url) }.to_not raise_error
+    context "on a remote file with a long filename" do
+      let(:long_url) { 'http://www.example.com/TgFCbMcysSV0v3-JJyvP02lfjh-XzbRxjsNpECoDJEsnoUUro9me195pWTE597xl6p6vDjo5sn5bGMjS40MRwMIsAsbNpqKfqdO19xvFbyPrVeXrkUMDeF_YjMUPXeVkRGdE3nGkK2zgwBCMAMMu2aU06Vod1FvslJaoasIFwqqF_jzolk2ot8nXlwTFvXt82CAV-a6gwqXFFdIfwRlCSF3gLGlfuPqSPzPxamwyDhzcJaf-eSMrsLE1-YA4BUZmEwD9hDKWusnpQ4jqGEbPBP5BKkM-HWPmxkVzkcQahtvQnlA.jpg' }
+
+      it "should only use part of the original filename" do
+        @uploader.download!(long_url)
+        @uploader.filename.size.should <= 255
+        @uploader.filename.should =~ /^#{long_url.split("/").last[0,217]}__/
+      end
+
+      it "should retain the extension" do
+        @uploader.download!(long_url)
+        @uploader.filename.should =~ /\.jpg$/
+      end
     end
 
     it "should be cached" do
