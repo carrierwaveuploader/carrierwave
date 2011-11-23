@@ -36,6 +36,11 @@ describe CarrierWave::Uploader::Download do
       @uploader.file.should be_an_instance_of(CarrierWave::SanitizedFile)
     end
 
+    it "should not raise error on a remote file with a long filename" do
+      long_url = 'http://lh6.googleusercontent.com/public/TgFCbMcysSV0v3-JJyvP02lfjh-XzbRxjsNpECoDJEsnoUUro9me195pWTE597xl6p6vDjo5sn5bGMjS40MRwMIsAsbNpqKfqdO19xvFbyPrVeXrkUMDeF_YjMUPXeVkRGdE3nGkK2zgwBCMAMMu2aU06Vod1FvslJaoasIFwqqF_jzolk2ot8nXlwTFvXt82CAV-a6gwqXFFdIfwRlCSF3gLGlfuPqSPzPxamwyDhzcJaf-eSMrsLE1-YA4BUZmEwD9hDKWusnpQ4jqGEbPBP5BKkM-HWPmxkVzkcQahtvQnlA'
+      expect { @uploader.download!(long_url) }.to_not raise_error
+    end
+
     it "should be cached" do
       @uploader.download!('http://www.example.com/test.jpg')
       @uploader.should be_cached
