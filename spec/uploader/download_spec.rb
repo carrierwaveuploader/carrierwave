@@ -14,6 +14,9 @@ describe CarrierWave::Uploader::Download do
   end
 
   describe '#download!' do
+    let(:long_filename) { 'TgFCbMcysSV0v3-JJyvP02lfjh-XzbRxjsNpECoDJEsnoUUro9me195pWTE597xl6p6vDjo5sn5bGMjS40MRwMIsAsbNpqKfqdO19xvFbyPrVeXrkUMDeF_YjMUPXeVkRGdE3nGkK2zgwBCMAMMu2aU06Vod1FvslJaoasIFwqqF_jzolk2ot8nXlwTFvXt82CAV-a6gwqXFFdIfwRlCSF3gLGlfuPqSPzPxamwyDhzcJaf-eSMrsLE1-YA4BUZmEwD9hDKWusnpQ4jqGEbPBP5BKkM-HWPmxkVzkcQahtvQnlA' }
+    let(:long_url_without_extension) { 'http://www.example.com/' + long_filename }
+    let(:long_url) { long_url_without_extension + '.jpg' }
 
     before do
       CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
@@ -21,6 +24,8 @@ describe CarrierWave::Uploader::Download do
       sham_rack_app = ShamRack.at('www.example.com').stub
       sham_rack_app.register_resource('/test.jpg', File.read(file_path('test.jpg')), 'image/jpg')
       sham_rack_app.register_resource('/test%20with%20spaces/test.jpg', File.read(file_path('test.jpg')), 'image/jpg')
+      sham_rack_app.register_resource('/' + long_filename + '.jpg', File.read(file_path('test.jpg')), 'image/jpg')
+      sham_rack_app.register_resource('/' + long_filename, File.read(file_path('test.jpg')), 'image/jpg')
 
       ShamRack.at("www.redirect.com") do |env|
         [301, {'Content-Type'=>'text/html', 'Location'=>"http://www.example.com/test.jpg"}, ['Redirecting']]
@@ -34,6 +39,33 @@ describe CarrierWave::Uploader::Download do
     it "should cache a file" do
       @uploader.download!('http://www.example.com/test.jpg')
       @uploader.file.should be_an_instance_of(CarrierWave::SanitizedFile)
+    end
+
+    context "on a remote file with a long filename" do
+      context "when the remote filename has no extension" do
+        it "should only use part of the original filename" do
+          @uploader.download!(long_url_without_extension)
+          @uploader.filename.size.should <= 255
+
+          regexp = /#{@uploader.filename.split("__").first}/
+          long_url_without_extension.split("/").last.should =~ regexp
+        end
+      end
+
+      context "when the remote filename has a proper extension" do
+        it "should only use part of the original filename" do
+          @uploader.download!(long_url)
+          @uploader.filename.size.should <= 255
+
+          regexp = /#{@uploader.filename.split("__").first}/
+          long_url.split("/").last.should =~ regexp
+        end
+
+        it "should retain the extension" do
+          @uploader.download!(long_url)
+          @uploader.filename.should =~ /\.jpg$/
+        end
+      end
     end
 
     it "should be cached" do
