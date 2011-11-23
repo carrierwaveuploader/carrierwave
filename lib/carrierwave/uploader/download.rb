@@ -12,6 +12,10 @@ module CarrierWave
       include CarrierWave::Uploader::Cache
 
       class RemoteFile
+        # 255 characters is the max size of a filename in modern filesystems
+        # and 100 characters are allocated for versions
+        MAX_FILENAME_LENGTH = 255 - 100
+
         def initialize(uri)
           @uri = uri
         end
@@ -19,16 +23,15 @@ module CarrierWave
         def original_filename
           filename = File.basename(file.base_uri.path)
 
-          # 255 is the max size of a filename in modern filesystems
-          if filename.size > 255
+          if filename.size > MAX_FILENAME_LENGTH
             extension = if filename =~ /\./
               filename.split(/\./).last
             else
               false
             end
 
-            # 255 max size, 32 for MD5 and 2 for the __ separator
-            split_position = 255 - 32 - 2
+            # 32 for MD5 and 2 for the __ separator
+            split_position = MAX_FILENAME_LENGTH - 32 - 2
             # +1 for the . in the extension
             if extension
               split_position -= (extension.size + 1)

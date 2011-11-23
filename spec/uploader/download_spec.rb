@@ -46,7 +46,9 @@ describe CarrierWave::Uploader::Download do
         it "should only use part of the original filename" do
           @uploader.download!(long_url_without_extension)
           @uploader.filename.size.should <= 255
-          @uploader.filename.should =~ /^#{long_url.split("/").last[0,221]}__/
+
+          regexp = /#{@uploader.filename.split("__").first}/
+          long_url_without_extension.split("/").last.should =~ regexp
         end
       end
 
@@ -54,7 +56,9 @@ describe CarrierWave::Uploader::Download do
         it "should only use part of the original filename" do
           @uploader.download!(long_url)
           @uploader.filename.size.should <= 255
-          @uploader.filename.should =~ /^#{long_url.split("/").last[0,217]}__/
+
+          regexp = /#{@uploader.filename.split("__").first}/
+          long_url.split("/").last.should =~ regexp
         end
 
         it "should retain the extension" do
