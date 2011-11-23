@@ -253,7 +253,7 @@ module CarrierWave
             case @uploader.fog_credentials[:provider]
             when 'AWS'
               # if directory is a valid subdomain, use that style for access
-              if @uploader.fog_directory.to_s =~ /^(?:[a-z]|\d(?!\d{0,2}(?:\.\d{1,3}){3}$))(?:[a-z0-9]|\.(?![\.\-])|\-(?![\.])){1,61}[a-z0-9]$/
+              if @uploader.fog_directory.to_s =~ /^(?:[a-z]|\d(?!\d{0,2}(?:\d{1,3}){3}$))(?:[a-z0-9]|(?![\-])|\-(?![\.])){1,61}[a-z0-9]$/
                 "https://#{@uploader.fog_directory}.s3.amazonaws.com/#{path}"
               else
                 # directory is not a valid subdomain, so use path style for access
