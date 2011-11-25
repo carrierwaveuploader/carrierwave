@@ -95,6 +95,58 @@ describe CarrierWave::Uploader do
       thumb.enable_processing = true
       thumb.enable_processing.should be_true
     end
+    
+    describe "with conditional versions" do
+      before do
+        @file = File.open(file_path('test.jpg'))
+
+        @uploader_class.class_eval {
+          version :true_thing, :if => :true?
+          version :false_thing, :if => :false?
+          
+        public
+          def active_versions_test; active_versions; end
+
+        protected
+          def true? picture; true; end
+          def false? picture; false; end
+        }
+      end
+      
+      it "should process the :if condition" do
+        @uploader.active_versions_test.keys.should == [:true_thing]
+      end
+      
+      it "should return proper urls" do
+        @uploader.store!(@file)
+        @uploader.url.should == '/uploads/test.jpg'
+        @uploader.true_thing.url.should == '/uploads/true_thing_test.jpg'
+        @uploader.false_thing.url.should == nil
+      end
+    
+      describe "with conditional versions and attached to model" do
+        before do
+          @class = Class.new
+          @class.send(:extend, CarrierWave::Mount)
+
+          @uploader = Class.new(@uploader_class)
+
+          @class.mount_uploader(:image, @uploader)
+          @instance = @class.new
+        end
+        
+        it "should process the :if condition" do
+          @instance.image.active_versions_test.keys.should == [:true_thing]
+        end
+        
+        it "should return proper urls" do
+          @instance.image.store!(@file)
+          @instance.image.url.should == '/uploads/test.jpg'
+          @instance.image.true_thing.url.should == '/uploads/true_thing_test.jpg'
+          @instance.image.false_thing.url.should == nil
+        end
+      end
+    end
 
     it "should reopen the same class when called multiple times" do
       @uploader_class.version :thumb do
