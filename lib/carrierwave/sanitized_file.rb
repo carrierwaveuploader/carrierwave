@@ -132,7 +132,7 @@ module CarrierWave
     # [Boolean] whether the file is valid and has a non-zero size
     #
     def empty?
-      @file.nil? || self.size.nil? || self.size.zero?
+      @file.nil? || self.size.nil? || (self.size.zero? && ! self.exists?)
     end
 
     ##
