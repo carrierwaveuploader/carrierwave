@@ -140,28 +140,38 @@ module CarrierWave
       ##
       # When given a version name as a parameter, will return the url for that version
       # This also works with nested versions.
+      # When given a query hash as a parameter, will return the url with signature that contains query params
+      # Query hash only works with AWS (S3 storage).
       #
       # === Example
       #
       #     my_uploader.url                 # => /path/to/my/uploader.gif
       #     my_uploader.url(:thumb)         # => /path/to/my/thumb_uploader.gif
       #     my_uploader.url(:thumb, :small) # => /path/to/my/thumb_small_uploader.gif
+      #     my_uploader.url(:query => {"response-content-disposition" => "attachment"}) 
+      #     # => https://s3.amazonaws.com/carrierwave1323435530private/uploads/private.txt?AWSAccessKeyId=AKIAJXXVLMTYDJBPG5UA&Signature=wRqaa49WOpEWfuzWejpDyRcINN4%3D&Expires=1323436551
+      #     my_uploader.url(:version, :sub_version, :query => {"response-content-disposition" => "attachment"}) 
+      #     # => https://s3.amazonaws.com/carrierwave1323435530private/uploads/version_subversion_private.txt?AWSAccessKeyId=AKIAJXXVLMTYDJBPG5UA&Signature=wRqaa49WOpEWfuzWejpDyRcINN4%3D&Expires=1323436551
       #
       # === Parameters
       #
       # [*args (Symbol)] any number of versions
+      # OR
+      # [Hash] query params
       #
       # === Returns
       #
       # [String] the location where this file is accessible via a url
       #
       def url(*args)
-        if(args.first)
-          raise ArgumentError, "Version #{args.first} doesn't exist!" if versions[args.first.to_sym].nil?
+        if (version = args.first) && version.respond_to?(:to_sym)
+          raise ArgumentError, "Version #{version} doesn't exist!" if versions[version.to_sym].nil?
           # recursively proxy to version
-          versions[args.first.to_sym].url(*args[1..-1])
+          versions[version.to_sym].url(*args[1..-1])
+        elsif args.first
+          super(args.first)
         else
-          super()
+          super
         end
       end
 

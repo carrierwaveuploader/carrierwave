@@ -114,9 +114,9 @@ module CarrierWave
         #
         # [String] file's url
         #
-        def url
+        def url(options = {})
           if access_policy == :authenticated_read
-            authenticated_url
+            authenticated_url(options)
           else
             public_url
           end
@@ -131,8 +131,8 @@ module CarrierWave
           end
         end
 
-        def authenticated_url
-          connection.get_object_https_url(bucket, path, Time.now + authentication_timeout)
+        def authenticated_url(options = {})
+          connection.get_object_https_url(bucket, path, Time.now + authentication_timeout, options)
         end
 
         def store(file)
