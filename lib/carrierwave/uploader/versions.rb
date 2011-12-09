@@ -156,10 +156,10 @@ module CarrierWave
       # [String] the location where this file is accessible via a url
       #
       def url(*args)
-        if(args.first)
-          raise ArgumentError, "Version #{args.first} doesn't exist!" if versions[args.first.to_sym].nil?
+        if (version = args.first) && version.respond_to?(:to_sym)
+          raise ArgumentError, "Version #{version} doesn't exist!" if versions[version.to_sym].nil?
           # recursively proxy to version
-          versions[args.first.to_sym].url(*args[1..-1])
+          versions[version.to_sym].url(*args[1..-1])
         else
           super()
         end
