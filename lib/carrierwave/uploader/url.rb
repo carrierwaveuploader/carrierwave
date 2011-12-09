@@ -7,6 +7,10 @@ module CarrierWave
       include CarrierWave::Uploader::Configuration
 
       ##
+      # === Parameters
+      #
+      # [Hash] optional, the query params (only AWS)
+      #
       # === Returns
       #
       # [String] the location where this file is accessible via a url
