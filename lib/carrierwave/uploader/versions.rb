@@ -161,7 +161,7 @@ module CarrierWave
           # recursively proxy to version
           versions[version.to_sym].url(*args[1..-1])
         else
-          super()
+          super(args.first)
         end
       end
 
