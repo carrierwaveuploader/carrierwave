@@ -96,6 +96,7 @@ describe CarrierWave::Uploader do
       thumb.enable_processing.should be_true
     end
 
+
     it "should reopen the same class when called multiple times" do
       @uploader_class.version :thumb do
         def self.monkey
@@ -278,19 +279,53 @@ describe CarrierWave::Uploader do
         @uploader.store!(@file)
         @uploader.thumb.should be_present
         @uploader.preview.should be_blank
-       end
+      end
 
-       it "should not cache file twice when store! called with a file" do
-         @uploader_class.process :banana
-         @uploader.thumb.class.process :banana
+      it "should not cache file twice when store! called with a file" do
+        @uploader_class.process :banana
+        @uploader.thumb.class.process :banana
 
-         @uploader.should_receive(:banana).at_least(:once).at_most(:once).and_return(true)
-         @uploader.thumb.should_receive(:banana).at_least(:once).at_most(:once).and_return(true)
+        @uploader.should_receive(:banana).at_least(:once).at_most(:once).and_return(true)
+        @uploader.thumb.should_receive(:banana).at_least(:once).at_most(:once).and_return(true)
 
-         @uploader.store!(@file)
-         @uploader.store_path.should == 'uploads/test.jpg'
-         @uploader.thumb.store_path.should == 'uploads/thumb_test.jpg'
-       end
+        @uploader.store!(@file)
+        @uploader.store_path.should == 'uploads/test.jpg'
+        @uploader.thumb.store_path.should == 'uploads/thumb_test.jpg'
+      end
+
+      it "should process version with type included to instance variable @create_type" do
+        @uploader_class.version(:thumb)[:options][:type] = :delayed
+        @uploader.thumb.instance_variable_set('@create_type', [:delayed])
+        @uploader.store!(@file)
+        @uploader.thumb.should be_present
+      end
+
+      it "should process versions without type if @create_type is not set" do
+        @uploader_class.version(:thumb)[:options][:type].should be_nil
+        @uploader.thumb.instance_variable_get('@create_type').should be_nil
+        @uploader.store!(@file)
+        @uploader.thumb.should be_present
+      end
+
+      it "should process all versions if the @create_type set to [:all]" do
+        @uploader_class.version(:preview)[:options][:type] = :my_version
+        @uploader_class.version(:thumb)[:options][:type].should be_nil
+        @uploader.thumb.instance_variable_set('@create_type', [:all])
+        @uploader.preview.instance_variable_set('@create_type', [:all])
+        @uploader.store!(@file)
+        @uploader.thumb.should be_present
+        @uploader.preview.should be_present
+      end
+
+      it "should process versions with types included in @create_type" do
+        @uploader_class.version(:preview)[:options][:type] = :my_version
+        @uploader_class.version(:thumb)[:options][:type]= :delayed
+        @uploader.thumb.instance_variable_set('@create_type', [:my_version, :delayed])
+        @uploader.preview.instance_variable_set('@create_type', [:my_version, :delayed])
+        @uploader.store!(@file)
+        @uploader.thumb.should be_present
+        @uploader.preview.should be_present
+      end
     end
 
     describe '#recreate_versions!' do
@@ -308,8 +343,10 @@ describe CarrierWave::Uploader do
       end
 
       it "should recreate all versions if any are missing" do
+        @uploader_class.version(:preview)[:options][:type] = :delayed
         @uploader.store!(@file)
 
+        @uploader.preview.should be_blank
         File.exists?(@uploader.thumb.path).should == true
         FileUtils.rm(@uploader.thumb.path)
         File.exists?(@uploader.thumb.path).should == false
@@ -317,6 +354,7 @@ describe CarrierWave::Uploader do
         @uploader.recreate_versions!
 
         File.exists?(@uploader.thumb.path).should == true
+        File.exists?(@uploader.preview.path).should == true
       end
 
       it "should not change the case of versions" do
@@ -422,6 +460,149 @@ describe CarrierWave::Uploader do
       it "should not set the filename" do
         @uploader.retrieve_from_store!('monkey.txt')
         @uploader.filename.should be_nil
+      end
+    end
+
+    describe '#create_versions!' do
+      before do
+        @file = File.open(file_path('test.jpg'))
+      end
+
+      describe "with different types" do
+        before(:each) do
+          @uploader_class.version(:preview)[:options][:type] = :delayed
+          @uploader_class.version(:mini)[:options][:type] = :my_type
+          @uploader.store!(@file)
+          @uploader.preview.should be_blank
+          @uploader.mini.should be_blank
+          File.exists?(@uploader.thumb.path).should == true
+          FileUtils.rm(@uploader.thumb.path)
+          File.exists?(@uploader.thumb.path).should == false
+        end
+
+        it "should create versions by type" do
+          @uploader.create_versions!(:delayed)
+          File.exists?(@uploader.thumb.path).should == false
+          File.exists?(@uploader.preview.path).should == true
+          @uploader.mini.should be_blank
+        end
+
+        it "should create all versions" do
+          @uploader.create_versions!(:all)
+          File.exists?(@uploader.thumb.path).should == true
+          File.exists?(@uploader.preview.path).should == true
+          File.exists?(@uploader.mini.path).should == true
+        end
+
+        it "should create versions with types :my_type and :delayed" do
+          @uploader.create_versions!(:my_type, :delayed)
+          File.exists?(@uploader.thumb.path).should == false
+          File.exists?(@uploader.preview.path).should == true
+          File.exists?(@uploader.mini.path).should == true
+        end
+      end
+
+
+      describe "with nested versions" do
+
+        it "should create nested version if it type same as parent" do
+          @uploader_class.class_eval {
+            version :preview, :type => :delayed do
+              version :middle, :type => :delayed
+            end
+          }
+          @uploader.store!(@file)
+          @uploader.preview.should be_blank
+          File.exists?(@uploader.thumb.path).should == true
+          FileUtils.rm(@uploader.thumb.path)
+          File.exists?(@uploader.thumb.path).should == false
+
+          @uploader.create_versions!(:delayed)
+
+          File.exists?(@uploader.thumb.path).should == false
+          File.exists?(@uploader.preview.path).should == true
+          File.exists?(@uploader.preview.middle.path).should == true
+        end
+
+        it "should not create nested version if it has type different than parent" do
+          @uploader_class.class_eval {
+            version :preview, :type => :delayed do
+              version :middle, :type => :my_type
+            end
+          }
+          @uploader.store!(@file)
+          @uploader.preview.should be_blank
+          File.exists?(@uploader.thumb.path).should == true
+          FileUtils.rm(@uploader.thumb.path)
+          File.exists?(@uploader.thumb.path).should == false
+
+          @uploader.create_versions!(:delayed)
+
+          File.exists?(@uploader.thumb.path).should == false
+          File.exists?(@uploader.preview.path).should == true
+          @uploader.preview.middle.should be_blank
+        end
+
+        it "should create all nested versions" do
+           @uploader_class.class_eval {
+            version :preview, :type => :delayed do
+              version :mini
+              version :middle, :type => :my_type
+              version :big, :type => :delayed
+            end
+          }
+
+          @uploader.store!(@file)
+          @uploader.preview.should be_blank
+          File.exists?(@uploader.thumb.path).should == true
+          FileUtils.rm(@uploader.thumb.path)
+          File.exists?(@uploader.thumb.path).should == false
+
+          @uploader.create_versions!(:all)
+
+          File.exists?(@uploader.thumb.path).should == true
+          File.exists?(@uploader.preview.path).should == true
+          File.exists?(@uploader.preview.mini.path).should == true
+          File.exists?(@uploader.preview.middle.path).should == true
+          File.exists?(@uploader.preview.big.path).should == true
+        end
+
+        it "should create versions with types" do
+           @uploader_class.class_eval {
+            version :preview, :type => :delayed do
+              version :middle, :type => :my_type
+              version :big, :type => :my_other_type
+            end
+          }
+
+          @uploader.store!(@file)
+          @uploader.preview.should be_blank
+          File.exists?(@uploader.thumb.path).should == true
+          FileUtils.rm(@uploader.thumb.path)
+          File.exists?(@uploader.thumb.path).should == false
+
+          @uploader.create_versions!(:delayed, :my_type, :my_other_type)
+
+          File.exists?(@uploader.thumb.path).should == false
+          File.exists?(@uploader.preview.path).should == true
+          File.exists?(@uploader.preview.middle.path).should == true
+          File.exists?(@uploader.preview.big.path).should == true
+        end
+
+        it "should assign nil to create_type variable" do
+          @uploader_class.class_eval {
+            version :preview, :type => :delayed do
+              version :middle, :type => :my_type
+              version :big, :type => :my_other_type
+            end
+          }
+          @uploader.store!(@file)
+          @uploader.create_versions!(:all)
+          @uploader.preview.create_type.should be_blank
+          @uploader.preview.middle.create_type.should be_blank
+          @uploader.preview.big.create_type.should be_blank
+        end
+
       end
     end
   end

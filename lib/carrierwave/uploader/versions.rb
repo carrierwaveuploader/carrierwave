@@ -27,6 +27,9 @@ module CarrierWave
         self.version_names = []
 
         attr_accessor :parent_cache_id
+        attr_accessor :create_type
+
+        before :create_versions, :assign_create_type
 
         after :cache, :assign_parent_cache_id
         after :cache, :cache_versions!
@@ -34,6 +37,7 @@ module CarrierWave
         after :remove, :remove_versions!
         after :retrieve_from_cache, :retrieve_versions_from_cache!
         after :retrieve_from_store, :retrieve_versions_from_store!
+        after :create_versions, :assign_nil_to_create_type
       end
 
       module ClassMethods
@@ -176,9 +180,53 @@ module CarrierWave
         #
         # The call to store! will trigger the necessary callbacks to both
         # process this version and all sub-versions
-        cache_stored_file! if !cached?
+        create_versions!(:all)
+      end
 
-        store!
+      ##
+      # Create versions and reprocess them by its types. This can be used to
+      # create versions in background with resque or delayed_job.
+      # === Parameters
+      # [type (#to_sym)] versions type, if type = :all it will create all versions
+      #
+      # === Examples
+      # You have uploader with version :preview that have type :delayed :
+      #
+      #     class MyUploader < CarrierWave::Uploader::Base
+      #
+      #       version :thumb do
+      #         process :scale => [200, 200]
+      #       end
+      #
+      #       version :preview, :if => :image?, :type => :delayed do
+      #         process :scale => [200, 200]
+      #       end
+      #
+      #     end
+      #
+      # Then you can create this version:
+      #     instance = MyUploader.new
+      #     instance.create_versions!(:delayed)
+      #
+      # Or on a mounted uploader:
+      #
+      #     User.all.each do |user|
+      #       user.avatar.create_versions!(:delayed)
+      #     end
+
+      def create_versions!(*args)
+        with_callbacks(:create_versions, *args) do
+          cache_stored_file! if !cached?
+
+          store!
+        end
+      end
+
+      def recursively_set_create_type_to_versions
+        versions.each do |name, uploader|
+          uploader.create_type = @create_type
+          uploader.recursively_set_create_type_to_versions
+        end
       end
 
     private
@@ -191,7 +239,16 @@ module CarrierWave
       def active_versions
         versions.select do |name, uploader|
           condition = self.class.versions[name][:options][:if]
-          not condition or send(condition, file)
+          (not condition or send(condition, file)) and type_condition(name, uploader)
+        end
+      end
+
+      def type_condition(name, uploader)
+        type = self.class.versions[name][:options][:type]
+        if uploader.create_type.present?
+          (uploader.create_type.include? type) || (uploader.create_type.include? :all)
+        else
+          type.blank?
         end
       end
 
@@ -230,6 +287,15 @@ module CarrierWave
 
       def retrieve_versions_from_store!(identifier)
         versions.each { |name, v| v.retrieve_from_store!(identifier) }
+      end
+
+      def assign_create_type(*args)
+        @create_type = args.compact
+        recursively_set_create_type_to_versions
+      end
+
+      def assign_nil_to_create_type(*args)
+        assign_create_type(nil)
       end
 
     end # Versions
