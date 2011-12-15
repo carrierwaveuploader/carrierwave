@@ -47,7 +47,7 @@ module CarrierWave
         if file.respond_to?(:content_type=)
           file.content_type = new_content_type
         else
-          file.set_instance_variable(:@content_type, new_content_type)
+          file.instance_variable_set(:@content_type, new_content_type)
         end
       end
     rescue ::MIME::InvalidContentType => e
