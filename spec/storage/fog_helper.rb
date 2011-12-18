@@ -165,6 +165,13 @@ end
                 @fog_file.authenticated_url.should_not be_nil
               end
             end
+
+            it "should handle query params" do
+              if @provider == 'AWS' && !Fog.mocking?
+                headers = Excon.get(@fog_file.url(:query => {"response-content-disposition" => "attachment"})).headers
+                headers["Content-Disposition"].should == "attachment"
+              end
+            end
           end
         end
 
