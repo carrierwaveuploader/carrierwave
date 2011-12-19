@@ -101,7 +101,7 @@ u.avatar = File.open('somewhere')
 u.save!
 u.avatar.url # => '/url/to/file.png'
 u.avatar.current_path # => 'path/to/file.png'
-u.avatar_identifier # => 'file.png'
+u.avatar.identifier # => 'file.png'
 ```
 
 ### DataMapper, Mongoid, Sequel
