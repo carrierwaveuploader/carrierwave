@@ -125,6 +125,19 @@ if ENV['REMOTE'] == 'true'
       end
     end
 
+    describe "#url for private content" do
+      before do
+        @uploader.stub!(:s3_access_policy).and_return(:authenticated_read)
+        @storage.connection.put_object(@bucket, "uploads/bar.txt", "A test, 1234", {'a-amz-acl' => 'private'})
+        @s3_file = @storage.retrieve!('bar.txt')
+      end
+
+      it "should return with Content-Disposition => 'attachment' when specified as query params" do
+        headers = Excon.get(@s3_file.url(:query => {"response-content-disposition" => "attachment"})).headers
+        headers["Content-Disposition"].should == "attachment"
+      end
+    end
+
     describe 'access policy' do
       context "with public read" do
         before do
@@ -143,7 +156,7 @@ if ENV['REMOTE'] == 'true'
         end
       end
 
-      context "with public read" do
+      context "without public read" do
         before do
           @uploader.stub!(:s3_access_policy).and_return(:authenticated_read)
           @s3_file = @storage.store!(@file)

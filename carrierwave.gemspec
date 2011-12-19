@@ -39,7 +39,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "timecop"
 
   s.add_development_dependency "cloudfiles"
-  s.add_development_dependency "fog"
+  s.add_development_dependency "fog", ">= 1.1.2"
 
   s.add_development_dependency "mini_magick"
   s.add_development_dependency "rmagick"
