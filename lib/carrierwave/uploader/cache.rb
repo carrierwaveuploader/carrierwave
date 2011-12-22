@@ -70,7 +70,13 @@ module CarrierWave
       # require the file to be stored on the local filesystem.
       #
       def cache_stored_file!
-        sanitized = SanitizedFile.new :tempfile => StringIO.new(file.read),
+        _content = file.read
+        if _content.is_a?(File) # could be if storage is Fog
+          _tempfile = _content.read
+        else
+          _tempfile = StringIO.new(_content)          
+        end
+        sanitized = SanitizedFile.new :tempfile => _tempfile,
           :filename => File.basename(path), :content_type => file.content_type
 
         cache! sanitized
