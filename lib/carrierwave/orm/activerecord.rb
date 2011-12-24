@@ -36,6 +36,12 @@ module CarrierWave
           send(:"\#{column}_will_change!")
           super
         end
+
+        def remote_#{column}_url=(url)
+          column = _mounter(:#{column}).serialization_column
+          send(:"\#{column}_will_change!")
+          super
+        end
       RUBY
 
     end

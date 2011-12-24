@@ -288,6 +288,18 @@ describe CarrierWave::ActiveRecord do
         @event.image_changed?.should be_true
         @event.changed_for_autosave?.should be_true
       end
+    end
+
+    describe "dirty tracking with remote_image_url" do
+
+      it "should mark remote_image_url as changed when changed" do
+        @event.image_changed?.should be_false
+        @event.remote_image_url = 'http://www.example.com/test.jpg'
+        @event.image_changed?.should be_true
+        @event.save
+        @event.reload
+        @event.image_changed?.should be_false
+      end
 
     end
 
