@@ -292,7 +292,8 @@ describe CarrierWave::ActiveRecord do
 
     describe "dirty tracking with remote_image_url" do
 
-      it "should mark remote_image_url as changed when changed" do
+      # FIXME ideally image_changed? and remote_image_url_changed? would return true
+      it "should mark image as changed when setting remote_image_url" do
         @event.image_changed?.should be_false
         @event.remote_image_url = 'http://www.example.com/test.jpg'
         @event.image_changed?.should be_true
