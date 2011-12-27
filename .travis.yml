@@ -4,3 +4,8 @@ rvm:
  - 1.9.3
  - ruby-head
  - ree
+
+gemfile:
+  - gemfiles/rails3_0.gemfile
+  - gemfiles/rails3_1.gemfile
+  - gemfiles/rails3_2.gemfile
