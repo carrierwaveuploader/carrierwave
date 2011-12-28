@@ -90,9 +90,9 @@ module CarrierWave
       ##
       # Caches the given file. Calls process! to trigger any process callbacks.
       #
-      # By default, cache!() uses copy_to(), which operates by copying the file 
-      # to the cache, then deleting the original file.  If move_to_cache() is 
-      # overriden to return true, then cache!() uses move_to(), which simply 
+      # By default, cache!() uses copy_to(), which operates by copying the file
+      # to the cache, then deleting the original file.  If move_to_cache() is
+      # overriden to return true, then cache!() uses move_to(), which simply
       # moves the file to the cache.  Useful for large files.
       #
       # === Parameters

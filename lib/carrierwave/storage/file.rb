@@ -13,11 +13,11 @@ module CarrierWave
       ##
       # Move the file to the uploader's store path.
       #
-      # By default, store!() uses copy_to(), which operates by copying the file 
-      # from the cache to the store, then deleting the file from the cache.  
+      # By default, store!() uses copy_to(), which operates by copying the file
+      # from the cache to the store, then deleting the file from the cache.
       # If move_to_store() is overriden to return true, then store!() uses move_to(),
       # which simply moves the file from cache to store.  Useful for large files.
-      # 
+      #
       # === Parameters
       #
       # [file (CarrierWave::SanitizedFile)] the file to store

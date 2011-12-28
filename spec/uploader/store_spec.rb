@@ -326,47 +326,47 @@ describe CarrierWave::Uploader do
     end
 
   end
-  
+
   describe "#store! with the move_to_store option" do
-    
+
     before do
       @file = File.open(file_path('test.jpg'))
       @uploader_class.permissions = 777
       CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
     end
-                
+
     context "set to true" do
       before do
         @uploader_class.move_to_store = true
       end
-      
+
       it "should move it from the tmp dir to the store dir" do
         @uploader.cache!(@file)
-  
+
         @cached_path = @uploader.file.path
         @stored_path = ::File.expand_path(@uploader.store_path, @uploader.root)
-  
+
         @cached_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpg')
         File.exists?(@cached_path).should be_true
         File.exists?(@stored_path).should be_false
-      
+
         @uploader.store!
-  
+
         File.exists?(@cached_path).should be_false
         File.exists?(@stored_path).should be_true
       end
-    
+
       it "should use move_to() during store!()" do
         @uploader.cache!(@file)
         @stored_path = ::File.expand_path(@uploader.store_path, @uploader.root)
-      
+
         @uploader.file.should_receive(:move_to).with(@stored_path, 777)
         @uploader.file.should_not_receive(:copy_to)
-      
+
         @uploader.store!
       end
     end
-        
+
     context "set to false" do
       before do
         @uploader_class.move_to_store = false
@@ -375,10 +375,10 @@ describe CarrierWave::Uploader do
       it "should use copy_to() during store!()" do
         @uploader.cache!(@file)
         @stored_path = ::File.expand_path(@uploader.store_path, @uploader.root)
-      
+
         @uploader.file.should_receive(:copy_to).with(@stored_path, 777)
         @uploader.file.should_not_receive(:move_to)
-      
+
         @uploader.store!
       end
     end

@@ -181,8 +181,8 @@ describe CarrierWave::SanitizedFile do
       @sanitized_file = CarrierWave::SanitizedFile.new(:content_type => 'image/png')
       @sanitized_file.content_type.should == 'image/png'
     end
-    
-    it "should handle Mime::Type object" do 
+
+    it "should handle Mime::Type object" do
       @file = File.open(file_path('sponsored.doc'))
       @file.stub!(:content_type).and_return(MIME::Type.new('application/msword'))
       @sanitized_file = CarrierWave::SanitizedFile.new(@file)
@@ -523,7 +523,7 @@ describe CarrierWave::SanitizedFile do
     end
 
   end
-  
+
   describe "with a valid File object and an empty file" do
     before do
       FileUtils.cp(file_path('test.jpg'), file_path('llama.jpg'))
@@ -549,7 +549,7 @@ describe CarrierWave::SanitizedFile do
     end
 
   end
-  
+
   describe "with a valid path" do
     before do
       FileUtils.cp(file_path('test.jpg'), file_path('llama.jpg'))

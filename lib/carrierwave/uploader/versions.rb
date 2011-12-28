@@ -148,8 +148,8 @@ module CarrierWave
       #     my_uploader.url                 # => /path/to/my/uploader.gif
       #     my_uploader.url(:thumb)         # => /path/to/my/thumb_uploader.gif
       #     my_uploader.url(:thumb, :small) # => /path/to/my/thumb_small_uploader.gif
-      #     my_uploader.url(:query => {"response-content-disposition" => "attachment"}) 
-      #     my_uploader.url(:version, :sub_version, :query => {"response-content-disposition" => "attachment"}) 
+      #     my_uploader.url(:query => {"response-content-disposition" => "attachment"})
+      #     my_uploader.url(:version, :sub_version, :query => {"response-content-disposition" => "attachment"})
       #
       # === Parameters
       #
