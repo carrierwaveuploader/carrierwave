@@ -31,6 +31,12 @@ describe CarrierWave::Uploader do
       lambda { @uploader.url({}) }.should_not raise_error
     end
 
+    it "should not raise ArgumentError when storage's File#url method doesn't get params" do
+      module StorageX; class File; def url; true; end; end; end
+      @uploader.stub!(:file).and_return(StorageX::File.new)
+      lambda { @uploader.url }.should_not raise_error
+    end
+
     it "should not raise ArgumentError when versions version exists" do
       @uploader_class.version(:thumb)
       lambda { @uploader.url(:thumb) }.should_not raise_error(ArgumentError)
