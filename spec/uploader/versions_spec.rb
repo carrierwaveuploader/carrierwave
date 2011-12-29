@@ -147,7 +147,7 @@ describe CarrierWave::Uploader do
 
           def rotate
             manipulate! do |img|
-              img.rotate 90
+              img.rotate "90"
               img
             end
           end
