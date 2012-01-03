@@ -37,17 +37,6 @@ module CarrierWave
         h.merge Hash[versions.map { |name, version| [name, { :url => version.url }] }]
       end
 
-      ##
-      # FIXME to_xml should work like to_json, but this is the best we've been able to do so far.
-      # This hack fixes issue #337.
-      #
-      # === Returns
-      #
-      # [nil]
-      #
-      def to_xml(options = nil)
-      end
-
     end # Url
   end # Uploader
 end # CarrierWave
