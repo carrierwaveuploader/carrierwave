@@ -5,7 +5,6 @@ rvm:
  - ruby-head
  - ree
  - rbx-18mode
- - rbx-19mode
 
 gemfile:
   - gemfiles/rails3_0.gemfile
