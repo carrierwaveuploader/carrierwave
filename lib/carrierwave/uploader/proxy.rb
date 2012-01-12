@@ -18,8 +18,9 @@ module CarrierWave
       #
       # [String] the path where the file is currently located.
       #
+      # NOTICE: force encoding to utf-8
       def current_path
-        file.path if file.respond_to?(:path)
+        file.path.encode('UTF-8') if file.respond_to?(:path)
       end
 
       alias_method :path, :current_path
