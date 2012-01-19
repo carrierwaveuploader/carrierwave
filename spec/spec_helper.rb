@@ -12,17 +12,11 @@ require 'timecop'
 require 'open-uri'
 require 'sham_rack'
 
-<<<<<<< HEAD
-# not sure why we need to do this
-require 'sqlite3/sqlite3_native'
-require 'sqlite3'
-=======
 unless defined?(JRUBY_VERSION)
   # not sure why we need to do this
   require 'sqlite3/sqlite3_native'
   require 'sqlite3'
 end
->>>>>>> a0f8810996d43e005972a70b5715f0f7b2f4f132
 
 require 'fog'
 require 'storage/fog_helper'
