@@ -2,9 +2,9 @@
 
 class <%= class_name %>Uploader < CarrierWave::Uploader::Base
 
-  # Include RMagick or ImageScience support:
+  # Include RMagick or MiniMagick support:
   # include CarrierWave::RMagick
-  # include CarrierWave::ImageScience
+  # include CarrierWave::MiniMagick
 
   # Choose what kind of storage to use for this uploader:
   storage :file

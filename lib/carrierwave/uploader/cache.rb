@@ -41,11 +41,11 @@ module CarrierWave
         # This only works as long as you haven't done anything funky with your cache_dir.
         # It's recommended that you keep cache files in one place only.
         #
-        def clean_cached_files!
+        def clean_cached_files!(seconds=60*60*24)
           Dir.glob(File.expand_path(File.join(cache_dir, '*'), CarrierWave.root)).each do |dir|
             time = dir.scan(/(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})/).first.map { |t| t.to_i }
             time = Time.utc(*time)
-            if time < (Time.now.utc - (60*60*24))
+            if time < (Time.now.utc - seconds)
               FileUtils.rm_rf(dir)
             end
           end
@@ -90,6 +90,11 @@ module CarrierWave
       ##
       # Caches the given file. Calls process! to trigger any process callbacks.
       #
+      # By default, cache!() uses copy_to(), which operates by copying the file 
+      # to the cache, then deleting the original file.  If move_to_cache() is 
+      # overriden to return true, then cache!() uses move_to(), which simply 
+      # moves the file to the cache.  Useful for large files.
+      #
       # === Parameters
       #
       # [new_file (File, IOString, Tempfile)] any kind of file object
@@ -110,7 +115,11 @@ module CarrierWave
             @filename = new_file.filename
             self.original_filename = new_file.filename
 
-            @file = new_file.copy_to(cache_path, permissions)
+            if move_to_cache
+              @file = new_file.move_to(cache_path, permissions)
+            else
+              @file = new_file.copy_to(cache_path, permissions)
+            end
           end
         end
       end
@@ -151,7 +160,7 @@ module CarrierWave
       end
 
       def original_filename=(filename)
-        raise CarrierWave::InvalidParameter, "invalid filename" unless filename =~ /\A[a-z0-9\.\-\+_]+\z/i
+        raise CarrierWave::InvalidParameter, "invalid filename" if filename =~ CarrierWave::SanitizedFile.sanitize_regexp
         @original_filename = filename
       end
 

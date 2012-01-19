@@ -5,7 +5,10 @@ module CarrierWave
       extend ActiveSupport::Concern
 
       included do
+        class_attribute :_storage, :instance_writer => false
+
         add_config :root
+        add_config :base_path
         add_config :permissions
         add_config :storage_engines
         add_config :s3_access_policy
@@ -35,6 +38,9 @@ module CarrierWave
         add_config :enable_processing
         add_config :ensure_multipart_form
         add_config :delete_tmp_file_after_storage
+        add_config :move_to_cache
+        add_config :move_to_store
+        add_config :remove_previously_stored_files_after_update
 
         # fog
         add_config :fog_attributes
@@ -81,18 +87,12 @@ module CarrierWave
         #     storage MyCustomStorageEngine
         #
         def storage(storage = nil)
-          if storage.is_a?(Symbol)
-            @storage = eval(storage_engines[storage])
-          elsif storage
-            @storage = storage
-          elsif @storage.nil?
-            # Get the storage from the superclass if there is one
-            @storage = superclass.storage rescue nil
+          if storage
+            self._storage = storage.is_a?(Symbol) ? eval(storage_engines[storage]) : storage
           end
-          return @storage
+          _storage
         end
         alias_method :storage=, :storage
-
 
         def add_config(name)
           class_eval <<-RUBY, __FILE__, __LINE__ + 1
@@ -147,11 +147,15 @@ module CarrierWave
             config.store_dir = 'uploads'
             config.cache_dir = 'uploads/tmp'
             config.delete_tmp_file_after_storage = true
+            config.move_to_cache = false
+            config.move_to_store = false
+            config.remove_previously_stored_files_after_update = true
             config.ignore_integrity_errors = true
             config.ignore_processing_errors = true
             config.validate_integrity = true
             config.validate_processing = true
             config.root = CarrierWave.root
+            config.base_path = CarrierWave.base_path
             config.enable_processing = true
             config.ensure_multipart_form = true
           end

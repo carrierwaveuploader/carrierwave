@@ -57,6 +57,21 @@ module CarrierWave
         file.respond_to?(:size) ? file.size : 0
       end
 
+      ##
+      # Return the size of the file when asked for its length
+      #
+      # === Returns
+      #
+      # [Integer] size of the file
+      #
+      # === Note
+      #
+      # This was added because of the way Rails handles length/size validations in 3.0.6 and above.
+      #
+      def length
+        size
+      end
+
     end # Proxy
   end # Uploader
 end # CarrierWave

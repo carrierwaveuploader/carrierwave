@@ -104,6 +104,54 @@ describe CarrierWave::Uploader do
         @uploader.file.should_not_receive(:delete).and_return(true)
         @uploader.store!
       end
+
+      it "should not delete the old cache_id" do
+        @uploader.cache!(@file)
+        cache_path = @uploader.send(:cache_path) # WARNING: violating private
+        cache_id_dir = File.dirname(cache_path)
+        cache_parent_dir = File.split(cache_id_dir).first
+        File.should be_directory(cache_parent_dir)
+        File.should be_directory(cache_id_dir)
+
+        @uploader.store!
+
+        File.should be_directory(cache_parent_dir)
+        File.should be_directory(cache_id_dir)
+      end
+    end
+
+    it "should delete the old cache_id" do
+      @uploader.cache!(@file)
+      cache_path = @uploader.send(:cache_path) # WARNING: violating private
+      cache_id_dir = File.dirname(cache_path)
+      cache_parent_dir = File.split(cache_id_dir).first
+      File.should be_directory(cache_parent_dir)
+      File.should be_directory(cache_id_dir)
+
+      @uploader.store!
+
+      File.should be_directory(cache_parent_dir)
+      File.should_not be_directory(cache_id_dir)
+    end
+
+    context "when the old cache_id directory is not empty" do
+      before do
+        @uploader.cache!(@file)
+        cache_path = @uploader.send(:cache_path) # WARNING: violating private
+        @cache_id_dir = File.dirname(cache_path)
+        @existing_file = File.join(@cache_id_dir, "exsting_file.txt")
+        File.open(@existing_file, "wb"){|f| f << "I exist"}
+      end
+
+      it "should not delete the old cache_id" do
+        @uploader.store!
+        File.should be_directory(@cache_id_dir)
+      end
+
+      it "should not delete other existing files in old cache_id dir" do
+        @uploader.store!
+        File.should exist @existing_file
+      end
     end
 
     it "should do nothing when trying to store an empty file" do
@@ -277,6 +325,63 @@ describe CarrierWave::Uploader do
       end
     end
 
+  end
+  
+  describe "#store! with the move_to_store option" do
+    
+    before do
+      @file = File.open(file_path('test.jpg'))
+      @uploader_class.permissions = 777
+      CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+    end
+                
+    context "set to true" do
+      before do
+        @uploader_class.move_to_store = true
+      end
+      
+      it "should move it from the tmp dir to the store dir" do
+        @uploader.cache!(@file)
+  
+        @cached_path = @uploader.file.path
+        @stored_path = ::File.expand_path(@uploader.store_path, @uploader.root)
+  
+        @cached_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpg')
+        File.exists?(@cached_path).should be_true
+        File.exists?(@stored_path).should be_false
+      
+        @uploader.store!
+  
+        File.exists?(@cached_path).should be_false
+        File.exists?(@stored_path).should be_true
+      end
+    
+      it "should use move_to() during store!()" do
+        @uploader.cache!(@file)
+        @stored_path = ::File.expand_path(@uploader.store_path, @uploader.root)
+      
+        @uploader.file.should_receive(:move_to).with(@stored_path, 777)
+        @uploader.file.should_not_receive(:copy_to)
+      
+        @uploader.store!
+      end
+    end
+        
+    context "set to false" do
+      before do
+        @uploader_class.move_to_store = false
+      end
+
+      it "should use copy_to() during store!()" do
+        @uploader.cache!(@file)
+        @stored_path = ::File.expand_path(@uploader.store_path, @uploader.root)
+      
+        @uploader.file.should_receive(:copy_to).with(@stored_path, 777)
+        @uploader.file.should_not_receive(:move_to)
+      
+        @uploader.store!
+      end
+    end
   end
 
 end

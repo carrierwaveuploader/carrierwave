@@ -42,6 +42,44 @@ describe CarrierWave::Mount do
       @subclass_instance.image.should be_an_instance_of(@uploader)
     end
 
+    describe "expected behavior with subclassed uploaders" do
+      before do
+        @class = Class.new
+        @class.send(:extend, CarrierWave::Mount)
+        @uploader1 = Class.new(CarrierWave::Uploader::Base)
+        @uploader1.process :rotate
+        @uploader1.version :thumb do
+          process :compress
+        end
+        @uploader2 = Class.new(@uploader1)
+        @uploader2.process :shrink
+        @uploader2.version :secret do
+          process :encrypt
+        end
+        @class.mount_uploader(:image1, @uploader1)
+        @class.mount_uploader(:image2, @uploader2)
+        @instance = @class.new
+      end
+
+      it "should inherit defined versions" do
+        @instance.image1.should respond_to(:thumb)
+        @instance.image2.should respond_to(:thumb)
+      end
+
+      it "should not inherit versions defined in subclasses" do
+        @instance.image1.should_not respond_to(:secret)
+        @instance.image2.should respond_to(:secret)
+      end
+
+      it "should inherit defined processors properly" do
+        @uploader1.processors.should == [[:rotate, [], nil]]
+        @uploader2.processors.should == [[:rotate, [], nil], [:shrink, [], nil]]
+        @uploader1.versions[:thumb][:uploader].processors.should == [[:compress, [], nil]]
+        @uploader2.versions[:thumb][:uploader].processors.should == [[:compress, [], nil]]
+        @uploader2.versions[:secret][:uploader].processors.should == [[:encrypt, [], nil]]
+      end
+    end
+
     describe '#image' do
 
       it "should return a blank uploader when nothing has been assigned" do
@@ -254,10 +292,10 @@ describe CarrierWave::Mount do
           @instance.image.current_path.should =~ /test.jpg$/
         end
 
-        it "should not write over a previously assigned file" do
+        it "should write over a previously assigned file" do
           @instance.image = stub_file('portrait.jpg')
           @instance.remote_image_url = 'http://www.example.com/test.jpg'
-          @instance.image.current_path.should =~ /portrait.jpg$/
+          @instance.image.current_path.should =~ /test.jpg$/
         end
       end
     end
@@ -367,7 +405,9 @@ describe CarrierWave::Mount do
           end
         end
         @instance.image = stub_file('test.jpg')
-        @instance.image_integrity_error.should be_an_instance_of(CarrierWave::IntegrityError)
+        e = @instance.image_integrity_error
+        e.should be_an_instance_of(CarrierWave::IntegrityError)
+        e.message.lines.grep(/^You are not allowed to upload/).should be_true
       end
     end
 
@@ -410,18 +450,21 @@ describe CarrierWave::Mount do
       end
     end
 
+    describe '#image_identifier' do
+      it "should return the identifier from the mounted column" do
+        @instance.should_receive(:read_uploader).with(:image).and_return("test.jpg")
+        @instance.image_identifier.should == 'test.jpg'
+      end
+    end
+
   end
 
-  describe '#mount_uploader with a block' do
+  describe '#mount_uploader without an uploader' do
 
     before do
       @class = Class.new
       @class.send(:extend, CarrierWave::Mount)
-      @class.mount_uploader(:image) do
-        def monkey
-          'blah'
-        end
-      end
+      @class.mount_uploader(:image)
       @instance = @class.new
     end
 
@@ -439,12 +482,67 @@ describe CarrierWave::Mount do
         @instance.image.current_path.should == public_path('uploads/test.jpg')
       end
 
+    end
+
+  end
+
+  describe '#mount_uploader with a block' do
+    describe 'and no uploader given' do
+      before do
+        @class = Class.new
+        @class.send(:extend, CarrierWave::Mount)
+        @class.mount_uploader(:image) do
+          def monkey
+            'blah'
+          end
+        end
+        @instance = @class.new
+      end
+
+      it "should return an instance of a subclass of CarrierWave::Uploader::Base" do
+        @instance.image.should be_a(CarrierWave::Uploader::Base)
+      end
+
       it "should apply any custom modifications" do
         @instance.image.monkey.should == "blah"
       end
-
     end
 
+    describe 'and an uploader given' do
+      before do
+        @class = Class.new
+        @class.send(:extend, CarrierWave::Mount)
+        @uploader = Class.new(CarrierWave::Uploader::Base)
+        @uploader.version :thumb do
+          version :mini
+          version :maxi
+        end
+        @class.mount_uploader(:image, @uploader) do
+          def fish
+            'blub'
+          end
+        end
+        @instance = @class.new
+      end
+
+      it "should return an instance of the uploader specified" do
+        @instance.image.should be_a_kind_of(@uploader)
+      end
+
+      it "should apply any custom modifications to the instance" do
+        @instance.image.fish.should == "blub"
+      end
+
+      it "should apply any custom modifications to all defined versions" do
+        @instance.image.thumb.fish.should == "blub"
+        @instance.image.thumb.mini.fish.should == "blub"
+        @instance.image.thumb.maxi.fish.should == "blub"
+      end
+
+      it "should not apply any custom modifications to the uploader class" do
+        @uploader.new.should_not respond_to(:fish)
+      end
+    end
   end
 
   describe '#mount_uploader with :ignore_integrity_errors => false' do

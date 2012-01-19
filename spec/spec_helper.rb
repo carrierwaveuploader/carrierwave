@@ -12,9 +12,17 @@ require 'timecop'
 require 'open-uri'
 require 'sham_rack'
 
+<<<<<<< HEAD
 # not sure why we need to do this
 require 'sqlite3/sqlite3_native'
 require 'sqlite3'
+=======
+unless defined?(JRUBY_VERSION)
+  # not sure why we need to do this
+  require 'sqlite3/sqlite3_native'
+  require 'sqlite3'
+end
+>>>>>>> a0f8810996d43e005972a70b5715f0f7b2f4f132
 
 require 'fog'
 require 'storage/fog_helper'
@@ -81,9 +89,9 @@ module CarrierWave
         else
           t = StringIO.new
         end
-        t.stub!(:local_path).and_return("")
-        t.stub!(:original_filename).and_return(filename || fake_name)
-        t.stub!(:content_type).and_return(mime_type)
+        t.stub!(:local_path => "",
+                :original_filename => filename || fake_name,
+                :content_type => mime_type)
         return t
       end
 

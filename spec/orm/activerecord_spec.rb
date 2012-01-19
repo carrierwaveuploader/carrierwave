@@ -32,7 +32,7 @@ $arclass = 0
 
 describe CarrierWave::ActiveRecord do
 
-  describe '.mount_uploader' do
+  describe '#mount_uploader' do
 
     before(:all) { TestMigration.up }
     after(:all) { TestMigration.down }
@@ -79,6 +79,35 @@ describe CarrierWave::ActiveRecord do
         @event.image.current_path.should == public_path('uploads/test.jpeg')
       end
 
+      it "should return valid JSON when to_json is called when image is nil" do
+        @event[:image].should be_nil
+
+        JSON.parse(@event.to_json)["event#{$arclass}"]["image"].should == {"url"=>nil}
+      end
+
+      it "should return valid JSON when to_json is called when image is present" do
+        @event[:image] = 'test.jpeg'
+        @event.save
+        @event.reload
+
+        JSON.parse(@event.to_json)["event#{$arclass}"]["image"].should == {"url"=>"/uploads/test.jpeg"}
+      end
+
+      # FIXME to_xml should work like to_json
+      it "should return valid XML when to_xml is called when image is nil" do
+        @event[:image].should be_nil
+
+        Hash.from_xml(@event.to_xml)["event#{$arclass}"].except("id").should == {"textfile"=>nil, "foo"=>nil}
+      end
+
+      # FIXME to_xml should work like to_json
+      it "should return valid XML when to_xml is called when image is present" do
+        @event[:image] = 'test.jpeg'
+        @event.save
+        @event.reload
+
+        Hash.from_xml(@event.to_xml)["event#{$arclass}"]["image"].should == "test.jpeg"
+      end
     end
 
     describe '#image=' do
@@ -114,26 +143,52 @@ describe CarrierWave::ActiveRecord do
               %w(txt)
             end
           end
-          @event.image = stub_file('test.jpg')
-        end
-
-        it "should make the record invalid when an integrity error occurs" do
-          @event.should_not be_valid
         end
 
         it "should use I18n for integrity error messages" do
+          # Localize the error message to Dutch
+          change_locale_and_store_translations(:nl, :errors => {
+            :messages => {
+              :extension_white_list_error => "Het opladen van %{extension} bestanden is niet toe gestaan. Geaccepteerde types: %{allowed_types}"
+            }
+          }) do
+            # Assigning image triggers check_whitelist! and thus should be inside change_locale_and_store_translations
+            @event.image = stub_file('test.jpg')
+            @event.should_not be_valid
+            @event.valid?
+            @event.errors[:image].should == ['Het opladen van "jpg" bestanden is niet toe gestaan. Geaccepteerde types: ["txt"]']
+          end
+        end
+      end
+
+      context 'when validating processing' do
+        before do
+          @uploader.class_eval do
+            process :monkey
+            def monkey
+              raise CarrierWave::ProcessingError
+            end
+          end
+          @event.image = stub_file('test.jpg')
+        end
+
+        it "should make the record invalid when a processing error occurs" do
+          @event.should_not be_valid
+        end
+
+        it "should use I18n for processing errors without messages" do
           @event.valid?
-          @event.errors[:image].should == ['is not an allowed file type']
+          @event.errors[:image].should == ['failed to be processed']
 
           change_locale_and_store_translations(:pt, :activerecord => {
             :errors => {
               :messages => {
-                :carrierwave_integrity_error => 'tipo de imagem não permitido.'
+                :carrierwave_processing_error => 'falha ao processar imagem.'
               }
             }
           }) do
             @event.should_not be_valid
-            @event.errors[:image].should == ['tipo de imagem não permitido.']
+            @event.errors[:image].should == ['falha ao processar imagem.']
           end
         end
       end
@@ -153,9 +208,9 @@ describe CarrierWave::ActiveRecord do
           @event.should_not be_valid
         end
 
-        it "should use I18n for processing error messages" do
+        it "should use the error's messages for processing errors with messages" do
           @event.valid?
-          @event.errors[:image].should == ['failed to be processed']
+          @event.errors[:image].should == ['Ohh noez!']
 
           change_locale_and_store_translations(:pt, :activerecord => {
             :errors => {
@@ -165,11 +220,10 @@ describe CarrierWave::ActiveRecord do
             }
           }) do
             @event.should_not be_valid
-            @event.errors[:image].should == ['falha ao processar imagem.']
+            @event.errors[:image].should == ['Ohh noez!']
           end
         end
       end
-
     end
 
     describe '#save' do
@@ -199,6 +253,7 @@ describe CarrierWave::ActiveRecord do
         @event.save.should be_true
         @event.reload
         @event[:image].should == 'test.jpeg'
+        @event.image_identifier.should == 'test.jpeg'
       end
 
       it "should preserve the image when nothing is assigned" do
@@ -208,6 +263,7 @@ describe CarrierWave::ActiveRecord do
         @event.foo = "bar"
         @event.save.should be_true
         @event[:image].should == 'test.jpeg'
+        @event.image_identifier.should == 'test.jpeg'
       end
 
       it "should remove the image if remove_image? returns true" do
@@ -218,6 +274,7 @@ describe CarrierWave::ActiveRecord do
         @event.reload
         @event.image.should be_blank
         @event[:image].should == ''
+        @event.image_identifier.should == ''
       end
 
       it "should mark image as changed when saving a new image" do
@@ -319,7 +376,238 @@ describe CarrierWave::ActiveRecord do
       end
 
     end
-
   end
 
+  describe '#mount_uploader with mount_on' do
+
+    before(:all) { TestMigration.up }
+    after(:all) { TestMigration.down }
+    after { Event.delete_all }
+
+    before do
+      @class = Class.new(Event)
+      @class.table_name = "events"
+      @uploader = Class.new(CarrierWave::Uploader::Base)
+      @class.mount_uploader(:avatar, @uploader, :mount_on => :image)
+      @event = @class.new
+    end
+
+    describe '#avatar=' do
+
+      it "should cache a file" do
+        @event.avatar = stub_file('test.jpeg')
+        @event.save
+        @event.reload
+        @event.avatar.should be_an_instance_of(@uploader)
+        @event.image.should == 'test.jpeg'
+      end
+
+    end
+  end
+
+  describe '#mount_uploader removing old files' do
+
+    before(:all) { TestMigration.up }
+    after(:all) { TestMigration.down }
+
+    before do
+      @class = Class.new(Event)
+      @class.table_name = "events"
+      @uploader = Class.new(CarrierWave::Uploader::Base)
+      @class.mount_uploader(:image, @uploader)
+      @event = @class.new
+      @event.image = stub_file('old.jpeg')
+      @event.save.should be_true
+      File.exists?(public_path('uploads/old.jpeg')).should be_true
+    end
+
+    after do
+      FileUtils.rm_rf(file_path("uploads"))
+    end
+
+    describe 'normally' do
+      it "should remove old file if old file had a different path" do
+        @event.image = stub_file('new.jpeg')
+        @event.save.should be_true
+        File.exists?(public_path('uploads/new.jpeg')).should be_true
+        File.exists?(public_path('uploads/old.jpeg')).should be_false
+      end
+
+      it "should not remove old file if old file had a different path but config is false" do
+        @uploader.stub!(:remove_previously_stored_files_after_update).and_return(false)
+        @event.image = stub_file('new.jpeg')
+        @event.save.should be_true
+        File.exists?(public_path('uploads/new.jpeg')).should be_true
+        File.exists?(public_path('uploads/old.jpeg')).should be_true
+      end
+
+      it "should not remove file if old file had the same path" do
+        @event.image = stub_file('old.jpeg')
+        @event.save.should be_true
+        File.exists?(public_path('uploads/old.jpeg')).should be_true
+      end
+
+      it "should not remove file if validations fail on save" do
+        @class.validate { |r| r.errors.add :textfile, "FAIL!" }
+        @event.image = stub_file('new.jpeg')
+        @event.save.should be_false
+        File.exists?(public_path('uploads/old.jpeg')).should be_true
+      end
+    end
+
+    describe 'with an overriden filename' do
+      before do
+        @uploader.class_eval do
+          def filename
+            model.foo + File.extname(super)
+          end
+        end
+
+        @event.image = stub_file('old.jpeg')
+        @event.foo = "test"
+        @event.save.should be_true
+        File.exists?(public_path('uploads/test.jpeg')).should be_true
+        @event.image.read.should == "this is stuff"
+      end
+
+      it "should not remove file if old file had the same dynamic path" do
+        @event.image = stub_file('test.jpeg')
+        @event.save.should be_true
+        File.exists?(public_path('uploads/test.jpeg')).should be_true
+      end
+
+      it "should remove old file if old file had a different dynamic path" do
+        @event.foo = "new"
+        @event.image = stub_file('test.jpeg')
+        @event.save.should be_true
+        File.exists?(public_path('uploads/new.jpeg')).should be_true
+        File.exists?(public_path('uploads/test.jpeg')).should be_false
+      end
+    end
+  end
+
+  describe '#mount_uploader removing old files with versions' do
+
+    before(:all) { TestMigration.up }
+    after(:all) { TestMigration.down }
+
+    before do
+      @class = Class.new(Event)
+      @class.table_name = "events"
+      @uploader = Class.new(CarrierWave::Uploader::Base)
+      @uploader.version :thumb
+      @class.mount_uploader(:image, @uploader)
+      @event = @class.new
+      @event.image = stub_file('old.jpeg')
+      @event.save.should be_true
+      File.exists?(public_path('uploads/old.jpeg')).should be_true
+      File.exists?(public_path('uploads/thumb_old.jpeg')).should be_true
+    end
+
+    after do
+      FileUtils.rm_rf(file_path("uploads"))
+    end
+
+    it "should remove old file if old file had a different path" do
+      @event.image = stub_file('new.jpeg')
+      @event.save.should be_true
+      File.exists?(public_path('uploads/new.jpeg')).should be_true
+      File.exists?(public_path('uploads/thumb_new.jpeg')).should be_true
+      File.exists?(public_path('uploads/old.jpeg')).should be_false
+      File.exists?(public_path('uploads/thumb_old.jpeg')).should be_false
+    end
+
+    it "should not remove file if old file had the same path" do
+      @event.image = stub_file('old.jpeg')
+      @event.save.should be_true
+      File.exists?(public_path('uploads/old.jpeg')).should be_true
+      File.exists?(public_path('uploads/thumb_old.jpeg')).should be_true
+    end
+  end
+
+  describe '#mount_uploader removing old files with multiple uploaders' do
+
+    before(:all) { TestMigration.up }
+    after(:all) { TestMigration.down }
+
+    before do
+      @class = Class.new(Event)
+      @class.table_name = "events"
+      @uploader = Class.new(CarrierWave::Uploader::Base)
+      @class.mount_uploader(:image, @uploader)
+      @uploader1 = Class.new(CarrierWave::Uploader::Base)
+      @class.mount_uploader(:textfile, @uploader1)
+      @event = @class.new
+      @event.image = stub_file('old.jpeg')
+      @event.textfile = stub_file('old.txt')
+      @event.save.should be_true
+      File.exists?(public_path('uploads/old.jpeg')).should be_true
+      File.exists?(public_path('uploads/old.txt')).should be_true
+    end
+
+    after do
+      FileUtils.rm_rf(file_path("uploads"))
+    end
+
+    it "should remove old file1 and file2 if old file1 and file2 had a different paths" do
+      @event.image = stub_file('new.jpeg')
+      @event.textfile = stub_file('new.txt')
+      @event.save.should be_true
+      File.exists?(public_path('uploads/new.jpeg')).should be_true
+      File.exists?(public_path('uploads/old.jpeg')).should be_false
+      File.exists?(public_path('uploads/new.txt')).should be_true
+      File.exists?(public_path('uploads/old.txt')).should be_false
+    end
+
+    it "should remove old file1 but not file2 if old file1 had a different path but old file2 has the same path" do
+      @event.image = stub_file('new.jpeg')
+      @event.textfile = stub_file('old.txt')
+      @event.save.should be_true
+      File.exists?(public_path('uploads/new.jpeg')).should be_true
+      File.exists?(public_path('uploads/old.jpeg')).should be_false
+      File.exists?(public_path('uploads/old.txt')).should be_true
+    end
+
+    it "should not remove file1 or file2 if file1 and file2 have the same paths" do
+      @event.image = stub_file('old.jpeg')
+      @event.textfile = stub_file('old.txt')
+      @event.save.should be_true
+      File.exists?(public_path('uploads/old.jpeg')).should be_true
+      File.exists?(public_path('uploads/old.txt')).should be_true
+    end
+  end
+
+  describe '#mount_uploader removing old files with with mount_on' do
+
+    before(:all) { TestMigration.up }
+    after(:all) { TestMigration.down }
+
+    before do
+      @class = Class.new(Event)
+      @class.table_name = "events"
+      @uploader = Class.new(CarrierWave::Uploader::Base)
+      @class.mount_uploader(:avatar, @uploader, :mount_on => :image)
+      @event = @class.new
+      @event.avatar = stub_file('old.jpeg')
+      @event.save.should be_true
+      File.exists?(public_path('uploads/old.jpeg')).should be_true
+    end
+
+    after do
+      FileUtils.rm_rf(file_path("uploads"))
+    end
+
+    it "should remove old file if old file had a different path" do
+      @event.avatar = stub_file('new.jpeg')
+      @event.save.should be_true
+      File.exists?(public_path('uploads/new.jpeg')).should be_true
+      File.exists?(public_path('uploads/old.jpeg')).should be_false
+    end
+
+    it "should not remove file if old file had the same path" do
+      @event.avatar = stub_file('old.jpeg')
+      @event.save.should be_true
+      File.exists?(public_path('uploads/old.jpeg')).should be_true
+    end
+  end
 end

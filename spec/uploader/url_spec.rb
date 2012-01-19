@@ -51,6 +51,15 @@ describe CarrierWave::Uploader do
       @uploader.url(:thumb, :mini).should == '/uploads/tmp/20071201-1234-345-2255/thumb_mini_test.jpg'
     end
 
+    it "should prepend the config option 'base_path', if set" do
+      @uploader_class.version(:thumb)
+      @uploader.class.configure do |config|
+        config.base_path = "/base_path"
+      end
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      @uploader.url(:thumb).should == '/base_path/uploads/tmp/20071201-1234-345-2255/thumb_test.jpg'
+    end
+
     it "should return file#url if available" do
       @uploader.cache!(File.open(file_path('test.jpg')))
       @uploader.file.stub!(:url).and_return('http://www.example.com/someurl.jpg')

@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require 'active_support/deprecation'
+
 module CarrierWave
   module Uploader
     module Versions
@@ -8,6 +10,25 @@ module CarrierWave
       include CarrierWave::Uploader::Callbacks
 
       included do
+        ##
+        # Add configuration options for versions
+        # class_inheritable_accessor was deprecated in Rails 3.1 and removed for 3.2.
+        # class_attribute was added in 3.0, but doesn't support omitting the instance_reader until 3.0.10
+        # For max compatibility, always use class_inheritable_accessor when possible
+        if respond_to?(:class_inheritable_accessor)
+          ActiveSupport::Deprecation.silence do
+            class_inheritable_accessor :versions, :version_names, :instance_reader => false, :instance_writer => false
+          end
+        else
+          class_attribute :versions, :version_names, :instance_reader => false, :instance_writer => false
+        end
+
+        self.versions = {}
+        self.version_names = []
+
+        attr_accessor :parent_cache_id
+
+        after :cache, :assign_parent_cache_id
         after :cache, :cache_versions!
         after :store, :store_versions!
         after :remove, :remove_versions!
@@ -17,43 +38,78 @@ module CarrierWave
 
       module ClassMethods
 
-        def version_names
-          @version_names ||= []
-        end
-
         ##
         # Adds a new version to this uploader
         #
         # === Parameters
         #
         # [name (#to_sym)] name of the version
+        # [options (Hash)] optional options hash
         # [&block (Proc)] a block to eval on this version of the uploader
         #
-        def version(name, &block)
+        # === Examples
+        #
+        #     class MyUploader < CarrierWave::Uploader::Base
+        #
+        #       version :thumb do
+        #         process :scale => [200, 200]
+        #       end
+        #
+        #       version :preview, :if => :image? do
+        #         process :scale => [200, 200]
+        #       end
+        #
+        #     end
+        #
+        def version(name, options = {}, &block)
           name = name.to_sym
           unless versions[name]
-            versions[name] = Class.new(self)
-            versions[name].version_names.push(*version_names)
-            versions[name].version_names.push(name)
+            uploader = Class.new(self)
+            uploader.versions = {}
+
+            # Define the enable_processing method for versions so they get the
+            # value from the parent class unless explicitly overwritten
+            uploader.class_eval <<-RUBY, __FILE__, __LINE__ + 1
+              def self.enable_processing(value=nil)
+                self.enable_processing = value if value
+                if !@enable_processing.nil?
+                  @enable_processing
+                else
+                  superclass.enable_processing
+                end
+              end
+            RUBY
+
+            # Add the current version hash to class attribute :versions
+            current_version = {}
+            current_version[name] = {
+              :uploader => uploader,
+              :options  => options
+            }
+            self.versions = versions.merge(current_version)
+
+            versions[name][:uploader].version_names += [name]
+
             class_eval <<-RUBY
               def #{name}
                 versions[:#{name}]
               end
             RUBY
+            # as the processors get the output from the previous processors as their
+            # input we must not stack the processors here
+            versions[name][:uploader].processors = versions[name][:uploader].processors.dup
+            versions[name][:uploader].processors.clear
           end
-          versions[name].class_eval(&block) if block
+          versions[name][:uploader].class_eval(&block) if block
           versions[name]
         end
 
-        ##
-        # === Returns
-        #
-        # [Hash{Symbol => Class}] a list of versions available for this uploader
-        #
-        def versions
-          @versions ||= {}
+        def recursively_apply_block_to_versions(&block)
+          versions.each do |name, version|
+            version[:uploader].class_eval(&block)
+            version[:uploader].recursively_apply_block_to_versions(&block)
+          end
         end
-
       end # ClassMethods
 
       ##
@@ -66,8 +122,8 @@ module CarrierWave
       def versions
         return @versions if @versions
         @versions = {}
-        self.class.versions.each do |name, klass|
-          @versions[name] = klass.new(model, mounted_as)
+        self.class.versions.each do |name, version|
+          @versions[name] = version[:uploader].new(model, mounted_as)
         end
         @versions
       end
@@ -126,6 +182,18 @@ module CarrierWave
       end
 
     private
+      def assign_parent_cache_id(file)
+        active_versions.each do |name, uploader|
+          uploader.parent_cache_id = @cache_id
+        end
+      end
+
+      def active_versions
+        versions.select do |name, uploader|
+          condition = self.class.versions[name][:options][:if]
+          not condition or send(condition, file)
+        end
+      end
 
       def full_filename(for_file)
         [version_name, super(for_file)].compact.join('_')
@@ -142,14 +210,14 @@ module CarrierWave
         processed_parent = SanitizedFile.new :tempfile => self.file,
           :filename => new_file.original_filename
 
-        versions.each do |name, v|
+        active_versions.each do |name, v|
           v.send(:cache_id=, cache_id)
           v.cache!(processed_parent)
         end
       end
 
       def store_versions!(new_file)
-        versions.each { |name, v| v.store!(new_file) }
+        active_versions.each { |name, v| v.store!(new_file) }
       end
 
       def remove_versions!

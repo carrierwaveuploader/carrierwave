@@ -32,16 +32,15 @@ module CarrierWave
   #     class MyUploader < CarrierWave::Uploader::Base
   #       include CarrierWave::MiniMagick
   #
-  #       process :do_stuff => 10.0
+  #       process :radial_blur => 10
   #
-  #       def do_stuff(blur_factor)
+  #       def radial_blur(amount)
   #         manipulate! do |img|
-  #           img = img.sepiatone
-  #           img = img.auto_orient
-  #           img = img.radial_blur blur_factor
+  #           img.radial_blur(amount)
+  #           img = yield(img) if block_given?
+  #           img
   #         end
   #       end
-  #     end
   #
   # === Note
   #
@@ -129,12 +128,9 @@ module CarrierWave
     end
 
     ##
-    # From the RMagick documentation: "Resize the image to fit within the
-    # specified dimensions while retaining the original aspect ratio. The
-    # image may be shorter or narrower than specified in the smaller dimension
-    # but will not be larger than the specified values."
-    #
-    # See even http://www.imagemagick.org/RMagick/doc/image3.html#resize_to_fit
+    # Resize the image to fit within the specified dimensions while retaining
+    # the original aspect ratio. The image may be shorter or narrower than
+    # specified in the smaller dimension but will not be larger than the specified values.
     #
     # === Parameters
     #
@@ -154,15 +150,9 @@ module CarrierWave
     end
 
     ##
-    # From the RMagick documentation: "Resize the image to fit within the
-    # specified dimensions while retaining the aspect ratio of the original
-    # image. If necessary, crop the image in the larger dimension."
-    #
-    # See even http://www.imagemagick.org/RMagick/doc/image3.html#resize_to_fill
-    #
-    # and
-    #
-    # http://www.clipclip.org/clips/detail/4365/jerrett-net-»-crop_resized-in-rmagick
+    # Resize the image to fit within the specified dimensions while retaining
+    # the aspect ratio of the original image. If necessary, crop the image in the
+    # larger dimension.
     #
     # === Parameters
     #
@@ -229,7 +219,7 @@ module CarrierWave
     end
 
     ##
-    # Manipulate the image with RMagick. This method will load up an image
+    # Manipulate the image with MiniMagick. This method will load up an image
     # and then pass each of its frames to the supplied block. It will then
     # save the image to disk.
     #
@@ -255,7 +245,7 @@ module CarrierWave
       image.write(current_path)
       ::MiniMagick::Image.open(current_path)
     rescue ::MiniMagick::Error, ::MiniMagick::Invalid => e
-      raise CarrierWave::ProcessingError.new("Failed to manipulate with MiniMagick, maybe it is not an image? Original Error: #{e}")
+      raise CarrierWave::ProcessingError, I18n.translate(:"errors.messages.mini_magick_processing_error", :e => e)
     end
 
   end # MiniMagick

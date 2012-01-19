@@ -13,15 +13,22 @@ module CarrierWave
         def initialize(expected)
           @expected = expected
         end
+
         def matches?(actual)
           @actual = actual
           FileUtils.identical?(@actual, @expected)
         end
+
         def failure_message
           "expected #{@actual.inspect} to be identical to #{@expected.inspect}"
         end
+
         def negative_failure_message
           "expected #{@actual.inspect} to not be identical to #{@expected.inspect}"
+        end
+
+        def description
+          "be identical to #{@expected.inspect}"
         end
       end
 
@@ -46,6 +53,10 @@ module CarrierWave
 
         def negative_failure_message
           "expected #{@actual.inspect} not to have permissions #{@expected.to_s(8)}, but it did"
+        end
+
+        def description
+          "have permissions #{@expected.to_s(8)}"
         end
       end
 
@@ -75,6 +86,9 @@ module CarrierWave
           "expected #{@actual.current_path.inspect} to be larger than #{@width} by #{@height}, but it wasn't."
         end
 
+        def description
+          "be no larger than #{@width} by #{@height}"
+        end
       end
 
       def be_no_larger_than(width, height)
@@ -103,10 +117,73 @@ module CarrierWave
           "expected #{@actual.current_path.inspect} not to have an exact size of #{@width} by #{@height}, but it did."
         end
 
+        def description
+          "have an exact size of #{@width} by #{@height}"
+        end
       end
 
       def have_dimensions(width, height)
         HaveDimensions.new(width, height)
+      end
+
+      class BeNoWiderThan # :nodoc:
+        def initialize(width)
+          @width = width
+        end
+
+        def matches?(actual)
+          @actual = actual
+          # Satisfy expectation here. Return false or raise an error if it's not met.
+          image = ImageLoader.load_image(@actual.current_path)
+          @actual_width = image.width
+          @actual_width <= @width
+        end
+
+        def failure_message
+          "expected #{@actual.current_path.inspect} to be no wider than #{@width}, but it was #{@actual_width}."
+        end
+
+        def negative_failure_message
+          "expected #{@actual.current_path.inspect} not to be wider than #{@width}, but it is."
+        end
+
+        def description
+          "have a width less than or equal to #{@width}"
+        end
+      end
+
+      def be_no_wider_than(width)
+        BeNoWiderThan.new(width)
+      end
+
+      class BeNoTallerThan # :nodoc:
+        def initialize(height)
+          @height = height
+        end
+
+        def matches?(actual)
+          @actual = actual
+          # Satisfy expectation here. Return false or raise an error if it's not met.
+          image = ImageLoader.load_image(@actual.current_path)
+          @actual_height = image.height
+          @actual_height <= @height
+        end
+
+        def failure_message
+          "expected #{@actual.current_path.inspect} to be no taller than #{@height}, but it was #{@actual_height}."
+        end
+
+        def negative_failure_message
+          "expected #{@actual.current_path.inspect} not to be taller than #{@height}, but it is."
+        end
+
+        def description
+          "have a height less than or equal to #{@height}"
+        end
+      end
+
+      def be_no_height_than(height)
+        BeNoTallerThan.new(height)
       end
 
       class ImageLoader # :nodoc:

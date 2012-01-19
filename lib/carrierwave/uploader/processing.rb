@@ -8,21 +8,13 @@ module CarrierWave
       include CarrierWave::Uploader::Callbacks
 
       included do
+        class_attribute :processors, :instance_writer => false
+        self.processors = []
+
         after :cache, :process!
       end
 
       module ClassMethods
-
-        ##
-        # Lists processor callbacks declared
-        #
-        # === Returns
-        #
-        # [Array[Array[Symbol, Array]]] a list of processor callbacks which have been declared for this uploader
-        #
-        def processors
-          @processors ||= []
-        end
 
         ##
         # Adds a processor callback which applies operations as a file is uploaded.
@@ -40,6 +32,8 @@ module CarrierWave
         #
         #       process :sepiatone, :vignette
         #       process :scale => [200, 200]
+        #       process :scale => [200, 200], :if => :image?
+        #       process :sepiatone, :if => :image?
         #
         #       def sepiatone
         #         ...
@@ -52,16 +46,27 @@ module CarrierWave
         #       def scale(height, width)
         #         ...
         #       end
+        #
+        #       def image?
+        #         ...
+        #       end
+        #
         #     end
         #
         def process(*args)
+          if !args.first.is_a?(Hash) && args.last.is_a?(Hash)
+            conditions = args.pop
+            args.map!{ |arg| {arg => []}.merge(conditions) }
+          end
+
           args.each do |arg|
             if arg.is_a?(Hash)
+              condition = arg.delete(:if)
               arg.each do |method, args|
-                processors.push([method, args])
+                self.processors += [[method, args, condition]]
               end
             else
-              processors.push([arg, []])
+              self.processors += [[arg, [], nil]]
             end
           end
         end
@@ -73,7 +78,8 @@ module CarrierWave
       #
       def process!(new_file=nil)
         if enable_processing
-          self.class.processors.each do |method, args|
+          self.class.processors.each do |method, args, condition|
+            next if condition && !self.send(condition, new_file)
             self.send(method, *args)
           end
         end

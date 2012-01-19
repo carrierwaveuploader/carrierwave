@@ -266,7 +266,7 @@ module CarrierWave
       end
       destroy_image(frames)
     rescue ::Magick::ImageMagickError => e
-      raise CarrierWave::ProcessingError.new("Failed to manipulate with rmagick, maybe it is not an image? Original Error: #{e}")
+      raise CarrierWave::ProcessingError, I18n.translate(:"errors.messages.rmagick_processing_error", :e => e)
     end
 
   private
