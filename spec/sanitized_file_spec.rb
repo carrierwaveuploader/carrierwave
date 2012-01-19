@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require 'spec_helper'
+require 'mime/types'
 
 describe CarrierWave::SanitizedFile do
 
@@ -29,14 +30,6 @@ describe CarrierWave::SanitizedFile do
 
     it "should be empty for an empty StringIO" do
       @sanitized_file = CarrierWave::SanitizedFile.new(StringIO.new(""))
-      @sanitized_file.should be_empty
-    end
-
-    it "should be empty for a file with a zero size" do
-      FileUtils.rm file_path('llama.jpg')
-      FileUtils.touch file_path('llama.jpg')
-
-      @sanitized_file = CarrierWave::SanitizedFile.new(File.open(file_path('llama.jpg')))
       @sanitized_file.should be_empty
     end
 
@@ -187,6 +180,15 @@ describe CarrierWave::SanitizedFile do
     it "preserves file's content_type" do
       @sanitized_file = CarrierWave::SanitizedFile.new(:content_type => 'image/png')
       @sanitized_file.content_type.should == 'image/png'
+    end
+
+    it "should handle Mime::Type object" do
+      @file = File.open(file_path('sponsored.doc'))
+      @file.stub!(:content_type).and_return(MIME::Type.new('application/msword'))
+      @sanitized_file = CarrierWave::SanitizedFile.new(@file)
+      @sanitized_file.stub!(:file).and_return(@file)
+      lambda { @sanitized_file.content_type }.should_not raise_error
+      @sanitized_file.content_type.should == 'application/msword'
     end
   end
 
@@ -504,6 +506,32 @@ describe CarrierWave::SanitizedFile do
     end
 
     it_should_behave_like "all valid sanitized files"
+
+    it_should_behave_like "all valid sanitized files that are stored on disk"
+
+    describe '#is_path?' do
+      it "should be false" do
+        @sanitized_file.is_path?.should be_false
+      end
+    end
+
+    describe '#path' do
+      it "should return the path of the file" do
+        @sanitized_file.path.should_not be_nil
+        @sanitized_file.path.should == file_path('llama.jpg')
+      end
+    end
+
+  end
+
+  describe "with a valid File object and an empty file" do
+    before do
+      FileUtils.cp(file_path('test.jpg'), file_path('llama.jpg'))
+      FileUtils.rm file_path('llama.jpg')
+      FileUtils.touch file_path('llama.jpg')
+      @sanitized_file = CarrierWave::SanitizedFile.new(stub_file('llama.jpg', 'image/jpeg'))
+      @sanitized_file.should_not be_empty
+    end
 
     it_should_behave_like "all valid sanitized files that are stored on disk"
 

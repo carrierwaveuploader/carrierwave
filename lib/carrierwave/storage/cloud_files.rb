@@ -7,8 +7,8 @@ module CarrierWave
     ##
     # Uploads things to Rackspace Cloud Files webservices using the Rackspace libraries (cloudfiles gem).
     # In order for CarrierWave to connect to Cloud Files, you'll need to specify an username, api key
-    # and container.  Optional arguments are config.cloud_files_snet (using the private internal 
-    # Rackspace network for communication) and config.cloud_files_auth_url (for connecting to Rackspace's 
+    # and container.  Optional arguments are config.cloud_files_snet (using the private internal
+    # Rackspace network for communication) and config.cloud_files_auth_url (for connecting to Rackspace's
     # UK infrastructure or an OpenStack Swift installation)
     #
     #     CarrierWave.configure do |config|

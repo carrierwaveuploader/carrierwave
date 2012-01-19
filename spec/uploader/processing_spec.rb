@@ -65,6 +65,24 @@ describe CarrierWave::Uploader do
       @uploader.process!("test.jpg")
     end
 
+    it "should call the processor if the condition block returns true" do
+      @uploader_class.process :resize => [200, 300], :if => lambda{|record, args| record.true?(args[:file])}
+      @uploader_class.process :fancy, :if => :true?
+      @uploader.should_receive(:true?).with("test.jpg").twice.and_return(true)
+      @uploader.should_receive(:resize).with(200, 300)
+      @uploader.should_receive(:fancy).with()
+      @uploader.process!("test.jpg")
+    end
+
+    it "should not call the processor if the condition block returns false" do
+      @uploader_class.process :resize => [200, 300], :if => lambda{|record, args| record.false?(args[:file])}
+      @uploader_class.process :fancy, :if => :false?
+      @uploader.should_receive(:false?).with("test.jpg").twice.and_return(false)
+      @uploader.should_not_receive(:resize)
+      @uploader.should_not_receive(:fancy)
+      @uploader.process!("test.jpg")
+    end
+
     context "with 'enable_processing' set to false" do
       it "should not do any processing" do
         @uploader_class.enable_processing = false

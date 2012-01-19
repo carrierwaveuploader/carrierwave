@@ -101,7 +101,7 @@ u.avatar = File.open('somewhere')
 u.save!
 u.avatar.url # => '/url/to/file.png'
 u.avatar.current_path # => 'path/to/file.png'
-u.avatar_identifier # => 'file.png'
+u.avatar.identifier # => 'file.png'
 ```
 
 ### DataMapper, Mongoid, Sequel
@@ -463,7 +463,7 @@ Processing can be enabled for a single version by setting the processing flag on
 
 ## Using Amazon S3
 
-[Fog](http://github.com/geemus/fog) is used to support Amazon S3. Ensure you have it installed:
+[Fog](http://github.com/fog/fog) is used to support Amazon S3. Ensure you have it installed:
 
 	gem install fog
 
@@ -498,7 +498,7 @@ That's it! You can still use the `CarrierWave::Uploader#url` method to return th
 
 ## Using Rackspace Cloud Files
 
-[Fog](http://github.com/geemus/fog) is used to support Rackspace Cloud Files. Ensure you have it installed:
+[Fog](http://github.com/fog/fog) is used to support Rackspace Cloud Files. Ensure you have it installed:
 
 	gem install fog
 
@@ -544,7 +544,7 @@ the url to the file on Rackspace Cloud Files.
 
 ## Using Google Storage for Developers
 
-[Fog](http://github.com/geemus/fog) is used to support Google Storage for Developers. Ensure you have it installed:
+[Fog](http://github.com/fog/fog) is used to support Google Storage for Developers. Ensure you have it installed:
 
     gem install fog
 

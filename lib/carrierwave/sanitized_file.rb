@@ -132,7 +132,7 @@ module CarrierWave
     # [Boolean] whether the file is valid and has a non-zero size
     #
     def empty?
-      @file.nil? || self.size.nil? || self.size.zero?
+      @file.nil? || self.size.nil? || (self.size.zero? && ! self.exists?)
     end
 
     ##
@@ -238,7 +238,7 @@ module CarrierWave
     #
     def content_type
       return @content_type if @content_type
-      @file.content_type.chomp if @file.respond_to?(:content_type) and @file.content_type
+      @file.content_type.to_s.chomp if @file.respond_to?(:content_type) and @file.content_type
     end
 
     ##

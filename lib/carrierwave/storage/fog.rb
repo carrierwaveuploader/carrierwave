@@ -133,12 +133,16 @@ module CarrierWave
         #   or
         # [NilClass] no authenticated url available
         #
-        def authenticated_url
+        def authenticated_url(options = {})
           if ['AWS', 'Google'].include?(@uploader.fog_credentials[:provider])
             # avoid a get by using local references
             local_directory = connection.directories.new(:key => @uploader.fog_directory)
             local_file = local_directory.files.new(:key => path)
-            local_file.url(::Fog::Time.now + @uploader.fog_authenticated_url_expiration)
+            if @uploader.fog_credentials[:provider] == "AWS"
+              local_file.url(::Fog::Time.now + @uploader.fog_authenticated_url_expiration, options)
+            else
+              local_file.url(::Fog::Time.now + @uploader.fog_authenticated_url_expiration)
+            end
           else
             nil
           end
@@ -253,7 +257,7 @@ module CarrierWave
             case @uploader.fog_credentials[:provider]
             when 'AWS'
               # if directory is a valid subdomain, use that style for access
-              if @uploader.fog_directory.to_s =~ /^(?:[a-z]|\d(?!\d{0,2}(?:\.\d{1,3}){3}$))(?:[a-z0-9]|\.(?![\.\-])|\-(?![\.])){1,61}[a-z0-9]$/
+              if @uploader.fog_directory.to_s =~ /^(?:[a-z]|\d(?!\d{0,2}(?:\d{1,3}){3}$))(?:[a-z0-9]|(?![\-])|\-(?![\.])){1,61}[a-z0-9]$/
                 "https://#{@uploader.fog_directory}.s3.amazonaws.com/#{path}"
               else
                 # directory is not a valid subdomain, so use path style for access
@@ -277,9 +281,9 @@ module CarrierWave
         #   or
         # [NilClass] no url available
         #
-        def url
+        def url(options = {})
           if !@uploader.fog_public
-            authenticated_url
+            authenticated_url(options)
           else
             public_url
           end

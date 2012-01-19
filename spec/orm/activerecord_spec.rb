@@ -60,21 +60,21 @@ describe CarrierWave::ActiveRecord do
 
       it "should return blank uploader when an empty string has been assigned" do
         @event[:image] = ''
-        @event.save
+        @event.save!
         @event.reload
         @event.image.should be_blank
       end
 
       it "should retrieve a file from the storage if a value is stored in the database" do
         @event[:image] = 'test.jpeg'
-        @event.save
+        @event.save!
         @event.reload
         @event.image.should be_an_instance_of(@uploader)
       end
 
       it "should set the path to the store dir" do
         @event[:image] = 'test.jpeg'
-        @event.save
+        @event.save!
         @event.reload
         @event.image.current_path.should == public_path('uploads/test.jpeg')
       end
@@ -87,7 +87,7 @@ describe CarrierWave::ActiveRecord do
 
       it "should return valid JSON when to_json is called when image is present" do
         @event[:image] = 'test.jpeg'
-        @event.save
+        @event.save!
         @event.reload
 
         JSON.parse(@event.to_json)["event#{$arclass}"]["image"].should == {"url"=>"/uploads/test.jpeg"}
@@ -97,16 +97,16 @@ describe CarrierWave::ActiveRecord do
       it "should return valid XML when to_xml is called when image is nil" do
         @event[:image].should be_nil
 
-        Hash.from_xml(@event.to_xml)["event#{$arclass}"].except("id").should == {"textfile"=>nil, "foo"=>nil}
+        Hash.from_xml(@event.to_xml)["event#{$arclass}"].except("id").should == {"textfile"=>nil, "foo"=>nil, "image"=>nil}
       end
 
       # FIXME to_xml should work like to_json
       it "should return valid XML when to_xml is called when image is present" do
         @event[:image] = 'test.jpeg'
-        @event.save
+        @event.save!
         @event.reload
 
-        Hash.from_xml(@event.to_xml)["event#{$arclass}"]["image"].should == "test.jpeg"
+        Hash.from_xml(@event.to_xml)["event#{$arclass}"]["image"].should == "/uploads/test.jpeg"
       end
     end
 
@@ -287,6 +287,19 @@ describe CarrierWave::ActiveRecord do
         @event.image = stub_file("test.jpg")
         @event.image_changed?.should be_true
         @event.changed_for_autosave?.should be_true
+      end
+    end
+
+    describe "dirty tracking with remote_image_url" do
+
+      # FIXME ideally image_changed? and remote_image_url_changed? would return true
+      it "should mark image as changed when setting remote_image_url" do
+        @event.image_changed?.should be_false
+        @event.remote_image_url = 'http://www.example.com/test.jpg'
+        @event.image_changed?.should be_true
+        @event.save
+        @event.reload
+        @event.image_changed?.should be_false
       end
 
     end
