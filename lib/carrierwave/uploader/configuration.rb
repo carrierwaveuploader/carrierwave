@@ -11,28 +11,6 @@ module CarrierWave
         add_config :base_path
         add_config :permissions
         add_config :storage_engines
-        add_config :s3_access_policy
-        add_config :s3_bucket
-        add_config :s3_access_key_id
-        add_config :s3_secret_access_key
-        add_config :s3_cnamed
-        add_config :s3_headers
-        add_config :s3_region
-        add_config :s3_use_ssl
-        add_config :s3_authentication_timeout
-        add_config :cloud_files_username
-        add_config :cloud_files_api_key
-        add_config :cloud_files_container
-        add_config :cloud_files_cdn_host
-        add_config :cloud_files_auth_url
-        add_config :cloud_files_snet
-        add_config :grid_fs_connection
-        add_config :grid_fs_database
-        add_config :grid_fs_host
-        add_config :grid_fs_port
-        add_config :grid_fs_username
-        add_config :grid_fs_password
-        add_config :grid_fs_access_url
         add_config :store_dir
         add_config :cache_dir
         add_config :enable_processing
@@ -127,20 +105,9 @@ module CarrierWave
             config.permissions = 0644
             config.storage_engines = {
               :file => "CarrierWave::Storage::File",
-              :fog => "CarrierWave::Storage::Fog",
-              :s3 => "CarrierWave::Storage::S3",
-              :grid_fs => "CarrierWave::Storage::GridFS",
-              :right_s3 => "CarrierWave::Storage::RightS3",
-              :cloud_files => "CarrierWave::Storage::CloudFiles"
+              :fog  => "CarrierWave::Storage::Fog"
             }
             config.storage = :file
-            config.s3_headers = {}
-            config.s3_access_policy = :public_read
-            config.s3_region = 'us-east-1'
-            config.s3_authentication_timeout = 600
-            config.grid_fs_database = 'carrierwave'
-            config.grid_fs_host = 'localhost'
-            config.grid_fs_port = 27017
             config.fog_attributes = {}
             config.fog_credentials = {}
             config.fog_public = true

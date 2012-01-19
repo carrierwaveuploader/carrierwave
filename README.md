@@ -253,16 +253,16 @@ protected
   def is_human? picture
     model.can_program?(:ruby)
   end
-  
+
   def is_monkey? picture
     model.favorite_food == 'banana'
   end
-  
+
   def is_landscape? picture
     image = MiniMagick::Image.open(picture.path)
     image[:width] > image[:height]
   end
-  
+
 end
 ```
 
@@ -382,7 +382,7 @@ both globally and on a per-uploader basis:
 ``` ruby
 CarrierWave.configure do |config|
   config.permissions = 0666
-  config.storage = :s3
+  config.storage = :file
 end
 ```
 
@@ -522,13 +522,6 @@ of this information.
 
 ``` ruby
 config.fog_host = "http://c000000.cdn.rackspacecloud.com"
-```
-
-The UK Rackspace Cloud doesn’t have the same auth server as the US Cloud.
-In case you are using Rackspace UK, you have to adjust the Auth URL:
-
-``` ruby
-config.rackspace_auth_url = 'lon.auth.api.rackspacecloud.com'
 ```
 
 In your uploader, set the storage to :fog
@@ -674,7 +667,7 @@ errors:
 By default, CarrierWave copies an uploaded file twice, first copying the file into the cache, then
 copying the file into the store.  For large files, this can be prohibitively time consuming.
 
-You may change this behavior by overriding either or both of the `move_to_cache` and 
+You may change this behavior by overriding either or both of the `move_to_cache` and
 `move_to_store` methods:
 
 ``` ruby
@@ -726,7 +719,7 @@ Please test with the latest Ruby 1.8.x and 1.9.x versions using RVM if possible.
 
 ## License
 
-Copyright (c) 2008 Jonas Nicklas
+Copyright (c) 2008-2012 Jonas Nicklas
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

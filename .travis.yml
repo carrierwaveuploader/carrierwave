@@ -7,8 +7,6 @@ rvm:
  - rbx-18mode
 
 gemfile:
-  - gemfiles/rails3_0.gemfile
-  - gemfiles/rails3_1.gemfile
   - gemfiles/rails3_2.gemfile
   - gemfiles/rails_master.gemfile
 
