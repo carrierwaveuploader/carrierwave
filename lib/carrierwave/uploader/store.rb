@@ -79,8 +79,6 @@ module CarrierWave
             # Ignore: path is not a dir
           rescue Errno::ENOTEMPTY, Errno::EEXIST
             # Ignore: dir is not empty
-          rescue SystemCallError
-            # no such directory on JRuby
           end
         end
       end
