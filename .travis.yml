@@ -22,3 +22,6 @@ matrix:
       gemfile: gemfiles/rails_master.gemfile
     - rvm: rbx-18mode
       gemfile: gemfiles/rails_master.gemfile
+
+before_script:
+  - "mysql -e 'create database carrierwave_test;'"
