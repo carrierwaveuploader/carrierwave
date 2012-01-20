@@ -12,11 +12,7 @@ require 'timecop'
 require 'open-uri'
 require 'sham_rack'
 
-unless defined?(JRUBY_VERSION)
-  # not sure why we need to do this
-  require 'sqlite3/sqlite3_native'
-  require 'sqlite3'
-end
+require 'mysql2'
 
 require 'fog'
 require 'storage/fog_helper'

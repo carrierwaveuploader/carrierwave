@@ -4,10 +4,12 @@ require 'spec_helper'
 
 require 'carrierwave/orm/activerecord'
 
-# change this if sqlite is unavailable
+# Change this if MySQL is unavailable
 dbconfig = {
-  :adapter => 'sqlite3',
-  :database => ':memory:'
+  :adapter  => 'mysql2',
+  :database => 'carrierwave_test',
+  :username => 'root',
+  :encoding => 'utf8'
 }
 
 ActiveRecord::Base.establish_connection(dbconfig)

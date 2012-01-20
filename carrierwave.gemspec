@@ -24,13 +24,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "activesupport", ">= 3.2.0.rc2"
 
-  if defined?(JRUBY_VERSION)
-    s.add_development_dependency "activerecord-jdbc-adapter"
-    s.add_development_dependency "jdbc-sqlite3"
-  else
-    s.add_development_dependency "sqlite3"
-  end
-
+  s.add_development_dependency "mysql2"
   s.add_development_dependency "rails", ">= 3.2.0.rc2"
   s.add_development_dependency "cucumber", "1.1.4"
   s.add_development_dependency "json"
