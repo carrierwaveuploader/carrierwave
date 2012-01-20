@@ -33,8 +33,7 @@ module CarrierWave
       # [Hash] the locations where this file and versions are accessible via a url
       #
       def as_json(options = nil)
-        h = { :url => url }
-        h.merge Hash[versions.map { |name, version| [name, { :url => version.url }] }]
+        {:url => url}.merge Hash[versions.map { |name, version| [name, { :url => version.url }] }]
       end
 
     end # Url
