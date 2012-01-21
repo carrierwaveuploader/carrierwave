@@ -82,6 +82,13 @@ describe CarrierWave::Uploader do
       @uploader.should_not_receive(:fancy)
       @uploader.process!("test.jpg")
     end
+    
+    it "should successfully process a multi-page PDF when using RMagick" do
+      @uploader_class.send :include, CarrierWave::RMagick
+      @uploader_class.process :convert => 'jpg'
+      @uploader.cache! File.open(file_path("multi_page.pdf"))
+      @uploader.process!
+    end
 
     context "with 'enable_processing' set to false" do
       it "should not do any processing" do

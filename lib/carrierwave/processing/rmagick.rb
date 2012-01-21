@@ -250,9 +250,9 @@ module CarrierWave
       frames = if image.size > 1
         list = ::Magick::ImageList.new
         image.each do |frame|
-          list << yield( frame )
+          list << (block_given? ? yield( frame ) : frame)
         end
-        list
+        block_given? ? list : list.append(true)
       else
         frame = image.first
         frame = yield( frame ) if block_given?
