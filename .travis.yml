@@ -4,11 +4,8 @@ rvm:
  - 1.9.3
  - ruby-head
  - ree
- - rbx-18mode
 
 gemfile:
-  - gemfiles/rails3_0.gemfile
-  - gemfiles/rails3_1.gemfile
   - gemfiles/rails3_2.gemfile
   - gemfiles/rails_master.gemfile
 
@@ -20,5 +17,6 @@ matrix:
       gemfile: gemfiles/rails_master.gemfile
     - rvm: ree
       gemfile: gemfiles/rails_master.gemfile
-    - rvm: rbx-18mode
-      gemfile: gemfiles/rails_master.gemfile
+
+before_script:
+  - "mysql -e 'create database carrierwave_test;'"

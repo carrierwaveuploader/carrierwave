@@ -175,12 +175,6 @@ end
           end
         end
 
-        context 'finishing' do
-          it "should destroy the directory" do # hack, but after never does what/when I want
-            @directory.destroy
-          end
-        end
-
       end
 
     end

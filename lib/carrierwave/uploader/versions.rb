@@ -1,7 +1,5 @@
 # encoding: utf-8
 
-require 'active_support/deprecation'
-
 module CarrierWave
   module Uploader
     module Versions
@@ -10,18 +8,7 @@ module CarrierWave
       include CarrierWave::Uploader::Callbacks
 
       included do
-        ##
-        # Add configuration options for versions
-        # class_inheritable_accessor was deprecated in Rails 3.1 and removed for 3.2.
-        # class_attribute was added in 3.0, but doesn't support omitting the instance_reader until 3.0.10
-        # For max compatibility, always use class_inheritable_accessor when possible
-        if respond_to?(:class_inheritable_accessor)
-          ActiveSupport::Deprecation.silence do
-            class_inheritable_accessor :versions, :version_names, :instance_reader => false, :instance_writer => false
-          end
-        else
-          class_attribute :versions, :version_names, :instance_reader => false, :instance_writer => false
-        end
+        class_attribute :versions, :version_names, :instance_reader => false, :instance_writer => false
 
         self.versions = {}
         self.version_names = []

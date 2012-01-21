@@ -22,22 +22,16 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.5}
   s.specification_version = 3
 
-  s.add_dependency "activesupport", ">= 3.0"
+  s.add_dependency "activesupport", ">= 3.2.0"
+  s.add_dependency "activemodel", ">= 3.2.0"
 
-  if defined?(JRUBY_VERSION)
-    s.add_development_dependency "activerecord-jdbc-adapter"
-    s.add_development_dependency "jdbc-sqlite3"
-  else
-    s.add_development_dependency "sqlite3"
-  end
-
-  s.add_development_dependency "rails", ">= 3.0"
+  s.add_development_dependency "mysql2"
+  s.add_development_dependency "rails", ">= 3.2.0"
   s.add_development_dependency "cucumber", "1.1.4"
   s.add_development_dependency "json"
   s.add_development_dependency "rspec", "~> 2.0"
   s.add_development_dependency "sham_rack"
   s.add_development_dependency "timecop"
-  s.add_development_dependency "cloudfiles"
   s.add_development_dependency "fog", ">= 1.1.2"
   s.add_development_dependency "mini_magick"
   s.add_development_dependency "rmagick"

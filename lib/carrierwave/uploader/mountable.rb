@@ -7,7 +7,7 @@ module CarrierWave
       attr_reader :model, :mounted_as
 
       ##
-      # If a model is given as the first parameter, it will stored in the uploader, and
+      # If a model is given as the first parameter, it will be stored in the uploader, and
       # available throught +#model+. Likewise, mounted_as stores the name of the column
       # where this instance of the uploader is mounted. These values can then be used inside
       # your uploader.

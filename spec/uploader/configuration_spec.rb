@@ -51,15 +51,15 @@ describe CarrierWave::Uploader::Base do
     end
 
     it "should remember the storage when inherited" do
-      @uploader_class.storage :s3
+      @uploader_class.storage :fog
       subclass = Class.new(@uploader_class)
-      subclass.storage.should == CarrierWave::Storage::S3
+      subclass.storage.should == CarrierWave::Storage::Fog
     end
 
     it "should be changeable when inherited" do
-      @uploader_class.storage :s3
+      @uploader_class.storage :fog
       subclass = Class.new(@uploader_class)
-      subclass.storage.should == CarrierWave::Storage::S3
+      subclass.storage.should == CarrierWave::Storage::Fog
       subclass.storage :file
       subclass.storage.should == CarrierWave::Storage::File
     end

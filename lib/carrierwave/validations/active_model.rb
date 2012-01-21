@@ -3,7 +3,6 @@
 require 'active_model/validator'
 require 'active_support/concern'
 
-
 module CarrierWave
 
   # == Active Model Presence Validator

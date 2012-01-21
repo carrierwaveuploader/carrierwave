@@ -4,11 +4,6 @@ require 'fileutils'
 require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/class/attribute'
 
-begin
-  require 'active_support/core_ext/class/inheritable_attributes'
-rescue LoadError
-end
-
 require 'active_support/concern'
 
 module CarrierWave
@@ -43,10 +38,6 @@ module CarrierWave
     autoload :Abstract, 'carrierwave/storage/abstract'
     autoload :File, 'carrierwave/storage/file'
     autoload :Fog, 'carrierwave/storage/fog'
-    autoload :S3, 'carrierwave/storage/s3'
-    autoload :GridFS, 'carrierwave/storage/grid_fs'
-    autoload :RightS3, 'carrierwave/storage/right_s3'
-    autoload :CloudFiles, 'carrierwave/storage/cloud_files'
   end
 
   module Uploader
