@@ -108,7 +108,7 @@ describe CarrierWave::ActiveRecord do
         @event.save!
         @event.reload
 
-        Hash.from_xml(@event.to_xml)["event#{$arclass}"]["image"].should == "/uploads/test.jpeg"
+        Hash.from_xml(@event.to_xml)["event#{$arclass}"]["image"].should == "test.jpeg"
       end
     end
 
