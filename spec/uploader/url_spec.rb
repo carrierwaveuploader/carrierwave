@@ -113,24 +113,26 @@ describe CarrierWave::Uploader do
     end
   end
 
-  describe '#to_xml' do
-    before do
-      CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
-    end
+  pending do
+    describe '#to_xml' do
+      before do
+        CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+      end
 
-    it "should return a hash with a blank URL" do
-      Hash.from_xml(@uploader.to_xml).should == {"url" => nil}
-    end
+      it "should return a hash with a blank URL" do
+        Hash.from_xml(@uploader.to_xml).should == {"url" => nil}
+      end
 
-    it "should return a hash including a cached URL" do
-      @uploader.cache!(File.open(file_path("test.jpg")))
-      Hash.from_xml(@uploader.to_xml).should == {"url" => "/uploads/tmp/20071201-1234-345-2255/test.jpg"}
-    end
+      it "should return a hash including a cached URL" do
+        @uploader.cache!(File.open(file_path("test.jpg")))
+        Hash.from_xml(@uploader.to_xml).should == {"url" => "/uploads/tmp/20071201-1234-345-2255/test.jpg"}
+      end
 
-    it "should return a hash including a cached URL of a version" do
-      MyCoolUploader.version(:thumb)
-      @uploader.cache!(File.open(file_path("test.jpg")))
-      Hash.from_xml(@uploader.to_xml)["thumb"].should == {"url" => "/uploads/tmp/20071201-1234-345-2255/thumb_test.jpg"}
+      it "should return a hash including a cached URL of a version" do
+        MyCoolUploader.version(:thumb)
+        @uploader.cache!(File.open(file_path("test.jpg")))
+        Hash.from_xml(@uploader.to_xml)["thumb"].should == {"url" => "/uploads/tmp/20071201-1234-345-2255/thumb_test.jpg"}
+      end
     end
   end
 

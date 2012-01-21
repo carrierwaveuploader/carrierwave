@@ -105,12 +105,14 @@ describe CarrierWave::ActiveRecord do
       end
 
       # FIXME to_xml should work like to_json
-      it "should return valid XML when to_xml is called when image is present" do
-        @event[:image] = 'test.jpeg'
-        @event.save!
-        @event.reload
+      pending do
+        it "should return valid XML when to_xml is called when image is present" do
+          @event[:image] = 'test.jpeg'
+          @event.save!
+          @event.reload
 
-        Hash.from_xml(@event.to_xml)["event#{$arclass}"]["image"].should == {"url" => "/uploads/test.jpeg"}
+          Hash.from_xml(@event.to_xml)["event#{$arclass}"]["image"].should == {"url" => "/uploads/test.jpeg"}
+        end
       end
     end
 
