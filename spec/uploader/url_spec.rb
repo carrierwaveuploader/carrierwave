@@ -92,47 +92,47 @@ describe CarrierWave::Uploader do
     it "should return a hash with a nil URL" do
       MyCoolUploader.version(:thumb)
       hash = JSON.parse(@uploader.to_json)
-      hash.keys.should include("url")
-      hash.keys.should include("thumb")
-      hash["url"].should be_nil
-      hash["thumb"].keys.should include("url")
-      hash["thumb"]["url"].should be_nil
+      hash.keys.should
+      hash.keys.should include("uploader")
+      hash["uploader"].keys.should include("url")
+      hash["uploader"].keys.should include("thumb")
+      hash["uploader"]["url"].should be_nil
+      hash["uploader"]["thumb"].keys.should include("url")
+      hash["uploader"]["thumb"]["url"].should be_nil
     end
 
     it "should return a hash including a cached URL" do
       @uploader.cache!(File.open(file_path("test.jpg")))
-      JSON.parse(@uploader.to_json).should == {"url" => "/uploads/tmp/20071201-1234-345-2255/test.jpg"}
+      JSON.parse(@uploader.to_json).should == {"uploader" => {"url" => "/uploads/tmp/20071201-1234-345-2255/test.jpg"}}
     end
 
     it "should return a hash including a cached URL of a version" do
       MyCoolUploader.version(:thumb)
       @uploader.cache!(File.open(file_path("test.jpg")))
-      hash = JSON.parse(@uploader.to_json)
+      hash = JSON.parse(@uploader.to_json)["uploader"]
       hash.keys.should include "thumb"
       hash["thumb"].should == {"url" => "/uploads/tmp/20071201-1234-345-2255/thumb_test.jpg"}
     end
   end
 
-  pending do
-    describe '#to_xml' do
-      before do
-        CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
-      end
+  describe '#to_xml' do
+    before do
+      CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+    end
 
-      it "should return a hash with a blank URL" do
-        Hash.from_xml(@uploader.to_xml).should == {"url" => nil}
-      end
+    it "should return a hash with a blank URL" do
+      Hash.from_xml(@uploader.to_xml).should == {"uploader" => {"url" => nil}}
+    end
 
-      it "should return a hash including a cached URL" do
-        @uploader.cache!(File.open(file_path("test.jpg")))
-        Hash.from_xml(@uploader.to_xml).should == {"url" => "/uploads/tmp/20071201-1234-345-2255/test.jpg"}
-      end
+    it "should return a hash including a cached URL" do
+      @uploader.cache!(File.open(file_path("test.jpg")))
+      Hash.from_xml(@uploader.to_xml).should == {"uploader" => {"url" => "/uploads/tmp/20071201-1234-345-2255/test.jpg"}}
+    end
 
-      it "should return a hash including a cached URL of a version" do
-        MyCoolUploader.version(:thumb)
-        @uploader.cache!(File.open(file_path("test.jpg")))
-        Hash.from_xml(@uploader.to_xml)["thumb"].should == {"url" => "/uploads/tmp/20071201-1234-345-2255/thumb_test.jpg"}
-      end
+    it "should return a hash including a cached URL of a version" do
+      MyCoolUploader.version(:thumb)
+      @uploader.cache!(File.open(file_path("test.jpg")))
+      Hash.from_xml(@uploader.to_xml)["uploader"]["thumb"].should == {"url" => "/uploads/tmp/20071201-1234-345-2255/thumb_test.jpg"}
     end
   end
 
