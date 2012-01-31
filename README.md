@@ -434,6 +434,7 @@ describe MyUploader do
 
   after do
     MyUploader.enable_processing = false
+    @uploader.remove!
   end
 
   context 'the thumb version' do
