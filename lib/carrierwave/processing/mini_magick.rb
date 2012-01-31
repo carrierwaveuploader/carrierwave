@@ -206,7 +206,7 @@ module CarrierWave
         img.combine_options do |cmd|
           cmd.thumbnail "#{width}x#{height}>"
           if background == :transparent
-            cmd.background "rgba(0, 0, 0, 0.0)"
+            cmd.background "rgba(255, 255, 255, 0.0)"
           else
             cmd.background background
           end
