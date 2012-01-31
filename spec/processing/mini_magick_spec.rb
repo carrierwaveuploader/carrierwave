@@ -48,6 +48,15 @@ describe CarrierWave::MiniMagick do
       @instance.resize_and_pad(1000, 1000)
       @instance.should have_dimensions(1000, 1000)
     end
+
+    it "should pad with white" do
+      @instance.resize_and_pad(200, 200)
+      image = ::MiniMagick::Image.open(@instance.current_path)
+      x, y = 0, 0
+      color = image.run_command("convert", "#{image.escaped_path}[1x1+#{x}+#{y}]", "-depth 8", "txt:").split("\n")[1]
+      color.should include('#FFFFFF')
+    end
+
   end
 
   describe '#resize_to_fit' do
