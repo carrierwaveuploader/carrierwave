@@ -62,6 +62,11 @@ module CarrierWave
     #     end
     #
     class Fog < Abstract
+      class << self
+        def connection_cache
+          @connection_cache ||= {}
+        end
+      end
 
       ##
       # Store a file
@@ -97,7 +102,8 @@ module CarrierWave
 
       def connection
         @connection ||= begin
-          ::Fog::Storage.new(uploader.fog_credentials)
+          credentials = uploader.fog_credentials
+          self.class.connection_cache[credentials] ||= ::Fog::Storage.new(credentials)
         end
       end
 
