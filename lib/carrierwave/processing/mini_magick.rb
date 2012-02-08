@@ -158,7 +158,7 @@ module CarrierWave
     #
     # [width (Integer)] the width to scale the image to
     # [height (Integer)] the height to scale the image to
-    # [gravity (String)] the current gravity suggestion
+    # [gravity (String)] the current gravity suggestion (default: Center; options: NorthWest, North, NorthEast, West, Center, East, SouthWest, South, SouthEast)
     #
     # === Yields
     #
