@@ -70,8 +70,8 @@ module CarrierWave
         process :resize_to_fit => [width, height]
       end
 
-      def resize_to_fill(width, height)
-        process :resize_to_fill => [width, height]
+      def resize_to_fill(width, height, gravity='Center')
+        process :resize_to_fill => [width, height, gravity]
       end
 
       def resize_and_pad(width, height, background=:transparent, gravity=::Magick::CenterGravity)
@@ -158,6 +158,7 @@ module CarrierWave
     #
     # [width (Integer)] the width to scale the image to
     # [height (Integer)] the height to scale the image to
+    # [gravity (String)] the current gravity suggestion (default: 'Center'; options: 'NorthWest', 'North', 'NorthEast', 'West', 'Center', 'East', 'SouthWest', 'South', 'SouthEast')
     #
     # === Yields
     #
