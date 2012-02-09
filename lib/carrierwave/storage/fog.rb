@@ -227,6 +227,17 @@ module CarrierWave
         def size
           file.content_length
         end
+        
+        ##
+        # Checks if file exists
+        #
+        # === Returns
+        #
+        # [Boolean] true if it exists or false
+        
+        def exists?
+          file.nil?
+        end
 
         ##
         # Write file to service
