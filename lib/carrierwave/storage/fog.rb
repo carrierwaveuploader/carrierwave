@@ -237,6 +237,7 @@ module CarrierWave
             :key          => path,
             :public       => @uploader.fog_public
           }.merge(@uploader.fog_attributes))
+          fog_file.close if fog_file && !fog_file.closed?
           true
         end
 
