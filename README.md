@@ -24,7 +24,7 @@ Install the latest stable release:
 
 In Rails, add it to your Gemfile:
 
-``` ruby
+```ruby
 gem 'carrierwave'
 ```
 
@@ -44,7 +44,7 @@ this should give you a file in:
 Check out this file for some hints on how you can customize your uploader. It
 should look something like this:
 
-``` ruby
+```ruby
 class AvatarUploader < CarrierWave::Uploader::Base
   storage :file
 end
@@ -52,7 +52,7 @@ end
 
 You can use your uploader class to store and retrieve files like this:
 
-``` ruby
+```ruby
 uploader = AvatarUploader.new
 
 uploader.store!(my_file)
@@ -73,19 +73,19 @@ simply assign files and get going:
 Make sure you are loading CarrierWave after loading your ORM, otherwise you'll
 need to require the relevant extension manually, e.g.:
 
-``` ruby
+```ruby
 require 'carrierwave/orm/activerecord'
 ```
 
 Add a string column to the model you want to mount the uploader on:
 
-``` ruby
+```ruby
 add_column :users, :avatar, :string
 ```
 
 Open your model file and mount the uploader:
 
-``` ruby
+```ruby
 class User < ActiveRecord::Base
   mount_uploader :avatar, AvatarUploader
 end
@@ -94,7 +94,7 @@ end
 Now you can cache files by assigning them to the attribute, they will
 automatically be stored when the record is saved.
 
-``` ruby
+```ruby
 u = User.new
 u.avatar = params[:file]
 u.avatar = File.open('somewhere')
@@ -119,7 +119,7 @@ There are more extensions listed in [the wiki](https://github.com/jnicklas/carri
 In order to change where uploaded files are put, just override the `store_dir`
 method:
 
-``` ruby
+```ruby
 class MyUploader < CarrierWave::Uploader::Base
   def store_dir
     'public/my/upload/directory'
@@ -139,7 +139,7 @@ allowed extensions.
 If you're mounting the uploader, uploading a file with the wrong extension will
 make the record invalid instead. Otherwise, an error is raised.
 
-``` ruby
+```ruby
 class MyUploader < CarrierWave::Uploader::Base
   def extension_white_list
     %w(jpg jpeg gif png)
@@ -159,14 +159,14 @@ all *non*-allowed symbols.
 With Ruby 1.9 and higher you can simply write (as it has [Oniguruma](http://oniguruma.rubyforge.org/oniguruma/)
 built-in):
 
-``` ruby
+```ruby
   CarrierWave::SanitizedFile.sanitize_regexp = /[^[:word:]\.\-\+]/
 ```
 
 With Ruby 1.8 you have to manually specify all character ranges. For example, for files which may
 contain Russian letters:
 
-``` ruby
+```ruby
   CarrierWave::SanitizedFile.sanitize_regexp = /[^a-zA-Zа-яА-ЯёЁ0-9\.\-\+_]/u
 ```
 
@@ -180,7 +180,7 @@ as expected, you can configure your uploaders to use `CarrierWave::MimeTypes`.
 This adds a dependency on the [mime-types](http://rubygems.org/gems/mime-types) gem,
 but is recommended when using fog, and fog already has a dependency on mime-types.
 
-``` ruby
+```ruby
 require 'carrierwave/processing/mime_types'
 
 class MyUploader < CarrierWave::Uploader::Base
@@ -195,7 +195,7 @@ end
 Often you'll want to add different versions of the same file. The classic
 example is image thumbnails. There is built in support for this:
 
-``` ruby
+```ruby
 class MyUploader < CarrierWave::Uploader::Base
   include CarrierWave::RMagick
 
@@ -212,7 +212,7 @@ When this uploader is used, an uploaded image would be scaled to be no larger
 than 800 by 800 pixels. A version called thumb is then created, which is scaled
 and cropped to exactly 200 by 200 pixels. The uploader could be used like this:
 
-``` ruby
+```ruby
 uploader = AvatarUploader.new
 uploader.store!(my_file)                              # size: 1024x768
 
@@ -225,7 +225,7 @@ created. This can cut down on processing cost.
 
 It is possible to nest versions within versions:
 
-``` ruby
+```ruby
 class MyUploader < CarrierWave::Uploader::Base
 
   version :animal do
@@ -241,7 +241,7 @@ end
 Occasionally you want to restrict the creation of versions on certain
 properties within the model or based on the picture itself.
 
-``` ruby
+```ruby
 class MyUploader < CarrierWave::Uploader::Base
 
   version :human, :if => :is_human?
@@ -276,7 +276,7 @@ in that case. Suppose your `user` model has an uploader mounted on `avatar`
 file, just add a hidden field called `avatar_cache`. In Rails, this would look
 like this:
 
-``` erb
+```erb
 <%= form_for @user, :html => {:multipart => true} do |f| %>
   <p>
     <label>My Avatar</label>
@@ -289,7 +289,7 @@ like this:
 It might be a good idea to show the user that a file has been uploaded, in the
 case of images, a small thumbnail would be a good indicator:
 
-``` erb
+```erb
 <%= form_for @user, :html => {:multipart => true} do |f| %>
   <p>
     <label>My Avatar</label>
@@ -305,7 +305,7 @@ case of images, a small thumbnail would be a good indicator:
 If you want to remove a previously uploaded file on a mounted uploader, you can
 easily add a checkbox to the form which will remove the file when checked.
 
-``` erb
+```erb
 <%= form_for @user, :html => {:multipart => true} do |f| %>
   <p>
     <label>My Avatar</label>
@@ -330,7 +330,7 @@ Your users may find it convenient to upload a file from a location on the Intern
 via a URL. CarrierWave makes this simple, just add the appropriate attribute to your
 form and you're good to go:
 
-``` erb
+```erb
 <%= form_for @user, :html => {:multipart => true} do |f| %>
   <p>
     <label>My Avatar URL:</label>
@@ -346,7 +346,7 @@ In many cases, especially when working with images, it might be a good idea to
 provide a default url, a fallback in case no file has been uploaded. You can do
 this easily by overriding the `default_url` method in your uploader:
 
-``` ruby
+```ruby
 class MyUploader < CarrierWave::Uploader::Base
   def default_url
     "/images/fallback/" + [version_name, "default.png"].compact.join('_')
@@ -361,14 +361,14 @@ or add a new one. You can use the recreate_versions! method to recreate the
 versions from the base file. This uses a naive approach which will re-upload and
 process all versions.
 
-``` ruby
+```ruby
 instance = MyUploader.new
 instance.recreate_versions!
 ```
 
 Or on a mounted uploader:
 
-``` ruby
+```ruby
 User.all.each do |user|
   user.avatar.recreate_versions!
 end
@@ -379,7 +379,7 @@ end
 CarrierWave has a broad range of configuration options, which you can configure,
 both globally and on a per-uploader basis:
 
-``` ruby
+```ruby
 CarrierWave.configure do |config|
   config.permissions = 0666
   config.storage = :file
@@ -388,7 +388,7 @@ end
 
 Or alternatively:
 
-``` ruby
+```ruby
 class AvatarUploader < CarrierWave::Uploader::Base
   permissions 0777
 end
@@ -396,7 +396,7 @@ end
 
 If you're using Rails, create an initializer for this:
 
-``` ruby
+```ruby
 config/initializers/carrierwave.rb
 ```
 
@@ -406,7 +406,7 @@ It's a good idea to test you uploaders in isolation. In order to speed up your
 tests, it's recommended to switch off processing in your tests, and to use the
 file storage. In Rails you could do that by adding an initializer with:
 
-``` ruby
+```ruby
 if Rails.env.test? or Rails.env.cucumber?
   CarrierWave.configure do |config|
     config.storage = :file
@@ -420,7 +420,7 @@ processing only for those tests that need it.
 
 CarrierWave comes with some RSpec matchers which you may find useful:
 
-``` ruby
+```ruby
 require 'carrierwave/test/matchers'
 
 describe MyUploader do
@@ -458,7 +458,7 @@ end
 Setting the enable_processing flag on an uploader will prevent any of the versions from processing as well.
 Processing can be enabled for a single version by setting the processing flag on the version like so:
 
-``` ruby
+```ruby
 @uploader.thumb.enable_processing = true
 ```
 
@@ -472,7 +472,7 @@ You'll need to provide your fog_credentials and a fog_directory (also known as a
 For the sake of performance it is assumed that the directory already exists, so please create it if need be.
 You can also pass in additional options, as documented fully in lib/carrierwave/storage/fog.rb. Here's a full example:
 
-``` ruby
+```ruby
 CarrierWave.configure do |config|
   config.fog_credentials = {
     :provider               => 'AWS',       # required
@@ -489,7 +489,7 @@ end
 
 In your uploader, set the storage to :fog
 
-``` ruby
+```ruby
 class AvatarUploader < CarrierWave::Uploader::Base
   storage :fog
 end
@@ -506,7 +506,7 @@ That's it! You can still use the `CarrierWave::Uploader#url` method to return th
 You'll need to configure a directory (also known as a container), username and API key in the initializer.
 For the sake of performance it is assumed that the directory already exists, so please create it if need be.
 
-``` ruby
+```ruby
 CarrierWave.configure do |config|
   config.fog_credentials = {
     :provider           => 'Rackspace',
@@ -521,13 +521,13 @@ You can optionally include your CDN host name in the configuration.
 This is *highly* recommended, as without it every request requires a lookup
 of this information.
 
-``` ruby
+```ruby
 config.fog_host = "http://c000000.cdn.rackspacecloud.com"
 ```
 
 In your uploader, set the storage to :fog
 
-``` ruby
+```ruby
 class AvatarUploader < CarrierWave::Uploader::Base
   storage :fog
 end
@@ -545,7 +545,7 @@ the url to the file on Rackspace Cloud Files.
 You'll need to configure a directory (also known as a bucket), access key id and secret access key in the initializer.
 For the sake of performance it is assumed that the directory already exists, so please create it if need be.
 
-``` ruby
+```ruby
 CarrierWave.configure do |config|
   config.fog_credentials = {
     :provider                         => 'Google',
@@ -558,7 +558,7 @@ end
 
 In your uploader, set the storage to :fog
 
-``` ruby
+```ruby
 class AvatarUploader < CarrierWave::Uploader::Base
   storage :fog
 end
@@ -574,7 +574,7 @@ you might want to create thumbnail images for example. CarrierWave comes with a
 small library to make manipulating images with RMagick easier, you'll need to
 include it in your Uploader:
 
-``` ruby
+```ruby
 class AvatarUploader < CarrierWave::Uploader::Base
   include CarrierWave::RMagick
 end
@@ -587,7 +587,7 @@ file is uploaded.
 There is a demonstration of convert here.
 Convert will only work if the file has the same file extension, thus the use of the filename method.
 
-``` ruby
+```ruby
 class AvatarUploader < CarrierWave::Uploader::Base
   include CarrierWave::RMagick
 
@@ -620,7 +620,7 @@ http://www.imagemagick.org/script/command-line-options.php
 Currently, the MiniMagick carrierwave processor provides exactly the same methods as
 for the RMagick processor.
 
-``` ruby
+```ruby
 class AvatarUploader < CarrierWave::Uploader::Base
   include CarrierWave::MiniMagick
 
@@ -632,7 +632,7 @@ end
 
 If you are using Paperclip, you can use the provided compatibility module:
 
-``` ruby
+```ruby
 class AvatarUploader < CarrierWave::Uploader::Base
   include CarrierWave::Compatibility::Paperclip
 end
@@ -643,7 +643,7 @@ details.
 
 Be sure to use mount_on to specify the correct column:
 
-``` ruby
+```ruby
 mount_uploader :avatar, AvatarUploader, :mount_on => :avatar_file_name
 ```
 
@@ -656,7 +656,7 @@ happily accepted.
 The Active Record validations use the Rails i18n framework. Add these keys to
 your translations file:
 
-``` yaml
+```yaml
 errors:
   messages:
     carrierwave_processing_error: 'Cannot resize image.'
@@ -671,7 +671,7 @@ copying the file into the store.  For large files, this can be prohibitively tim
 You may change this behavior by overriding either or both of the `move_to_cache` and
 `move_to_store` methods:
 
-``` ruby
+```ruby
 class MyUploader < CarrierWave::Uploader::Base
   def move_to_cache
     true
@@ -702,7 +702,7 @@ You should now be able to run the local tests:
 
 You can also run the remote specs by creating a ~/.fog file:
 
-``` yaml
+```yaml
 :carrierwave:
   :aws_access_key_id: xxx
   :aws_secret_access_key: yyy
