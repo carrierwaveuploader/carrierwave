@@ -12,8 +12,12 @@ module CarrierWave
         {"url" => url}.merge Hash[versions.map { |name, version| [name, { "url" => version.url }] }]
       end
 
+      def as_json(options=nil)
+        Hash[mounted_as || "uploader", serializable_hash]
+      end
+
       def to_json
-        ActiveSupport::JSON.encode(Hash[mounted_as || "uploader", serializable_hash])
+        ActiveSupport::JSON.encode(as_json)
       end
 
       def to_xml
