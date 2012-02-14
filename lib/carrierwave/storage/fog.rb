@@ -227,6 +227,17 @@ module CarrierWave
         def size
           file.content_length
         end
+        
+        ##
+        # Checks if file exists
+        #
+        # === Returns
+        #
+        # [Boolean] true if it exists or false
+        
+        def exists?
+          head.nil?
+        end
 
         ##
         # Write file to service
@@ -334,6 +345,17 @@ module CarrierWave
         #
         def file
           @file ||= directory.files.get(path)
+        end
+        
+        ##
+        # lookup file head
+        #
+        # === Returns
+        #
+        # [Fog::#{provider}::File] file data wrapper, body is retrieved on demand
+        #        
+        def head 
+          directory.files.head(path)
         end
 
       end
