@@ -79,9 +79,10 @@ describe CarrierWave::Uploader::Download do
       }.should raise_error(CarrierWave::DownloadError)
     end
 
-    it "should accept spaces in the url" do
-      @uploader.download!('http://www.example.com/test with spaces/test.jpg')
-      @uploader.url.should == '/uploads/tmp/20071201-1234-345-2255/test.jpg'
+    it "should not accept invalid URIs" do
+      lambda {
+        @uploader.download!('http://www.example.com/test with spaces/test.jpg')
+      }.should raise_error URI::InvalidURIError
     end
 
     it "should follow redirects" do
@@ -124,11 +125,6 @@ describe CarrierWave::Uploader::Download do
 
   describe '#process_uri' do
     let(:uri) { "http://www.example.com/test%20image.jpg" }
-
-    it 'should unescape and then escape the given uri' do
-      unescaped_uri = URI.unescape(uri)
-      @uploader.process_uri(unescaped_uri).should == @uploader.process_uri(uri)
-    end
 
     it 'should parse the given uri' do
       @uploader.process_uri(uri).should == URI.parse(uri)
