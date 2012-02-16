@@ -21,6 +21,7 @@ describe CarrierWave::Uploader::Download do
       sham_rack_app = ShamRack.at('www.example.com').stub
       sham_rack_app.register_resource('/test.jpg', File.read(file_path('test.jpg')), 'image/jpg')
       sham_rack_app.register_resource('/test%20with%20spaces/test.jpg', File.read(file_path('test.jpg')), 'image/jpg')
+      sham_rack_app.register_resource('/test-with-brackets/test-%5B4%5D.jpg', File.read(file_path('test.jpg')), 'image/jpg')
 
       ShamRack.at("www.redirect.com") do |env|
         [301, {'Content-Type'=>'text/html', 'Location'=>"http://www.example.com/test.jpg"}, ['Redirecting']]
@@ -82,6 +83,11 @@ describe CarrierWave::Uploader::Download do
     it "should accept spaces in the url" do
       @uploader.download!('http://www.example.com/test with spaces/test.jpg')
       @uploader.url.should == '/uploads/tmp/20071201-1234-345-2255/test.jpg'
+    end
+
+    it "should accept brackets in the url" do
+      @uploader.download!('http://www.example.com/test-with-brackets/test-[4].jpg')
+      @uploader.url.should == '/uploads/tmp/20071201-1234-345-2255/test-_5B4_5D.jpg'
     end
 
     it "should follow redirects" do
