@@ -134,6 +134,12 @@ describe CarrierWave::Uploader do
       @uploader.cache!(File.open(file_path("test.jpg")))
       Hash.from_xml(@uploader.to_xml)["uploader"]["thumb"].should == {"url" => "/uploads/tmp/20071201-1234-345-2255/thumb_test.jpg"}
     end
+
+    it "should return a hash including an array with a cached URL" do
+      @uploader.cache!(File.open(file_path("test.jpg")))
+      hash = Hash.from_xml([@uploader].to_xml)
+      hash.should have_value([{"url"=>"/uploads/tmp/20071201-1234-345-2255/test.jpg"}])
+    end
   end
 
   describe '#to_s' do

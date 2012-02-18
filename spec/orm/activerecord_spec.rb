@@ -97,6 +97,14 @@ describe CarrierWave::ActiveRecord do
         JSON.parse(@event.to_json)["event#{$arclass}"]["image"].should == {"url" => "/uploads/test.jpeg"}
       end
 
+      it "should return valid JSON when to_json is called on a collection containing uploader from a model" do
+        @event[:image] = 'test.jpeg'
+        @event.save!
+        @event.reload
+
+        JSON.parse({:data => @event.image}.to_json).should == {"data"=>{"image"=>{"url"=>"/uploads/test.jpeg"}}}
+      end
+
       it "should return valid XML when to_xml is called when image is nil" do
         @event[:image].should be_nil
         hash = Hash.from_xml(@event.to_xml)["event#{$arclass}"]
