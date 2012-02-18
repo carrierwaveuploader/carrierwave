@@ -20,8 +20,9 @@ module CarrierWave
         ActiveSupport::JSON.encode(as_json)
       end
 
-      def to_xml
-        serializable_hash.to_xml(:root => mounted_as || "uploader")
+      def to_xml(options={})
+        merged_options = options.merge(:root => mounted_as || "uploader", :type => 'uploader')
+        serializable_hash.to_xml(merged_options)
       end
 
     end
