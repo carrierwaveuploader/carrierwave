@@ -9,6 +9,15 @@ Given /^an instance of that class$/ do
   @uploader = @klass.new
 end
 
+Given /^a processor method named :upcase$/ do
+  @klass.class_eval do
+    define_method(:upcase) do
+      content = File.read(current_path)
+      File.write(current_path, content.upcase)
+    end
+  end
+end
+
 Then /^the contents of the file should be '(.*?)'$/ do |contents|
   @uploader.read.chomp.should == contents
 end
@@ -45,8 +54,18 @@ Given /^that the version '(.*?)' has the store_dir overridden to '(.*?)'$/ do |v
   end
 end
 
-Given /^that the uploader class has a version named '(.*?)'$/ do |name|
+Given /^that the uploader class has a version named '([^\']+)'$/ do |name|
   @klass.version(name)
+end
+
+Given /^that the uploader class has a version named '([^\']+)' which process '([a-zA-Z0-9\_\?!]*)'$/ do |name, processor_name|
+  @klass.version(name) do
+    process processor_name.to_sym
+  end
+end
+
+Given /^that the uploader class has a version named '([^\']+)' which is based on version '(.*?)'$/ do |name, based_version_name|
+  @klass.version(name, {:from_version => based_version_name.to_sym})
 end
 
 Given /^yo dawg, I put a version called '(.*?)' in your version called '(.*?)'$/ do |v2, v1|
