@@ -457,7 +457,7 @@ describe CarrierWave::Uploader do
       @uploader_class.class_eval do
         def upcase
           content = File.read(current_path)
-          File.write(current_path, content.upcase)
+          File.open(current_path, 'w') { |f| f.write content.upcase }
         end
       end
 
