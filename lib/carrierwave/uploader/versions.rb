@@ -214,10 +214,16 @@ module CarrierWave
           :filename => new_file.original_filename
 
         active_versions.each do |name, v|
+          next if v.cached?
+
           # If option :from_version is present, create cache using cached file from
           # version indicated
           if self.class.versions[name][:options] &&
               self.class.versions[name][:options][:from_version]
+            # Maybe the reference version has not been cached yet
+            unless versions[self.class.versions[name][:options][:from_version]].cached?
+              versions[self.class.versions[name][:options][:from_version]].cache!(processed_parent)
+            end
             processed_version = SanitizedFile.new :tempfile => versions[self.class.versions[name][:options][:from_version]],
               :filename => new_file.original_filename
             v.cache!(processed_version)
