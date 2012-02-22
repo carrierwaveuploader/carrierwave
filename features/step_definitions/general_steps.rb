@@ -13,7 +13,7 @@ Given /^a processor method named :upcase$/ do
   @klass.class_eval do
     define_method(:upcase) do
       content = File.read(current_path)
-      File.write(current_path, content.upcase)
+      File.open(current_path, 'w') { |f| f.write content.upcase }
     end
   end
 end
