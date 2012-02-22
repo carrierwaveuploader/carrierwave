@@ -111,6 +111,11 @@ describe CarrierWave::Uploader do
       @uploader_class.version(:thumb)[:uploader].llama.should == "llama"
     end
 
+    it "should accept option :from_version" do
+      @uploader_class.version :small_thumb, :from_version => :thumb
+      @uploader_class.version(:small_thumb)[:options][:from_version].should == :thumb
+    end
+
     describe 'with nested versions' do
       before do
         @uploader_class.version :thumb do
@@ -186,6 +191,12 @@ describe CarrierWave::Uploader do
         @uploader.thumb.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/thumb_test.jpg')
         @uploader.file.exists?.should be_true
         @uploader.thumb.file.exists?.should be_true
+      end
+
+      it "should cache the files based on the parent" do
+        @uploader.cache!(File.open(file_path('bork.txt')))
+
+        File.read(public_path(@uploader.to_s)).should == File.read(public_path(@uploader.thumb.to_s))
       end
     end
 
@@ -389,7 +400,6 @@ describe CarrierWave::Uploader do
 
     end
 
-
     describe '#retrieve_from_store!' do
       before do
         @uploader_class.storage = mock_storage('base')
@@ -438,6 +448,36 @@ describe CarrierWave::Uploader do
       it "should not set the filename" do
         @uploader.retrieve_from_store!('monkey.txt')
         @uploader.filename.should be_nil
+      end
+    end
+  end
+
+  describe 'with a version with option :from_version' do
+    before do
+      @uploader_class.class_eval do
+        def upcase
+          content = File.read(current_path)
+          File.write(current_path, content.upcase)
+        end
+      end
+
+      @uploader_class.version(:thumb) do
+        process :upcase
+      end
+
+      @uploader_class.version(:small_thumb, :from_version => :thumb)
+    end
+
+    describe '#cache!' do
+      before do
+        CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+      end
+
+      it "should cache the files based on the version" do
+        @uploader.cache!(File.open(file_path('bork.txt')))
+
+        File.read(public_path(@uploader.to_s)).should_not == File.read(public_path(@uploader.thumb.to_s))
+        File.read(public_path(@uploader.thumb.to_s)).should == File.read(public_path(@uploader.small_thumb.to_s))
       end
     end
   end
