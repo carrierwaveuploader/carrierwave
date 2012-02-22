@@ -270,10 +270,10 @@ The `model` variable points to the instance object the uploader is attached to.
 
 ### Create versions from existing versions
 
-Sometimes, for performance reasons, maybe interesting to create new versions
-from existing ones, instead of from the original file. I.e.: if your uploader
-generates versions cropping an image, it will take fewer time if the crop is
-done from a small image than from a big image.
+For performance reasons, it is often useful to create versions from existing ones
+instead of using the original file. If your uploader generates several versions
+where the next is smaller than the last, it will take less time to generate from
+a smaller, already processed image.
 
 ```ruby
 class MyUploader < CarrierWave::Uploader::Base
@@ -281,17 +281,16 @@ class MyUploader < CarrierWave::Uploader::Base
   version :thumb do
     process resize_to_fill: [280, 280]
   end
-  
+
   version :small_thumb, :from_version => :thumb do
     process resize_to_fill: [20, 20]
   end
-  
+
 end
 ```
 
-The option `:from_version` uses the file cached in version `:thumb`, instead
-of the original version and it, depending on each situation, can result faster
-in a faster processing.
+The option `:from_version` uses the file cached in the `:thumb` version instead
+of the original version, potentially resulting in faster processing.
 
 ## Making uploads work across form redisplays
 
