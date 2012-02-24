@@ -218,8 +218,7 @@ module CarrierWave
 
           # If option :from_version is present, create cache using cached file from
           # version indicated
-          if self.class.versions[name][:options] &&
-              self.class.versions[name][:options][:from_version]
+          if self.class.versions[name][:options] && self.class.versions[name][:options][:from_version]
             # Maybe the reference version has not been cached yet
             unless versions[self.class.versions[name][:options][:from_version]].cached?
               versions[self.class.versions[name][:options][:from_version]].cache!(processed_parent)
