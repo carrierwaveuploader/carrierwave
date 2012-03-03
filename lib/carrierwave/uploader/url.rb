@@ -19,7 +19,7 @@ module CarrierWave
         if file.respond_to?(:url) and not file.url.blank?
           file.method(:url).arity == 0 ? file.url : file.url(options)
         elsif current_path
-          (base_path || "") + File.expand_path(current_path).gsub(File.expand_path(root), '')
+          (base_path || "") + File.expand_path(current_path).gsub(File.expand_path(CarrierWave.root), '')
         end
       end
 
