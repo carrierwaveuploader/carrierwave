@@ -361,6 +361,10 @@ describe CarrierWave::ActiveRecord do
           @event[:image].should == 'jonas.jpeg'
         end
 
+        it "should update if nil" do
+          @event.update_attributes({})
+        end
+
       end
 
     end

@@ -236,7 +236,7 @@ module CarrierWave
         def store_previous_model_for_#{column}
           serialization_column = _mounter(:#{column}).serialization_column
 
-          if #{column}.remove_previously_stored_files_after_update && send(:"\#{serialization_column}_changed?")
+          if #{column} && #{column}.remove_previously_stored_files_after_update && send(:"\#{serialization_column}_changed?")
             @previous_model_for_#{column} ||= self.find_previous_model_for_#{column}
           end
         end
