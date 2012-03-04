@@ -16,7 +16,7 @@ module CarrierWave
       end
 
       def identifier
-        uploader.filename
+        uploader.filename if uploader.present?
       end
 
       def store!(file)
