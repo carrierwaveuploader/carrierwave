@@ -268,7 +268,11 @@ module CarrierWave
         #
         def public_url
           if host = @uploader.fog_host
-            "#{host}/#{path}"
+            if host.is_a? Proc
+              "#{host.call}/#{path}"
+            else
+              "#{host}/#{path}"
+            end
           else
             # AWS/Google optimized for speed over correctness
             case @uploader.fog_credentials[:provider]
