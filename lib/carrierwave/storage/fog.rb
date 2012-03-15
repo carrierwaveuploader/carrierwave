@@ -268,8 +268,8 @@ module CarrierWave
         #
         def public_url
           if host = @uploader.fog_host
-            if host.is_a? Proc
               "#{host.call}/#{path}"
+            if host.respond_to? :call
             else
               "#{host}/#{path}"
             end
