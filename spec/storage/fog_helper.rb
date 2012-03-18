@@ -120,6 +120,17 @@ end
             @fog_file.delete
             @directory.files.head('uploads/test.jpg').should == nil
           end
+          
+          context "file does not exist" do
+            before do 
+              @uploader.stub!(:store_path).with('test.jpg').and_return('uploads/unexisting.jpg')              
+              @fog_file = @storage.retrieve!('test.jpg')
+            end
+            
+            it "should have zero size" do
+              @fog_file.size.should be_zero
+            end
+          end
         end
 
         describe 'fog_public' do

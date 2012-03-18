@@ -225,7 +225,7 @@ module CarrierWave
         # [Integer] size of file body
         #
         def size
-          file.content_length
+          file.try(:content_length) || 0
         end
 
         ##
