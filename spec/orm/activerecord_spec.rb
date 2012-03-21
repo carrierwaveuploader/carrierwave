@@ -120,6 +120,22 @@ describe CarrierWave::ActiveRecord do
 
         Hash.from_xml(@event.to_xml)["event#{$arclass}"]["image"].should == {"url" => "/uploads/test.jpeg"}
       end
+
+      it "should respect options[:only] when passed to as_json for the serializable hash" do
+        @event[:image] = 'test.jpeg'
+        @event.save!
+        @event.reload
+
+        @event.as_json(:only => [:foo])["event#{$arclass}"].should == {"foo" => nil}
+      end
+
+      it "should respect options[:except] when passed to as_json for the serializable hash" do
+        @event[:image] = 'test.jpeg'
+        @event.save!
+        @event.reload
+
+        @event.as_json(:except => [:id, :image, :foo])["event#{$arclass}"].should == {"textfile" => nil}
+      end
     end
 
     describe '#image=' do
