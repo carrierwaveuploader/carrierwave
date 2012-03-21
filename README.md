@@ -591,6 +591,19 @@ end
 That's it! You can still use the `CarrierWave::Uploader#url` method to return
 the url to the file on Google.
 
+## Dynamic Fog Host
+
+The `fog_host` config property can be assigned a proc (or anything that responds to `call`) for generating the host dynamically. The proc-compliant object gets an instance of the current `CarrierWave::Storage::Fog::File` as its only argument.
+
+```ruby
+CarrierWave.configure do |config|
+  config.fog_host = proc do |file|
+    identifier = # some logic
+    "http://#{identifier}.cdn.rackspacecloud.com"
+  end
+end
+```
+
 ## Using RMagick
 
 If you're uploading images, you'll probably want to manipulate them in some way,
