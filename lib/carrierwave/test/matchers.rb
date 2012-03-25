@@ -48,11 +48,11 @@ module CarrierWave
         end
 
         def failure_message
-          "expected #{@actual.inspect} to have permissions #{@expected.to_s(8)}, but they were #{(File.stat(@actual.path).mode & 0777).to_s(8)}"
+          "expected #{@actual.current_path.inspect} to have permissions #{@expected.to_s(8)}, but they were #{(File.stat(@actual.path).mode & 0777).to_s(8)}"
         end
 
         def negative_failure_message
-          "expected #{@actual.inspect} not to have permissions #{@expected.to_s(8)}, but it did"
+          "expected #{@actual.current_path.inspect} not to have permissions #{@expected.to_s(8)}, but it did"
         end
 
         def description
