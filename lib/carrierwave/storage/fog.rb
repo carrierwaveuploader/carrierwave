@@ -347,7 +347,7 @@ module CarrierWave
         # [Fog::#{provider}::File] file data from remote service
         #
         def file
-          @file ||= directory.files.get(path)
+          @file ||= directory.files.head(path)
         end
 
       end
