@@ -1,3 +1,26 @@
+=== Version 0.6.0 2012-03-27
+
+* [BREAKING CHANGE] Require Rails 3.2 or Rails master (4.0) - depends on activesupport/activemodel [bensie]
+* [BREAKING CHANGE] Remove :S3 storage option in favor of Fog [bensie]
+* [BREAKING CHANGE] Remove :CloudFiles storage option in favor of Fog [bensie]
+* [changed] JSON / XML serialization hashes are consistent and work as expected with ActiveRecord's serializable_hash [bensie]
+* [added] fog_host now accepts a proc (useful for dynamic asset servers) [jtrim]
+* [added] Add ability to process a version from an existing version so you aren't always crunching the original, large file [ferblape]
+* [added] Allow brackets in remote URLs [ngauthier]
+* [added] CarrierWave::Storage::Fog::File#exists? to check the existence of the file without needing to fetch it [bensie]
+* [added] Gravity option on resize_to_fill (minimagick) [TheOddLinguist]
+* [added] Add query options for s3 to support response headers overwriting [meceo]
+* [added] Make storages File#url methods to work without any params [meceo]
+* [added] Set the CarrierWave.root correctly if Padrino is defined [futurechimp]
+* [added] Cache fog connections for improved performance [labocho]
+* [fixed] Fix slow fetching of content-length on remote file [geemus]
+* [fixed] Fog remote specs now passing and depend on Fog >= 1.3.1 [geemus]
+* [fixed] Fix an issue where multi-page PDFs can't be converted with RMagick [chanind]
+* [fixed] MiniMagick expects string args to mogrify commands [bensie]
+* [fixed] With Active Record ORM, setting remote_url marks mounted column as dirty [trevorturk]
+* [fixed] Fix possible race condition with CarrierWave.root [bensie]
+* [fixed] ActiveSupport::Memoizable deprecation warning [slbug]
+
 === Version 0.5.8 2011-11-10
 
 * [added] Allow custom error messages [bartt]
