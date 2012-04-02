@@ -488,9 +488,11 @@ Processing can be enabled for a single version by setting the processing flag on
 
 ## Using Amazon S3
 
-[Fog](http://github.com/fog/fog) is used to support Amazon S3. Ensure you have it installed:
+[Fog](http://github.com/fog/fog) is used to support Amazon S3. Ensure you have it in your Gemfile:
 
-	gem install fog
+```ruby
+gem "fog", "~> 1.3.1"
+```
 
 You'll need to provide your fog_credentials and a fog_directory (also known as a bucket) in an initializer.
 For the sake of performance it is assumed that the directory already exists, so please create it if need be.
@@ -523,9 +525,11 @@ That's it! You can still use the `CarrierWave::Uploader#url` method to return th
 
 ## Using Rackspace Cloud Files
 
-[Fog](http://github.com/fog/fog) is used to support Rackspace Cloud Files. Ensure you have it installed:
+[Fog](http://github.com/fog/fog) is used to support Rackspace Cloud Files. Ensure you have it in your Gemfile:
 
-	gem install fog
+```ruby
+gem "fog", "~> 1.3.1"
+```
 
 You'll need to configure a directory (also known as a container), username and API key in the initializer.
 For the sake of performance it is assumed that the directory already exists, so please create it if need be.
@@ -562,9 +566,11 @@ the url to the file on Rackspace Cloud Files.
 
 ## Using Google Storage for Developers
 
-[Fog](http://github.com/fog/fog) is used to support Google Storage for Developers. Ensure you have it installed:
+[Fog](http://github.com/fog/fog) is used to support Google Storage for Developers. Ensure you have it in your Gemfile:
 
-    gem install fog
+```ruby
+gem "fog", "~> 1.3.1"
+```
 
 You'll need to configure a directory (also known as a bucket), access key id and secret access key in the initializer.
 For the sake of performance it is assumed that the directory already exists, so please create it if need be.
