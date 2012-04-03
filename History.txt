@@ -1,3 +1,7 @@
+=== Version 0.6.1 2012-04-02
+
+* [fixed] Calling #serializable_hash with no options [matthewrudy]
+
 === Version 0.6.0 2012-03-27
 
 * [BREAKING CHANGE] Require Rails 3.2 or Rails master (4.0) - depends on activesupport/activemodel [bensie]
