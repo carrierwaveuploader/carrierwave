@@ -332,6 +332,28 @@ describe CarrierWave::ActiveRecord do
 
     end
 
+    describe "#serializable_hash" do
+
+      it "should include the image with url" do
+        @event.image = stub_file("test.jpg")
+        @event.serializable_hash["image"].should have_key("url")
+      end
+
+      it "should include the other columns" do
+        ["id", "foo"].each do |key|
+          @event.serializable_hash.should have_key(key)
+        end
+      end
+
+      it "should take an option to exclude the image column" do
+        @event.serializable_hash(:except => :image).should_not have_key("image")
+      end
+
+      it "should take an option to only include the image column" do
+        @event.serializable_hash(:only => :image).should have_key("image")
+      end
+    end
+
     describe '#destroy' do
 
       it "should do nothing when no file has been assigned" do
