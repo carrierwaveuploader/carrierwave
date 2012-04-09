@@ -216,6 +216,7 @@ module CarrierWave
         active_versions.each do |name, v|
           next if v.cached?
 
+          v.send(:cache_id=, cache_id)
           # If option :from_version is present, create cache using cached file from
           # version indicated
           if self.class.versions[name][:options] && self.class.versions[name][:options][:from_version]
@@ -229,7 +230,6 @@ module CarrierWave
           else
             v.cache!(processed_parent)
           end
-          v.send(:cache_id=, cache_id)
         end
       end
 
