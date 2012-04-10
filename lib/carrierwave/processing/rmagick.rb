@@ -249,13 +249,14 @@ module CarrierWave
 
       frames = if image.size > 1
         list = ::Magick::ImageList.new
-        image.each do |frame|
-          list << (block_given? ? yield( frame ) : frame)
+        image.each_with_index do |frame, index|
+          processed_frame = block_given? ? yield( frame, index ) : frame
+          list << processed_frame if processed_frame
         end
         block_given? ? list : list.append(true)
       else
         frame = image.first
-        frame = yield( frame ) if block_given?
+        frame = yield( frame, 0 ) if block_given?
         frame
       end
 

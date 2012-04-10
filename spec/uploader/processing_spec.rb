@@ -83,11 +83,45 @@ describe CarrierWave::Uploader do
       @uploader.process!("test.jpg")
     end
     
-    it "should successfully process a multi-page PDF when using RMagick" do
-      @uploader_class.send :include, CarrierWave::RMagick
-      @uploader_class.process :convert => 'jpg'
-      @uploader.cache! File.open(file_path("multi_page.pdf"))
-      @uploader.process!
+    context "when using RMagick" do
+      before do
+        def @uploader.cover
+          manipulate! { |frame, index| frame if index.zero? }
+        end
+
+        @uploader_class.send :include, CarrierWave::RMagick
+      end
+
+      after do
+        @uploader.instance_eval { undef cover }
+      end
+      
+      context "with a multi-page PDF" do
+        before do
+          @uploader.cache! File.open(file_path("multi_page.pdf"))
+        end
+
+        it "should successfully process" do
+          @uploader_class.process :convert => 'jpg'
+          @uploader.process!
+        end
+
+        it "should support page specific transformations" do
+          @uploader_class.process :cover
+          @uploader.process!
+        end
+      end
+
+      context "with a simple image" do
+        before do
+          @uploader.cache! File.open(file_path("portrait.jpg"))
+        end
+
+        it "should still allow page specific transformations" do
+          @uploader_class.process :cover
+          @uploader.process!
+        end
+      end
     end
 
     context "with 'enable_processing' set to false" do
