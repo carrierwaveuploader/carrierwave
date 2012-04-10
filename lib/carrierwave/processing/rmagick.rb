@@ -243,20 +243,24 @@ module CarrierWave
     #
     # [CarrierWave::ProcessingError] if manipulation failed.
     #
-    def manipulate!(options={})
+    def manipulate!(options={}, &block)
       cache_stored_file! if !cached?
       image = ::Magick::Image.read(current_path)
 
       frames = if image.size > 1
         list = ::Magick::ImageList.new
         image.each_with_index do |frame, index|
-          processed_frame = block_given? ? yield( frame, index ) : frame
+          processed_frame = if block_given?
+            yield *[frame, index].take(block.arity)
+          else
+            frame
+          end
           list << processed_frame if processed_frame
         end
         block_given? ? list : list.append(true)
       else
         frame = image.first
-        frame = yield( frame, 0 ) if block_given?
+        frame = yield( *[frame, 0].take(block.arity) ) if block_given?
         frame
       end
 
