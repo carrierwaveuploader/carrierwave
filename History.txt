@@ -1,7 +1,7 @@
 === Version 0.6.2 2012-04-12
 
 * [fixed] Don't double-generate cache_id [skyeagle]
-* [added] Escape plus signs (+) in remote URLs [skyeagle]
+* [added] Escape plus signs (+) in remote URLs [adrianpike]
 * [added] Enhance multi-page PDF support in RMagick [xtreme-tanzeeb-khalili]
 
 === Version 0.6.1 2012-04-02
