@@ -94,6 +94,7 @@ module CarrierWave
     #
     # [image_integrity_error]   Returns an error object if the last file to be assigned caused an integrity error
     # [image_processing_error]  Returns an error object if the last file to be assigned caused a processing error
+    # [image_download_error]    Returns an error object if the last file to be remotely assigned caused a download error
     #
     # [write_image_identifier]  Uses the write_uploader method to set the identifier.
     # [image_identifier]        Reads out the identifier of the file
@@ -225,6 +226,10 @@ module CarrierWave
           _mounter(:#{column}).processing_error
         end
 
+        def #{column}_download_error
+          _mounter(:#{column}).download_error
+        end
+
         def write_#{column}_identifier
           _mounter(:#{column}).write_identifier
         end
@@ -281,7 +286,7 @@ module CarrierWave
     # this is an internal class, used by CarrierWave::Mount so that
     # we don't pollute the model with a lot of methods.
     class Mounter #:nodoc:
-      attr_reader :column, :record, :remote_url, :integrity_error, :processing_error
+      attr_reader :column, :record, :remote_url, :integrity_error, :processing_error, :download_error
       attr_accessor :remove
 
       def initialize(record, column, options={})
@@ -333,8 +338,22 @@ module CarrierWave
       end
 
       def remote_url=(url)
+        @download_error = nil
+        @integrity_error = nil
+
         @remote_url = url
+        
         uploader.download!(url)
+
+      rescue CarrierWave::DownloadError => e
+        @download_error = e
+        raise e unless option(:ignore_download_errors)
+      rescue CarrierWave::ProcessingError => e
+        @processing_error = e
+        raise e unless option(:ignore_processing_errors)
+      rescue CarrierWave::IntegrityError => e
+        @integrity_error = e
+        raise e unless option(:ignore_integrity_errors)
       end
 
       def store!

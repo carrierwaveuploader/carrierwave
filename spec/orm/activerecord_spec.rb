@@ -330,7 +330,7 @@ describe CarrierWave::ActiveRecord do
       end
     end
 
-    describe "dirty tracking with remote_image_url" do
+    describe "#remote_image_url=" do
 
       # FIXME ideally image_changed? and remote_image_url_changed? would return true
       it "should mark image as changed when setting remote_image_url" do
@@ -340,6 +340,37 @@ describe CarrierWave::ActiveRecord do
         @event.save
         @event.reload
         @event.image_changed?.should be_false
+      end
+
+      context 'when validating download' do
+        before do
+          @uploader.class_eval do
+            def download! file
+              raise CarrierWave::DownloadError
+            end
+          end
+          @event.remote_image_url = 'http://www.example.com/missing.jpg'
+        end
+
+        it "should make the record invalid when a download error occurs" do
+          @event.should_not be_valid
+        end
+
+        it "should use I18n for download errors without messages" do
+          @event.valid?
+          @event.errors[:image].should == ['could not be downloaded']
+
+          change_locale_and_store_translations(:pt, :activerecord => {
+            :errors => {
+              :messages => {
+                :carrierwave_download_error => 'não pode ser descarregado'
+              }
+            }
+          }) do
+            @event.should_not be_valid
+            @event.errors[:image].should == ['não pode ser descarregado']
+          end
+        end
       end
 
     end
