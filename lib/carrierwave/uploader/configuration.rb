@@ -31,8 +31,10 @@ module CarrierWave
         # Mounting
         add_config :ignore_integrity_errors
         add_config :ignore_processing_errors
+        add_config :ignore_download_errors
         add_config :validate_integrity
         add_config :validate_processing
+        add_config :validate_download
         add_config :mount_on
 
         # set default values
@@ -120,8 +122,10 @@ module CarrierWave
             config.remove_previously_stored_files_after_update = true
             config.ignore_integrity_errors = true
             config.ignore_processing_errors = true
+            config.ignore_download_errors = true
             config.validate_integrity = true
             config.validate_processing = true
+            config.validate_download = true
             config.root = lambda { CarrierWave.root }
             config.base_path = CarrierWave.base_path
             config.enable_processing = true
