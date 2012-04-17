@@ -338,12 +338,22 @@ module CarrierWave
       end
 
       def remote_url=(url)
-        @remote_url = url
-        uploader.download!(url)
         @download_error = nil
+        @integrity_error = nil
+
+        @remote_url = url
+        
+        uploader.download!(url)
+
       rescue CarrierWave::DownloadError => e
         @download_error = e
         raise e unless option(:ignore_download_errors)
+      rescue CarrierWave::ProcessingError => e
+        @processing_error = e
+        raise e unless option(:ignore_processing_errors)
+      rescue CarrierWave::IntegrityError => e
+        @integrity_error = e
+        raise e unless option(:ignore_integrity_errors)
       end
 
       def store!
