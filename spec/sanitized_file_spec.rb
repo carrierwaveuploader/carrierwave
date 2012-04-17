@@ -247,7 +247,7 @@ describe CarrierWave::SanitizedFile do
     describe '#move_to' do
 
       after do
-        FileUtils.rm(file_path('gurr.png'))
+        FileUtils.rm_f(file_path('gurr.png'))
       end
 
       it "should be moved to the correct location" do
@@ -281,6 +281,12 @@ describe CarrierWave::SanitizedFile do
         @sanitized_file.should have_permissions(0755)
       end
 
+      it "should set the right directory permissions" do
+        @sanitized_file.move_to(file_path('new_dir','gurr.png'), nil, 0775)
+        @sanitized_file.should have_directory_permissions(0775)
+        FileUtils.rm_rf(file_path('new_dir'))
+      end
+
       it "should return itself" do
         @sanitized_file.move_to(file_path('gurr.png')).should == @sanitized_file
       end
@@ -290,7 +296,7 @@ describe CarrierWave::SanitizedFile do
     describe '#copy_to' do
 
       after do
-        FileUtils.rm(file_path('gurr.png'))
+        FileUtils.rm_f(file_path('gurr.png'))
       end
 
       it "should be copied to the correct location" do
@@ -337,6 +343,12 @@ describe CarrierWave::SanitizedFile do
       it "should set the right permissions" do
         new_file = @sanitized_file.copy_to(file_path('gurr.png'), 0755)
         new_file.should have_permissions(0755)
+      end
+
+      it "should set the right directory permissions" do
+        new_file = @sanitized_file.copy_to(file_path('new_dir', 'gurr.png'), nil, 0755)
+        new_file.should have_directory_permissions(0755)
+        FileUtils.rm_rf(file_path('new_dir'))
       end
 
       it "should preserve the file's content type" do
