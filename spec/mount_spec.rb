@@ -434,6 +434,27 @@ describe CarrierWave::Mount do
       end
     end
 
+    describe '#image_download_error' do
+      before do
+        sham_rack_app = ShamRack.at('www.example.com').stub
+        sham_rack_app.register_resource('/test.jpg', File.read(file_path('test.jpg')), 'image/jpg')
+      end
+
+      it "should be nil by default" do
+        @instance.image_download_error.should be_nil
+      end
+
+      it "should be nil if file download was successful" do
+        @instance.remote_image_url = "http://www.example.com/test.jpg"
+        @instance.image_download_error.should be_nil
+      end
+
+      it "should be an error instance if file could not be found" do
+        @instance.remote_image_url = "http://www.example.com/missing.jpg"
+        @instance.image_download_error.should be_an_instance_of(CarrierWave::DownloadError)
+      end
+    end
+
     describe '#write_image_identifier' do
       it "should write to the column" do
         @instance.should_receive(:write_uploader).with(:image, "test.jpg")
@@ -596,8 +617,33 @@ describe CarrierWave::Mount do
 
   end
 
-  describe '#mount_uploader with :mount_on => :monkey' do
+  describe '#mount_uploader with :ignore_download_errors => false' do
 
+    before do
+      @class = Class.new
+      @class.send(:extend, CarrierWave::Mount)
+
+      @uploader = Class.new(CarrierWave::Uploader::Base)
+
+      @class.mount_uploader(:image, @uploader, :ignore_download_errors => false)
+      @instance = @class.new
+    end
+
+    it "should raise an error if the image fails to be processed" do
+      @uploader.class_eval do
+        def download! uri
+          raise CarrierWave::DownloadError
+        end
+      end
+
+      running {
+        @instance.remote_image_url = "http://www.example.com/test.jpg"
+      }.should raise_error(CarrierWave::DownloadError)
+    end
+
+  end
+
+  describe '#mount_uploader with :mount_on => :monkey' do
 
     before do
       @class = Class.new
@@ -632,6 +678,7 @@ describe CarrierWave::Mount do
         @instance.write_image_identifier
       end
     end
+
   end
 
 end
