@@ -34,6 +34,7 @@ module CarrierWave
         add_config :ignore_download_errors
         add_config :validate_integrity
         add_config :validate_processing
+        add_config :validate_download
         add_config :mount_on
 
         # set default values
@@ -124,6 +125,7 @@ module CarrierWave
             config.ignore_download_errors = true
             config.validate_integrity = true
             config.validate_processing = true
+            config.validate_download = true
             config.root = lambda { CarrierWave.root }
             config.base_path = CarrierWave.base_path
             config.enable_processing = true
