@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency "mysql2"
   s.add_development_dependency "rails", ">= 3.2.0"
-  s.add_development_dependency "cucumber", "= 1.1.4"
+  s.add_development_dependency "cucumber", "~> 1.1.4"
   s.add_development_dependency "json"
   s.add_development_dependency "rspec", "~> 2.0"
   s.add_development_dependency "sham_rack"
