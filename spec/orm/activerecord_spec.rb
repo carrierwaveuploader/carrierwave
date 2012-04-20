@@ -184,7 +184,7 @@ describe CarrierWave::ActiveRecord do
             @event.image = stub_file('test.jpg')
             @event.should_not be_valid
             @event.valid?
-            @event.errors[:image].should == ['Het opladen van "jpg" bestanden is niet toe gestaan. Geaccepteerde types: ["txt"]']
+            @event.errors[:image].should == ['Het opladen van "jpg" bestanden is niet toe gestaan. Geaccepteerde types: txt']
           end
         end
       end
