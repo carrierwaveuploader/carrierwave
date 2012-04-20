@@ -43,6 +43,12 @@ module CarrierWave
           super
         end
 
+        def remove_#{column}!
+          super
+          _mounter(:#{column}).remove = true
+          _mounter(:#{column}).write_identifier
+        end
+
         def serializable_hash(options=nil)
           hash = {}
 

@@ -318,6 +318,18 @@ describe CarrierWave::ActiveRecord do
       end
     end
 
+    describe "remove_image!" do
+      before do
+        @event.image = stub_file('test.jpeg')
+        @event.save!
+        @event.remove_image!
+      end
+
+      it "should clear the serialization column" do
+        @event.attributes['image'].should be_blank
+      end
+    end
+
     describe "dirty tracking with remote_image_url" do
 
       # FIXME ideally image_changed? and remote_image_url_changed? would return true
