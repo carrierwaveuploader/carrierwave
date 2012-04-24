@@ -10,6 +10,7 @@ module CarrierWave
         add_config :root
         add_config :base_path
         add_config :permissions
+        add_config :directory_permissions
         add_config :storage_engines
         add_config :store_dir
         add_config :cache_dir
@@ -103,6 +104,7 @@ module CarrierWave
         def reset_config
           configure do |config|
             config.permissions = 0644
+            config.directory_permissions = 0755
             config.storage_engines = {
               :file => "CarrierWave::Storage::File",
               :fog  => "CarrierWave::Storage::Fog"

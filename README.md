@@ -406,6 +406,7 @@ both globally and on a per-uploader basis:
 ```ruby
 CarrierWave.configure do |config|
   config.permissions = 0666
+  config.directory_permissions = 0777
   config.storage = :file
 end
 ```
