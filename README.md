@@ -704,6 +704,7 @@ errors:
   messages:
     carrierwave_processing_error: 'Cannot resize image.'
     carrierwave_integrity_error: 'Not an image.'
+    carrierwave_download_error: 'Couldn't download image.'
 ```
 
 ## Large files

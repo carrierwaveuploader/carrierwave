@@ -81,6 +81,12 @@ describe CarrierWave::Uploader::Download do
       }.should raise_error(CarrierWave::DownloadError)
     end
 
+    it "should raise an error when trying to download a missing file" do
+      running {
+        @uploader.download!('http://www.example.com/missing.jpg')
+      }.should raise_error(CarrierWave::DownloadError)
+    end
+
     it "should accept spaces in the url" do
       @uploader.download!('http://www.example.com/test with spaces/test.jpg')
       @uploader.url.should == '/uploads/tmp/20071201-1234-345-2255/test.jpg'
