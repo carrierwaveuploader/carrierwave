@@ -36,6 +36,9 @@ module CarrierWave
             @file = @file.is_a?(String) ? StringIO.new(@file) : @file
           end
           @file
+
+        rescue
+          raise CarrierWave::DownloadError, "could not download file"
         end
 
         def method_missing(*args, &block)
