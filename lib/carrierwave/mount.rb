@@ -111,6 +111,9 @@ module CarrierWave
     # [:mount_on => Symbol] if the name of the column to be serialized to differs you can override it using this option
     # [:ignore_integrity_errors => Boolean] if set to true, integrity errors will result in caching failing silently
     # [:ignore_processing_errors => Boolean] if set to true, processing errors will result in caching failing silently
+    # === Options to set custom versions
+    # [:versions => Hash] if set, will initialize these versions into uploader with default processing for version with name :default.
+    # [:process => Symbol] if versions option set, will process file with this method (:resize_to_fit by default)
     #
     # === Examples
     #
@@ -138,6 +141,20 @@ module CarrierWave
     #       end
     #     end
     #
+    # this will add custom versions to your uploader with set names and dimensions:
+    #
+    #     class User
+    #       mount_uploader :avatar, PictureUploader,
+    #                      :versions => {:thumb => [62, 62], :default => [128, 128]}
+    #     end
+    #
+    # also you can set process method you need:
+    #
+    #     class User
+    #       mount_uploader :avatar, PictureUploader,
+    #                      :versions => {:thumb => [62, 62], :default => [128, 128]},
+    #                      :process => :resize_to_fill
+    #     end
     def mount_uploader(column, uploader=nil, options={}, &block)
       if block_given?
         uploader = Class.new(uploader || CarrierWave::Uploader::Base)
@@ -145,6 +162,21 @@ module CarrierWave
         uploader.recursively_apply_block_to_versions(&block)
       else
         uploader ||= Class.new(CarrierWave::Uploader::Base)
+      end
+
+      if options[:versions]
+        uploader.instance_eval do
+          process_method = (options[:process] || :resize_to_fit)
+          if options[:versions][:default]
+            process process_method => options[:versions].delete(:default)
+          end
+
+          options[:versions].each do |key, value|
+            version key do
+              process process_method => value
+            end
+          end
+        end
       end
 
       uploaders[column.to_sym] = uploader
