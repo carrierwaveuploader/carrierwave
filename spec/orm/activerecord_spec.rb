@@ -395,6 +395,26 @@ describe CarrierWave::ActiveRecord do
       it "should take an option to only include the image column" do
         @event.serializable_hash(:only => :image).should have_key("image")
       end
+
+      context "with multiple uploaders" do
+
+        before do
+          @class = Class.new(Event)
+          @class.table_name = "events"
+          @uploader = Class.new(CarrierWave::Uploader::Base)
+          @class.mount_uploader(:image, @uploader)
+          @uploader1 = Class.new(CarrierWave::Uploader::Base)
+          @class.mount_uploader(:textfile, @uploader1)
+          @event = @class.new
+          @event.image = stub_file('old.jpeg')
+          @event.textfile = stub_file('old.txt')
+        end
+
+        it "serializes the correct values" do
+          @event.serializable_hash["image"]["url"].should match(/old\.jpeg$/)
+          @event.serializable_hash["textfile"]["url"].should match(/old\.txt$/)
+        end
+      end
     end
 
     describe '#destroy' do
