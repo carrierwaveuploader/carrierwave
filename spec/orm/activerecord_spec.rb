@@ -419,6 +419,20 @@ describe CarrierWave::ActiveRecord do
 
     describe '#destroy' do
 
+      it "should not raise an error with a custom filename" do
+        @uploader.class_eval do 
+          def filename 
+            "page.jpeg"
+          end
+        end
+
+        @event.image = stub_file('test.jpeg')
+        @event.save.should be_true
+        expect {
+          @event.destroy
+        }.to_not raise_error
+      end
+
       it "should do nothing when no file has been assigned" do
         @event.save.should be_true
         @event.destroy
