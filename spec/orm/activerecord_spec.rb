@@ -399,10 +399,6 @@ describe CarrierWave::ActiveRecord do
       context "with multiple uploaders" do
 
         before do
-          @class = Class.new(Event)
-          @class.table_name = "events"
-          @uploader = Class.new(CarrierWave::Uploader::Base)
-          @class.mount_uploader(:image, @uploader)
           @uploader1 = Class.new(CarrierWave::Uploader::Base)
           @class.mount_uploader(:textfile, @uploader1)
           @event = @class.new
@@ -414,14 +410,20 @@ describe CarrierWave::ActiveRecord do
           @event.serializable_hash["image"]["url"].should match(/old\.jpeg$/)
           @event.serializable_hash["textfile"]["url"].should match(/old\.txt$/)
         end
+
+        it "should have JSON for each uploader" do
+          parsed = JSON.parse(@event.to_json)
+          parsed["event#{$arclass}"]["image"]["url"].should match(/old\.jpeg$/)
+          parsed["event#{$arclass}"]["textfile"]["url"].should match(/old\.txt$/)
+        end
       end
     end
 
     describe '#destroy' do
 
       it "should not raise an error with a custom filename" do
-        @uploader.class_eval do 
-          def filename 
+        @uploader.class_eval do
+          def filename
             "page.jpeg"
           end
         end
