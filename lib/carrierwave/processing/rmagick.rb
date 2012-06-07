@@ -268,6 +268,13 @@ module CarrierWave
     #       self.depth = 8
     #     end
     #   
+    # ==== :read
+    # A hash of assignments to be given to the RMagick read call.
+    #
+    # The options available are identical to those for write, but are passed in directly, like this:
+    #
+    #     manipulate! :read => { :density => 300 }
+    #
     # ==== :format
     # Specify the output format. If unset, the filename extension is used to determine the format. 
     #
@@ -277,7 +284,9 @@ module CarrierWave
     #
     def manipulate!(options={}, &block)
       cache_stored_file! if !cached?
-      image = ::Magick::Image.read(current_path)
+
+      read_block = create_info_block(options[:read])
+      image = ::Magick::Image.read(current_path, &read_block)
 
       frames = if image.size > 1
         list = ::Magick::ImageList.new
@@ -296,7 +305,7 @@ module CarrierWave
         frame
       end
 
-      write_block = create_write_block(options[:write])
+      write_block = create_info_block(options[:write])
       if options[:format]
         frames.write("#{options[:format]}:#{current_path}", &write_block)
       else
@@ -309,9 +318,9 @@ module CarrierWave
 
   private
 
-    def create_write_block(write_options)
-      return nil unless write_options
-      assignments = write_options.map { |k, v| "self.#{k} = #{v}" }
+    def create_info_block(options)
+      return nil unless options
+      assignments = options.map { |k, v| "self.#{k} = #{v}" }
       code = "lambda { |img| " + assignments.join(";") + "}"
       eval code
     end
