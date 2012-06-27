@@ -102,8 +102,18 @@ module CarrierWave
 
       def connection
         @connection ||= begin
-          credentials = uploader.fog_credentials
-          self.class.connection_cache[credentials] ||= ::Fog::Storage.new(credentials)
+          options = credentials = uploader.fog_credentials
+          url = if uploader.fog_host.respond_to? :call
+            URI.parse( uploader.fog_host.call(self) )
+          elsif uploader.fog_host.present?
+            URI.parse( uploader.fog_host )
+          else
+            nil
+          end
+          if url.present?
+            options.merge!( { :host => url.host } )
+          end
+          self.class.connection_cache[credentials] ||= ::Fog::Storage.new(options)
         end
       end
 

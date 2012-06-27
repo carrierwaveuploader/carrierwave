@@ -81,6 +81,13 @@ end
                 @fog_file.public_url.should == 'http://foo.bar/uploads/test.jpg'
               end
 
+              it "should pass fog_host to ::Fog::Storage constructor for AWS" do
+                if 'AWS' == @provider
+                  storage = CarrierWave::Storage::Fog.new(@uploader)
+                  storage.connection.instance_variable_get('@host').should == 'foo.bar'
+                end
+              end
+
               it "should have a fog_host rooted url" do
                 @fog_file.url.should == 'http://foo.bar/uploads/test.jpg'
               end
