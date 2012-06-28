@@ -117,6 +117,17 @@ end
                 @fog_file.url.should == 'http://foo.bar/uploads/test.jpg'
               end
             end
+
+            context "when a string w/o schema" do
+              let(:fog_host) { "foo.bar" }
+
+              it "should pass fog_host to ::Fog::Storage constructor for AWS" do
+                if 'AWS' == @provider
+                  storage = CarrierWave::Storage::Fog.new(@uploader)
+                  storage.connection.instance_variable_get('@host').should == 'foo.bar'
+                end
+              end
+            end
           end
 
           it "should return filesize" do
