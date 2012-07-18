@@ -179,6 +179,7 @@ describe CarrierWave::Uploader do
       end
 
       it "should set store_path with versions" do
+        CarrierWave.should_receive(:generate_cache_id).once
         @uploader.cache!(File.open(file_path('test.jpg')))
         @uploader.store_path.should == 'uploads/test.jpg'
         @uploader.thumb.store_path.should == 'uploads/thumb_test.jpg'
@@ -186,6 +187,7 @@ describe CarrierWave::Uploader do
       end
 
       it "should move it to the tmp dir with the filename prefixed" do
+        CarrierWave.should_receive(:generate_cache_id).once
         @uploader.cache!(File.open(file_path('test.jpg')))
         @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpg')
         @uploader.thumb.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/thumb_test.jpg')
@@ -194,6 +196,7 @@ describe CarrierWave::Uploader do
       end
 
       it "should cache the files based on the parent" do
+        CarrierWave.should_receive(:generate_cache_id).once
         @uploader.cache!(File.open(file_path('bork.txt')))
 
         File.read(public_path(@uploader.to_s)).should == File.read(public_path(@uploader.thumb.to_s))

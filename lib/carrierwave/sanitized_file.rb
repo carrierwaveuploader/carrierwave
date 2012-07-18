@@ -168,12 +168,13 @@ module CarrierWave
     #
     # [new_path (String)] The path where the file should be moved.
     # [permissions (Integer)] permissions to set on the file in its new location.
+    # [directory_permissions (Integer)] permissions to set on created directories.
     #
-    def move_to(new_path, permissions=nil)
+    def move_to(new_path, permissions=nil, directory_permissions=nil)
       return if self.empty?
       new_path = File.expand_path(new_path)
 
-      mkdir!(new_path)
+      mkdir!(new_path, directory_permissions)
       if exists?
         FileUtils.mv(path, new_path) unless new_path == path
       else
@@ -191,16 +192,17 @@ module CarrierWave
     #
     # [new_path (String)] The path where the file should be copied to.
     # [permissions (Integer)] permissions to set on the copy
+    # [directory_permissions (Integer)] permissions to set on created directories.
     #
     # === Returns
     #
     # @return [CarrierWave::SanitizedFile] the location where the file will be stored.
     #
-    def copy_to(new_path, permissions=nil)
+    def copy_to(new_path, permissions=nil, directory_permissions=nil)
       return if self.empty?
       new_path = File.expand_path(new_path)
 
-      mkdir!(new_path)
+      mkdir!(new_path, directory_permissions)
       if exists?
         FileUtils.cp(path, new_path) unless new_path == path
       else
@@ -278,8 +280,10 @@ module CarrierWave
     end
 
     # create the directory if it doesn't exist
-    def mkdir!(path)
-      FileUtils.mkdir_p(File.dirname(path)) unless File.exists?(File.dirname(path))
+    def mkdir!(path, directory_permissions)
+      options = {}
+      options[:mode] = directory_permissions if directory_permissions
+      FileUtils.mkdir_p(File.dirname(path), options) unless File.exists?(File.dirname(path))
     end
 
     def chmod!(path, permissions)

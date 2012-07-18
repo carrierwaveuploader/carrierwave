@@ -184,7 +184,7 @@ describe CarrierWave::ActiveRecord do
             @event.image = stub_file('test.jpg')
             @event.should_not be_valid
             @event.valid?
-            @event.errors[:image].should == ['Het opladen van "jpg" bestanden is niet toe gestaan. Geaccepteerde types: ["txt"]']
+            @event.errors[:image].should == ['Het opladen van "jpg" bestanden is niet toe gestaan. Geaccepteerde types: txt']
           end
         end
       end
@@ -318,7 +318,19 @@ describe CarrierWave::ActiveRecord do
       end
     end
 
-    describe "dirty tracking with remote_image_url" do
+    describe "remove_image!" do
+      before do
+        @event.image = stub_file('test.jpeg')
+        @event.save!
+        @event.remove_image!
+      end
+
+      it "should clear the serialization column" do
+        @event.attributes['image'].should be_blank
+      end
+    end
+
+    describe "#remote_image_url=" do
 
       # FIXME ideally image_changed? and remote_image_url_changed? would return true
       it "should mark image as changed when setting remote_image_url" do
@@ -328,6 +340,37 @@ describe CarrierWave::ActiveRecord do
         @event.save
         @event.reload
         @event.image_changed?.should be_false
+      end
+
+      context 'when validating download' do
+        before do
+          @uploader.class_eval do
+            def download! file
+              raise CarrierWave::DownloadError
+            end
+          end
+          @event.remote_image_url = 'http://www.example.com/missing.jpg'
+        end
+
+        it "should make the record invalid when a download error occurs" do
+          @event.should_not be_valid
+        end
+
+        it "should use I18n for download errors without messages" do
+          @event.valid?
+          @event.errors[:image].should == ['could not be downloaded']
+
+          change_locale_and_store_translations(:pt, :activerecord => {
+            :errors => {
+              :messages => {
+                :carrierwave_download_error => 'não pode ser descarregado'
+              }
+            }
+          }) do
+            @event.should_not be_valid
+            @event.errors[:image].should == ['não pode ser descarregado']
+          end
+        end
       end
 
     end
@@ -352,9 +395,45 @@ describe CarrierWave::ActiveRecord do
       it "should take an option to only include the image column" do
         @event.serializable_hash(:only => :image).should have_key("image")
       end
+
+      context "with multiple uploaders" do
+
+        before do
+          @uploader1 = Class.new(CarrierWave::Uploader::Base)
+          @class.mount_uploader(:textfile, @uploader1)
+          @event = @class.new
+          @event.image = stub_file('old.jpeg')
+          @event.textfile = stub_file('old.txt')
+        end
+
+        it "serializes the correct values" do
+          @event.serializable_hash["image"]["url"].should match(/old\.jpeg$/)
+          @event.serializable_hash["textfile"]["url"].should match(/old\.txt$/)
+        end
+
+        it "should have JSON for each uploader" do
+          parsed = JSON.parse(@event.to_json)
+          parsed["event#{$arclass}"]["image"]["url"].should match(/old\.jpeg$/)
+          parsed["event#{$arclass}"]["textfile"]["url"].should match(/old\.txt$/)
+        end
+      end
     end
 
     describe '#destroy' do
+
+      it "should not raise an error with a custom filename" do
+        @uploader.class_eval do
+          def filename
+            "page.jpeg"
+          end
+        end
+
+        @event.image = stub_file('test.jpeg')
+        @event.save.should be_true
+        expect {
+          @event.destroy
+        }.to_not raise_error
+      end
 
       it "should do nothing when no file has been assigned" do
         @event.save.should be_true

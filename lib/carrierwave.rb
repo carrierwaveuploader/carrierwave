@@ -95,7 +95,7 @@ elsif defined?(Rails)
   end
 
 elsif defined?(Sinatra)
-  if defined?(Padrino)
+  if defined?(Padrino) && defined?(PADRINO_ROOT)
     CarrierWave.root = File.join(PADRINO_ROOT, "public")
   else
 

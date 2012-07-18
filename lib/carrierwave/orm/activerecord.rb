@@ -23,10 +23,11 @@ module CarrierWave
 
       validates_integrity_of column if uploader_option(column.to_sym, :validate_integrity)
       validates_processing_of column if uploader_option(column.to_sym, :validate_processing)
+      validates_download_of column if uploader_option(column.to_sym, :validate_download)
 
       after_save :"store_#{column}!"
       before_save :"write_#{column}_identifier"
-      after_destroy :"remove_#{column}!"
+      after_commit :"remove_#{column}!", :on => :destroy
       before_update :"store_previous_model_for_#{column}"
       after_save :"remove_previously_stored_#{column}"
 
@@ -43,6 +44,12 @@ module CarrierWave
           super
         end
 
+        def remove_#{column}!
+          super
+          _mounter(:#{column}).remove = true
+          _mounter(:#{column}).write_identifier
+        end
+
         def serializable_hash(options=nil)
           hash = {}
 
@@ -51,7 +58,7 @@ module CarrierWave
 
           self.class.uploaders.each do |column, uploader|
             if (!only && !except) || (only && only.include?(column.to_s)) || (except && !except.include?(column.to_s))
-              hash[column.to_s] = _mounter(:#{column}).uploader.serializable_hash
+              hash[column.to_s] = _mounter(column).uploader.serializable_hash
             end
           end
           super(options).merge(hash)

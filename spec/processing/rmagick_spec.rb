@@ -73,6 +73,33 @@ describe CarrierWave::RMagick do
     end
   end
 
+  describe "#manipulate!" do
+    it 'should support passing write options to RMagick' do
+      image = ::Magick::Image.read(file_path('landscape_copy.jpg'))
+      ::Magick::Image.stub(:read => image)
+      ::Magick::Image::Info.any_instance.should_receive(:quality=).with(50)
+      ::Magick::Image::Info.any_instance.should_receive(:depth=).with(8)
+      
+      @instance.manipulate! do |image, index, options| 
+        options[:write] = {
+          :quality => 50,
+          :depth => 8
+        }
+        image
+      end
+    end
+
+    it 'should support passing read options to RMagick' do
+      ::Magick::Image::Info.any_instance.should_receive(:density=).with(10)
+      ::Magick::Image::Info.any_instance.should_receive(:size=).with("200x200")
+      
+      @instance.manipulate! :read => {
+          :density => 10,
+          :size => %{"200x200"}
+        }
+    end
+  end
+
   describe "test errors" do
     context "invalid image file" do
       before do
