@@ -34,10 +34,18 @@ describe CarrierWave::MimeTypes do
       @instance.set_content_type
     end
 
-    it "sets content_type if content_type is generic" do
-      @instance.file.content_type = 'application/octet-stream'
+    it "set content_type if content_type is empty" do
+      @instance.file.content_type = ''
       @instance.file.should_receive(:content_type=).with('image/jpeg')
       @instance.set_content_type
+    end
+
+    %w[ application/octet-stream binary/octet-stream ].each do |type|
+      it "sets content_type if content_type is generic (#{type})" do
+        @instance.file.content_type = type
+        @instance.file.should_receive(:content_type=).with('image/jpeg')
+        @instance.set_content_type
+      end
     end
 
     it "sets content_type if override is true" do
