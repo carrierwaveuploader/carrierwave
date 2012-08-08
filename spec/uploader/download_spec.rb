@@ -117,6 +117,22 @@ describe CarrierWave::Uploader::Download do
         }.should raise_error(CarrierWave::IntegrityError)
       end
     end
+
+    describe '#download! with an extension_black_list' do
+      before do
+        @uploader_class.class_eval do
+          def extension_black_list
+            %w(jpg)
+          end
+        end
+      end
+
+      it "should follow redirects but still respect the extension_black_list" do
+        running {
+          @uploader.download!('http://www.redirect.com/')
+        }.should raise_error(CarrierWave::IntegrityError)
+      end
+    end
   end
 
   describe '#download! with an overridden process_uri method' do

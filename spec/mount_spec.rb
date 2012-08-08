@@ -128,10 +128,20 @@ describe CarrierWave::Mount do
         @instance.image = stub_file('test.jpg')
       end
 
-      it "should fail silently if the image fails an integrity check" do
+      it "should fail silently if the image fails a white list integrity check" do
         @uploader.class_eval do
           def extension_white_list
             %w(txt)
+          end
+        end
+        @instance.image = stub_file('test.jpg')
+        @instance.image.should be_blank
+      end
+
+      it "should fail silently if the image fails a black list integrity check" do
+        @uploader.class_eval do
+          def extension_black_list
+            %w(jpg)
           end
         end
         @instance.image = stub_file('test.jpg')

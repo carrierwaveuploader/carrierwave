@@ -34,6 +34,7 @@ module CarrierWave
       include CarrierWave::Uploader::Download
       include CarrierWave::Uploader::Remove
       include CarrierWave::Uploader::ExtensionWhitelist
+      include CarrierWave::Uploader::ExtensionBlacklist
       include CarrierWave::Uploader::Processing
       include CarrierWave::Uploader::Versions
       include CarrierWave::Uploader::DefaultUrl
