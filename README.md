@@ -768,7 +768,7 @@ Please test with the latest Ruby 1.8.x and 1.9.x versions using RVM if possible.
 
 ### Running active record tests
 
-Make sure you have a mysql2 database named `carrierwave_test` with the username
+Make sure you have a local MySQL database named `carrierwave_test` with the username
 `root` and empty password. 
 
 ## License
