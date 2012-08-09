@@ -318,6 +318,21 @@ module CarrierWave
           end
         end
 
+        ##
+        # Return file name, if available
+        #
+        # === Returns
+        #
+        # [String] file name
+        #   or
+        # [NilClass] no file name available
+        #
+        def filename(options = {})
+          if file_url = url(options)
+            file_url.gsub(/.*\/(.*?$)/, '\1')
+          end
+        end
+
       private
 
         ##
