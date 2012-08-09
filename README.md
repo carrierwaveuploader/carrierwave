@@ -737,7 +737,9 @@ This has only been tested with the local filesystem store.
 CarrierWave thrives on a large number of [contributors](https://github.com/jnicklas/carrierwave/contributors),
 and pull requests are very welcome. Before submitting a pull request, please make sure that your changes are well tested.
 
-You'll need to install bundler and the gem dependencies:
+First, make sure you have `imagemagick` and `ghostscript` installed.
+
+Then, you'll need to install bundler and the gem dependencies:
 
 	gem install bundler
 	bundle install
@@ -763,6 +765,11 @@ You should now be able to run the remote tests:
 	REMOTE=true bundle exec rake
 
 Please test with the latest Ruby 1.8.x and 1.9.x versions using RVM if possible.
+
+### Running active record tests
+
+Make sure you have a mysql2 database named `carrierwave_test` with the username
+`root` and empty password. 
 
 ## License
 
