@@ -50,6 +50,7 @@ module CarrierWave
     autoload :Versions, 'carrierwave/uploader/versions'
     autoload :Remove, 'carrierwave/uploader/remove'
     autoload :ExtensionWhitelist, 'carrierwave/uploader/extension_whitelist'
+    autoload :ExtensionBlacklist, 'carrierwave/uploader/extension_blacklist'
     autoload :DefaultUrl, 'carrierwave/uploader/default_url'
     autoload :Proxy, 'carrierwave/uploader/proxy'
     autoload :Url, 'carrierwave/uploader/url'
