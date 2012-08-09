@@ -96,6 +96,10 @@ end
                 @fog_file.url.should == 'http://foo.bar/uploads/test.jpg'
                 @fog_file.url.should == 'http://foo.bar/uploads/test.jpg'
               end
+
+              it 'should retrieve file name' do
+                @fog_file.filename.should == 'test.jpg'
+              end
             end
 
             context "when a string" do
