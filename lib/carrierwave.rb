@@ -38,6 +38,7 @@ module CarrierWave
     autoload :Abstract, 'carrierwave/storage/abstract'
     autoload :File, 'carrierwave/storage/file'
     autoload :Fog, 'carrierwave/storage/fog'
+    autoload :FTP, 'carrierwave/storage/ftp'
   end
 
   module Uploader
