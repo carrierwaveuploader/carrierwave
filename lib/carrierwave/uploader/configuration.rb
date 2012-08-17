@@ -29,6 +29,14 @@ module CarrierWave
         add_config :fog_public
         add_config :fog_authenticated_url_expiration
 
+        # ftp
+
+        add_config :ftp_host
+        add_config :ftp_user
+        add_config :ftp_passwd
+        add_config :ftp_folder
+        add_config :ftp_url
+
         # Mounting
         add_config :ignore_integrity_errors
         add_config :ignore_processing_errors
@@ -109,7 +117,8 @@ module CarrierWave
             config.directory_permissions = 0755
             config.storage_engines = {
               :file => "CarrierWave::Storage::File",
-              :fog  => "CarrierWave::Storage::Fog"
+              :fog  => "CarrierWave::Storage::Fog",
+              :ftp  => "CarrierWave::Storage::FTP"
             }
             config.storage = :file
             config.fog_attributes = {}
