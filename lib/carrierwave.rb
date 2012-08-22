@@ -15,8 +15,8 @@ module CarrierWave
       CarrierWave::Uploader::Base.configure(&block)
     end
 
-    def clean_cached_files!
-      CarrierWave::Uploader::Base.clean_cached_files!
+    def clean_cached_files!(seconds=60*60*24)
+      CarrierWave::Uploader::Base.clean_cached_files!(seconds)
     end
   end
 
