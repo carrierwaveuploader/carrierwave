@@ -34,7 +34,7 @@ end
           it "should cache_stored_file! after store!" do
             uploader = @uploader.new
             uploader.store!(@file)
-            uploader.cache_stored_file!.should_not raise_error
+            lambda{ uploader.cache_stored_file! }.should_not raise_error
           end
         end
 
