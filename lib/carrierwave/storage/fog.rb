@@ -126,6 +126,12 @@ module CarrierWave
         #
         attr_reader :store_path
 
+        def path
+          if @uploader.fog_credentials[:provider] == 'Local'
+            "#{@uploader.fog_credentials[:local_root]}/#{@uploader.fog_directory}/#{store_path}"
+          end
+        end
+
         ##
         # Return all attributes from file
         #
