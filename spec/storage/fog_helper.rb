@@ -48,8 +48,8 @@ end
             @directory.files.get('uploads/test.jpg').body.should == 'this is stuff'
           end
 
-          it "should have a path" do
-            @fog_file.path.should == 'uploads/test.jpg'
+          it "should have a store path" do
+            @fog_file.store_path.should == 'uploads/test.jpg'
           end
 
           it "should have a content_type" do
@@ -163,8 +163,8 @@ end
             @fog_file.read.chomp.should == "A test, 1234"
           end
 
-          it "should have a path" do
-            @fog_file.path.should == 'uploads/test.jpg'
+          it "should have a store path" do
+            @fog_file.store_path.should == 'uploads/test.jpg'
           end
 
           it "should have a public url" do
