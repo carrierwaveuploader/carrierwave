@@ -129,6 +129,8 @@ module CarrierWave
         def path
           if @uploader.fog_credentials[:provider] == 'Local'
             "#{@uploader.fog_credentials[:local_root]}/#{@uploader.fog_directory}/#{store_path}"
+          else
+            store_path
           end
         end
 
