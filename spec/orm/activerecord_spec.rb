@@ -102,7 +102,7 @@ describe CarrierWave::ActiveRecord do
         @event.save!
         @event.reload
 
-        JSON.parse({:data => @event.image}.to_json).should == {"data"=>{"image"=>{"url"=>"/uploads/test.jpeg"}}}
+        JSON.parse({:data => @event.image}.to_json).should == {"data"=>{"url"=>"/uploads/test.jpeg"}}
       end
 
       it "should return valid XML when to_xml is called when image is nil" do
