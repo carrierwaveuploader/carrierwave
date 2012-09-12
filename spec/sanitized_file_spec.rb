@@ -68,9 +68,11 @@ describe CarrierWave::SanitizedFile do
   end
 
   describe '#extension' do
-    it "should return the extension for complicated extensions" do
-      @sanitized_file = CarrierWave::SanitizedFile.new(file_path('complex.filename.tar.gz'))
-      @sanitized_file.extension.should == "tar.gz"
+    %w[gz bz2 z lz xz].each do |ext|
+      it "should return the extension for complicated extensions (tar.#{ext})" do
+        @sanitized_file = CarrierWave::SanitizedFile.new(file_path("complex.filename.tar.#{ext}"))
+        @sanitized_file.extension.should == "tar.#{ext}"
+      end
     end
 
     it "should return the extension for real-world user file names" do
