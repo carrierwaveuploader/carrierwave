@@ -303,7 +303,7 @@ module CarrierWave
     def split_extension(filename)
       # regular expressions to try for identifying extensions
       extension_matchers = [
-        /\A(.+)\.(tar\.gz)\z/, # matches "something.tar.gz"
+        /\A(.+)\.(tar\.([glx]?z|bz2))\z/, # matches "something.tar.gz"
         /\A(.+)\.([^\.]+)\z/ # matches "something.jpg"
       ]
 
