@@ -124,7 +124,15 @@ module CarrierWave
         #
         # [String] a path to file
         #
-        attr_reader :path
+        attr_reader :store_path
+
+        def path
+          if @uploader.fog_credentials[:provider] == 'Local'
+            "#{@uploader.fog_credentials[:local_root]}/#{@uploader.fog_directory}/#{store_path}"
+          else
+            store_path
+          end
+        end
 
         ##
         # Return all attributes from file
@@ -151,7 +159,7 @@ module CarrierWave
           if ['AWS', 'Google'].include?(@uploader.fog_credentials[:provider])
             # avoid a get by using local references
             local_directory = connection.directories.new(:key => @uploader.fog_directory)
-            local_file = local_directory.files.new(:key => path)
+            local_file = local_directory.files.new(:key => store_path)
             if @uploader.fog_credentials[:provider] == "AWS"
               local_file.url(::Fog::Time.now + @uploader.fog_authenticated_url_expiration, options)
             else
@@ -193,7 +201,7 @@ module CarrierWave
         #
         def delete
           # avoid a get by just using local reference
-          directory.files.new(:key => path).destroy
+          directory.files.new(:key => store_path).destroy
         end
 
         ##
@@ -211,8 +219,8 @@ module CarrierWave
           attributes
         end
 
-        def initialize(uploader, base, path)
-          @uploader, @base, @path = uploader, base, path
+        def initialize(uploader, base, store_path)
+          @uploader, @base, @store_path = uploader, base, store_path
         end
 
         ##
@@ -243,7 +251,7 @@ module CarrierWave
         #
         # [Boolean] true if file exists or false
         def exists?
-          !!directory.files.head(path)
+          !!directory.files.head(store_path)
         end
 
         ##
@@ -258,7 +266,7 @@ module CarrierWave
           @file = directory.files.create({
             :body         => fog_file ? fog_file : new_file.read,
             :content_type => @content_type,
-            :key          => path,
+            :key          => store_path,
             :public       => @uploader.fog_public
           }.merge(@uploader.fog_attributes))
           fog_file.close if fog_file && !fog_file.closed?
@@ -277,9 +285,9 @@ module CarrierWave
         def public_url
           if host = @uploader.fog_host
             if host.respond_to? :call
-              "#{host.call(self)}/#{path}"
+              "#{host.call(self)}/#{store_path}"
             else
-              "#{host}/#{path}"
+              "#{host}/#{store_path}"
             end
           else
             # AWS/Google optimized for speed over correctness
@@ -287,16 +295,16 @@ module CarrierWave
             when 'AWS'
               # if directory is a valid subdomain, use that style for access
               if @uploader.fog_directory.to_s =~ /^(?:[a-z]|\d(?!\d{0,2}(?:\d{1,3}){3}$))(?:[a-z0-9]|(?![\-])|\-(?![\.])){1,61}[a-z0-9]$/
-                "https://#{@uploader.fog_directory}.s3.amazonaws.com/#{path}"
+                "https://#{@uploader.fog_directory}.s3.amazonaws.com/#{store_path}"
               else
                 # directory is not a valid subdomain, so use path style for access
-                "https://s3.amazonaws.com/#{@uploader.fog_directory}/#{path}"
+                "https://s3.amazonaws.com/#{@uploader.fog_directory}/#{store_path}"
               end
             when 'Google'
-              "https://commondatastorage.googleapis.com/#{@uploader.fog_directory}/#{path}"
+              "https://commondatastorage.googleapis.com/#{@uploader.fog_directory}/#{store_path}"
             else
               # avoid a get by just using local reference
-              directory.files.new(:key => path).public_url
+              directory.files.new(:key => store_path).public_url
             end
           end
         end
@@ -370,7 +378,7 @@ module CarrierWave
         # [Fog::#{provider}::File] file data from remote service
         #
         def file
-          @file ||= directory.files.head(path)
+          @file ||= directory.files.head(store_path)
         end
 
       end
