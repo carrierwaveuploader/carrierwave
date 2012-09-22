@@ -20,7 +20,6 @@ module CarrierWave
     # [:fog_directory]    specifies name of directory to store data in, assumed to already exist
     #
     # [:fog_attributes]                   (optional) additional attributes to set on files
-    # [:fog_host]                         (optional) non-default host to serve files from
     # [:fog_endpoint]                     (optional) non-default host to connect with
     # [:fog_public]                       (optional) public readability, defaults to true
     # [:fog_authenticated_url_expiration] (optional) time (in seconds) that authenticated urls
@@ -276,7 +275,7 @@ module CarrierWave
         # [NilClass] no public url available
         #
         def public_url
-          if host = @uploader.fog_host
+          if host = @uploader.asset_host
             if host.respond_to? :call
               "#{host.call(self)}/#{path}"
             else

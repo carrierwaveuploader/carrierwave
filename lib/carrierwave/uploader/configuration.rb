@@ -9,6 +9,7 @@ module CarrierWave
 
         add_config :root
         add_config :base_path
+        add_config :asset_host
         add_config :permissions
         add_config :directory_permissions
         add_config :storage_engines
@@ -25,7 +26,6 @@ module CarrierWave
         add_config :fog_attributes
         add_config :fog_credentials
         add_config :fog_directory
-        add_config :fog_host
         add_config :fog_endpoint
         add_config :fog_public
         add_config :fog_authenticated_url_expiration

@@ -509,9 +509,9 @@ CarrierWave.configure do |config|
     :region                 => 'eu-west-1'  # optional, defaults to 'us-east-1'
   }
   config.fog_directory  = 'name_of_directory'                     # required
-  config.fog_host       = 'https://assets.example.com'            # optional, defaults to nil
   config.fog_public     = false                                   # optional, defaults to true
   config.fog_attributes = {'Cache-Control'=>'max-age=315576000'}  # optional, defaults to {}
+  config.asset_host     = 'https://assets.example.com'            # optional, defaults to nil
 end
 ```
 
@@ -552,7 +552,7 @@ This is *highly* recommended, as without it every request requires a lookup
 of this information.
 
 ```ruby
-config.fog_host = "http://c000000.cdn.rackspacecloud.com"
+config.asset_host = "http://c000000.cdn.rackspacecloud.com"
 ```
 
 In your uploader, set the storage to :fog
@@ -599,13 +599,13 @@ end
 That's it! You can still use the `CarrierWave::Uploader#url` method to return
 the url to the file on Google.
 
-## Dynamic Fog Host
+## Dynamic Asset Host
 
-The `fog_host` config property can be assigned a proc (or anything that responds to `call`) for generating the host dynamically. The proc-compliant object gets an instance of the current `CarrierWave::Storage::Fog::File` as its only argument.
+The `asset_host` config property can be assigned a proc (or anything that responds to `call`) for generating the host dynamically. The proc-compliant object gets an instance of the current `CarrierWave::Storage::Fog::File` or `CarrierWave::SanitizedFile` as its only argument.
 
 ```ruby
 CarrierWave.configure do |config|
-  config.fog_host = proc do |file|
+  config.asset_host = proc do |file|
     identifier = # some logic
     "http://#{identifier}.cdn.rackspacecloud.com"
   end
