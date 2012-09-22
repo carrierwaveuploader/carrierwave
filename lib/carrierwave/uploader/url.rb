@@ -18,8 +18,18 @@ module CarrierWave
       def url(options = {})
         if file.respond_to?(:url) and not file.url.blank?
           file.method(:url).arity == 0 ? file.url : file.url(options)
-        elsif current_path
-          (base_path || "") + File.expand_path(current_path).gsub(File.expand_path(root), '')
+        elsif file.respond_to?(:path)
+          path = file.path.gsub(File.expand_path(root), '')
+
+          if host = asset_host
+            if host.respond_to? :call
+              "#{host.call(file)}#{path}"
+            else
+              "#{host}#{path}"
+            end
+          else
+            (base_path || "") + path
+          end
         end
       end
 
