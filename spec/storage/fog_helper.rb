@@ -11,6 +11,7 @@ def fog_tests(fog_credentials)
             config.fog_credentials = fog_credentials
             config.fog_directory   = CARRIERWAVE_DIRECTORY
             config.fog_host        = nil
+            config.fog_endpoint    = nil
             config.fog_public      = true
           end
 
@@ -89,13 +90,6 @@ end
                 @fog_file.public_url.should == 'http://foo.bar/uploads/test.jpg'
               end
 
-              it "should pass fog_host to ::Fog::Storage constructor for AWS" do
-                if 'AWS' == @provider
-                  storage = CarrierWave::Storage::Fog.new(@uploader)
-                  storage.connection.instance_variable_get('@host').should == 'foo.bar'
-                end
-              end
-
               it "should have a fog_host rooted url" do
                 @fog_file.url.should == 'http://foo.bar/uploads/test.jpg'
               end
@@ -129,16 +123,21 @@ end
                 @fog_file.url.should == 'http://foo.bar/uploads/test.jpg'
               end
             end
+          end
 
-            context "when a string w/o schema" do
-              let(:fog_host) { "foo.bar" }
+          context "with fog_endpoint" do
+            let(:fog_endpoint) { proc { "http://foo.bar" } }
+            before { @uploader.stub(:fog_endpoint).and_return(fog_endpoint) }
 
-              it "should pass fog_host to ::Fog::Storage constructor for AWS" do
-                if 'AWS' == @provider
-                  storage = CarrierWave::Storage::Fog.new(@uploader)
-                  storage.connection.instance_variable_get('@host').should == 'foo.bar'
-                end
+            it "should pass fog_endpoint to ::Fog::Storage constructor as the host" do
+              storage = CarrierWave::Storage::Fog.new(@uploader)
+
+              ::Fog::Storage.stub!(:new).and_return do |options|  
+                options[:host].should == 'foo.bar'
+                nil
               end
+
+              storage.connection
             end
           end
 
