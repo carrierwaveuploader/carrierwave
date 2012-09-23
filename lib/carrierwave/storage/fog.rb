@@ -20,7 +20,7 @@ module CarrierWave
     # [:fog_directory]    specifies name of directory to store data in, assumed to already exist
     #
     # [:fog_attributes]                   (optional) additional attributes to set on files
-    # [:fog_host]                         (optional) non-default host to serve files from
+    # [:fog_endpoint]                     (optional) non-default host to connect with
     # [:fog_public]                       (optional) public readability, defaults to true
     # [:fog_authenticated_url_expiration] (optional) time (in seconds) that authenticated urls
     #   will be valid, when fog_public is false and provider is AWS or Google, defaults to 600
@@ -103,12 +103,12 @@ module CarrierWave
       def connection
         @connection ||= begin
           options = credentials = uploader.fog_credentials
-          url = if uploader.fog_host.respond_to? :call
-            URI.parse( uploader.fog_host.call(self) )
-          elsif uploader.fog_host
-            URI.parse( uploader.fog_host )
+          endpoint_url = if uploader.fog_endpoint.respond_to? :call
+            URI.parse( uploader.fog_endpoint.call(self) )
+          elsif uploader.fog_endpoint
+            URI.parse( uploader.fog_endpoint )
           end
-          if host_string = url && (url.host || url.to_s)
+          if host_string = endpoint_url && (endpoint_url.host || endpoint_url.to_s)
             options.merge!( { :host => host_string } )
           end
           self.class.connection_cache[credentials] ||= ::Fog::Storage.new(options)
@@ -275,7 +275,7 @@ module CarrierWave
         # [NilClass] no public url available
         #
         def public_url
-          if host = @uploader.fog_host
+          if host = @uploader.asset_host
             if host.respond_to? :call
               "#{host.call(self)}/#{path}"
             else

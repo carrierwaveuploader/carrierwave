@@ -62,10 +62,29 @@ describe CarrierWave::Uploader do
       @uploader.url(:thumb, :mini).should == '/uploads/tmp/20071201-1234-345-2255/thumb_mini_test.jpg'
     end
 
-    it "should prepend the config option 'base_path', if set" do
+    it "should prepend the config option 'asset_host', if set and a string" do
+      MyCoolUploader.version(:thumb)
+      @uploader.class.configure do |config|
+        config.asset_host = "http://foo.bar"
+      end
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      @uploader.url(:thumb).should == 'http://foo.bar/uploads/tmp/20071201-1234-345-2255/thumb_test.jpg'
+    end
+
+    it "should prepend the result of the config option 'asset_host', if set and a proc" do
+      MyCoolUploader.version(:thumb)
+      @uploader.class.configure do |config|
+        config.asset_host = proc { "http://foo.bar" }
+      end
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      @uploader.url(:thumb).should == 'http://foo.bar/uploads/tmp/20071201-1234-345-2255/thumb_test.jpg'
+    end
+
+    it "should prepend the config option 'base_path', if set and 'asset_host' is not set" do
       MyCoolUploader.version(:thumb)
       @uploader.class.configure do |config|
         config.base_path = "/base_path"
+        config.asset_host = nil
       end
       @uploader.cache!(File.open(file_path('test.jpg')))
       @uploader.url(:thumb).should == '/base_path/uploads/tmp/20071201-1234-345-2255/thumb_test.jpg'
