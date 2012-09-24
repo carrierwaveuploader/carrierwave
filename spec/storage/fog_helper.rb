@@ -69,6 +69,20 @@ end
                 @fog_file.url.should_not be_nil
               end
             end
+
+            it "should use a subdomain URL for AWS if the directory is a valid subdomain" do
+              if @provider == 'AWS'
+                @uploader.stub(:fog_directory).and_return('assets.site.com')
+                @fog_file.public_url.should include('https://assets.site.com.s3.amazonaws.com')
+              end
+            end
+
+            it "should not use a subdomain URL for AWS if the directory is not a valid subdomain" do
+              if @provider == 'AWS'
+                @uploader.stub(:fog_directory).and_return('SiteAssets')
+                @fog_file.public_url.should include('https://s3.amazonaws.com/SiteAssets')
+              end
+            end
           end
 
           context "with asset_host" do
