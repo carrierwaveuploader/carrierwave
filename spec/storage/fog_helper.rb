@@ -64,6 +64,15 @@ end
               end
             end
 
+            context "when a fog_directory contains many underscores" do
+              let(:fog_directory) { 'test_fog_directory_with_underscores' }
+              before { @uploader.stub(:fog_directory).and_return(fog_directory) }
+
+              it "should have a public_url" do
+                @fog_file.public_url.should_not be_nil
+              end
+            end
+
             it "should have a url" do
               unless fog_credentials[:provider] == 'Local'
                 @fog_file.url.should_not be_nil
