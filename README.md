@@ -21,7 +21,7 @@ It works well with Rack based web applications, such as Ruby on Rails.
 
 Install the latest stable release:
 
-	[sudo] gem install carrierwave
+  [sudo] gem install carrierwave
 
 In Rails, add it to your Gemfile:
 
@@ -38,11 +38,11 @@ Rails 2, please use the 0.4-stable branch on GitHub.
 
 Start off by generating an uploader:
 
-	rails generate uploader Avatar
+  rails generate uploader Avatar
 
 this should give you a file in:
 
-	app/uploaders/avatar_uploader.rb
+  app/uploaders/avatar_uploader.rb
 
 Check out this file for some hints on how you can customize your uploader. It
 should look something like this:
@@ -490,6 +490,20 @@ Processing can be enabled for a single version by setting the processing flag on
 @uploader.thumb.enable_processing = true
 ```
 
+## Deploying with Capistrano
+
+Add this to your Capistrano ```config/deploy.rb``` file at the end of your ```namespace :deploy do``` block:
+
+```ruby
+desc "Ensure CarrierWave uploads go into the shared directory."
+task :symlink_uploads do
+  run "ln -nfs #{shared_path}/uploads  #{release_path}/public/uploads"
+end
+after 'deploy:update_code', 'deploy:symlink_uploads'
+```
+
+This ensures your CarrierWave uploads are placed within the ```shared/``` directory that Capistrano creates for assets and other "shared" elements of your application between releases.
+
 ## Using Amazon S3
 
 [Fog](http://github.com/fog/fog) is used to support Amazon S3. Ensure you have it in your Gemfile:
@@ -743,12 +757,12 @@ First, make sure you have `imagemagick` and `ghostscript` installed.
 
 Then, you'll need to install bundler and the gem dependencies:
 
-	gem install bundler
-	bundle install
+  gem install bundler
+  bundle install
 
 You should now be able to run the local tests:
 
-	bundle exec rake
+  bundle exec rake
 
 You can also run the remote specs by creating a ~/.fog file:
 
@@ -764,7 +778,7 @@ You can also run the remote specs by creating a ~/.fog file:
 
 You should now be able to run the remote tests:
 
-	REMOTE=true bundle exec rake
+  REMOTE=true bundle exec rake
 
 Please test with the latest Ruby 1.8.x and 1.9.x versions using RVM if possible.
 
