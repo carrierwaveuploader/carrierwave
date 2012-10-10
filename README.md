@@ -29,6 +29,8 @@ In Rails, add it to your Gemfile:
 gem 'carrierwave'
 ```
 
+Finally, restart the server to apply the changes.
+
 Note that CarrierWave is not compatible with Rails 2 as of version 0.5. If you want to use
 Rails 2, please use the 0.4-stable branch on GitHub.
 
