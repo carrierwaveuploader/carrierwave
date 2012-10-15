@@ -90,6 +90,10 @@ module CarrierWave
       def resize_and_pad(width, height, background=:transparent, gravity=::Magick::CenterGravity)
         process :resize_and_pad => [width, height, background, gravity]
       end
+
+      def resize_to_geometry_string(geometry_string)
+        process :resize_to_geometry_string => [geometry_string]
+      end
     end
 
     ##
@@ -224,6 +228,28 @@ module CarrierWave
     end
 
     ##
+    # Resize the image per the provided geometry string.
+    #
+    # === Parameters
+    #
+    # [geometry_string (String)] the proportions in which to scale image
+    #
+    # === Yields
+    #
+    # [Magick::Image] additional manipulations to perform
+    #
+    def resize_to_geometry_string(geometry_string)
+      manipulate! do |img|
+        new_img = img.change_geometry(geometry_string) do |new_width, new_height|
+          img.resize(new_width, new_height)
+        end
+        destroy_image(img)
+        new_img = yield(new_img) if block_given?
+        new_img
+      end
+    end
+
+    ##
     # Manipulate the image with RMagick. This method will load up an image
     # and then pass each of its frames to the supplied block. It will then
     # save the image to disk.
@@ -252,7 +278,7 @@ module CarrierWave
     # A hash of assignments to be evaluated in the block given to the RMagick write call.
     #
     # An example:
-    # 
+    #
     #      manipulate! do |img, index, options|
     #        options[:write] = {
     #          :quality => 50,
@@ -261,13 +287,13 @@ module CarrierWave
     #        img
     #      end
     #
-    # This will translate to the following RMagick::Image#write call: 
-    # 
+    # This will translate to the following RMagick::Image#write call:
+    #
     #     image.write do |img|
     #       self.quality = 50
     #       self.depth = 8
     #     end
-    #   
+    #
     # ==== :read
     # A hash of assignments to be given to the RMagick read call.
     #
@@ -276,7 +302,7 @@ module CarrierWave
     #     manipulate! :read => { :density => 300 }
     #
     # ==== :format
-    # Specify the output format. If unset, the filename extension is used to determine the format. 
+    # Specify the output format. If unset, the filename extension is used to determine the format.
     #
     # === Raises
     #
