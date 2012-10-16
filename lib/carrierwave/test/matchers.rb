@@ -154,6 +154,66 @@ module CarrierWave
         HaveDimensions.new(width, height)
       end
 
+      class HaveHeight # :nodoc:
+        def initialize(height)
+          @height = height
+        end
+
+        def matches?(actual)
+          @actual = actual
+          # Satisfy expectation here. Return false or raise an error if it's not met.
+          image = ImageLoader.load_image(@actual.current_path)
+          @actual_height = image.height
+          @actual_height == @height
+        end
+
+        def failure_message
+          "expected #{@actual.current_path.inspect} to have an exact size of #{@height}, but it was #{@actual_height}."
+        end
+
+        def negative_failure_message
+          "expected #{@actual.current_path.inspect} not to have an exact size of #{@height}, but it did."
+        end
+
+        def description
+          "have an exact height of #{@height}"
+        end
+      end
+
+      def have_height(height)
+        HaveHeight.new(height)
+      end
+
+      class HaveWidth # :nodoc:
+        def initialize(width)
+          @width = width
+        end
+
+        def matches?(actual)
+          @actual = actual
+          # Satisfy expectation here. Return false or raise an error if it's not met.
+          image = ImageLoader.load_image(@actual.current_path)
+          @actual_width = image.width
+          @actual_width == @width
+        end
+
+        def failure_message
+          "expected #{@actual.current_path.inspect} to have an exact size of #{@width}, but it was #{@actual_width}."
+        end
+
+        def negative_failure_message
+          "expected #{@actual.current_path.inspect} not to have an exact size of #{@width}, but it did."
+        end
+
+        def description
+          "have an exact width of #{@width}"
+        end
+      end
+
+      def have_width(width)
+        HaveWidth.new(width)
+      end
+
       class BeNoWiderThan # :nodoc:
         def initialize(width)
           @width = width
