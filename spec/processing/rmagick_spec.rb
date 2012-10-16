@@ -73,6 +73,28 @@ describe CarrierWave::RMagick do
     end
   end
 
+  describe '#resize_to_geometry_string' do
+    it "should resize the image to comply with `200x200^` Geometry String spec" do
+      @instance.resize_to_geometry_string('200x200^')
+      @instance.should have_dimensions(267, 200)
+    end
+
+    it "should resize the image to have 125% larger dimensions" do
+      @instance.resize_to_geometry_string('125%')
+      @instance.should have_dimensions(800, 600)
+    end
+
+    it "should resize the image to have a given height" do
+      @instance.resize_to_geometry_string('x256')
+      @instance.should have_height(256)
+    end
+
+    it "should resize the image to have a given width" do
+      @instance.resize_to_geometry_string('256x')
+      @instance.should have_width(256)
+    end
+  end
+
   describe "#manipulate!" do
     it 'should support passing write options to RMagick' do
       image = ::Magick::Image.read(file_path('landscape_copy.jpg'))
