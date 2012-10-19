@@ -26,6 +26,7 @@ describe CarrierWave::Uploader do
         :aws_secret_access_key  => 'AAAA',              # required
         :region                 => 'us-east-2'          # optional, defaults to 'us-east-1'
     }
+    @uploader_overridden.fog_public = false
   end
 
   describe 'fog_credentials' do
@@ -53,6 +54,16 @@ describe CarrierWave::Uploader do
 
     it 'should reflect the standard value in overridden object because property is not overridden' do
       @uploader_overridden.fog_directory.should be_eql('defaultbucket')
+    end
+  end
+
+  describe 'fog_public' do
+    it 'should reflect the standard value if no override done' do
+      @uploader.fog_public.should be_eql(true)
+    end
+
+    it 'should reflect the standard value in overridden object because property is not overridden' do
+      @uploader_overridden.fog_public.should be_eql(false)
     end
   end
 end
