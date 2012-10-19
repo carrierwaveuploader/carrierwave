@@ -300,8 +300,8 @@ of the original version, potentially resulting in faster processing.
 Often you'll notice that uploaded files disappear when a validation fails.
 CarrierWave has a feature that makes it easy to remember the uploaded file even
 in that case. Suppose your `user` model has an uploader mounted on `avatar`
-file, just add a hidden field called `avatar_cache`. In Rails, this would look
-like this:
+file, just add a hidden field called `avatar_cache` (don't forget to add it to
+the attr_accessible list as necessary). In Rails, this would look like this:
 
 ```erb
 <%= form_for @user, :html => {:multipart => true} do |f| %>
