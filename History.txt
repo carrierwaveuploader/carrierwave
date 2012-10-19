@@ -1,3 +1,23 @@
+=== Version 0.6.3 2012-10-19
+
+* [changed] Changed after_destroy with after_commit ... :on => :destroy [Cristian Sorinel]
+* [changed] Do not handle any special cases for URL handling, keep the existing escape/unescape functionality and allow overriding [bensie]
+* [changed] Activerecord-deprecated_finders gem was renamed [bensie]
+* [changed] Rename 'fog_host' config option to 'asset_host' and add support for file storage [DouweM]
+* [changed] Removed unnecessary present? method from ActiveSupport [Yauheni Kryudziuk]
+* [changed] Use AWS S3 subdomain URL when directory name contains a period. [DouweM]
+* [added] Added resize_to_geometry_string RMagick method that will scale image [wprater]
+* [added] Made feature to blacklist certain extensions [thiagofm]
+* [added] Parse and pass fog_host option to ::Fog::Storage [Yauheni Kryudziuk]
+* [added] Add serialization spec for multiple uploaders. [malclocke]
+* [added] Add :read option to manipulate! [xtreme-tanzeeb-khalili]
+* [added] Add binary/octet-stream as generic mime type. [phiggins]
+* [added] Add 'fog_endpoint' config option to set an alternate Fog host. [DouweM]
+* [fixed] Fixed can't convert File into String [jnimety]
+* [fixed] Fixed an issue when parsing URL w/o schema. [Yauheni Kryudziuk]
+* [fixed] Fix reference to column in serializable_hash [malclocke] 
+* [fixed] Fix inconsistence in file API [oelmekki]
+
 === Version 0.6.2 2012-04-12
 
 * [fixed] Don't double-generate cache_id [skyeagle]
