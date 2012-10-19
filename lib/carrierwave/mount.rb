@@ -252,7 +252,7 @@ module CarrierWave
 
         def remove_previously_stored_#{column}
           if @previous_model_for_#{column} && @previous_model_for_#{column}.#{column}.path != #{column}.path
-            @previous_model_for_#{column}.#{column}.remove!
+            @previous_model_for_#{column}.#{column}.file.try(:delete)
             @previous_model_for_#{column} = nil
           end
         end
