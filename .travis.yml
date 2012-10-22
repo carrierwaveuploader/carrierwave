@@ -1,3 +1,9 @@
+before_install:
+  - gem install bundler
+
+notifications:
+  email: false
+
 rvm:
  - 1.8.7
  - 1.9.2
@@ -10,6 +16,8 @@ gemfile:
   - gemfiles/rails_master.gemfile
 
 matrix:
+  allow_failures:
+    - rvm: ruby-head
   exclude:
     - rvm: 1.8.7
       gemfile: gemfiles/rails_master.gemfile
