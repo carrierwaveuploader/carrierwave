@@ -430,7 +430,7 @@ config/initializers/carrierwave.rb
 
 ## Testing with CarrierWave
 
-It's a good idea to test you uploaders in isolation. In order to speed up your
+It's a good idea to test your uploaders in isolation. In order to speed up your
 tests, it's recommended to switch off processing in your tests, and to use the
 file storage. In Rails you could do that by adding an initializer with:
 
@@ -771,7 +771,7 @@ Please test with the latest Ruby 1.8.x and 1.9.x versions using RVM if possible.
 ### Running active record tests
 
 Make sure you have a local MySQL database named `carrierwave_test` with the username
-`root` and empty password. 
+`root` and empty password.
 
 ## License
 
