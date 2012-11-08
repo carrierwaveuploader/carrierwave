@@ -296,11 +296,13 @@ module CarrierWave
       end
 
       def write_identifier
-        return if record.frozen? || uploader.identifier.blank?
+        return if record.frozen?
 
-        value = remove? ? '' : uploader.identifier
-
-        record.write_uploader(serialization_column, value)
+        if remove?
+          record.write_uploader(serialization_column, '')
+        elsif not uploader.identifier.blank?
+          record.write_uploader(serialization_column, uploader.identifier)
+        end
       end
 
       def identifier
