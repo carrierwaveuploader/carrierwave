@@ -658,7 +658,7 @@ of ImageMagick without having to worry about installing all the RMagick librarie
 
 See the MiniMagick site for more details:
 
-http://github.com/probablycorey/mini_magick
+https://github.com/minimagic/minimagick
 
 And the ImageMagick command line options for more for whats on offer:
 
@@ -706,9 +706,9 @@ your translations file:
 ```yaml
 errors:
   messages:
-    carrierwave_processing_error: 'Cannot resize image.'
-    carrierwave_integrity_error: 'Not an image.'
-    carrierwave_download_error: 'Couldn't download image.'
+    carrierwave_processing_error: "Cannot resize image."
+    carrierwave_integrity_error: "Not an image."
+    carrierwave_download_error: "Couldn't download image."
 ```
 
 ## Large files
