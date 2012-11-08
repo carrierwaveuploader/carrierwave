@@ -284,19 +284,18 @@ module CarrierWave
           else
             # AWS/Google optimized for speed over correctness
             case @uploader.fog_credentials[:provider]
-            when 'AWS'
-              # if directory is a valid subdomain, use that style for access
-              if @uploader.fog_directory.to_s =~ /^(?:[a-z]|\d(?!\d{0,2}(?:\d{1,3}){3}$))(?:[a-z0-9\.]|(?![\-])|\-(?![\.])){1,61}[a-z0-9]$/
-                "https://#{@uploader.fog_directory}.s3.amazonaws.com/#{path}"
+              when 'AWS'
+                # check if some endpoint is set in fog_credentials
+                if @uploader.fog_credentials.has_key?(:endpoint)
+                  "#{@uploader.fog_credentials[:endpoint]}/#{@uploader.fog_directory}/#{path}"
+                else
+                  "https://s3.amazonaws.com/#{@uploader.fog_directory}/#{path}"
+                end
+              when 'Google'
+                "https://commondatastorage.googleapis.com/#{@uploader.fog_directory}/#{path}"
               else
-                # directory is not a valid subdomain, so use path style for access
-                "https://s3.amazonaws.com/#{@uploader.fog_directory}/#{path}"
-              end
-            when 'Google'
-              "https://commondatastorage.googleapis.com/#{@uploader.fog_directory}/#{path}"
-            else
-              # avoid a get by just using local reference
-              directory.files.new(:key => path).public_url
+                # avoid a get by just using local reference
+                directory.files.new(:key => path).public_url
             end
           end
         end
