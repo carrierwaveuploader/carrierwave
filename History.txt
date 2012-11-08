@@ -1,3 +1,7 @@
+=== Version 0.7.1 2012-11-08
+* [fixed] Revert "changed after_destroy with after_commit ... :on => :destroy" [thiagofm]
+* [added] add a override to allow fog configuration per uploader [dei79]
+
 === Version 0.7.0 2012-10-19
 
 * [BREAKING CHANGE] Rename 'fog_host' config option to 'asset_host' and add support for file storage [DouweM]
