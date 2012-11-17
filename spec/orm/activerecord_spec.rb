@@ -477,7 +477,7 @@ describe CarrierWave::ActiveRecord do
 
     end
 
-    describe 'with overriddent filename' do
+    describe 'with overridden filename' do
 
       describe '#save' do
 
@@ -502,6 +502,7 @@ describe CarrierWave::ActiveRecord do
           @event.save.should be_true
           @event.reload
           @event[:image].should == 'jonas.jpeg'
+          @event.image.identifier.should == 'jonas.jpeg'
         end
 
       end

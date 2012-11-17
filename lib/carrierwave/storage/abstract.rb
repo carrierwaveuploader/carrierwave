@@ -1,5 +1,4 @@
 # encoding: utf-8
-
 module CarrierWave
   module Storage
 
@@ -16,7 +15,11 @@ module CarrierWave
       end
 
       def identifier
-        uploader.filename
+        if uploader.blank? || (uploader.filename != uploader.file.filename)
+          uploader.filename
+        else
+          uploader.file.filename
+        end
       end
 
       def store!(file)
