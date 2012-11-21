@@ -20,7 +20,8 @@ module CarrierWave
     # [:fog_directory]    specifies name of directory to store data in, assumed to already exist
     #
     # [:fog_attributes]                   (optional) additional attributes to set on files
-    # [:fog_endpoint]                     (optional) non-default host to connect with
+    # [:fog_endpoint] (deprecated!)       (optional) non-default host to connect with
+    #                                     To set non-default host use :host or :endpoint in :fog_credentials instead
     # [:fog_public]                       (optional) public readability, defaults to true
     # [:fog_authenticated_url_expiration] (optional) time (in seconds) that authenticated urls
     #   will be valid, when fog_public is false and provider is AWS or Google, defaults to 600
