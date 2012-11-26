@@ -70,6 +70,10 @@ module CarrierWave
       # require the file to be stored on the local filesystem.
       #
       def cache_stored_file!
+        cache!
+      end
+
+      def sanitized_file
         _content = file.read
         if _content.is_a?(File) # could be if storage is Fog
           sanitized = CarrierWave::Storage::Fog.new(self).retrieve!(File.basename(_content.path))
@@ -79,8 +83,7 @@ module CarrierWave
           sanitized = SanitizedFile.new :tempfile => StringIO.new(file.read),
             :filename => File.basename(path), :content_type => file.content_type
         end
-
-        cache! sanitized
+        sanitized
       end
 
       ##
@@ -110,7 +113,7 @@ module CarrierWave
       #
       # [CarrierWave::FormNotMultipart] if the assigned parameter is a string
       #
-      def cache!(new_file)
+      def cache!(new_file = sanitized_file)
         new_file = CarrierWave::SanitizedFile.new(new_file)
 
         unless new_file.empty?
