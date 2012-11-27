@@ -349,6 +349,28 @@ describe CarrierWave::Uploader do
         File.exists?(@uploader.thumb.path).should == true
       end
 
+      it "should recreate only specified versions if passed as args" do
+        @uploader_class.version(:mini)
+        @uploader_class.version(:maxi)
+        @uploader.store!(@file)
+
+        File.exists?(@uploader.thumb.path).should == true
+        File.exists?(@uploader.mini.path).should == true
+        File.exists?(@uploader.maxi.path).should == true
+        FileUtils.rm(@uploader.thumb.path)
+        File.exists?(@uploader.thumb.path).should == false
+        FileUtils.rm(@uploader.mini.path)
+        File.exists?(@uploader.mini.path).should == false
+        FileUtils.rm(@uploader.maxi.path)
+        File.exists?(@uploader.maxi.path).should == false
+
+        @uploader.recreate_versions!(:thumb, :maxi)
+
+        File.exists?(@uploader.thumb.path).should == true
+        File.exists?(@uploader.maxi.path).should == true
+        File.exists?(@uploader.mini.path).should == false
+      end
+
       it "should not change the case of versions" do
         @file = File.open(file_path('Uppercase.jpg'))
         @uploader.store!(@file)
