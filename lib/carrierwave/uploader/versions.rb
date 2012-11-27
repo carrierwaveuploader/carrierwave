@@ -164,16 +164,20 @@ module CarrierWave
       # Recreate versions and reprocess them. This can be used to recreate
       # versions if their parameters somehow have changed.
       #
-      def recreate_versions!
+      def recreate_versions!(*versions)
         # Some files could possibly not be stored on the local disk. This
         # doesn't play nicely with processing. Make sure that we're only
         # processing a cached file
         #
         # The call to store! will trigger the necessary callbacks to both
         # process this version and all sub-versions
-        cache_stored_file! if !cached?
-
-        store!
+        if versions.any?
+          file = sanitized_file if !cached?
+          store_versions!(file, versions)
+        else
+          cache! if !cached?
+          store!
+        end
       end
 
     private
@@ -233,8 +237,12 @@ module CarrierWave
         end
       end
 
-      def store_versions!(new_file)
-        active_versions.each { |name, v| v.store!(new_file) }
+      def store_versions!(new_file, versions=nil)
+        if versions
+          versions.each { |v| Hash[active_versions][v].store!(new_file) }
+        else
+          active_versions.each { |name, v| v.store!(new_file) }
+        end
       end
 
       def remove_versions!
