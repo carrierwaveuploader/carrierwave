@@ -20,7 +20,8 @@ module CarrierWave
     # [:fog_directory]    specifies name of directory to store data in, assumed to already exist
     #
     # [:fog_attributes]                   (optional) additional attributes to set on files
-    # [:fog_endpoint]                     (optional) non-default host to connect with
+    # [:fog_endpoint] (deprecated!)       (optional) non-default host to connect with
+    #                                     To set non-default host use :host or :endpoint in :fog_credentials instead
     # [:fog_public]                       (optional) public readability, defaults to true
     # [:fog_authenticated_url_expiration] (optional) time (in seconds) that authenticated urls
     #   will be valid, when fog_public is false and provider is AWS or Google, defaults to 600
@@ -287,12 +288,17 @@ module CarrierWave
             # AWS/Google optimized for speed over correctness
             case @uploader.fog_credentials[:provider]
             when 'AWS'
-              # if directory is a valid subdomain, use that style for access
-              if @uploader.fog_directory.to_s =~ /^(?:[a-z]|\d(?!\d{0,2}(?:\d{1,3}){3}$))(?:[a-z0-9\.]|(?![\-])|\-(?![\.])){1,61}[a-z0-9]$/
-                "https://#{@uploader.fog_directory}.s3.amazonaws.com/#{path}"
+              # check if some endpoint is set in fog_credentials
+              if @uploader.fog_credentials.has_key?(:endpoint)
+                "#{@uploader.fog_credentials[:endpoint]}/#{@uploader.fog_directory}/#{path}"
               else
-                # directory is not a valid subdomain, so use path style for access
-                "https://s3.amazonaws.com/#{@uploader.fog_directory}/#{path}"
+                # if directory is a valid subdomain, use that style for access
+                if @uploader.fog_directory.to_s =~ /^(?:[a-z]|\d(?!\d{0,2}(?:\d{1,3}){3}$))(?:[a-z0-9\.]|(?![\-])|\-(?![\.])){1,61}[a-z0-9]$/
+                  "https://#{@uploader.fog_directory}.s3.amazonaws.com/#{path}"
+                else
+                  # directory is not a valid subdomain, so use path style for access
+                  "https://s3.amazonaws.com/#{@uploader.fog_directory}/#{path}"
+                end
               end
             when 'Google'
               "https://commondatastorage.googleapis.com/#{@uploader.fog_directory}/#{path}"
