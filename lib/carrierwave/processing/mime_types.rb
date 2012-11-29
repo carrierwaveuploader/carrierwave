@@ -31,6 +31,7 @@ module CarrierWave
         require "mime/types"
       rescue LoadError => e
         e.message << " (You may need to install the mime-types gem)"
+        raise e
       end
     end
 

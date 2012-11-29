@@ -60,6 +60,7 @@ module CarrierWave
         require "mini_magick"
       rescue LoadError => e
         e.message << " (You may need to install the mini_magick gem)"
+        raise e
       end
     end
 
