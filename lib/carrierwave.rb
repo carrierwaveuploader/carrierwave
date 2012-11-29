@@ -3,7 +3,6 @@
 require 'fileutils'
 require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/class/attribute'
-
 require 'active_support/concern'
 
 module CarrierWave
@@ -18,53 +17,6 @@ module CarrierWave
     def clean_cached_files!(seconds=60*60*24)
       CarrierWave::Uploader::Base.clean_cached_files!(seconds)
     end
-  end
-
-  class UploadError < StandardError; end
-  class IntegrityError < UploadError; end
-  class InvalidParameter < UploadError; end
-  class ProcessingError < UploadError; end
-  class DownloadError < UploadError; end
-
-  autoload :SanitizedFile, 'carrierwave/sanitized_file'
-  autoload :Mount, 'carrierwave/mount'
-  autoload :RMagick, 'carrierwave/processing/rmagick'
-  autoload :ImageScience, 'carrierwave/processing/image_science'
-  autoload :MiniMagick, 'carrierwave/processing/mini_magick'
-  autoload :MimeTypes, 'carrierwave/processing/mime_types'
-  autoload :VERSION, 'carrierwave/version'
-
-  module Storage
-    autoload :Abstract, 'carrierwave/storage/abstract'
-    autoload :File, 'carrierwave/storage/file'
-    autoload :Fog, 'carrierwave/storage/fog'
-  end
-
-  module Uploader
-    autoload :Base, 'carrierwave/uploader'
-    autoload :Cache, 'carrierwave/uploader/cache'
-    autoload :Store, 'carrierwave/uploader/store'
-    autoload :Download, 'carrierwave/uploader/download'
-    autoload :Callbacks, 'carrierwave/uploader/callbacks'
-    autoload :Processing, 'carrierwave/uploader/processing'
-    autoload :Versions, 'carrierwave/uploader/versions'
-    autoload :Remove, 'carrierwave/uploader/remove'
-    autoload :ExtensionWhitelist, 'carrierwave/uploader/extension_whitelist'
-    autoload :ExtensionBlacklist, 'carrierwave/uploader/extension_blacklist'
-    autoload :DefaultUrl, 'carrierwave/uploader/default_url'
-    autoload :Proxy, 'carrierwave/uploader/proxy'
-    autoload :Url, 'carrierwave/uploader/url'
-    autoload :Mountable, 'carrierwave/uploader/mountable'
-    autoload :Configuration, 'carrierwave/uploader/configuration'
-    autoload :Serialization, 'carrierwave/uploader/serialization'
-  end
-
-  module Compatibility
-    autoload :Paperclip, 'carrierwave/compatibility/paperclip'
-  end
-
-  module Test
-    autoload :Matchers, 'carrierwave/test/matchers'
   end
 
 end
@@ -108,5 +60,14 @@ elsif defined?(Sinatra)
       Sinatra::Application.public
     end
   end
-
 end
+
+require "carrierwave/error"
+require "carrierwave/sanitized_file"
+require "carrierwave/mount"
+require "carrierwave/processing"
+require "carrierwave/version"
+require "carrierwave/storage"
+require "carrierwave/uploader"
+require "carrierwave/compatibility/paperclip"
+require "carrierwave/test/matchers"
