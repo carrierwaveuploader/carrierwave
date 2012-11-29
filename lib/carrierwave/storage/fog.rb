@@ -1,10 +1,6 @@
 # encoding: utf-8
 
-begin
-  require 'fog'
-rescue LoadError
-  raise "You don't have the 'fog' gem installed"
-end
+require "fog"
 
 module CarrierWave
   module Storage
