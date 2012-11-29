@@ -1,7 +1,5 @@
 # encoding: utf-8
 
-require 'mini_magick'
-
 module CarrierWave
 
   ##
@@ -51,11 +49,19 @@ module CarrierWave
   #
   # http://mini_magick.rubyforge.org/
   # and
-  # http://github.com/probablycorey/mini_magick/
+  # https://github.com/minimagic/minimagick/
   #
   #
   module MiniMagick
     extend ActiveSupport::Concern
+
+    included do
+      begin
+        require "mini_magick"
+      rescue LoadError => e
+        e.message << " (You may need to install the mini_magick gem)"
+      end
+    end
 
     module ClassMethods
       def convert(format)

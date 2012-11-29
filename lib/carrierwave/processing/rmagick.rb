@@ -1,15 +1,5 @@
 # encoding: utf-8
 
-unless defined? Magick
-  begin
-    require 'rmagick'
-  rescue LoadError
-    require 'RMagick'
-  rescue LoadError
-    puts "WARNING: Failed to require rmagick, image processing may fail!"
-  end
-end
-
 module CarrierWave
 
   ##
@@ -69,6 +59,16 @@ module CarrierWave
   #
   module RMagick
     extend ActiveSupport::Concern
+
+    included do
+      begin
+        require "rmagick"
+      rescue LoadError
+        require "RMagick"
+      rescue LoadError => e
+        e.message << " (You may need to install the rmagick gem)"
+      end
+    end
 
     module ClassMethods
       def convert(format)

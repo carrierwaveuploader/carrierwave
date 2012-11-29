@@ -1,4 +1,4 @@
-require 'mime/types'
+# encoding: utf-8
 
 module CarrierWave
 
@@ -25,6 +25,14 @@ module CarrierWave
   #
   module MimeTypes
     extend ActiveSupport::Concern
+
+    included do
+      begin
+        require "mime/types"
+      rescue LoadError => e
+        e.message << " (You may need to install the mime-types gem)"
+      end
+    end
 
     module ClassMethods
       def set_content_type(override=false)
