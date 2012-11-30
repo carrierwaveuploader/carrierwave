@@ -659,7 +659,7 @@ of ImageMagick without having to worry about installing all the RMagick librarie
 
 See the MiniMagick site for more details:
 
-https://github.com/minimagic/minimagick
+https://github.com/minimagick/minimagick
 
 And the ImageMagick command line options for more for whats on offer:
 
