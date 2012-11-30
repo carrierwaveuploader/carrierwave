@@ -386,11 +386,11 @@ end
 You might come to a situation where you want to retroactively change a version
 or add a new one. You can use the recreate_versions! method to recreate the
 versions from the base file. This uses a naive approach which will re-upload and
-process all versions.
+process the specified version or all versions, if none is passed as an argument.
 
 ```ruby
 instance = MyUploader.new
-instance.recreate_versions!
+instance.recreate_versions!(:thumb, :large)
 ```
 
 Or on a mounted uploader:
