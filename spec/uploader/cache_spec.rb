@@ -178,6 +178,10 @@ describe CarrierWave::Uploader do
 
         it "should use move_to() during cache!()" do
           CarrierWave::SanitizedFile.any_instance.should_receive(:move_to).with(@cached_path, 0777, 0777)
+          @uploader.cache!(@tmpfile)
+        end
+
+        it "should not use copy_to() during cache!()" do
           CarrierWave::SanitizedFile.any_instance.should_not_receive(:copy_to)
           @uploader.cache!(@tmpfile)
         end
@@ -198,6 +202,10 @@ describe CarrierWave::Uploader do
 
         it "should use copy_to() during cache!()" do
           CarrierWave::SanitizedFile.any_instance.should_receive(:copy_to).with(@cached_path, 0777, 0777)
+          @uploader.cache!(@tmpfile)
+        end
+
+        it "should not use move_to() during cache!()" do
           CarrierWave::SanitizedFile.any_instance.should_not_receive(:move_to)
           @uploader.cache!(@tmpfile)
         end
