@@ -101,7 +101,7 @@ describe CarrierWave::Uploader do
 
       it "should not delete the old file" do
         @uploader.cache!(@file)
-        @uploader.file.should_not_receive(:delete).and_return(true)
+        @uploader.file.should_not_receive(:delete)
         @uploader.store!
       end
 
