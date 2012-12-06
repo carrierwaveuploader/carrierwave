@@ -194,6 +194,17 @@ module CarrierWave
           # avoid a get by just using local reference
           directory.files.new(:key => path).destroy
         end
+        
+        ##
+        # Return extension of file
+        #
+        # === Returns
+        #
+        # [String] extension of file
+        #
+        def extension
+          path.split('.').last
+        end
 
         ##
         # deprecated: All attributes from file (includes headers)

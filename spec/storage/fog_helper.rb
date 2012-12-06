@@ -56,6 +56,10 @@ end
             @fog_file.content_type.should == 'image/jpeg'
             @directory.files.get('uploads/test.jpg').content_type.should == 'image/jpeg'
           end
+          
+          it "should have an extension" do
+            @fog_file.extension.should == "jpg"
+          end
 
           context "without asset_host" do
             it "should have a public_url" do
