@@ -580,6 +580,10 @@ gem "fog", "~> 1.3.1"
 You'll need to configure a directory (also known as a bucket), access key id and secret access key in the initializer.
 For the sake of performance it is assumed that the directory already exists, so please create it if need be.
 
+Sign up [here](http://gs-signup-redirect.appspot.com/) and get your credentials [here](https://storage.cloud.google.com/m)
+under the section “Interoperable Access”.
+
+
 ```ruby
 CarrierWave.configure do |config|
   config.fog_credentials = {
