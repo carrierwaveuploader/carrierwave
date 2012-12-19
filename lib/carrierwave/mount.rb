@@ -247,7 +247,7 @@ module CarrierWave
         end
 
         def find_previous_model_for_#{column}
-          self.class.find(to_key.first)
+          self.class.unscoped.find(to_key.first)
         end
 
         def remove_previously_stored_#{column}
