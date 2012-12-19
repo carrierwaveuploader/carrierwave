@@ -606,6 +606,43 @@ end
 That's it! You can still use the `CarrierWave::Uploader#url` method to return
 the url to the file on Google.
 
+## Testing Fog Storage
+
+To test :fog uploaders, you must use [Fog's](http://github.com/fog/fog) [built-in Mock](https://github.com/fog/fog#mocks) functionality, for example for AWS (using minitest + factory_girl specs) :
+
+```ruby
+describe AssetsController do
+    before(:all) do
+      Fog.mock!
+      connection = Fog::Storage.new(provider: 'AWS')
+      connection.directories.create(key: 'test-bucket')
+      @user = create :user  
+    end
+
+    it "should be able to create" do
+        file = Rack::Test::UploadedFile.new "#{Rails.root}/test/fixtures/test.mov", "video/quicktime"
+        assert_difference "@user.assets.count", +1 do
+            post :create, { asset: { description: "test", file: file } }  
+        end
+        assert_response :success
+    end
+end
+```
+
+Finally, you still must tell Carrierwave which bucket to talk to - ensure that fog_directory below in my test.rb environment file matches the mocked bucket created above in your actual test.
+
+```
+Fog.credentials_path = Rails.root.join('config/fog_credentials.yml')
+    
+CarrierWave.configure do |config|
+      config.fog_directory      = 'test-bucket'
+      config.fog_credentials    = {
+            provider: 'AWS'
+        }
+end
+```
+
+
 ## Dynamic Asset Host
 
 The `asset_host` config property can be assigned a proc (or anything that responds to `call`) for generating the host dynamically. The proc-compliant object gets an instance of the current `CarrierWave::Storage::Fog::File` or `CarrierWave::SanitizedFile` as its only argument.
