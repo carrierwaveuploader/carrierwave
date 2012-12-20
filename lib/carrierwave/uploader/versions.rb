@@ -239,9 +239,10 @@ module CarrierWave
 
       def store_versions!(new_file, versions=nil)
         if versions
-          versions.each { |v| Hash[active_versions][v].store!(new_file) }
+          Parallel.each(versions, :in_threads => versions.length) { |v| Hash[active_versions][v].store!(new_file) }
         else
-          active_versions.each { |name, v| v.store!(new_file) }
+          a_v = active_versions
+          Parallel.each(a_v, :in_threads => a_v.length) { |name, v| v.store!(new_file) }
         end
       end
 
