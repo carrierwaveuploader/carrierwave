@@ -7,10 +7,11 @@ def fog_tests(fog_credentials)
         before do
           CarrierWave.configure do |config|
             config.reset_config
-            config.fog_attributes  = {}
-            config.fog_credentials = fog_credentials
-            config.fog_directory   = CARRIERWAVE_DIRECTORY
-            config.fog_public      = true
+            config.fog_attributes      = {}
+            config.fog_credentials     = fog_credentials
+            config.fog_directory       = CARRIERWAVE_DIRECTORY
+            config.fog_public          = true
+            config.fog_use_ssl_for_aws = true
           end
 
           eval <<-RUBY
@@ -84,6 +85,19 @@ end
               if @provider == 'AWS'
                 @uploader.stub(:fog_directory).and_return('SiteAssets')
                 @fog_file.public_url.should include('https://s3.amazonaws.com/SiteAssets')
+              end
+            end
+
+            it "should use https as a default protocol" do
+              if @provider == 'AWS'
+                @fog_file.public_url.should start_with 'https'
+              end
+            end
+
+            it "should use https as a default protocol" do
+              if @provider == 'AWS'
+                @uploader.stub(:fog_use_ssl_for_aws).and_return(false)
+                @fog_file.public_url.should start_with 'http://'
               end
             end
           end
