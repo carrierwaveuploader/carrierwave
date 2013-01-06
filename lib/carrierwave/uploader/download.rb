@@ -37,8 +37,8 @@ module CarrierWave
           end
           @file
 
-        rescue
-          raise CarrierWave::DownloadError, "could not download file"
+        rescue Exception => e
+          raise CarrierWave::DownloadError, "could not download file cause: #{e.message}"
         end
 
         def method_missing(*args, &block)
