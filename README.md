@@ -745,7 +745,7 @@ See [CONTRIBUTING.md](https://github.com/jnicklas/carrierwave/blob/master/CONTRI
 
 ## License
 
-Copyright (c) 2008-2012 Jonas Nicklas
+Copyright (c) 2008-2013 Jonas Nicklas
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
