@@ -105,7 +105,7 @@ describe CarrierWave::Uploader::Download do
     it 'should not obscure original exception message' do
       expect {
         @uploader.download!('http://www.example.com/missing.jpg')
-      }.to raise_error(CarrierWave::DownloadError, 'could not download file cause: 404 ')
+      }.to raise_error(CarrierWave::DownloadError, 'could not download file: 404 ')
     end
 
     describe '#download! with an extension_white_list' do
