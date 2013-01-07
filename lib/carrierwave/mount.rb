@@ -141,10 +141,15 @@ module CarrierWave
     def mount_uploader(column, uploader=nil, options={}, &block)
       if block_given?
         uploader = Class.new(uploader || CarrierWave::Uploader::Base)
+        Mount.const_set("Uploader#{uploader.object_id}", uploader)
         uploader.class_eval(&block)
         uploader.recursively_apply_block_to_versions(&block)
       else
-        uploader ||= Class.new(CarrierWave::Uploader::Base)
+        uploader ||= begin
+          u = Class.new(CarrierWave::Uploader::Base)
+          Mount.const_set("Uploader#{u.object_id}", u)
+          u
+        end
       end
 
       uploaders[column.to_sym] = uploader
@@ -344,7 +349,7 @@ module CarrierWave
         @integrity_error = nil
 
         @remote_url = url
-        
+
         uploader.download!(url)
 
       rescue CarrierWave::DownloadError => e
