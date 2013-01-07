@@ -52,7 +52,7 @@ module CarrierWave
           name = name.to_sym
           unless versions[name]
             uploader = Class.new(self)
-            Mount.const_set("Uploader#{uploader.object_id}", uploader)
+            const_set("Uploader#{uploader.object_id}".gsub('-', '_'), uploader)
             uploader.versions = {}
 
             # Define the enable_processing method for versions so they get the

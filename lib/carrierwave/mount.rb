@@ -141,13 +141,13 @@ module CarrierWave
     def mount_uploader(column, uploader=nil, options={}, &block)
       if block_given?
         uploader = Class.new(uploader || CarrierWave::Uploader::Base)
-        Mount.const_set("Uploader#{uploader.object_id}", uploader)
+        const_set("Uploader#{uploader.object_id}".gsub('-', '_'), uploader)
         uploader.class_eval(&block)
         uploader.recursively_apply_block_to_versions(&block)
       else
         uploader ||= begin
           u = Class.new(CarrierWave::Uploader::Base)
-          Mount.const_set("Uploader#{u.object_id}", u)
+          const_set("Uploader#{u.object_id}".gsub('-', '_'), u)
           u
         end
       end
