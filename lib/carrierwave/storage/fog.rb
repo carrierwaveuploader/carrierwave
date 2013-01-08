@@ -12,12 +12,10 @@ module CarrierWave
     #
     # You need to setup some options to configure your usage:
     #
-    # [:fog_credentials]  credentials for service
+    # [:fog_credentials]  host info and credentials for service
     # [:fog_directory]    specifies name of directory to store data in, assumed to already exist
     #
     # [:fog_attributes]                   (optional) additional attributes to set on files
-    # [:fog_endpoint] (deprecated!)       (optional) non-default host to connect with
-    #                                     To set non-default host use :host or :endpoint in :fog_credentials instead
     # [:fog_public]                       (optional) public readability, defaults to true
     # [:fog_authenticated_url_expiration] (optional) time (in seconds) that authenticated urls
     #   will be valid, when fog_public is false and provider is AWS or Google, defaults to 600
@@ -100,14 +98,6 @@ module CarrierWave
       def connection
         @connection ||= begin
           options = credentials = uploader.fog_credentials
-          endpoint_url = if uploader.fog_endpoint.respond_to? :call
-            URI.parse( uploader.fog_endpoint.call(self) )
-          elsif uploader.fog_endpoint
-            URI.parse( uploader.fog_endpoint )
-          end
-          if host_string = endpoint_url && (endpoint_url.host || endpoint_url.to_s)
-            options.merge!( { :host => host_string } )
-          end
           self.class.connection_cache[credentials] ||= ::Fog::Storage.new(options)
         end
       end
@@ -194,7 +184,7 @@ module CarrierWave
           # avoid a get by just using local reference
           directory.files.new(:key => path).destroy
         end
-        
+
         ##
         # Return extension of file
         #

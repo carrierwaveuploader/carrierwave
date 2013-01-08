@@ -26,7 +26,6 @@ module CarrierWave
         add_config :fog_attributes
         add_config :fog_credentials
         add_config :fog_directory
-        add_config :fog_endpoint
         add_config :fog_public
         add_config :fog_authenticated_url_expiration
 

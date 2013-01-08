@@ -10,7 +10,6 @@ def fog_tests(fog_credentials)
             config.fog_attributes  = {}
             config.fog_credentials = fog_credentials
             config.fog_directory   = CARRIERWAVE_DIRECTORY
-            config.fog_endpoint    = nil
             config.fog_public      = true
           end
 
@@ -56,7 +55,7 @@ end
             @fog_file.content_type.should == 'image/jpeg'
             @directory.files.get('uploads/test.jpg').content_type.should == 'image/jpeg'
           end
-          
+
           it "should have an extension" do
             @fog_file.extension.should == "jpg"
           end
@@ -137,22 +136,6 @@ end
                 @fog_file.url.should == 'http://foo.bar/uploads/test.jpg'
                 @fog_file.url.should == 'http://foo.bar/uploads/test.jpg'
               end
-            end
-          end
-
-          context "with fog_endpoint" do
-            let(:fog_endpoint) { proc { "http://foo.bar" } }
-            before { @uploader.stub(:fog_endpoint).and_return(fog_endpoint) }
-
-            it "should pass fog_endpoint to ::Fog::Storage constructor as the host" do
-              storage = CarrierWave::Storage::Fog.new(@uploader)
-
-              ::Fog::Storage.stub!(:new).and_return do |options|  
-                options[:host].should == 'foo.bar'
-                nil
-              end
-
-              storage.connection
             end
           end
 
