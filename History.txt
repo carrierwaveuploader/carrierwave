@@ -1,3 +1,12 @@
+=== Version 0.8.0 2013-01-08
+
+* [BREAKING CHANGE] Remove 'fog_endpoint' in favor of 'host' and/or 'endpoint' in fog_credentials [bensie]
+* [changed] Remove autoload in favor of standard 'require' to help with thread safety [bensie]
+* [added] Allow recreating only specified versions instead of all versions [div]
+* [added] Add support for S3-compliant storage APIs that are not actually S3 [neuhausler]
+* [added] Add #extension CarrierWave::Storage::Fog::File for fetching a file extension [sweatypitts]
+* [fixed] Marshaling uploader objects no longer raises a TypeError on anonymous classes [bensie]
+
 === Version 0.7.1 2012-11-08
 
 * [added] add a override to allow fog configuration per uploader [dei79]
