@@ -42,6 +42,20 @@ describe CarrierWave::Mount do
       @subclass_instance.image.should be_an_instance_of(@uploader)
     end
 
+    it "should allow marshalling uploaders and versions" do
+      Object.const_set("MyClass#{@class.object_id}", @class)
+      Object.const_set("Uploader#{@uploader.object_id}", @uploader)
+      @uploader.class_eval do
+        def rotate
+        end
+      end
+      @uploader.version :thumb do
+        process :rotate
+      end
+      @instance.image = stub_file('test.jpg')
+      lambda { Marshal.dump @instance.image }.should_not raise_error
+    end
+
     describe "expected behavior with subclassed uploaders" do
       before do
         @class = Class.new
