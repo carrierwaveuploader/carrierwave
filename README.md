@@ -133,6 +133,16 @@ end
 This works for the file storage as well as Amazon S3 and Rackspace Cloud Files.
 Define `store_dir` as `nil` if you'd like to store files at the root level.
 
+If you store files outside the project root folder, you may want to define `cache_dir` in the same way:
+
+```ruby
+class MyUploader < CarrierWave::Uploader::Base
+  def cache_dir
+    '/tmp/projectname-cache'
+  end
+end
+```
+
 ## Securing uploads
 
 Certain file might be dangerous if uploaded to the wrong location, such as php
