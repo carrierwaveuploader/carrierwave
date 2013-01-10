@@ -193,6 +193,21 @@ class MyUploader < CarrierWave::Uploader::Base
 end
 ```
 
+## (Magically) Setting the content type
+
+If you want to set file content type based on its content, you can configure your uploaders
+to use `CarrierWave::MagicMimeTypes`. This adds a dependency on the [ruby-filemagic](http://ruby-filemagic.rubyforge.org/).
+
+```ruby
+require 'carrierwave/processing/mime_types'
+
+class MyUploader < CarrierWave::Uploader::Base
+  include CarrierWave::MagicMimeTypes
+
+  process :set_magic_content_type
+end
+```
+
 ## Adding versions
 
 Often you'll want to add different versions of the same file. The classic
