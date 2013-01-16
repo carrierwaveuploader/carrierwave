@@ -96,7 +96,11 @@ module CarrierWave
             def #{name}
               value = @#{name} if instance_variable_defined?(:@#{name})
               value = self.class.#{name} unless instance_variable_defined?(:@#{name})
-              value.instance_of?(Proc) ? value.call : value
+              if value.instance_of?(Proc)
+                value.arity >= 1 ? value.call(self) : value.call
+              else 
+                value
+              end
             end
           RUBY
         end
