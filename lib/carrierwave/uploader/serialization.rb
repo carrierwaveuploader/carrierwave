@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require "active_support/json"
+require "multi_json"
 require "active_support/core_ext/hash"
 
 module CarrierWave
@@ -17,7 +17,7 @@ module CarrierWave
       end
 
       def to_json
-        ActiveSupport::JSON.encode(as_json)
+        MultiJson.encode(as_json)
       end
 
       def to_xml(options={})
