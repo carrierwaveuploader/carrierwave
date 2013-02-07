@@ -1,19 +1,7 @@
 # encoding: utf-8
 
 require 'spec_helper'
-
-require 'carrierwave/orm/activerecord'
-
-# Change this if MySQL is unavailable
-dbconfig = {
-  :adapter  => 'mysql2',
-  :database => 'carrierwave_test',
-  :username => 'root',
-  :encoding => 'utf8'
-}
-
-ActiveRecord::Base.establish_connection(dbconfig)
-ActiveRecord::Migration.verbose = false
+require 'support/activerecord'
 
 class TestMigration < ActiveRecord::Migration
   def self.up
