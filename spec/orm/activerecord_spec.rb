@@ -28,6 +28,8 @@ describe CarrierWave::ActiveRecord do
     after(:all) { TestMigration.down }
     after { Event.delete_all }
 
+    let(:uploader_options) { {} }
+
     before do
       # My god, what a horrible, horrible solution, but AR validations don't work
       # unless the class has a name. This is the best I could come up with :S
@@ -38,7 +40,7 @@ describe CarrierWave::ActiveRecord do
       Object.const_set("Event#{$arclass}", @class)
       @class.table_name = "events"
       @uploader = Class.new(CarrierWave::Uploader::Base)
-      @class.mount_uploader(:image, @uploader)
+      @class.mount_uploader(:image, @uploader, uploader_options)
       @event = @class.new
     end
 
@@ -463,6 +465,18 @@ describe CarrierWave::ActiveRecord do
         expect(File.exist?(public_path('uploads/test.jpeg'))).to be_false
       end
 
+      context "when removing files from filesystem is disabled" do
+        let(:uploader_options) { { :remove_files_after_destroy => false } }
+
+        it "should not remove the file from the filesystem" do
+          @event.image = stub_file('test.jpeg')
+          expect(@event.save).to be_true
+          expect(@event.image).to be_an_instance_of(@uploader)
+          expect(@event.image.current_path).to eq public_path('uploads/test.jpeg')
+          @event.destroy
+          expect(File.exist?(public_path('uploads/test.jpeg'))).to be_true
+        end
+      end
     end
 
     describe 'with overriddent filename' do

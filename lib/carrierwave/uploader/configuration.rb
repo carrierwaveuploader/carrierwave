@@ -21,6 +21,7 @@ module CarrierWave
         add_config :move_to_cache
         add_config :move_to_store
         add_config :remove_previously_stored_files_after_update
+        add_config :remove_files_after_destroy
 
         # fog
         add_config :fog_attributes
@@ -133,6 +134,7 @@ module CarrierWave
             config.move_to_cache = false
             config.move_to_store = false
             config.remove_previously_stored_files_after_update = true
+            config.remove_files_after_destroy = true
             config.ignore_integrity_errors = true
             config.ignore_processing_errors = true
             config.ignore_download_errors = true
