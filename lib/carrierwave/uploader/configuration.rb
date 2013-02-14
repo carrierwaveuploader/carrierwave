@@ -28,6 +28,7 @@ module CarrierWave
         add_config :fog_directory
         add_config :fog_public
         add_config :fog_authenticated_url_expiration
+        add_config :fog_use_ssl_for_aws
 
         # Mounting
         add_config :ignore_integrity_errors
@@ -125,6 +126,7 @@ module CarrierWave
             config.fog_credentials = {}
             config.fog_public = true
             config.fog_authenticated_url_expiration = 600
+            config.fog_use_ssl_for_aws = true
             config.store_dir = 'uploads'
             config.cache_dir = 'uploads/tmp'
             config.delete_tmp_file_after_storage = true
