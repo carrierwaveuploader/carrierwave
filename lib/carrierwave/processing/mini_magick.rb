@@ -128,7 +128,7 @@ module CarrierWave
     #
     def resize_to_limit(width, height)
       manipulate! do |img|
-        img.resize "#{width}x#{height}>"
+        img.resize "#{width}x#{height}"
         img = yield(img) if block_given?
         img
       end
