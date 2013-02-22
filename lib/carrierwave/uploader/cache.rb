@@ -16,7 +16,7 @@ module CarrierWave
   # [String] a cache id in the format YYYYMMDD-HHMM-PID-RND
   #
   def self.generate_cache_id
-    Time.now.strftime('%Y%m%d-%H%M') + '-' + Process.pid.to_s + '-' + ("%04d" % rand(9999))
+    Time.now.utc.strftime('%Y%m%d-%H%M') + '-' + Process.pid.to_s + '-' + ("%04d" % rand(9999))
   end
 
   module Uploader
