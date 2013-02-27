@@ -538,14 +538,6 @@ end
 
 That's it! You can still use the `CarrierWave::Uploader#url` method to return the url to the file on Amazon S3.
 
-Note: Amazon S3 does not support standard plus signs ('+') in a filename or path as it treats them as spaces instead of a literal plus.
-CarrierWave and Fog will still return URL's with a + instead of the encoded %2B and you'll receive an error when trying to load the file.
-The safest solution to this issue is to create your own file sanitize regex that excludes '+' in config/initializers/carrierwave.rb:
-
-```ruby
-CarrierWave::SanitizedFile.sanitize_regexp = /[^a-zA-Z0-9\.\-_]/
-```
-
 ## Using Rackspace Cloud Files
 
 [Fog](http://github.com/fog/fog) is used to support Rackspace Cloud Files. Ensure you have it in your Gemfile:
