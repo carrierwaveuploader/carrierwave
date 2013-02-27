@@ -168,5 +168,11 @@ describe CarrierWave::Uploader::Download do
     it 'should parse the given uri' do
       @uploader.process_uri(uri).should == URI.parse(uri)
     end
+
+    it "shouldn't unescape already escaped uris" do
+      uri = 'http://www.example.com/%5B.jpg'
+      @uploader.process_uri(uri).should == URI.parse(uri)
+    end
+
   end
 end
