@@ -72,7 +72,7 @@ module CarrierWave
       def process_uri(uri)
         URI.parse(uri)
       rescue URI::InvalidURIError
-        URI.parse(URI.encode(uri))
+        URI.parse(URI.encode(URI.encode(uri), "[]"))
       end
 
     end # Download
