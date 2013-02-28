@@ -70,9 +70,7 @@ module CarrierWave
       # [url (String)] The URL where the remote file is stored
       #
       def process_uri(uri)
-        URI.parse(uri)
-      rescue URI::InvalidURIError
-        URI.parse(URI.encode(uri))
+        URI.parse(URI.escape(URI.escape(URI.unescape(uri)), "[]"))
       end
 
     end # Download
