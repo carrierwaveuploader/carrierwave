@@ -37,4 +37,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "fog", ">= 1.3.1"
   s.add_development_dependency "mini_magick"
   s.add_development_dependency "rmagick"
+  s.add_development_dependency "pry"
 end

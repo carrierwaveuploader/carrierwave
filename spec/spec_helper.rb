@@ -6,6 +6,7 @@ require 'bundler/setup'
 require 'tempfile'
 require 'time'
 require 'logger'
+require 'pry'
 
 require 'carrierwave'
 require 'timecop'
