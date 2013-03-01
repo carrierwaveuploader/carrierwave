@@ -158,21 +158,33 @@ describe CarrierWave::Uploader::Download do
   end
 
   describe '#process_uri' do
-    let(:uri) { "http://www.example.com/test%20image.jpg" }
-
-    it 'should unescape and then escape the given uri' do
-      unescaped_uri = URI.unescape(uri)
-      @uploader.process_uri(unescaped_uri).should == @uploader.process_uri(uri)
+    it "should parse but not escape already escaped uris" do
+      uri = 'http://example.com/%5B.jpg'
+      processed = @uploader.process_uri(uri)
+      processed.class.should == URI::HTTP
+      processed.to_s.should == uri
     end
 
-    it 'should parse the given uri' do
-      @uploader.process_uri(uri).should == URI.parse(uri)
+    it "should parse but not escape uris with query-string-only characters not needing escaping" do
+      uri = 'http://example.com/?foo[]=bar'
+      processed = @uploader.process_uri(uri)
+      processed.class.should == URI::HTTP
+      processed.to_s.should == uri
     end
 
-    it "shouldn't unescape already escaped uris" do
-      uri = 'http://www.example.com/%5B.jpg'
-      @uploader.process_uri(uri).should == URI.parse(uri)
+    it "should escape and parse unescaped uris" do
+      uri = 'http://example.com/test image%.jpg'
+      processed = @uploader.process_uri(uri)
+      processed.class.should == URI::HTTP
+      processed.to_s.should == 'http://example.com/test%20image%25.jpg'
     end
 
+    it "should throw an exception on uris we don't know how to escape" do
+      # it would be better if we could escape this. but until somebody figures out
+      # how to do that without breaking the above, testing to ensure an exception
+      # is raised is the best we can do.
+      uri = 'http://www.example.com/].jpg'
+      expect { @uploader.process_uri(uri) }.to raise_error(URI::InvalidURIError)
+    end
   end
 end
