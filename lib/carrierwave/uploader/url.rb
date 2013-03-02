@@ -16,24 +16,21 @@ module CarrierWave
       # [String] the location where this file is accessible via a url
       #
       def url(options = {})
-        url =
-          if file.respond_to?(:url) and not file.url.blank?
-            file.method(:url).arity == 0 ? file.url : file.url(options)
-          elsif file.respond_to?(:path)
-            path = file.path.gsub(File.expand_path(root), '')
+        if file.respond_to?(:url) and not file.url.blank?
+          file.method(:url).arity == 0 ? file.url : file.url(options)
+        elsif file.respond_to?(:path)
+          path = uri_encode_path(file.path.gsub(File.expand_path(root), ''))
 
-            if host = asset_host
-              if host.respond_to? :call
-                "#{host.call(file)}#{path}"
-              else
-                "#{host}#{path}"
-              end
+          if host = asset_host
+            if host.respond_to? :call
+              "#{host.call(file)}#{path}"
             else
-              (base_path || "") + path
+              "#{host}#{path}"
             end
+          else
+            (base_path || "") + path
           end
-
-        uri_encode_url(url)
+        end
       end
 
       def to_s
@@ -41,15 +38,6 @@ module CarrierWave
       end
 
     private
-
-      def uri_encode_url(url)
-        if url = URI.parse(url)
-          url.path = uri_encode_path(url.path)
-          url.to_s
-        end
-      rescue URI::InvalidURIError
-        nil
-      end
 
       def uri_encode_path(path)
         # based on Ruby < 2.0's URI.encode
