@@ -6,6 +6,23 @@ module CarrierWave
       extend ActiveSupport::Concern
       include CarrierWave::Uploader::Configuration
 
+      module ClassMethods
+        def encode_path(path)
+          # based on Ruby < 2.0's URI.encode
+          safe_string = URI::REGEXP::PATTERN::UNRESERVED + '\/'
+          unsafe = Regexp.new("[^#{safe_string}]", false)
+
+          path.gsub(unsafe) do
+            us = $&
+            tmp = ''
+            us.each_byte do |uc|
+              tmp << sprintf('%%%02X', uc)
+            end
+            tmp
+          end
+        end
+      end
+
       ##
       # === Parameters
       #
@@ -19,7 +36,7 @@ module CarrierWave
         if file.respond_to?(:url) and not file.url.blank?
           file.method(:url).arity == 0 ? file.url : file.url(options)
         elsif file.respond_to?(:path)
-          path = uri_encode_path(file.path.gsub(File.expand_path(root), ''))
+          path = self.class.encode_path(file.path.gsub(File.expand_path(root), ''))
 
           if host = asset_host
             if host.respond_to? :call
@@ -35,23 +52,6 @@ module CarrierWave
 
       def to_s
         url || ''
-      end
-
-    private
-
-      def uri_encode_path(path)
-        # based on Ruby < 2.0's URI.encode
-        safe_string = URI::REGEXP::PATTERN::UNRESERVED + '\/'
-        unsafe = Regexp.new("[^#{safe_string}]", false)
-
-        path.gsub(unsafe) do
-          us = $&
-          tmp = ''
-          us.each_byte do |uc|
-            tmp << sprintf('%%%02X', uc)
-          end
-          tmp
-        end
       end
 
     end # Url
