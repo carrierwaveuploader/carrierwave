@@ -40,21 +40,21 @@ end
 
         describe '#store!' do
           before do
-            @uploader.stub!(:store_path).and_return('uploads/test.jpg')
+            @uploader.stub!(:store_path).and_return('uploads/test+.jpg')
             @fog_file = @storage.store!(@file)
           end
 
           it "should upload the file" do
-            @directory.files.get('uploads/test.jpg').body.should == 'this is stuff'
+            @directory.files.get('uploads/test+.jpg').body.should == 'this is stuff'
           end
 
           it "should have a path" do
-            @fog_file.path.should == 'uploads/test.jpg'
+            @fog_file.path.should == 'uploads/test+.jpg'
           end
 
           it "should have a content_type" do
             @fog_file.content_type.should == 'image/jpeg'
-            @directory.files.get('uploads/test.jpg').content_type.should == 'image/jpeg'
+            @directory.files.get('uploads/test+.jpg').content_type.should == 'image/jpeg'
           end
 
           it "should have an extension" do
@@ -118,20 +118,20 @@ end
               end
 
               it "should have a asset_host rooted public_url" do
-                @fog_file.public_url.should == 'http://foo.bar/uploads/test.jpg'
+                @fog_file.public_url.should == 'http://foo.bar/uploads/test%2B.jpg'
               end
 
               it "should have a asset_host rooted url" do
-                @fog_file.url.should == 'http://foo.bar/uploads/test.jpg'
+                @fog_file.url.should == 'http://foo.bar/uploads/test%2B.jpg'
               end
 
               it "should always have the same asset_host rooted url" do
-                @fog_file.url.should == 'http://foo.bar/uploads/test.jpg'
-                @fog_file.url.should == 'http://foo.bar/uploads/test.jpg'
+                @fog_file.url.should == 'http://foo.bar/uploads/test%2B.jpg'
+                @fog_file.url.should == 'http://foo.bar/uploads/test%2B.jpg'
               end
 
               it 'should retrieve file name' do
-                @fog_file.filename.should == 'test.jpg'
+                @fog_file.filename.should == 'test+.jpg'
               end
             end
 
@@ -139,16 +139,16 @@ end
               let(:asset_host) { "http://foo.bar" }
 
               it "should have a asset_host rooted public_url" do
-                @fog_file.public_url.should == 'http://foo.bar/uploads/test.jpg'
+                @fog_file.public_url.should == 'http://foo.bar/uploads/test%2B.jpg'
               end
 
               it "should have a asset_host rooted url" do
-                @fog_file.url.should == 'http://foo.bar/uploads/test.jpg'
+                @fog_file.url.should == 'http://foo.bar/uploads/test%2B.jpg'
               end
 
               it "should always have the same asset_host rooted url" do
-                @fog_file.url.should == 'http://foo.bar/uploads/test.jpg'
-                @fog_file.url.should == 'http://foo.bar/uploads/test.jpg'
+                @fog_file.url.should == 'http://foo.bar/uploads/test%2B.jpg'
+                @fog_file.url.should == 'http://foo.bar/uploads/test%2B.jpg'
               end
             end
           end
@@ -159,7 +159,7 @@ end
 
           it "should be deletable" do
             @fog_file.delete
-            @directory.files.head('uploads/test.jpg').should == nil
+            @directory.files.head('uploads/test+.jpg').should == nil
           end
         end
 
