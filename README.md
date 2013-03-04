@@ -377,12 +377,12 @@ form and you're good to go:
 <% end %>
 ```
 
-Note that it's up to you to validate that users have entered a valid URL. 
-CarrierWave does its best to interpret URLs intelligently, but this is
-[not always possible](https://github.com/jnicklas/carrierwave/issues/1003#issuecomment-14301719).
-Depending on whether or not you've turned off `ignore_download_errors`, upon 
-encountering an invalid URL CarrierWave will either throw an
-`URI::InvalidURIError`, or fail silently.
+If you're using ActiveRecord, CarrierWave will indicate invalid URLs and download
+failures automatically with attribute validation errors. If you aren't, or you
+disable CarrierWave's `validate_download` option, you'll need to handle those
+errors yourself. And please note that CarrierWave does its best to interpret
+URLs intelligently, but this is [not always possible](https://github.com/jnicklas/carrierwave/wiki/Known-Issues),
+particularly in the case of unencoded `:?[]` characters in the URL path.
 
 ## Providing a default URL
 
