@@ -377,6 +377,13 @@ form and you're good to go:
 <% end %>
 ```
 
+Note that it's up to you to validate that users have entered a valid URL. 
+CarrierWave does its best to interpret URLs intelligently, but this is
+[not always possible](https://github.com/jnicklas/carrierwave/issues/1003#issuecomment-14301719).
+Depending on whether or not you've turned off `ignore_download_errors`, upon 
+encountering an invalid URL CarrierWave will either throw an
+`URI::InvalidURIError`, or fail silently.
+
 ## Providing a default URL
 
 In many cases, especially when working with images, it might be a good idea to
