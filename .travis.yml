@@ -1,5 +1,5 @@
 before_install:
-  - gem install bundler --pre
+  - gem install bundler
 
 notifications:
   email: false
