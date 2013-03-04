@@ -62,6 +62,7 @@ elsif defined?(Sinatra)
   end
 end
 
+require "carrierwave/utilities"
 require "carrierwave/error"
 require "carrierwave/sanitized_file"
 require "carrierwave/mount"

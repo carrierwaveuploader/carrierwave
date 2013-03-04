@@ -104,6 +104,7 @@ module CarrierWave
       end
 
       class File
+        include CarrierWave::Utilities::Uri
 
         ##
         # Current local path to file
@@ -276,7 +277,7 @@ module CarrierWave
         # [NilClass] no public url available
         #
         def public_url
-          encoded_path = @uploader.encode_path(path)
+          encoded_path = encode_path(path)
           if host = @uploader.asset_host
             if host.respond_to? :call
               "#{host.call(self)}/#{encoded_path}"
