@@ -125,10 +125,11 @@ describe CarrierWave::Uploader do
       @uploader.url(:thumb).should == 'http://foo.bar/uploads/tmp/20071201-1234-345-2255/thumb_test%2B.jpg'
     end
 
-    it "should uri encode the path of an available file#url" do
+    it "shouldn't double-encode the path of an available file#url" do
+      url = 'http://www.example.com/directory%2Bname/another%2Bdirectory/some%2Burl.jpg'
       @uploader.cache!(File.open(file_path('test.jpg')))
-      @uploader.file.stub!(:url).and_return('http://www.example.com/directory+name/another+directory/some+url.jpg')
-      @uploader.url.should == 'http://www.example.com/directory%2Bname/another%2Bdirectory/some%2Burl.jpg'
+      @uploader.file.stub!(:url).and_return(url)
+      @uploader.url.should == url
     end
   end
 
