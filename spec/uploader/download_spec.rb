@@ -184,7 +184,7 @@ describe CarrierWave::Uploader::Download do
       # how to do that without breaking the above, testing to ensure an exception
       # is raised is the best we can do.
       uri = 'http://www.example.com/].jpg'
-      expect { @uploader.process_uri(uri) }.to raise_error(URI::InvalidURIError)
+      expect { @uploader.process_uri(uri) }.to raise_error(CarrierWave::DownloadError)
     end
   end
 end
