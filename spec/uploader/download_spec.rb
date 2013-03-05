@@ -173,17 +173,21 @@ describe CarrierWave::Uploader::Download do
     end
 
     it "should escape and parse unescaped uris" do
-      uri = 'http://example.com/test image%.jpg'
+      uri = 'http://example.com/ %[].jpg'
       processed = @uploader.process_uri(uri)
       processed.class.should == URI::HTTP
-      processed.to_s.should == 'http://example.com/test%20image%25.jpg'
+      processed.to_s.should == 'http://example.com/%20%25%5B%5D.jpg'
     end
 
-    it "should throw an exception on uris we don't know how to escape" do
-      # it would be better if we could escape this. but until somebody figures out
-      # how to do that without breaking the above, testing to ensure an exception
-      # is raised is the best we can do.
-      uri = 'http://www.example.com/].jpg'
+    it "should escape and parse brackets in uri paths without harming the query string" do
+      uri = 'http://example.com/].jpg?test[]'
+      processed = @uploader.process_uri(uri)
+      processed.class.should == URI::HTTP
+      processed.to_s.should == 'http://example.com/%5D.jpg?test[]'
+    end
+
+    it "should throw an exception on bad uris" do
+      uri = '~http:'
       expect { @uploader.process_uri(uri) }.to raise_error(CarrierWave::DownloadError)
     end
   end

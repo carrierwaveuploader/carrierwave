@@ -72,7 +72,11 @@ module CarrierWave
       def process_uri(uri)
         URI.parse(uri)
       rescue URI::InvalidURIError
-        URI.parse(URI.encode(uri)) rescue raise CarrierWave::DownloadError, "couldn't parse URL"
+        uri_parts = uri.split('?')
+        # regexp from Ruby's URI::Parser#regexp[:UNSAFE], with [] specifically removed
+        encoded_uri = URI.encode(uri_parts.shift, /[^\-_.!~*'()a-zA-Z\d;\/?:@&=+$,]/)
+        encoded_uri << '?' << URI.encode(uri_parts.join('?')) if uri_parts.any?
+        URI.parse(encoded_uri) rescue raise CarrierWave::DownloadError, "couldn't parse URL"
       end
 
     end # Download
