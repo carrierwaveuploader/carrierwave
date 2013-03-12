@@ -251,12 +251,12 @@ end
           before do
             @uploader.stub!(:store_path).and_return('uploads/test+.jpg')
             @fog_file = @storage.store!(@file)
-            @copied_carrierwave_dir_name = "copied-#{CARRIERWAVE_DIRECTORY}"
+            @copied_carrierwave_dir_name = "copied#{CARRIERWAVE_DIRECTORY}"
             @target_uploader = @uploader.new
-            @target_uploader.stub!(:store_path).with('test+copied.jpg').and_return("copied_uploads/test_copied.jpg")
+            @target_uploader.stub!(:store_path).with('test_copied.jpg').and_return("copied_uploads/test_copied.jpg")
             @target_uploader.stub!(:fog_directory).and_return(@copied_carrierwave_dir_name)
             @copy_directory = @storage.connection.directories.get(@copied_carrierwave_dir_name) || @storage.connection.directories.create(:key => @copied_carrierwave_dir_name, :public => true)
-            @fog_file.copy_to(@target_uploader, 'test+copied.jpg')
+            @fog_file.copy_to(@target_uploader, 'test_copied.jpg')
           end
 
           it "should copy the file to target location" do
@@ -264,7 +264,8 @@ end
           end
 
           it "should set target uploader" do
-            @target_uploader.url.should include("#{@copied_carrierwave_dir_name}/copied_uploads/test_copied.jpg")
+            @target_uploader.url.should include("#{@copied_carrierwave_dir_name}")
+            @target_uploader.url.should include("/copied_uploads/test_copied.jpg")
           end
         end
       end
