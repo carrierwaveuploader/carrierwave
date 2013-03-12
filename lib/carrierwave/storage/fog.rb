@@ -154,6 +154,19 @@ module CarrierWave
         end
 
         ##
+        # Copies a object from one uploader to other uploader in the cloud
+        #
+        # === Returns
+        #
+        # [Boolean] true on success or raises error
+        def copy_to(target_uploader, target_filename=nil)
+          fog_local_file = directory.files.new(:key => path)
+          fog_local_file.copy(target_uploader.fog_directory, target_uploader.store_path(target_filename))
+          target_uploader.retrieve_from_store!(target_filename)
+          true
+        end
+
+        ##
         # Lookup value for file content-type header
         #
         # === Returns
