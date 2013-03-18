@@ -62,7 +62,7 @@ module CarrierWave
     #
     #     @user.image.url # => '/some_url.png'
     #
-    # It is also possible (but not recommended) to ommit the uploader, which
+    # It is also possible (but not recommended) to omit the uploader, which
     # will create an anonymous uploader class.
     #
     # Passing a block makes it possible to customize the uploader. This can be
