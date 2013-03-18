@@ -10,7 +10,7 @@ module CarrierWave
         safe_string = URI::REGEXP::PATTERN::UNRESERVED + '\/'
         unsafe = Regexp.new("[^#{safe_string}]", false)
 
-        path.gsub(unsafe) do
+        path.to_s.gsub(unsafe) do
           us = $&
           tmp = ''
           us.each_byte do |uc|
