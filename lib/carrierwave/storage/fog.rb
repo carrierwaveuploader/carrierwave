@@ -142,7 +142,11 @@ module CarrierWave
             local_directory = connection.directories.new(:key => @uploader.fog_directory)
             local_file = local_directory.files.new(:key => path)
             if @uploader.fog_credentials[:provider] == "AWS"
-              local_file.url(::Fog::Time.now + @uploader.fog_authenticated_url_expiration, options)
+              if host = @uploader.asset_host
+                local_file.url(::Fog::Time.now + @uploader.fog_authenticated_url_expiration, options).gsub /.s3.amazonaws.com/, ''
+              else
+                local_file.url(::Fog::Time.now + @uploader.fog_authenticated_url_expiration, options)
+              end
             elsif @uploader.fog_credentials[:provider] == "Rackspace"
               connection.get_object_https_url(@uploader.fog_directory, path, ::Fog::Time.now + @uploader.fog_authenticated_url_expiration)
             else
