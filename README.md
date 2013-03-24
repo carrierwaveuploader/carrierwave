@@ -4,7 +4,7 @@ This gem provides a simple and extremely flexible way to upload files from Ruby 
 It works well with Rack based web applications, such as Ruby on Rails.
 
 [![Build Status](https://secure.travis-ci.org/jnicklas/carrierwave.png)](http://travis-ci.org/jnicklas/carrierwave)
-[![Code Quality](https://codeclimate.com/badge.png)](https://codeclimate.com/github/jnicklas/carrierwave)
+[![Code Climate](https://codeclimate.com/github/jnicklas/carrierwave.png)](https://codeclimate.com/github/jnicklas/carrierwave)
 
 ## Information
 
