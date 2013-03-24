@@ -419,6 +419,20 @@ describe CarrierWave::SanitizedFile do
     end
   end
 
+  shared_examples_for "all valid sanitized files that are read from an IO object" do
+
+    describe '#read' do
+      it "should have an open IO object" do
+        @sanitized_file.instance_variable_get(:@file).closed?.should be_false
+      end
+
+      it "should close the IO object after reading" do
+        @sanitized_file.read
+        @sanitized_file.instance_variable_get(:@file).closed?.should be_true
+      end
+    end
+  end
+
   describe "with a valid Hash" do
     before do
       @hash = {
@@ -432,6 +446,8 @@ describe CarrierWave::SanitizedFile do
     it_should_behave_like "all valid sanitized files"
 
     it_should_behave_like "all valid sanitized files that are stored on disk"
+
+    it_should_behave_like "all valid sanitized files that are read from an IO object"
 
     describe '#path' do
       it "should return the path of the tempfile" do
@@ -458,6 +474,8 @@ describe CarrierWave::SanitizedFile do
 
     it_should_behave_like "all valid sanitized files that are stored on disk"
 
+    it_should_behave_like "all valid sanitized files that are read from an IO object"
+
     describe '#is_path?' do
       it "should be false" do
         @sanitized_file.is_path?.should be_false
@@ -479,6 +497,8 @@ describe CarrierWave::SanitizedFile do
     end
 
     it_should_behave_like "all valid sanitized files"
+
+    it_should_behave_like "all valid sanitized files that are read from an IO object"
 
     describe '#exists?' do
       it "should be false" do
@@ -523,6 +543,8 @@ describe CarrierWave::SanitizedFile do
 
     it_should_behave_like "all valid sanitized files that are stored on disk"
 
+    it_should_behave_like "all valid sanitized files that are read from an IO object"
+
     describe '#is_path?' do
       it "should be false" do
         @sanitized_file.is_path?.should be_false
@@ -548,6 +570,8 @@ describe CarrierWave::SanitizedFile do
     end
 
     it_should_behave_like "all valid sanitized files that are stored on disk"
+
+    it_should_behave_like "all valid sanitized files that are read from an IO object"
 
     describe '#is_path?' do
       it "should be false" do
