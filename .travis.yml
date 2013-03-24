@@ -13,6 +13,7 @@ rvm:
  - ree
 
 gemfile:
+  - Gemfile
   - gemfiles/rails3_2.gemfile
   - gemfiles/rails_master.gemfile
 
