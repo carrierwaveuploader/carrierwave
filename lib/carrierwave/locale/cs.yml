@@ -1,0 +1,11 @@
+cs:
+  errors:
+    messages:
+      carrierwave_processing_error: se nepodařilo zpracovat
+      carrierwave_integrity_error: není povolený typ souboru
+      carrierwave_download_error: nemůže být stažen
+      extension_white_list_error: "Není možné nahrávat %{extension} soubory, povolené typy: %{allowed_types}"
+      extension_black_list_error: "Není možné nahrávat %{extension} soubory, zakázané typy: %{prohibited_types}"
+      rmagick_processing_error: "Nepodařilo se upravit pomocí rmagick, možná se nejedná o obrázek? Hlášená Chyba: %{e}"
+      mime_types_processing_error: "Nepodařilo se upravit s MIME::Types, možná se nejedná o content-type? Hlášená Chyba: %{e}"
+      mini_magick_processing_error: "Nepodařilo se upravit pomocí MiniMagick, možná se nejedná o obrázek? Hlášená Chyba: %{e}"
