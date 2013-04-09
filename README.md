@@ -548,18 +548,36 @@ That's it! You can still use the `CarrierWave::Uploader#url` method to return th
 [Fog](http://github.com/fog/fog) is used to support Rackspace Cloud Files. Ensure you have it in your Gemfile:
 
 ```ruby
-gem "fog", "~> 1.3.1"
+gem "fog", "~> 1.10.1"
 ```
 
 You'll need to configure a directory (also known as a container), username and API key in the initializer.
 For the sake of performance it is assumed that the directory already exists, so please create it if need be.
+
+Using a US-based account:
 
 ```ruby
 CarrierWave.configure do |config|
   config.fog_credentials = {
     :provider           => 'Rackspace',
     :rackspace_username => 'xxxxxx',
-    :rackspace_api_key  => 'yyyyyy'
+    :rackspace_api_key  => 'yyyyyy',
+    :rackspace_region   => :ord                # optional, defaults to :dfw
+  }
+  config.fog_directory = 'name_of_directory'
+end
+```
+
+Using a UK-based account:
+
+```ruby
+CarrierWave.configure do |config|
+  config.fog_credentials = {
+    :provider           => 'Rackspace',
+    :rackspace_username => 'xxxxxx',
+    :rackspace_api_key  => 'yyyyyy',
+    :rackspace_auth_url  => Fog::Rackspace::UK_AUTH_ENDPOINT,
+    :rackspace_region   => :lon
   }
   config.fog_directory = 'name_of_directory'
 end
