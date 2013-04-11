@@ -17,7 +17,19 @@ module CarrierWave
         end
 
         def original_filename
-          File.basename(file.base_uri.path)
+          filename = File.basename(file.base_uri.path)
+
+          if File.extname(filename).blank?
+            ext = case file.meta["content-type"]
+              when "image/jpeg", "image/jpg", "image/pjpeg" then ".jpg"
+              when "image/png", "image/x-png" then ".png"
+              when "image/gif" then ".gif"
+            end
+
+            [filename, ext].join
+          else
+            filename
+          end
         end
 
         def respond_to?(*args)
