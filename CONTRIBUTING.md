@@ -28,7 +28,7 @@ You can also run the remote specs by creating a ~/.fog file:
 
 You should now be able to run the remote tests:
 
-  REMOTE=true bundle exec rake
+    REMOTE=true bundle exec rake
 
 Please test with the latest Ruby 1.8.x and 1.9.x versions using RVM if possible.
 
