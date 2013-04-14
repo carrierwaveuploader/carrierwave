@@ -21,6 +21,11 @@ describe CarrierWave::Uploader::Download do
       sham_rack_app = ShamRack.at('www.example.com').stub
       sham_rack_app.register_resource('/test.jpg', File.read(file_path('test.jpg')), 'image/jpg')
       sham_rack_app.register_resource('/test%20with%20spaces/test.jpg', File.read(file_path('test.jpg')), 'image/jpg')
+      sham_rack_app.handle do |request|
+        if request.path_info == '/content-disposition'
+          ["200 OK", {'Content-Type'=>'image/jpg', 'Content-Disposition'=>'filename="another_test.jpg"'}, [File.read(file_path('test.jpg'))]]
+        end
+      end
 
       ShamRack.at("www.redirect.com") do |env|
         [301, {'Content-Type'=>'text/html', 'Location'=>"http://www.example.com/test.jpg"}, ['Redirecting']]
@@ -102,6 +107,11 @@ describe CarrierWave::Uploader::Download do
       @uploader.url.should == '/uploads/tmp/20071201-1234-345-2255/test.jpg'
     end
 
+    it "should read content-disposition headers" do
+      @uploader.download!('http://www.example.com/content-disposition')
+      @uploader.url.should == '/uploads/tmp/20071201-1234-345-2255/another_test.jpg'
+    end
+
     it 'should not obscure original exception message' do
       expect {
         @uploader.download!('http://www.example.com/missing.jpg')
@@ -122,6 +132,12 @@ describe CarrierWave::Uploader::Download do
           @uploader.download!('http://www.redirect.com/')
         }.should raise_error(CarrierWave::IntegrityError)
       end
+
+      it "should read content-disposition header but still respect the extension_white_list" do
+        running {
+          @uploader.download!('http://www.example.com/content-disposition')
+        }.should raise_error(CarrierWave::IntegrityError)
+      end
     end
 
     describe '#download! with an extension_black_list' do
@@ -136,6 +152,12 @@ describe CarrierWave::Uploader::Download do
       it "should follow redirects but still respect the extension_black_list" do
         running {
           @uploader.download!('http://www.redirect.com/')
+        }.should raise_error(CarrierWave::IntegrityError)
+      end
+
+      it "should read content-disposition header but still respect the extension_black_list" do
+        running {
+          @uploader.download!('http://www.example.com/content-disposition')
         }.should raise_error(CarrierWave::IntegrityError)
       end
     end
