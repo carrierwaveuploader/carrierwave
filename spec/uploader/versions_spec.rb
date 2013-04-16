@@ -371,6 +371,17 @@ describe CarrierWave::Uploader do
         File.exists?(@uploader.mini.path).should == false
       end
 
+      it "should not create version if proc returns false" do
+        @uploader_class.version(:mini, :if => Proc.new { |*args| false } )
+        @uploader.store!(@file)
+
+        @uploader.mini.path.should be_nil
+
+        @uploader.recreate_versions!(:mini)
+
+        @uploader.mini.path.should be_nil
+      end
+
       it "should not change the case of versions" do
         @file = File.open(file_path('Uppercase.jpg'))
         @uploader.store!(@file)
