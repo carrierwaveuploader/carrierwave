@@ -240,7 +240,8 @@ module CarrierWave
 
       def store_versions!(new_file, versions=nil)
         if versions
-          versions.each { |v| Hash[active_versions][v].store!(new_file) }
+          active = Hash[active_versions]
+          versions.each { |v| active[v].try(:store!, new_file) } unless active.empty?
         else
           active_versions.each { |name, v| v.store!(new_file) }
         end
