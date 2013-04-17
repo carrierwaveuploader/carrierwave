@@ -47,7 +47,7 @@ module CarrierWave
       # [CarrierWave::SanitizedFile] a sanitized file
       #
       def retrieve!(identifier)
-        path = ::File.expand_path(uploader.store_path(identifier), uploader.root)
+        path = ::File.expand_path((defined? uploader.retrieve_dir) ? uploader.retrieve_path(identifier) : uploader.store_path(identifier), uploader.root)
         CarrierWave::SanitizedFile.new(path)
       end
 
