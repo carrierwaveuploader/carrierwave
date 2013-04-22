@@ -16,7 +16,7 @@ module CarrierWave
         Hash[mounted_as || "uploader", serializable_hash]
       end
 
-      def to_json
+      def to_json(options=nil)
         MultiJson.encode(as_json)
       end
 

@@ -162,6 +162,10 @@ describe CarrierWave::Uploader do
       hash.keys.should include "thumb"
       hash["thumb"].should == {"url" => "/uploads/tmp/20071201-1234-345-2255/thumb_test.jpg"}
     end
+
+    it "should allow an options parameter to be passed in" do
+      lambda { @uploader.to_json({some: 'options'}) }.should_not raise_error
+    end
   end
 
   describe '#to_xml' do
