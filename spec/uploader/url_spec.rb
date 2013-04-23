@@ -164,7 +164,7 @@ describe CarrierWave::Uploader do
     end
 
     it "should allow an options parameter to be passed in" do
-      lambda { @uploader.to_json({some: 'options'}) }.should_not raise_error
+      lambda { @uploader.to_json({:some => 'options'}) }.should_not raise_error
     end
   end
 
