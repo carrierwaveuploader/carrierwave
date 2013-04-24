@@ -127,6 +127,37 @@ describe CarrierWave::ActiveRecord do
 
         expect(@event.as_json(:except => [:id, :image, :foo])).to eq({"textfile" => nil})
       end
+      it "should respect both options[:only] and options[:except] when passed to as_json for the serializable hash" do
+        @event[:image] = 'test.jpeg'
+        @event.save!
+        @event.reload
+
+        expect(@event.as_json(:only => [:foo], :except => [:id])).to eq({"foo" => nil})
+      end
+
+      it "should respect options[:only] when passed to to_xml for the serializable hash" do
+        @event[:image] = 'test.jpeg'
+        @event.save!
+        @event.reload
+
+        expect(Hash.from_xml(@event.to_xml(:only => [:foo]))["event#{$arclass}"]["image"]).to be_nil
+      end
+
+      it "should respect options[:except] when passed to to_xml for the serializable hash" do
+        @event[:image] = 'test.jpeg'
+        @event.save!
+        @event.reload
+
+        expect(Hash.from_xml(@event.to_xml(:except => [:image]))["event#{$arclass}"]["image"]).to be_nil
+      end
+
+      it "should respect both options[:only] and options[:except] when passed to to_xml for the serializable hash" do
+        @event[:image] = 'test.jpeg'
+        @event.save!
+        @event.reload
+
+        expect(Hash.from_xml(@event.to_xml(:only => [:foo], :except => [:id]))["event#{$arclass}"]["image"]).to be_nil
+      end
     end
 
     describe '#image=' do
