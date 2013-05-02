@@ -80,10 +80,12 @@ need to require the relevant extension manually, e.g.:
 require 'carrierwave/orm/activerecord'
 ```
 
-Add a string column to the model you want to mount the uploader on:
+Add a string column to the model you want to mount the uploader by creating 
+a migration:
 
 ```ruby
-add_column :users, :avatar, :string
+rails g migration add_avatar_to_users avatar:string
+rake db:migrate
 ```
 
 Open your model file and mount the uploader:
