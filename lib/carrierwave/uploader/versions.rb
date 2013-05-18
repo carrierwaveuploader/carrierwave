@@ -126,6 +126,33 @@ module CarrierWave
       end
 
       ##
+      #
+      # === Parameters
+      #
+      # [name (#to_sym)] name of the version
+      #
+      # === Returns
+      #
+      # [Boolean] True when the version exists according to its :if condition
+      #
+      def version_exists?(name)
+        name = name.to_sym
+
+        return false unless self.class.versions.has_key?(name)
+
+        condition = self.class.versions[name][:options][:if]
+        if(condition)
+          if(condition.respond_to?(:call))
+            condition.call(self, :version => name, :file => file)
+          else
+            send(condition, file)
+          end
+        else
+          true
+        end
+      end
+
+      ##
       # When given a version name as a parameter, will return the url for that version
       # This also works with nested versions.
       # When given a query hash as a parameter, will return the url with signature that contains query params
