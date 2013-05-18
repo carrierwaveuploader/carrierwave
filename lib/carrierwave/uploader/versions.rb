@@ -217,16 +217,7 @@ module CarrierWave
 
       def active_versions
         versions.select do |name, uploader|
-          condition = self.class.versions[name][:options][:if]
-          if(condition)
-            if(condition.respond_to?(:call))
-              condition.call(self, :version => name, :file => file)
-            else
-              send(condition, file)
-            end
-          else
-            true
-          end
+          version_exists?(name)
         end
       end
 
