@@ -180,7 +180,7 @@ module CarrierWave
         if (version = args.first) && version.respond_to?(:to_sym)
           raise ArgumentError, "Version #{version} doesn't exist!" if versions[version.to_sym].nil?
           # recursively proxy to version
-          versions[version.to_sym].url(*args[1..-1])
+          versions[version.to_sym].url(*args[1..-1]) if version_exists?(version)
         elsif args.first
           super(args.first)
         else
