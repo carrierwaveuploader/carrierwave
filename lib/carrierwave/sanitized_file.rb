@@ -30,7 +30,7 @@ module CarrierWave
     end
 
     ##
-    # Returns the filename as is, without sanizting it.
+    # Returns the filename as is, without sanitizing it.
     #
     # === Returns
     #
