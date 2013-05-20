@@ -143,6 +143,14 @@ describe CarrierWave::RMagick do
           lambda {@instance.resize_to_limit(200, 200)}.should raise_exception(CarrierWave::ProcessingError, /^Kon bestand niet met rmagick bewerken, misschien is het geen beeld bestand\? rmagick foutmelding:/)
         end
       end
+
+      it "should not suppress errors when translation is unavailable" do
+        change_locale_and_store_translations(:foo, {}) do
+          lambda do
+            @instance.resize_to_limit(200, 200)
+          end.should raise_exception( CarrierWave::ProcessingError, /Not a JPEG/ )
+        end
+      end
     end
   end
 end
