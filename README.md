@@ -205,6 +205,23 @@ class MyUploader < CarrierWave::Uploader::Base
 end
 ```
 
+If you need to save content type in your model, you could use this:
+
+```ruby
+require 'carrierwave/processing/mime_types'
+
+class MyUploader < CarrierWave::Uploader::Base
+  include CarrierWave::MimeTypes
+
+  process :save_content_type_in_model
+
+  def save_content_type_in_model
+    # replace `file_content_type` with your field name
+    model.file_content_type = file.content_type if file.content_type
+  end
+end
+```
+
 ## Adding versions
 
 Often you'll want to add different versions of the same file. The classic
