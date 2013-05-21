@@ -261,9 +261,7 @@ module CarrierWave
       image.write(current_path)
       ::MiniMagick::Image.open(current_path)
     rescue ::MiniMagick::Error, ::MiniMagick::Invalid => e
-      message = I18n.translate(:"errors.messages.mini_magick_processing_error", :e => e)
-      message += ", #{e}"  if message.index('translation missing')
-      raise CarrierWave::ProcessingError, message
+      raise CarrierWave::ProcessingError, I18n.translate(:"errors.messages.mini_magick_processing_error", :e => e, :default => I18n.translate(:"errors.messages.mini_magick_processing_error", :e => e, :locale => :en))
     end
 
   end # MiniMagick
