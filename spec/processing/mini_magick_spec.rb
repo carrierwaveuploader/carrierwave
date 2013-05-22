@@ -27,11 +27,19 @@ describe CarrierWave::MiniMagick do
   end
 
   describe '#resize_to_fill' do
-    it "should resize the image to exactly the given dimensions" do
+    it "should resize the image to exactly the given dimensions and maintain file type" do
       @instance.resize_to_fill(200, 200)
       @instance.should have_dimensions(200, 200)
+      ::MiniMagick::Image.open(@instance.current_path)['format'].should =~ /JPEG/
     end
 
+    it "should resize the image to exactly the given dimensions and maintain updated file type" do
+      @instance.convert('png')
+      @instance.resize_to_fill(200, 200)
+      @instance.should have_dimensions(200, 200)
+      ::MiniMagick::Image.open(@instance.current_path)['format'].should =~ /PNG/
+    end
+    
     it "should scale up the image if it smaller than the given dimensions" do
       @instance.resize_to_fill(1000, 1000)
       @instance.should have_dimensions(1000, 1000)
@@ -39,9 +47,17 @@ describe CarrierWave::MiniMagick do
   end
 
   describe '#resize_and_pad' do
-    it "should resize the image to exactly the given dimensions" do
+    it "should resize the image to exactly the given dimensions and maintain file type" do
       @instance.resize_and_pad(200, 200)
       @instance.should have_dimensions(200, 200)
+      ::MiniMagick::Image.open(@instance.current_path)['format'].should =~ /JPEG/
+    end
+
+    it "should resize the image to exactly the given dimensions and maintain updated file type" do
+      @instance.convert('png')
+      @instance.resize_and_pad(200, 200)
+      @instance.should have_dimensions(200, 200)
+      ::MiniMagick::Image.open(@instance.current_path)['format'].should =~ /PNG/
     end
 
     it "should scale up the image if it smaller than the given dimensions" do
@@ -51,18 +67,40 @@ describe CarrierWave::MiniMagick do
 
     it "should pad with white" do
       @instance.resize_and_pad(200, 200)
-      image = ::MiniMagick::Image.open(@instance.current_path)
-      x, y = 0, 0
-      color = image.run_command("convert", "#{image.escaped_path}[1x1+#{x}+#{y}]", "-depth 8", "txt:").split("\n")[1]
+      color = color_of_pixel(@instance.current_path, 0, 0)
       color.should include('#FFFFFF')
+      color.should_not include('#FFFFFF00')
+    end
+
+    it "should pad with transparent" do
+      @instance.convert('png')
+      @instance.resize_and_pad(200, 200, :transparent)
+      color = color_of_pixel(@instance.current_path, 0, 0)
+      color.should include('#FFFFFF00')
+    end
+
+    it "should not pad with transparent" do
+      @instance.resize_and_pad(200, 200, :transparent)
+      @instance.convert('png')
+      color = color_of_pixel(@instance.current_path, 0, 0)
+      color.should include('#FFFFFF')
+      color.should_not include('#FFFFFF00')
     end
 
   end
 
   describe '#resize_to_fit' do
-    it "should resize the image to fit within the given dimensions" do
+    it "should resize the image to fit within the given dimensions and maintain file type" do
       @instance.resize_to_fit(200, 200)
       @instance.should have_dimensions(200, 150)
+      ::MiniMagick::Image.open(@instance.current_path)['format'].should =~ /JPEG/
+    end
+
+    it "should resize the image to fit within the given dimensions and maintain updated file type" do
+      @instance.convert('png')
+      @instance.resize_to_fit(200, 200)
+      @instance.should have_dimensions(200, 150)
+      ::MiniMagick::Image.open(@instance.current_path)['format'].should =~ /PNG/
     end
 
     it "should scale up the image if it smaller than the given dimensions" do
@@ -72,9 +110,17 @@ describe CarrierWave::MiniMagick do
   end
 
   describe '#resize_to_limit' do
-    it "should resize the image to fit within the given dimensions" do
+    it "should resize the image to fit within the given dimensions and maintain file type" do
       @instance.resize_to_limit(200, 200)
       @instance.should have_dimensions(200, 150)
+      ::MiniMagick::Image.open(@instance.current_path)['format'].should =~ /JPEG/
+    end
+
+    it "should resize the image to fit within the given dimensions and maintain updated file type" do
+      @instance.convert('png')
+      @instance.resize_to_limit(200, 200)
+      @instance.should have_dimensions(200, 150)
+      ::MiniMagick::Image.open(@instance.current_path)['format'].should =~ /PNG/
     end
 
     it "should not scale up the image if it smaller than the given dimensions" do
