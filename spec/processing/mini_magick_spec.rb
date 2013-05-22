@@ -53,7 +53,7 @@ describe CarrierWave::MiniMagick do
       @instance.resize_and_pad(200, 200)
       image = ::MiniMagick::Image.open(@instance.current_path)
       x, y = 0, 0
-      color = image.run_command("convert", "#{image.escaped_path}[1x1+#{x}+#{y}]", "-depth 8", "txt:").split("\n")[1]
+      color = image.run_command("convert", "#{image.path}[1x1+#{x}+#{y}]", "-depth", "8", "txt:").split("\n")[1]
       color.should include('#FFFFFF')
     end
 
