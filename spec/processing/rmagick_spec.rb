@@ -20,15 +20,23 @@ describe CarrierWave::RMagick do
 
   describe '#convert' do
     it "should convert the image to the given format" do
-      # TODO: find some way to spec this
       @instance.convert(:png)
+      ::Magick::Image.read(@instance.current_path).to_s.should =~ /PNG/
     end
   end
 
   describe '#resize_to_fill' do
-    it "should resize the image to exactly the given dimensions" do
+    it "should resize the image to exactly the given dimensions and maintain file type" do
       @instance.resize_to_fill(200, 200)
       @instance.should have_dimensions(200, 200)
+      ::Magick::Image.read(@instance.current_path).to_s.should =~ /JPEG/
+    end
+
+    it "should resize the image to exactly the given dimensions and maintain updated file type" do
+      @instance.convert('png')
+      @instance.resize_to_fill(200, 200)
+      @instance.should have_dimensions(200, 200)
+      ::Magick::Image.read(@instance.current_path).to_s.should =~ /PNG/
     end
 
     it "should scale up the image if it smaller than the given dimensions" do
@@ -38,9 +46,39 @@ describe CarrierWave::RMagick do
   end
 
   describe '#resize_and_pad' do
-    it "should resize the image to exactly the given dimensions" do
+    it "should resize the image to exactly the given dimensions and maintain file type" do
       @instance.resize_and_pad(200, 200)
       @instance.should have_dimensions(200, 200)
+      ::Magick::Image.read(@instance.current_path).to_s.should =~ /JPEG/
+    end
+
+    it "should resize the image to exactly the given dimensions and maintain updated file type" do
+      @instance.convert('png')
+      @instance.resize_and_pad(200, 200)
+      @instance.should have_dimensions(200, 200)
+      ::Magick::Image.read(@instance.current_path).to_s.should =~ /PNG/
+    end
+
+    it "should pad with white" do
+      @instance.resize_and_pad(200, 200)
+      color = color_of_pixel(@instance.current_path, 0, 0)
+      color.should include('#FFFFFF')
+      color.should_not include('#FFFFFF00')
+    end
+
+    it "should pad with transparent" do
+      @instance.convert('png')
+      @instance.resize_and_pad(200, 200, :transparent)
+      color = color_of_pixel(@instance.current_path, 0, 0)
+      color.should include('#FFFFFF00')
+    end
+
+    it "should not pad with transparent" do
+      @instance.resize_and_pad(200, 200, :transparent)
+      @instance.convert('png')
+      color = color_of_pixel(@instance.current_path, 0, 0)
+      color.should include('#FFFFFF')
+      color.should_not include('#FFFFFF00')
     end
 
     it "should scale up the image if it smaller than the given dimensions" do
@@ -50,9 +88,17 @@ describe CarrierWave::RMagick do
   end
 
   describe '#resize_to_fit' do
-    it "should resize the image to fit within the given dimensions" do
+    it "should resize the image to fit within the given dimensions and maintain file type" do
       @instance.resize_to_fit(200, 200)
       @instance.should have_dimensions(200, 150)
+      ::Magick::Image.read(@instance.current_path).to_s.should =~ /JPEG/
+    end
+
+    it "should resize the image to fit within the given dimensions and maintain updated file type" do
+      @instance.convert('png')
+      @instance.resize_to_fit(200, 200)
+      @instance.should have_dimensions(200, 150)
+      ::Magick::Image.read(@instance.current_path).to_s.should =~ /PNG/
     end
 
     it "should scale up the image if it smaller than the given dimensions" do
@@ -62,9 +108,17 @@ describe CarrierWave::RMagick do
   end
 
   describe '#resize_to_limit' do
-    it "should resize the image to fit within the given dimensions" do
+    it "should resize the image to fit within the given dimensions and maintain file type" do
       @instance.resize_to_limit(200, 200)
       @instance.should have_dimensions(200, 150)
+      ::Magick::Image.read(@instance.current_path).to_s.should =~ /JPEG/
+    end
+
+    it "should resize the image to fit within the given dimensions and maintain updated file type" do
+      @instance.convert('png')
+      @instance.resize_to_limit(200, 200)
+      @instance.should have_dimensions(200, 150)
+      ::Magick::Image.read(@instance.current_path).to_s.should =~ /PNG/
     end
 
     it "should not scale up the image if it smaller than the given dimensions" do
@@ -74,9 +128,17 @@ describe CarrierWave::RMagick do
   end
 
   describe '#resize_to_geometry_string' do
-    it "should resize the image to comply with `200x200^` Geometry String spec" do
+    it "should resize the image to comply with `200x200^` Geometry String spec and maintain file type" do
       @instance.resize_to_geometry_string('200x200^')
       @instance.should have_dimensions(267, 200)
+      ::Magick::Image.read(@instance.current_path).to_s.should =~ /JPEG/
+    end
+
+    it "should resize the image to comply with `200x200^` Geometry String spec and maintain updated file type" do
+      @instance.convert('png')
+      @instance.resize_to_geometry_string('200x200^')
+      @instance.should have_dimensions(267, 200)
+      ::Magick::Image.read(@instance.current_path).to_s.should =~ /PNG/
     end
 
     it "should resize the image to have 125% larger dimensions" do

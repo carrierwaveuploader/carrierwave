@@ -104,6 +104,7 @@ module CarrierWave
     #     image.convert(:png)
     #
     def convert(format)
+      @format = format
       manipulate! do |img|
         img.format(format.to_s.downcase)
         img = yield(img) if block_given?
@@ -257,6 +258,7 @@ module CarrierWave
     def manipulate!
       cache_stored_file! if !cached?
       image = ::MiniMagick::Image.open(current_path)
+      image.format(@format.to_s.downcase) if @format
       image = yield(image)
       image.write(current_path)
       ::MiniMagick::Image.open(current_path)
