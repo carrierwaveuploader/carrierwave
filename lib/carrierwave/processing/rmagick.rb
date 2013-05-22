@@ -116,6 +116,7 @@ module CarrierWave
     #
     def convert(format)
       manipulate!(:format => format)
+      @format = format
     end
 
     ##
@@ -333,8 +334,8 @@ module CarrierWave
       end
 
       write_block = create_info_block(options[:write])
-      if options[:format]
-        frames.write("#{options[:format]}:#{current_path}", &write_block)
+      if options[:format] || @format
+        frames.write("#{options[:format] || @format}:#{current_path}", &write_block)
       else
         frames.write(current_path, &write_block)
       end
