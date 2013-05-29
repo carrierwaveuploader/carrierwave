@@ -9,6 +9,7 @@ class <%= class_name %>Uploader < CarrierWave::Uploader::Base
   # Include the Sprockets helpers for Rails 3.1+ asset pipeline compatibility:
   # include Sprockets::Helpers::RailsHelper
   # include Sprockets::Helpers::IsolatedHelper
+  # When using Rails 4 use 'include Sprockets::Rails::Helper' instead of the above
 
   # Choose what kind of storage to use for this uploader:
   storage :file
