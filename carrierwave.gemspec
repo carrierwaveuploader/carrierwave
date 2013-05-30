@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "activesupport", ">= 3.2.0"
   s.add_dependency "activemodel", ">= 3.2.0"
-  s.add_dependency "multi_json", "~> 1"
+  s.add_dependency "json", "~> 1.7"
 
   s.add_development_dependency "mysql2"
   s.add_development_dependency "rails", ">= 3.2.0"
