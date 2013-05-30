@@ -13,10 +13,10 @@ module CarrierWave
   #
   # === Returns
   #
-  # [String] a cache id in the format YYYYMMDD-HHMM-PID-RND
+  # [String] a cache id in the format TIMEINT-PID-RND
   #
   def self.generate_cache_id
-    Time.now.utc.strftime('%Y%m%d-%H%M') + '-' + Process.pid.to_s + '-' + ("%04d" % rand(9999))
+    Time.now.utc.to_i.to_s + '-' + Process.pid.to_s + '-' + ("%04d" % rand(9999))
   end
 
   module Uploader
@@ -43,8 +43,8 @@ module CarrierWave
         #
         def clean_cached_files!(seconds=60*60*24)
           Dir.glob(File.expand_path(File.join(cache_dir, '*'), CarrierWave.root)).each do |dir|
-            time = dir.scan(/(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})/).first.map { |t| t.to_i }
-            time = Time.utc(*time)
+            time = dir.scan(/(\d+)-\d+-\d+/).first.map { |t| t.to_i }
+            time = Time.at(*time)
             if time < (Time.now.utc - seconds)
               FileUtils.rm_rf(dir)
             end
@@ -165,7 +165,7 @@ module CarrierWave
       alias_method :full_original_filename, :original_filename
 
       def cache_id=(cache_id)
-        raise CarrierWave::InvalidParameter, "invalid cache id" unless cache_id =~ /\A[\d]{8}\-[\d]{4}\-[\d]+\-[\d]{4}\z/
+        raise CarrierWave::InvalidParameter, "invalid cache id" unless cache_id =~ /\A[\d]+\-[\d]+\-[\d]{4}\z/
         @cache_id = cache_id
       end
 
