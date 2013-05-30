@@ -3,19 +3,19 @@
 This gem provides a simple and extremely flexible way to upload files from Ruby applications.
 It works well with Rack based web applications, such as Ruby on Rails.
 
-[![Build Status](https://secure.travis-ci.org/jnicklas/carrierwave.png)](http://travis-ci.org/jnicklas/carrierwave)
-[![Code Climate](https://codeclimate.com/github/jnicklas/carrierwave.png)](https://codeclimate.com/github/jnicklas/carrierwave)
+[![Build Status](https://secure.travis-ci.org/carrierwaveuploader/carrierwave.png)](http://travis-ci.org/carrierwaveuploader/carrierwave)
+[![Code Climate](https://codeclimate.com/github/carrierwaveuploader/carrierwave.png)](https://codeclimate.com/github/carrierwaveuploader/carrierwave)
 
 ## Information
 
 * RDoc documentation [available on RubyDoc.info](http://rubydoc.info/gems/carrierwave/frames)
-* Source code [available on GitHub](http://github.com/jnicklas/carrierwave)
-* More information, known limitations, and how-tos [available on the wiki](https://github.com/jnicklas/carrierwave/wiki)
+* Source code [available on GitHub](http://github.com/carrierwaveuploader/carrierwave)
+* More information, known limitations, and how-tos [available on the wiki](https://github.com/carrierwaveuploader/carrierwave/wiki)
 
 ## Getting Help
 
 * Please ask the [Google Group](http://groups.google.com/group/carrierwave) for help if you have any questions.
-* Please report bugs on the [issue tracker](http://github.com/jnicklas/carrierwave/issues) but read the "getting help" section in the wiki first.
+* Please report bugs on the [issue tracker](http://github.com/carrierwaveuploader/carrierwave/issues) but read the "getting help" section in the wiki first.
 
 ## Installation
 
@@ -80,7 +80,7 @@ need to require the relevant extension manually, e.g.:
 require 'carrierwave/orm/activerecord'
 ```
 
-Add a string column to the model you want to mount the uploader by creating 
+Add a string column to the model you want to mount the uploader by creating
 a migration:
 
 ```ruby
@@ -113,11 +113,11 @@ u.avatar.identifier # => 'file.png'
 
 Other ORM support has been extracted into separate gems:
 
-* [carrierwave-datamapper](https://github.com/jnicklas/carrierwave-datamapper)
-* [carrierwave-mongoid](https://github.com/jnicklas/carrierwave-mongoid)
-* [carrierwave-sequel](https://github.com/jnicklas/carrierwave-sequel)
+* [carrierwave-datamapper](https://github.com/carrierwaveuploader/carrierwave-datamapper)
+* [carrierwave-mongoid](https://github.com/carrierwaveuploader/carrierwave-mongoid)
+* [carrierwave-sequel](https://github.com/carrierwaveuploader/carrierwave-sequel)
 
-There are more extensions listed in [the wiki](https://github.com/jnicklas/carrierwave/wiki)
+There are more extensions listed in [the wiki](https://github.com/carrierwaveuploader/carrierwave/wiki)
 
 ## Changing the storage directory
 
@@ -776,7 +776,7 @@ This has only been tested with the local filesystem store.
 
 ## Contributing to CarrierWave
 
-See [CONTRIBUTING.md](https://github.com/jnicklas/carrierwave/blob/master/CONTRIBUTING.md)
+See [CONTRIBUTING.md](https://github.com/carrierwaveuploader/carrierwave/blob/master/CONTRIBUTING.md)
 
 ## License
 
