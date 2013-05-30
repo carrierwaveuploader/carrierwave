@@ -11,6 +11,7 @@ require 'carrierwave'
 require 'timecop'
 require 'open-uri'
 require 'sham_rack'
+require 'mini_magick'
 
 require 'mysql2'
 
