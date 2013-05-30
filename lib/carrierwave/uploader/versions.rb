@@ -68,6 +68,25 @@ module CarrierWave
               end
             RUBY
 
+            # Regardless of what is set in the parent uploader, do not enforce the
+            # move_to_cache config option on versions because it moves the original
+            # file to the version's target file.
+            #
+            # If you want to enforce this setting on versions, override this method
+            # in each version:
+            #
+            # version :thumb do
+            #   def move_to_cache
+            #     true
+            #   end
+            # end
+            #
+            uploader.class_eval <<-RUBY
+              def move_to_cache
+                false
+              end
+            RUBY
+
             # Add the current version hash to class attribute :versions
             current_version = {}
             current_version[name] = {
