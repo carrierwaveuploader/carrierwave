@@ -16,7 +16,7 @@ describe CarrierWave::Uploader::Download do
   describe '#download!' do
 
     before do
-      CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+      CarrierWave.stub!(:generate_cache_id).and_return('1369894322-345-2255')
 
       sham_rack_app = ShamRack.at('www.example.com').stub
       sham_rack_app.register_resource('/test.jpg', File.read(file_path('test.jpg')), 'image/jpg')
@@ -48,7 +48,7 @@ describe CarrierWave::Uploader::Download do
 
     it "should store the cache name" do
       @uploader.download!('http://www.example.com/test.jpg')
-      @uploader.cache_name.should == '20071201-1234-345-2255/test.jpg'
+      @uploader.cache_name.should == '1369894322-345-2255/test.jpg'
     end
 
     it "should set the filename to the file's sanitized filename" do
@@ -58,13 +58,13 @@ describe CarrierWave::Uploader::Download do
 
     it "should move it to the tmp dir" do
       @uploader.download!('http://www.example.com/test.jpg')
-      @uploader.file.path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpg')
+      @uploader.file.path.should == public_path('uploads/tmp/1369894322-345-2255/test.jpg')
       @uploader.file.exists?.should be_true
     end
 
     it "should set the url" do
       @uploader.download!('http://www.example.com/test.jpg')
-      @uploader.url.should == '/uploads/tmp/20071201-1234-345-2255/test.jpg'
+      @uploader.url.should == '/uploads/tmp/1369894322-345-2255/test.jpg'
     end
 
     it "should do nothing when trying to download an empty file" do
@@ -99,17 +99,17 @@ describe CarrierWave::Uploader::Download do
 
     it "should accept spaces in the url" do
       @uploader.download!('http://www.example.com/test with spaces/test.jpg')
-      @uploader.url.should == '/uploads/tmp/20071201-1234-345-2255/test.jpg'
+      @uploader.url.should == '/uploads/tmp/1369894322-345-2255/test.jpg'
     end
 
     it "should follow redirects" do
       @uploader.download!('http://www.redirect.com/')
-      @uploader.url.should == '/uploads/tmp/20071201-1234-345-2255/test.jpg'
+      @uploader.url.should == '/uploads/tmp/1369894322-345-2255/test.jpg'
     end
 
     it "should read content-disposition headers" do
       @uploader.download!('http://www.example.com/content-disposition')
-      @uploader.url.should == '/uploads/tmp/20071201-1234-345-2255/another_test.jpg'
+      @uploader.url.should == '/uploads/tmp/1369894322-345-2255/another_test.jpg'
     end
 
     it 'should not obscure original exception message' do

@@ -19,7 +19,7 @@ describe CarrierWave::Uploader do
     end
 
     it "should not be true when the file is empty" do
-      @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
+      @uploader.retrieve_from_cache!('1369894322-345-2255/test.jpeg')
       @uploader.should be_blank
     end
 
