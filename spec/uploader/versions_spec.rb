@@ -203,6 +203,42 @@ describe CarrierWave::Uploader do
       end
     end
 
+    describe "version with move_to_cache set" do
+      before do
+        FileUtils.cp(file_path('test.jpg'), file_path('test_copy.jpg'))
+        CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+        @uploader_class.define_method :move_to_cache do
+          true
+        end
+      end
+
+      after do
+        FileUtils.mv(file_path('test_copy.jpg'), file_path('test.jpg'))
+      end
+
+      it "should copy the parent file when creating the version" do
+        @uploader_class.version(:thumb)
+        @uploader.cache!(File.open(file_path('test.jpg')))
+        @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpg')
+        @uploader.thumb.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/thumb_test.jpg')
+        @uploader.file.exists?.should be_true
+        @uploader.thumb.file.exists?.should be_true
+      end
+
+      it "should allow overriding move_to_cache on versions" do
+        @uploader_class.version(:thumb) do
+          def move_to_cache
+            true
+          end
+        end
+        @uploader.cache!(File.open(file_path('test.jpg')))
+        @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpg')
+        @uploader.thumb.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/thumb_test.jpg')
+        @uploader.file.exists?.should be_false
+        @uploader.thumb.file.exists?.should be_true
+      end
+    end
+
     describe '#retrieve_from_cache!' do
       it "should set the path to the tmp dir" do
         @uploader.retrieve_from_cache!('1369894322-345-2255/test.jpg')

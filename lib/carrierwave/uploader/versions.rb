@@ -68,6 +68,25 @@ module CarrierWave
               end
             RUBY
 
+            # Regardless of what is set in the parent uploader, do not enforce the
+            # move_to_cache config option on versions because it moves the original
+            # file to the version's target file.
+            #
+            # If you want to enforce this setting on versions, override this method
+            # in each version:
+            #
+            # version :thumb do
+            #   def move_to_cache
+            #     true
+            #   end
+            # end
+            #
+            uploader.class_eval <<-RUBY
+              def move_to_cache
+                false
+              end
+            RUBY
+
             # Add the current version hash to class attribute :versions
             current_version = {}
             current_version[name] = {
@@ -126,6 +145,33 @@ module CarrierWave
       end
 
       ##
+      #
+      # === Parameters
+      #
+      # [name (#to_sym)] name of the version
+      #
+      # === Returns
+      #
+      # [Boolean] True when the version exists according to its :if condition
+      #
+      def version_exists?(name)
+        name = name.to_sym
+
+        return false unless self.class.versions.has_key?(name)
+
+        condition = self.class.versions[name][:options][:if]
+        if(condition)
+          if(condition.respond_to?(:call))
+            condition.call(self, :version => name, :file => file)
+          else
+            send(condition, file)
+          end
+        else
+          true
+        end
+      end
+
+      ##
       # When given a version name as a parameter, will return the url for that version
       # This also works with nested versions.
       # When given a query hash as a parameter, will return the url with signature that contains query params
@@ -153,7 +199,7 @@ module CarrierWave
         if (version = args.first) && version.respond_to?(:to_sym)
           raise ArgumentError, "Version #{version} doesn't exist!" if versions[version.to_sym].nil?
           # recursively proxy to version
-          versions[version.to_sym].url(*args[1..-1])
+          versions[version.to_sym].url(*args[1..-1]) if version_exists?(version)
         elsif args.first
           super(args.first)
         else
@@ -190,16 +236,7 @@ module CarrierWave
 
       def active_versions
         versions.select do |name, uploader|
-          condition = self.class.versions[name][:options][:if]
-          if(condition)
-            if(condition.respond_to?(:call))
-              condition.call(self, :version => name, :file => file)
-            else
-              send(condition, file)
-            end
-          else
-            true
-          end
+          version_exists?(name)
         end
       end
 
