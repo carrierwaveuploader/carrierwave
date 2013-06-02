@@ -208,7 +208,7 @@ describe CarrierWave::Uploader do
     end
 
     it "should overwrite a file that has already been cached" do
-      @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
+      @uploader.retrieve_from_cache!('1369894322-345-2255/test.jpeg')
       @uploader.retrieve_from_store!('bork.txt')
       @uploader.file.should == @stored_file
     end
@@ -333,7 +333,7 @@ describe CarrierWave::Uploader do
       @file = File.open(file_path('test.jpg'))
       @uploader_class.permissions = 0777
       @uploader_class.directory_permissions = 0777
-      CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+      CarrierWave.stub!(:generate_cache_id).and_return('1369894322-345-2255')
     end
 
     context "set to true" do
@@ -347,7 +347,7 @@ describe CarrierWave::Uploader do
         @cached_path = @uploader.file.path
         @stored_path = ::File.expand_path(@uploader.store_path, @uploader.root)
 
-        @cached_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpg')
+        @cached_path.should == public_path('uploads/tmp/1369894322-345-2255/test.jpg')
         File.exists?(@cached_path).should be_true
         File.exists?(@stored_path).should be_false
 

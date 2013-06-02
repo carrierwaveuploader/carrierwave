@@ -13,9 +13,9 @@ describe CarrierWave::Uploader do
   end
 
   describe '#cache!' do
-    
+
     before do
-      CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+      CarrierWave.stub!(:generate_cache_id).and_return('1369894322-345-2255')
     end
 
     it "should not raise an integrity error if there is no black list" do

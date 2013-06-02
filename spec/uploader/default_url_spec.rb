@@ -49,7 +49,7 @@ describe CarrierWave::Uploader do
     describe '#cache!' do
 
       before do
-        CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+        CarrierWave.stub!(:generate_cache_id).and_return('1369894322-345-2255')
       end
 
       it "should cache a file" do
@@ -69,13 +69,13 @@ describe CarrierWave::Uploader do
 
       it "should set the current_path" do
         @uploader.cache!(File.open(file_path('test.jpg')))
-        @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpg')
+        @uploader.current_path.should == public_path('uploads/tmp/1369894322-345-2255/test.jpg')
       end
 
       it "should set the url" do
         @uploader.cache!(File.open(file_path('test.jpg')))
         @uploader.url.should_not == 'http://someurl.example.com'
-        @uploader.url.should == '/uploads/tmp/20071201-1234-345-2255/test.jpg'
+        @uploader.url.should == '/uploads/tmp/1369894322-345-2255/test.jpg'
       end
 
     end
