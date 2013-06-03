@@ -215,7 +215,7 @@ module CarrierWave
     def resize_and_pad(width, height, background=:transparent, gravity=::Magick::CenterGravity)
       manipulate! do |img|
         img.resize_to_fit!(width, height)
-        new_img = ::Magick::Image.new(width, height)
+        new_img = ::Magick::Image.new(width, height) { self.background_color = 'rgba(255,255,255,0)' }
         if background == :transparent
           filled = new_img.matte_floodfill(1, 1)
         else
