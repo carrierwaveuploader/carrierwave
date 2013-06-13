@@ -207,7 +207,7 @@ describe CarrierWave::Uploader do
       before do
         FileUtils.cp(file_path('test.jpg'), file_path('test_copy.jpg'))
         CarrierWave.stub!(:generate_cache_id).and_return('1369894322-345-2255')
-        @uploader_class.define_method :move_to_cache do
+        @uploader_class.send(:define_method, :move_to_cache) do
           true
         end
       end
