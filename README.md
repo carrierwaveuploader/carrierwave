@@ -410,10 +410,18 @@ instance = MyUploader.new
 instance.recreate_versions!(:thumb, :large)
 ```
 
-Or on a mounted uploader:
+Or on a mounted uploader, for instance in a Rails app:
 
 ```ruby
 User.all.each do |user|
+  user.avatar.recreate_versions!
+end
+```
+
+`recreate_versions!` will throw an exception if it encounters a record without an image. To avoid this, eg. in production, simply scope the records to recreate the images for:
+
+```ruby
+User.where("avatar IS NOT NULL").each do |user|
   user.avatar.recreate_versions!
 end
 ```
