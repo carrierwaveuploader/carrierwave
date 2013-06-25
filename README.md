@@ -398,6 +398,16 @@ class MyUploader < CarrierWave::Uploader::Base
 end
 ```
 
+Or if you are using the Rails asset pipeline:
+
+```ruby
+class MyUploader < CarrierWave::Uploader::Base
+  def default_url
+    ActionController::Base.helpers.asset_path("fallback/" + [version_name, "default.png"].compact.join('_'))
+  end
+end
+```
+
 ## Recreating versions
 
 You might come to a situation where you want to retroactively change a version
