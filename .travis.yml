@@ -14,19 +14,32 @@ rvm:
 
 gemfile:
   - Gemfile
-  - gemfiles/rails3_2.gemfile
-  - gemfiles/rails_master.gemfile
+  - gemfiles/rails-3-2-stable.gemfile
+  - gemfiles/rails-4-0-stable.gemfile
+  - gemfiles/rails-master.gemfile
 
 matrix:
   allow_failures:
     - rvm: ruby-head
   exclude:
     - rvm: 1.8.7
-      gemfile: gemfiles/rails_master.gemfile
+      gemfile: gemfiles/rails-master.gemfile
+    - rvm: 1.8.7
+      gemfile: gemfiles/rails-4-0-stable.gemfile
+    - rvm: 1.8.7
+      gemfile: Gemfile
     - rvm: 1.9.2
-      gemfile: gemfiles/rails_master.gemfile
+      gemfile: gemfiles/rails-master.gemfile
+    - rvm: 1.9.2
+      gemfile: gemfiles/rails-4-0-stable.gemfile
+    - rvm: 1.9.2
+      gemfile: Gemfile
     - rvm: ree
-      gemfile: gemfiles/rails_master.gemfile
+      gemfile: gemfiles/rails-master.gemfile
+    - rvm: ree
+      gemfile: gemfiles/rails-4-0-stable.gemfile
+    - rvm: ree
+      gemfile: Gemfile
 
 before_script:
   - "mysql -e 'create database carrierwave_test;'"
