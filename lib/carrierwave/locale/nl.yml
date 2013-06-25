@@ -1,0 +1,11 @@
+nl:
+  errors:
+    messages:
+      carrierwave_processing_error: kon niet worden verwerkt
+      carrierwave_integrity_error: is niet van een toegestaan bestandstype
+      carrierwave_download_error: kon niet gedownload worden
+      extension_white_list_error: "Het is niet toegestaan om %{extension} bestanden te uploaden; toegestane bestandstypes: %{allowed_types}"
+      extension_black_list_error: "Het is niet toegestaan om %{extension} bestanden te uploaden; verboden bestandstypes: %{prohibited_types}"
+      rmagick_processing_error: "Bewerking met rmagick is mislukt, misschien is het geen afbeelding? Originele foutmelding: %{e}"
+      mime_types_processing_error: "Verwerking van bestand met MIME::Types is mislukt, misschien is het geen geldig content-type? Originele foutmelding: %{e}"
+      mini_magick_processing_error: "Bewerking met MiniMagick is mislukt, misschien is het geen afbeelding? Originele foutmelding: %{e}"
