@@ -6,13 +6,6 @@ class <%= class_name %>Uploader < CarrierWave::Uploader::Base
   # include CarrierWave::RMagick
   # include CarrierWave::MiniMagick
 
-  # Include the Sprockets helpers for Rails 3.1 and 3.2 asset pipeline compatibility:
-  # include Sprockets::Helpers::RailsHelper
-  # include Sprockets::Helpers::IsolatedHelper
-
-  # Include the sprockets-rails helper for Rails 4+ asset pipeline compatibility:
-  # include Sprockets::Rails::Helper
-
   # Choose what kind of storage to use for this uploader:
   storage :file
   # storage :fog
@@ -26,7 +19,7 @@ class <%= class_name %>Uploader < CarrierWave::Uploader::Base
   # Provide a default URL as a default if there hasn't been a file uploaded:
   # def default_url
   #   # For Rails 3.1+ asset pipeline compatibility:
-  #   # asset_path("fallback/" + [version_name, "default.png"].compact.join('_'))
+  #   # ActionController::Base.helpers.asset_path("fallback/" + [version_name, "default.png"].compact.join('_'))
   #
   #   "/images/fallback/" + [version_name, "default.png"].compact.join('_')
   # end
