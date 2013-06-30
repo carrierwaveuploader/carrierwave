@@ -83,10 +83,9 @@ require 'carrierwave/orm/activerecord'
 Add a string column to the model you want to mount the uploader by creating
 a migration:
 
-```ruby
-rails g migration add_avatar_to_users avatar:string
-rake db:migrate
-```
+
+	rails g migration add_avatar_to_users avatar:string
+	rake db:migrate
 
 Open your model file and mount the uploader:
 
@@ -175,14 +174,14 @@ With Ruby 1.9 and higher you can simply write (as it has [Oniguruma](http://onig
 built-in):
 
 ```ruby
-  CarrierWave::SanitizedFile.sanitize_regexp = /[^[:word:]\.\-\+]/
+CarrierWave::SanitizedFile.sanitize_regexp = /[^[:word:]\.\-\+]/
 ```
 
 With Ruby 1.8 you have to manually specify all character ranges. For example, for files which may
 contain Russian letters:
 
 ```ruby
-  CarrierWave::SanitizedFile.sanitize_regexp = /[^a-zA-Zа-яА-ЯёЁ0-9\.\-\+_]/u
+CarrierWave::SanitizedFile.sanitize_regexp = /[^a-zA-Zа-яА-ЯёЁ0-9\.\-\+_]/u
 ```
 
 Also make sure that allowing non-latin characters won't cause a compatibility issue with a third-party
@@ -451,9 +450,8 @@ end
 
 If you're using Rails, create an initializer for this:
 
-```ruby
-config/initializers/carrierwave.rb
-```
+	config/initializers/carrierwave.rb
+
 
 ## Testing with CarrierWave
 
