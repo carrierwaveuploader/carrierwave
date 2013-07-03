@@ -410,9 +410,15 @@ end
 ## Recreating versions
 
 You might come to a situation where you want to retroactively change a version
-or add a new one. You can use the recreate_versions! method to recreate the
+or add a new one. You can use the `recreate_versions!` method to recreate the
 versions from the base file. This uses a naive approach which will re-upload and
 process the specified version or all versions, if none is passed as an argument.
+
+When you are generating random unique filenames you have to call `save!` on
+the model after using `recreate_versions!`. This is necessary because
+`recreate_versions!` doesn't save the new filename to the database. Calling
+`save!` yourself will prevent that the database and file system are running
+out of sync.
 
 ```ruby
 instance = MyUploader.new
