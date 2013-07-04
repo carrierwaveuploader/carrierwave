@@ -360,6 +360,8 @@ easily add a checkbox to the form which will remove the file when checked.
 <% end %>
 ```
 
+Also, make sure you have `:remove_avatar` in your `User` model's `attr_accessible` for this to work. 
+
 If you want to remove the file manually, you can call <code>remove_avatar!</code>.
 
 ## Uploading files from a remote location
