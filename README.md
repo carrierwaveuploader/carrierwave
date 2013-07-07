@@ -788,6 +788,38 @@ When the `move_to_cache` and/or `move_to_store` methods return true, files will 
 
 This has only been tested with the local filesystem store.
 
+## Skipping ActiveRecord callbacks
+
+By default, mounting an uploader into an ActiveRecord model will add a few
+callbacks. For example, this code:
+
+```ruby
+class User
+  mount_uploader :avatar, AvatarUploader
+end
+```
+
+Will add these callbacks:
+
+```ruby
+after_save :store_avatar!
+before_save :write_avatar_identifier
+after_commit :remove_avatar! :on => :destroy
+before_update :store_previous_model_for_avatar
+after_save :remove_previously_stored_avatar
+```
+
+If you want to skip any of these callbacks (eg. you want to keep the existing
+avatar, even after uploading a new one), you can use ActiveRecord’s
+`skip_callback` method.
+
+```ruby
+class User
+  mount_uploader :avatar, AvatarUploader
+  skip_callback :save, :after, :remove_previously_stored_avatar
+end
+```
+
 ## Contributing to CarrierWave
 
 See [CONTRIBUTING.md](https://github.com/carrierwaveuploader/carrierwave/blob/master/CONTRIBUTING.md)
