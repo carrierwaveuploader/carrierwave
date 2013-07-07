@@ -1,0 +1,11 @@
+pl:
+  errors:
+    messages:
+      carrierwave_processing_error: nie można przetworzyć
+      carrierwave_integrity_error: niedozwolony typ pliku
+      carrierwave_download_error: nie można pobrać pliku
+      extension_white_list_error: "Nie można wgrać pliku o rozszerzeniu %{extension}, dozwolone typy plików: %{allowed_types}"
+      extension_black_list_error: "Nie można wgrać pliku o rozszerzeniu %{extension}, zakazane typy plików: %{prohibited_types}"
+      rmagick_processing_error: "Nie udało się przetworzyć pliku przy pomocy rmagick, może to nie jest obrazek? Oryginalna treść błędu: %{e}"
+      mime_types_processing_error: "Nie udało się przetworzyć pliku przy pomocy MIME::Types, może content-type jest niepoprawny? Oryginalna treść błędu: %{e}"
+      mini_magick_processing_error: "Nie udało się przetworzyć pliku przy pomocy MiniMagick, może to nie jest obrazek? Oryginalna treść błędu: %{e}"
