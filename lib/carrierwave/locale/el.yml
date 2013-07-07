@@ -1,0 +1,11 @@
+el:
+  errors:
+    messages:
+      carrierwave_processing_error: "απέτυχε στην επεξεργασία"
+      carrierwave_integrity_error: "δεν ανήκει σε επιτρεπτό τύπο αρχείου"
+      carrierwave_download_error: "δεν ήταν δυνατό να μεταφορτωθεί"
+      extension_white_list_error: "Δεν επιτρέπεται το ανέβασμα αρχείων %{extension}, επιτρεπτοί τύποι: %{allowed_types}"
+      extension_black_list_error: "Δεν επιτρέπεται το ανέβασμα αρχείων %{extension}, μη επιτρεπτοί τύποι: %{prohibited_types}"
+      rmagick_processing_error: "Απέτυχε ο χειρισμός με rmagick, ίσως δεν είναι εικόνα; Αρχικό Σφάλμα: %{e}"
+      mime_types_processing_error: "Απέτυχε η επεξεργασία του αρχείου με MIME::Types, ίσως δεν έχει έγκυρο content-type; Αρχικό Σφάλμα: %{e}"
+      mini_magick_processing_error: "Απέτυχε ο χειρισμός με MiniMagick, ίσως δεν είναι εικόνα; Αρχικό Σφάλμα: %{e}"
