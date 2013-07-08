@@ -21,7 +21,7 @@ module CarrierWave
       attr_writer :sanitize_regexp
 
       def sanitize_regexp
-        @sanitize_regexp ||= /[^[:word:]a-zA-Z0-9\.\-\+_]/
+        @sanitize_regexp ||= /[^#{RUBY_VERSION < '1.9' ? '\w' : '[:word:]'}a-zA-Z0-9\.\-\+_]/
       end
     end
 

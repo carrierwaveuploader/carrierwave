@@ -133,8 +133,11 @@ describe CarrierWave::SanitizedFile do
     end
 
     it "should remove illegal characters from a filename but accept Japanese character" do
+      original_kcode = $KCODE
+      $KCODE = 'u'
       @sanitized_file.should_receive(:original_filename).at_least(:once).and_return("テストtest-s,%&m#st?.jpg")
       @sanitized_file.filename.should == "テストtest-s___m_st_.jpg"
+      $KCODE = original_kcode
     end
 
   end
