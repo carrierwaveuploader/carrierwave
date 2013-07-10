@@ -27,6 +27,7 @@ module CarrierWave
         add_config :fog_credentials
         add_config :fog_directory
         add_config :fog_public
+        add_config :fog_public_url
         add_config :fog_authenticated_url_expiration
         add_config :fog_use_ssl_for_aws
 
@@ -125,6 +126,7 @@ module CarrierWave
             config.fog_attributes = {}
             config.fog_credentials = {}
             config.fog_public = true
+            config.fog_public_url = false
             config.fog_authenticated_url_expiration = 600
             config.fog_use_ssl_for_aws = true
             config.store_dir = 'uploads'

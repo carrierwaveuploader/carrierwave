@@ -545,6 +545,7 @@ CarrierWave.configure do |config|
   }
   config.fog_directory  = 'name_of_directory'                     # required
   config.fog_public     = false                                   # optional, defaults to true
+  config.fog_public_url = true                                    # optional, defaults to false
   config.fog_attributes = {'Cache-Control'=>'max-age=315576000'}  # optional, defaults to {}
 end
 ```
