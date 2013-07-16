@@ -1,5 +1,7 @@
+<% if RUBY_VERSION < '2.0' -%>
 # encoding: utf-8
 
+<% end -%>
 class <%= class_name %>Uploader < CarrierWave::Uploader::Base
 
   # Include RMagick or MiniMagick support:
