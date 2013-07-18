@@ -474,6 +474,9 @@ if Rails.env.test? or Rails.env.cucumber?
 end
 ```
 
+Remember, if you have already set `storage :something` in your uploader, the `storage`
+setting from this initializer will be ignored.
+
 If you need to test your processing, you should test it in isolation, and enable
 processing only for those tests that need it.
 
