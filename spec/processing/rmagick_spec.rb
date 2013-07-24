@@ -81,6 +81,12 @@ describe CarrierWave::RMagick do
       color.should_not include('#FFFFFF00')
     end
 
+    it "should pad with given color" do
+      @instance.resize_and_pad(200, 200, '#888')
+      color = color_of_pixel(@instance.current_path, 0, 0)
+      color.should include('#888888')
+    end
+
     it "should scale up the image if it smaller than the given dimensions" do
       @instance.resize_and_pad(1000, 1000)
       @instance.should have_dimensions(1000, 1000)
