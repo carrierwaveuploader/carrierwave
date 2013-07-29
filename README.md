@@ -567,7 +567,7 @@ That's it! You can still use the `CarrierWave::Uploader#url` method to return th
 [Fog](http://github.com/fog/fog) is used to support Rackspace Cloud Files. Ensure you have it in your Gemfile:
 
 ```ruby
-gem "fog", "~> 1.10.1"
+gem "fog"
 ```
 
 You'll need to configure a directory (also known as a container), username and API key in the initializer.
@@ -626,7 +626,7 @@ the url to the file on Rackspace Cloud Files.
 [Fog](http://github.com/fog/fog) is used to support Google Storage for Developers. Ensure you have it in your Gemfile:
 
 ```ruby
-gem "fog", "~> 1.3.1"
+gem "fog"
 ```
 
 You'll need to configure a directory (also known as a bucket), access key id and secret access key in the initializer.
