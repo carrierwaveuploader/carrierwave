@@ -20,15 +20,11 @@ module CarrierWave
     # [Hash{Symbol => CarrierWave}] what uploaders are mounted on which columns
     #
     def uploaders
-      @uploaders ||= {}
-      @uploaders = superclass.uploaders.merge(@uploaders) if superclass.respond_to?(:uploaders)
-      @uploaders
+      @uploaders ||= superclass.respond_to?(:uploaders) ? superclass.uploaders.dup : {}
     end
 
     def uploader_options
-      @uploader_options ||= {}
-      @uploader_options = superclass.uploader_options.merge(@uploader_options) if superclass.respond_to?(:uploader_options)
-      @uploader_options
+      @uploader_options ||= superclass.respond_to?(:uploader_options) ? superclass.uploader_options.dup : {}
     end
 
     ##
