@@ -34,6 +34,54 @@ Finally, restart the server to apply the changes.
 Note that CarrierWave is not compatible with Rails 2 as of version 0.5. If you want to use
 Rails 2, please use the 0.4-stable branch on GitHub.
 
+## Quick Start for Ruby on Rails
+
+1. Generate an uploader:
+
+	```
+$ rails generate uploader Avatar
+```
+
+2. Add an "avatar" column to the model you intend to add the avatar to: 
+
+	```
+$ rails g migration add_avatar_to_users avatar:string
+$ rake db:migrate
+```
+
+3. Configure your Model by mounting the uploader:
+
+	```ruby
+class User < ActiveRecord::Base
+	mount_uploader :avatar, AvatarUploader
+end
+```
+4. Make sure your form has **enctype** multipart and then add the file_field to allow uploads:
+
+	```erb
+<%= form_for @user, :html => {:multipart => true} do |f| %>
+  <p>
+    <label>My Avatar</label>
+    <%= f.file_field :avatar %>
+  </p>
+<% end %>
+```
+
+5. Whitelist the "avatar" attribute in the Users controller if using Strong Parameters (or add it to attr_accessible list):
+
+	```ruby
+def user_params
+	params.require(:user).permit(:avatar)
+end
+```
+
+
+6. Display the Avatar with:
+
+	```erb
+<%= image_tag(@user.avatar_url) if @user.avatar? %>
+```
+
 ## Getting Started
 
 Start off by generating an uploader:
