@@ -338,7 +338,14 @@ module CarrierWave
         #
         def filename(options = {})
           if file_url = url(options)
-            URI.decode(file_url).gsub(/.*\/(.*?$)/, '\1')
+            case @uploader.fog_credentials[:provider]
+            when 'AWS'
+              URI.decode(file_url).gsub(/\?AWSAccessKeyId=.*/,'').gsub(/.*\/(.*?$)/, '\1')
+            when 'Google'
+              URI.decode(file_url).gsub(/\?GoogleAccessId=.*/,'').gsub(/.*\/(.*?$)/, '\1')
+            else
+              URI.decode(file_url).gsub(/.*\/(.*?$)/, '\1')
+            end
           end
         end
 
