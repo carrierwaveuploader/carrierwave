@@ -766,6 +766,8 @@ errors:
     carrierwave_processing_error: "Cannot resize image."
     carrierwave_integrity_error: "Not an image."
     carrierwave_download_error: "Couldn't download image."
+    extension_white_list_error: "You are not allowed to upload %{extension} files, allowed types: %{allowed_types}"
+    extension_black_list_error: "You are not allowed to upload %{extension} files, prohibited types: %{prohibited_types}"
 ```
 
 ## Large files
