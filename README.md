@@ -206,8 +206,17 @@ end
 
 ## Adding versions
 
-Often you'll want to add different versions of the same file. The classic
-example is image thumbnails. There is built in support for this:
+Often you'll want to add different versions of the same file. The classic example is image thumbnails. There is built in support for this*:
+
+*Note: You must have Imagemagick and MiniMagick installed to do image resizing. MiniMagick is a Ruby interface for Imagemagick which is a C program. This is why MiniMagick fails on 'bundle install' without Imagemagick installed.
+
+Some documentation refers to RMagick instead of MiniMagick but MiniMagick is recommended.
+
+To install Imagemagick on OSX with homebrew type the following:
+
+```
+$ brew install imagemagick
+```
 
 ```ruby
 class MyUploader < CarrierWave::Uploader::Base
