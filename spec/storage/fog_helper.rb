@@ -238,6 +238,10 @@ end
               end
             end
 
+            it 'should generate correct filename' do
+              @fog_file.filename.should == 'private.txt'
+            end
+
             it "should handle query params" do
               if @provider == 'AWS' && !Fog.mocking?
                 headers = Excon.get(@fog_file.url(:query => {"response-content-disposition" => "attachment"})).headers
