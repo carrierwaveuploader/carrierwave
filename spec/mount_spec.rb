@@ -447,6 +447,14 @@ describe CarrierWave::Mount do
           e.should be_an_instance_of(CarrierWave::IntegrityError)
           e.message.lines.grep(/^You are not allowed to upload/).should be_true
         end
+
+        it "should be an error instance when image file is assigned and remote_image_url is blank" do
+          @instance.image = stub_file('test.jpg')
+          @instance.remote_image_url = ""
+          e = @instance.image_integrity_error
+          e.should be_an_instance_of(CarrierWave::IntegrityError)
+          e.message.lines.grep(/^You are not allowed to upload/).should be_true
+        end
       end
     end
 

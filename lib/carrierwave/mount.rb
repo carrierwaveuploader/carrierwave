@@ -341,12 +341,14 @@ module CarrierWave
       end
 
       def remote_url=(url)
-        @download_error = nil
-        @integrity_error = nil
+        unless url.blank?
+          @download_error = nil
+          @integrity_error = nil
 
-        @remote_url = url
+          @remote_url = url
 
-        uploader.download!(url)
+          uploader.download!(url)
+        end
 
       rescue CarrierWave::DownloadError => e
         @download_error = e

@@ -67,10 +67,6 @@ describe CarrierWave::Uploader::Download do
       @uploader.url.should == '/uploads/tmp/1369894322-345-2255/test.jpg'
     end
 
-    it "should do nothing when trying to download an empty file" do
-      @uploader.download!(nil)
-    end
-
     it "should set permissions if options are given" do
       @uploader_class.permissions = 0777
 
