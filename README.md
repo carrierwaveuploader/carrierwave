@@ -708,7 +708,7 @@ class AvatarUploader < CarrierWave::Uploader::Base
   process :convert => 'png'
 
   def filename
-    super.chomp(File.extname(super)) + '.png'
+    super.chomp(File.extname(super)) + '.png' if original_filename.present?
   end
 end
 ```
