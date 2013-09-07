@@ -164,7 +164,7 @@ module CarrierWave
         end
 
         def #{column}?
-          !_mounter(:#{column}).blank?
+          _mounter(:#{column}).present?
         end
 
         def #{column}_url(*args)
@@ -305,7 +305,7 @@ module CarrierWave
 
         if remove?
           record.write_uploader(serialization_column, '')
-        elsif not uploader.identifier.blank?
+        elsif uploader.identifier.present?
           record.write_uploader(serialization_column, uploader.identifier)
         end
       end
@@ -316,11 +316,9 @@ module CarrierWave
 
       def uploader
         @uploader ||= record.class.uploaders[column].new(record, column)
+        @uploader.retrieve_from_store!(identifier) if @uploader.blank? && identifier.present?
 
-        if @uploader.blank? and not identifier.blank?
-          @uploader.retrieve_from_store!(identifier)
-        end
-        return @uploader
+        @uploader
       end
 
       def cache(new_file)
@@ -383,7 +381,7 @@ module CarrierWave
       end
 
       def remove?
-        !remove.blank? and remove !~ /\A0|false$\z/
+        remove.present? && remove !~ /\A0|false$\z/
       end
 
       def remove!
