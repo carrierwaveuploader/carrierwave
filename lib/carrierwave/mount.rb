@@ -135,23 +135,11 @@ module CarrierWave
     #     end
     #
     def mount_uploader(column, uploader=nil, options={}, &block)
-      if block_given?
-        uploader = Class.new(uploader || CarrierWave::Uploader::Base)
-        const_set("Uploader#{uploader.object_id}".gsub('-', '_'), uploader)
-        uploader.class_eval(&block)
-        uploader.recursively_apply_block_to_versions(&block)
-      else
-        uploader ||= begin
-          u = Class.new(CarrierWave::Uploader::Base)
-          const_set("Uploader#{u.object_id}".gsub('-', '_'), u)
-          u
-        end
-      end
+      include CarrierWave::Mount::Extension
 
+      uploader = build_uploader(uploader, &block)
       uploaders[column.to_sym] = uploader
       uploader_options[column.to_sym] = options
-
-      include CarrierWave::Mount::Extension
 
       # Make sure to write over accessors directly defined on the class.
       # Simply super to the included module below.
@@ -259,6 +247,22 @@ module CarrierWave
         end
 
       RUBY
+    end
+
+    private
+
+    def build_uploader(uploader, &block)
+      return uploader if uploader && !block_given?
+
+      uploader = Class.new(uploader || CarrierWave::Uploader::Base)
+      const_set("Uploader#{uploader.object_id}".gsub('-', '_'), uploader)
+
+      if block_given?
+        uploader.class_eval(&block)
+        uploader.recursively_apply_block_to_versions(&block)
+      end
+
+      uploader
     end
 
     module Extension
