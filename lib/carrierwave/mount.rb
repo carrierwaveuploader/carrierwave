@@ -135,23 +135,11 @@ module CarrierWave
     #     end
     #
     def mount_uploader(column, uploader=nil, options={}, &block)
-      if block_given?
-        uploader = Class.new(uploader || CarrierWave::Uploader::Base)
-        const_set("Uploader#{uploader.object_id}".gsub('-', '_'), uploader)
-        uploader.class_eval(&block)
-        uploader.recursively_apply_block_to_versions(&block)
-      else
-        uploader ||= begin
-          u = Class.new(CarrierWave::Uploader::Base)
-          const_set("Uploader#{u.object_id}".gsub('-', '_'), u)
-          u
-        end
-      end
+      include CarrierWave::Mount::Extension
 
+      uploader = build_uploader(uploader, &block)
       uploaders[column.to_sym] = uploader
       uploader_options[column.to_sym] = options
-
-      include CarrierWave::Mount::Extension
 
       # Make sure to write over accessors directly defined on the class.
       # Simply super to the included module below.
@@ -176,7 +164,7 @@ module CarrierWave
         end
 
         def #{column}?
-          !_mounter(:#{column}).blank?
+          _mounter(:#{column}).present?
         end
 
         def #{column}_url(*args)
@@ -261,6 +249,22 @@ module CarrierWave
       RUBY
     end
 
+    private
+
+    def build_uploader(uploader, &block)
+      return uploader if uploader && !block_given?
+
+      uploader = Class.new(uploader || CarrierWave::Uploader::Base)
+      const_set("Uploader#{uploader.object_id}".gsub('-', '_'), uploader)
+
+      if block_given?
+        uploader.class_eval(&block)
+        uploader.recursively_apply_block_to_versions(&block)
+      end
+
+      uploader
+    end
+
     module Extension
 
       ##
@@ -301,7 +305,7 @@ module CarrierWave
 
         if remove?
           record.write_uploader(serialization_column, '')
-        elsif not uploader.identifier.blank?
+        elsif uploader.identifier.present?
           record.write_uploader(serialization_column, uploader.identifier)
         end
       end
@@ -312,11 +316,9 @@ module CarrierWave
 
       def uploader
         @uploader ||= record.class.uploaders[column].new(record, column)
+        @uploader.retrieve_from_store!(identifier) if @uploader.blank? && identifier.present?
 
-        if @uploader.blank? and not identifier.blank?
-          @uploader.retrieve_from_store!(identifier)
-        end
-        return @uploader
+        @uploader
       end
 
       def cache(new_file)
@@ -341,14 +343,13 @@ module CarrierWave
       end
 
       def remote_url=(url)
-        unless url.blank?
-          @download_error = nil
-          @integrity_error = nil
+        return if url.blank?
 
-          @remote_url = url
+        @remote_url = url
+        @download_error = nil
+        @integrity_error = nil
 
-          uploader.download!(url)
-        end
+        uploader.download!(url)
 
       rescue CarrierWave::DownloadError => e
         @download_error = e
@@ -362,12 +363,12 @@ module CarrierWave
       end
 
       def store!
-        unless uploader.blank?
-          if remove?
-            uploader.remove!
-          else
-            uploader.store!
-          end
+        return if uploader.blank?
+
+        if remove?
+          uploader.remove!
+        else
+          uploader.store!
         end
       end
 
@@ -380,7 +381,7 @@ module CarrierWave
       end
 
       def remove?
-        !remove.blank? and remove !~ /\A0|false$\z/
+        remove.present? && remove !~ /\A0|false$\z/
       end
 
       def remove!
