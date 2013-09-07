@@ -345,14 +345,13 @@ module CarrierWave
       end
 
       def remote_url=(url)
-        unless url.blank?
-          @download_error = nil
-          @integrity_error = nil
+        return if url.blank?
 
-          @remote_url = url
+        @remote_url = url
+        @download_error = nil
+        @integrity_error = nil
 
-          uploader.download!(url)
-        end
+        uploader.download!(url)
 
       rescue CarrierWave::DownloadError => e
         @download_error = e
@@ -366,12 +365,12 @@ module CarrierWave
       end
 
       def store!
-        unless uploader.blank?
-          if remove?
-            uploader.remove!
-          else
-            uploader.store!
-          end
+        return if uploader.blank?
+
+        if remove?
+          uploader.remove!
+        else
+          uploader.store!
         end
       end
 
