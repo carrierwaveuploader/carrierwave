@@ -71,13 +71,17 @@ module CarrierWave
       # Apply all process callbacks added through CarrierWave.process
       #
       def process!(new_file=nil)
-        if enable_processing
-          self.class.processors.each do |method, args, condition|
-            if(condition)
-              next if !(condition.respond_to?(:call) ? condition.call(self, :args => args, :method => method, :file => new_file) : self.send(condition, new_file))
+        return unless enable_processing
+
+        self.class.processors.each do |method, args, condition|
+          if(condition)
+            if condition.respond_to?(:call)
+              next unless condition.call(self, :args => args, :method => method, :file => new_file)
+            else
+              next unless self.send(condition, new_file)
             end
-            self.send(method, *args)
           end
+          self.send(method, *args)
         end
       end
 
