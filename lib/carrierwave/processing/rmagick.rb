@@ -316,12 +316,8 @@ module CarrierWave
       frames = ::Magick::ImageList.new
 
       image.each_with_index do |frame, index|
-        processed_frame = if block_given?
-          yield *[frame, index, options].take(block.arity)
-        else
-          frame
-        end
-        frames << processed_frame if processed_frame
+        frame = yield *[frame, index, options].take(block.arity) if block_given?
+        frames << frame if frame
       end
       frames.append(true) if block_given?
 
