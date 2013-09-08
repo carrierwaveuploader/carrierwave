@@ -54,20 +54,14 @@ module CarrierWave
         #     end
         #
         def process(*args)
-          if !args.first.is_a?(Hash) && args.last.is_a?(Hash)
-            conditions = args.pop
-            args.map!{ |arg| {arg => []}.merge(conditions) }
+          new_processors = args.inject({}) do |hash, arg|
+            arg = { arg => [] } unless arg.is_a?(Hash)
+            hash.merge!(arg)
           end
 
-          args.each do |arg|
-            if arg.is_a?(Hash)
-              condition = arg.delete(:if)
-              arg.each do |method, args|
-                self.processors += [[method, args, condition]]
-              end
-            else
-              self.processors += [[arg, [], nil]]
-            end
+          condition = new_processors.delete(:if)
+          new_processors.each do |processor, processor_args|
+            self.processors += [[processor, processor_args, condition]]
           end
         end
 
