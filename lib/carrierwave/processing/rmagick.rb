@@ -313,23 +313,17 @@ module CarrierWave
 
       read_block = create_info_block(options[:read])
       image = ::Magick::Image.read(current_path, &read_block)
+      frames = ::Magick::ImageList.new
 
-      frames = if image.size > 1
-        list = ::Magick::ImageList.new
-        image.each_with_index do |frame, index|
-          processed_frame = if block_given?
-            yield *[frame, index, options].take(block.arity)
-          else
-            frame
-          end
-          list << processed_frame if processed_frame
+      image.each_with_index do |frame, index|
+        processed_frame = if block_given?
+          yield *[frame, index, options].take(block.arity)
+        else
+          frame
         end
-        block_given? ? list : list.append(true)
-      else
-        frame = image.first
-        frame = yield( *[frame, 0, options].take(block.arity) ) if block_given?
-        frame
+        frames << processed_frame if processed_frame
       end
+      frames.append(true) if block_given?
 
       write_block = create_info_block(options[:write])
       if options[:format] || @format
