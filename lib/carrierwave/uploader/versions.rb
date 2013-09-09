@@ -55,9 +55,9 @@ module CarrierWave
             const_set("Uploader#{uploader.object_id}".gsub('-', '_'), uploader)
             uploader.versions = {}
 
-            # Define the enable_processing method for versions so they get the
-            # value from the parent class unless explicitly overwritten
             uploader.class_eval <<-RUBY, __FILE__, __LINE__ + 1
+              # Define the enable_processing method for versions so they get the
+              # value from the parent class unless explicitly overwritten
               def self.enable_processing(value=nil)
                 self.enable_processing = value if value
                 if !@enable_processing.nil?
@@ -66,24 +66,28 @@ module CarrierWave
                   superclass.enable_processing
                 end
               end
-            RUBY
 
-            # Regardless of what is set in the parent uploader, do not enforce the
-            # move_to_cache config option on versions because it moves the original
-            # file to the version's target file.
-            #
-            # If you want to enforce this setting on versions, override this method
-            # in each version:
-            #
-            # version :thumb do
-            #   def move_to_cache
-            #     true
-            #   end
-            # end
-            #
-            uploader.class_eval <<-RUBY
+              # Regardless of what is set in the parent uploader, do not enforce the
+              # move_to_cache config option on versions because it moves the original
+              # file to the version's target file.
+              #
+              # If you want to enforce this setting on versions, override this method
+              # in each version:
+              #
+              # version :thumb do
+              #   def move_to_cache
+              #     true
+              #   end
+              # end
+              #
               def move_to_cache
                 false
+              end
+            RUBY
+
+            class_eval <<-RUBY
+              def #{name}
+                versions[:#{name}]
               end
             RUBY
 
@@ -97,11 +101,6 @@ module CarrierWave
 
             versions[name][:uploader].version_names += [name]
 
-            class_eval <<-RUBY
-              def #{name}
-                versions[:#{name}]
-              end
-            RUBY
             # as the processors get the output from the previous processors as their
             # input we must not stack the processors here
             versions[name][:uploader].processors = versions[name][:uploader].processors.dup
