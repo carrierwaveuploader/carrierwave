@@ -92,10 +92,11 @@ module CarrierWave
             RUBY
 
             # Add the current version hash to class attribute :versions
-            current_version = {}
-            current_version[name] = {
-              :uploader => uploader,
-              :options  => options
+            current_version = {
+              name => {
+                :uploader => uploader,
+                :options  => options
+              }
             }
             self.versions = versions.merge(current_version)
 
