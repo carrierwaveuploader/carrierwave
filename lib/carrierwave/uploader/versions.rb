@@ -53,7 +53,9 @@ module CarrierWave
           unless versions[name]
             uploader = Class.new(self)
             const_set("Uploader#{uploader.object_id}".gsub('-', '_'), uploader)
+            uploader.version_names += [name]
             uploader.versions = {}
+            uploader.processors = []
 
             uploader.class_eval <<-RUBY, __FILE__, __LINE__ + 1
               # Define the enable_processing method for versions so they get the
@@ -99,14 +101,8 @@ module CarrierWave
               }
             }
             self.versions = versions.merge(current_version)
-
-            versions[name][:uploader].version_names += [name]
-
-            # as the processors get the output from the previous processors as their
-            # input we must not stack the processors here
-            versions[name][:uploader].processors = versions[name][:uploader].processors.dup
-            versions[name][:uploader].processors.clear
           end
+
           versions[name][:uploader].class_eval(&block) if block
           versions[name]
         end
