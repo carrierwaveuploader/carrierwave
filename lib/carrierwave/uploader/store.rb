@@ -27,6 +27,10 @@ module CarrierWave
         @filename
       end
 
+      def content_type
+        @file.content_type
+      end
+
       ##
       # Calculates the path where the file should be stored. If +for_file+ is given, it will be
       # used as the filename, otherwise +CarrierWave::Uploader#filename+ is assumed.
