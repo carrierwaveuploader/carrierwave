@@ -304,7 +304,7 @@ module CarrierWave
         return if record.frozen?
 
         if remove?
-          record.write_uploader(serialization_column, '')
+          record.write_uploader(serialization_column, nil)
         elsif uploader.identifier.present?
           record.write_uploader(serialization_column, uploader.identifier)
         end

@@ -349,8 +349,8 @@ describe CarrierWave::ActiveRecord do
         @event.save!
         @event.reload
         expect(@event.image).to be_blank
-        expect(@event[:image]).to eq('')
-        expect(@event.image_identifier).to eq('')
+        expect(@event[:image]).to eq(nil)
+        expect(@event.image_identifier).to eq(nil)
       end
 
       it "should mark image as changed when saving a new image" do
