@@ -547,7 +547,7 @@ describe CarrierWave::Mount do
         @instance.image = stub_file('test.jpg')
         @instance.store_image!
         @instance.remove_image = true
-        @instance.should_receive(:write_uploader).with(:image, "")
+        @instance.should_receive(:write_uploader).with(:image, nil)
         @instance.write_image_identifier
       end
     end
@@ -774,7 +774,7 @@ describe CarrierWave::Mount do
         @instance.image = stub_file('test.jpg')
         @instance.store_image!
         @instance.remove_image = true
-        @instance.should_receive(:write_uploader).with(:monkey, "")
+        @instance.should_receive(:write_uploader).with(:monkey, nil)
         @instance.write_image_identifier
       end
     end
