@@ -277,36 +277,59 @@ module CarrierWave
         # [NilClass] no public url available
         #
         def public_url
-          encoded_path = encode_path(path)
+          public_url_by_custom_asset_host or public_url_by_provider_configuration
+        end
+
+        ##
+        # Return a url to a public file using asset host configuration if any
+        #
+        # === Returns
+        #
+        # [String] public url
+        #   or
+        # [NilClass] no asset host configured
+        #
+        def public_url_by_custom_asset_host
           if host = @uploader.asset_host
             if host.respond_to? :call
               "#{host.call(self)}/#{encoded_path}"
             else
               "#{host}/#{encoded_path}"
             end
-          else
-            # AWS/Google optimized for speed over correctness
-            case @uploader.fog_credentials[:provider]
-            when 'AWS'
-              # check if some endpoint is set in fog_credentials
-              if @uploader.fog_credentials.has_key?(:endpoint)
-                "#{@uploader.fog_credentials[:endpoint]}/#{@uploader.fog_directory}/#{encoded_path}"
-              else
-                protocol = @uploader.fog_use_ssl_for_aws ? "https" : "http"
-                # if directory is a valid subdomain, use that style for access
-                if @uploader.fog_directory.to_s =~ /^(?:[a-z]|\d(?!\d{0,2}(?:\d{1,3}){3}$))(?:[a-z0-9\.]|(?![\-])|\-(?![\.])){1,61}[a-z0-9]$/
-                  "#{protocol}://#{@uploader.fog_directory}.s3.amazonaws.com/#{encoded_path}"
-                else
-                  # directory is not a valid subdomain, so use path style for access
-                  "#{protocol}://s3.amazonaws.com/#{@uploader.fog_directory}/#{encoded_path}"
-                end
-              end
-            when 'Google'
-              "https://commondatastorage.googleapis.com/#{@uploader.fog_directory}/#{encoded_path}"
+          end
+        end
+
+        ##
+        # Returns a url to a public file using the fog configurations
+        #
+        # === Returns
+        #
+        # [String] public url
+        #   or
+        # [NilClass] no public url available
+        #
+        def public_url_by_provider_configuration
+          # AWS/Google optimized for speed over correctness
+          case @uploader.fog_credentials[:provider]
+          when 'AWS'
+            # check if some endpoint is set in fog_credentials
+            if @uploader.fog_credentials.has_key?(:endpoint)
+              "#{@uploader.fog_credentials[:endpoint]}/#{@uploader.fog_directory}/#{encoded_path}"
             else
-              # avoid a get by just using local reference
-              directory.files.new(:key => path).public_url
+              protocol = @uploader.fog_use_ssl_for_aws ? "https" : "http"
+              # if directory is a valid subdomain, use that style for access
+              if @uploader.fog_directory.to_s =~ /^(?:[a-z]|\d(?!\d{0,2}(?:\d{1,3}){3}$))(?:[a-z0-9\.]|(?![\-])|\-(?![\.])){1,61}[a-z0-9]$/
+                "#{protocol}://#{@uploader.fog_directory}.s3.amazonaws.com/#{encoded_path}"
+              else
+                # directory is not a valid subdomain, so use path style for access
+                "#{protocol}://s3.amazonaws.com/#{@uploader.fog_directory}/#{encoded_path}"
+              end
             end
+          when 'Google'
+            "https://commondatastorage.googleapis.com/#{@uploader.fog_directory}/#{encoded_path}"
+          else
+            # avoid a get by just using local reference
+            directory.files.new(:key => path).public_url
           end
         end
 
@@ -380,6 +403,17 @@ module CarrierWave
         #
         def file
           @file ||= directory.files.head(path)
+        end
+
+        ##
+        # current encoded path
+        #
+        # === Returns
+        #
+        # [String] current, uri encoded path
+        #
+        def encoded_path
+          @encode_path ||= encode_path(path)
         end
 
       end
