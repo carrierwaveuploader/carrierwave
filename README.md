@@ -114,7 +114,7 @@ Other ORM support has been extracted into separate gems:
 
 * [carrierwave-datamapper](https://github.com/carrierwaveuploader/carrierwave-datamapper)
 * [carrierwave-mongoid](https://github.com/carrierwaveuploader/carrierwave-mongoid)
-* [carrierwave-sequel](https://github.com/carrierwaveuploader/carrierwave-sequel)
+* [carrierwave-sequel](https://github.com/jnicklas/carrierwave-sequel)
 
 There are more extensions listed in [the wiki](https://github.com/carrierwaveuploader/carrierwave/wiki)
 
