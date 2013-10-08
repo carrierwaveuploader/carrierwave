@@ -1,0 +1,8 @@
+fr:
+  errors:
+    messages:
+      carrierwave_processing_error: "Impossible de redimensionner l'image."
+      carrierwave_integrity_error: "Ce n'est pas une image."
+      carrierwave_download_error: "Impossible de télécharger l'image."
+      extension_white_list_error: "Vous n'êtes pas authorisé à uploader des fichiers %{extension}, types authorisés: %{allowed_types}"
+      extension_black_list_error: "Vous n'êtes pas authorisé à uploader des fichiers %{extension}, types interdits: %{prohibited_types}"
