@@ -80,7 +80,7 @@ module CarrierWave
       # [String] content type of the file
       #
       def content_type
-        file.respond_to?(:content_type) ? file.content_type : nil
+        file.try(:content_type)
       end
 
     end # Proxy
