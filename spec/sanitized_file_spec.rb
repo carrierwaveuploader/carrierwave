@@ -196,11 +196,6 @@ describe CarrierWave::SanitizedFile do
     it 'should read content type from path if missing' do
       @sanitized_file = CarrierWave::SanitizedFile.new('llama.jpg')
       @sanitized_file.content_type.should == 'image/jpeg'
-
-      @file = File.open(file_path('sponsored.doc'))
-      @file.stub!(:content_type).and_return(MIME::Type.new('application/msword'))
-      @sanitized_file = CarrierWave::SanitizedFile.new(@file)
-      @sanitized_file.content_type.should == 'application/msword'
     end
   end
 
