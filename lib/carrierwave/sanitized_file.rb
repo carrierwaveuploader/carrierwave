@@ -245,7 +245,7 @@ module CarrierWave
     def content_type
       return @content_type if @content_type
       if @file.respond_to?(:content_type) and @file.content_type
-        @file.content_type.to_s.chomp
+        @content_type = @file.content_type.to_s.chomp
       elsif path && defined?(::MIME::Types)
         @content_type = ::MIME::Types.type_for(path).first.to_s
       end
