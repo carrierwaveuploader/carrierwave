@@ -72,6 +72,17 @@ module CarrierWave
         size
       end
 
+      ##
+      # Read the content type of the file
+      #
+      # === Returns
+      #
+      # [String] content type of the file
+      #
+      def content_type
+        file.try(:content_type)
+      end
+
     end # Proxy
   end # Uploader
 end # CarrierWave
