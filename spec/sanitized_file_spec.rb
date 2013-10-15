@@ -192,6 +192,11 @@ describe CarrierWave::SanitizedFile do
       lambda { @sanitized_file.content_type }.should_not raise_error
       @sanitized_file.content_type.should == 'application/msword'
     end
+
+    it 'should read content type from path if missing' do
+      @sanitized_file = CarrierWave::SanitizedFile.new('llama.jpg')
+      @sanitized_file.content_type.should == 'image/jpeg'
+    end
   end
 
   describe "#content_type=" do
