@@ -29,6 +29,7 @@ describe CarrierWave::MimeTypes do
     end
 
     it "set content_type if content_type is nil" do
+      pending 'This spec is deprecated because Proxy now read content type itself.'
       @instance.file.content_type = nil
       @instance.file.should_receive(:content_type=).with('image/jpeg')
       @instance.set_content_type
