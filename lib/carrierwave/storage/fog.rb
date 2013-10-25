@@ -192,11 +192,11 @@ module CarrierWave
         #
         # === Returns
         #
-        # [String] extension of file
+        # [String] extension of file or nil if the file has no extension
         #
         def extension
           path_elements = path.split('.')
-          path_elements.last if path.size > 1
+          path_elements.last if path_elements.size > 1
         end
 
         ##
