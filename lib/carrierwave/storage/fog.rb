@@ -195,7 +195,8 @@ module CarrierWave
         # [String] extension of file
         #
         def extension
-          path.split('.').last
+          path_elements = path.split('.')
+          path_elements.last if path.size > 1
         end
 
         ##
