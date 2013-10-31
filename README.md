@@ -220,7 +220,7 @@ $ brew install imagemagick
 
 ```ruby
 class MyUploader < CarrierWave::Uploader::Base
-  include CarrierWave::RMagick
+  include CarrierWave::MiniMagick
 
   process :resize_to_fit => [800, 800]
 
