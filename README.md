@@ -369,7 +369,13 @@ easily add a checkbox to the form which will remove the file when checked.
 <% end %>
 ```
 
-If you want to remove the file manually, you can call <code>remove_avatar!</code>.
+If you want to remove the file manually, you can call <code>remove_avatar!</code>, then save the object.
+
+```erb
+@user.remove_avatar!
+@user.save
+#=> true
+```
 
 ## Uploading files from a remote location
 
