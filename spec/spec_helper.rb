@@ -37,6 +37,7 @@ def public_path( *paths )
 end
 
 CarrierWave.root = public_path
+I18n.load_path << File.join(File.dirname(__FILE__),"..","lib","carrierwave", "locale", 'en.yml')
 
 module CarrierWave
   module Test

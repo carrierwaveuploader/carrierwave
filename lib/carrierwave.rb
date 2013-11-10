@@ -37,8 +37,9 @@ elsif defined?(Rails)
       initializer "carrierwave.setup_paths" do
         CarrierWave.root = Rails.root.join(Rails.public_path).to_s
         CarrierWave.base_path = ENV['RAILS_RELATIVE_URL_ROOT']
+        I18n.load_path << File.join(File.dirname(__FILE__), 'carrierwave', 'locale', 'en.yml')
       end
-
+      
       initializer "carrierwave.active_record" do
         ActiveSupport.on_load :active_record do
           require 'carrierwave/orm/activerecord'
