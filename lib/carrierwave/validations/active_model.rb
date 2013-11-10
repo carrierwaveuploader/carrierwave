@@ -78,5 +78,3 @@ module CarrierWave
     end
   end
 end
-
-I18n.load_path << File.join(File.dirname(__FILE__), "..", "locale", 'en.yml')
