@@ -1,0 +1,11 @@
+pt-PT:
+  errors:
+    messages:
+      carrierwave_processing_error: falhou ao ser processado
+      carrierwave_integrity_error: não é um tipo de ficheiro permitido
+      carrierwave_download_error: não pôde ser transferido
+      extension_white_list_error: "Não é permitido o envio de ficheiros com a extensão %{extension}, tipos de ficheiro permitidos: %{allowed_types}"
+      extension_black_list_error: "Não é permitido o envio de ficheiros com a extensão %{extension}, tipos de ficheiro proibidos: %{prohibited_types}"
+      rmagick_processing_error: "Ocorreu uma falha ao processar com rmagick, talvez o ficheiro não seja uma imagem? Erro original: %{e}"
+      mime_types_processing_error: "Ocorreu uma falha ao processar com MIME::Types, talvez o parâmetro content-type não seja válido? Erro original: %{e}"
+      mini_magick_processing_error: "Ocorreu uma falha ao processar com MiniMagick, talvez o ficheiro não seja uma imagem? Erro original: %{e}"
