@@ -448,6 +448,14 @@ User.all.each do |user|
 end
 ```
 
+Note: `recreate_versions!` will throw an exception on records without an image. To avoid this, scope the records to those with images or check if an image exists within the block:
+
+```ruby
+User.all.each do |user|
+  user.avatar.recreate_versions! if user.avatar?
+end
+```
+
 ## Configuring CarrierWave
 
 CarrierWave has a broad range of configuration options, which you can configure,
