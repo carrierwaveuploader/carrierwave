@@ -13,6 +13,7 @@ describe CarrierWave::Uploader do
   after do
     FileUtils.rm_rf(public_path)
     Object.send(:remove_const, "MyCoolUploader") if defined?(::MyCoolUploader)
+    CarrierWave.root = public_path
   end
 
   describe '#url' do
@@ -30,6 +31,13 @@ describe CarrierWave::Uploader do
 
     it "should not raise exception when hash specified as argument" do
       lambda { @uploader.url({}) }.should_not raise_error
+    end
+
+    it "should not raise exception when CarrierWave#root not available" do
+      CarrierWave.root = nil
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      @uploader.file.stub!(:url).and_return('')
+      lambda { @uploader.url }.should_not raise_error
     end
 
     it "should not raise ArgumentError when storage's File#url method doesn't get params" do
