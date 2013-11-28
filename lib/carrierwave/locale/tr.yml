@@ -1,0 +1,11 @@
+tr:
+  errors:
+    messages:
+      carrierwave_processing_error: işlenmesi sırasında hata oluştu
+      carrierwave_integrity_error: izin verilebilir bir dosya türü değil
+      carrierwave_download_error: indirilemedi
+      extension_white_list_error: "%{extension} uzantılı dosyaları yükleme izniniz yok, izin verilen uzantılar: %{allowed_types}"
+      extension_black_list_error: "%{extension} uzantılı dosyaları yükleme izniniz yok, izin verilmeyen uzantılar: %{prohibited_types}"
+      rmagick_processing_error: "Resim rmagick ile düzenlenemedi, belkide resim değildir? Orjinal Hata: %{e}"
+      mime_types_processing_error: "Dosya, MIME::Types kullanılarak işlenemedi, belkide geçerli bir içerik türü değildir? Orjinal Hata: %{e}"
+      mini_magick_processing_error: "Resim MiniMagick ile düzenlenemedi, belkide resim değildir? Orjinal Hata: %{e}"
