@@ -51,6 +51,20 @@ describe CarrierWave::Uploader do
     end
   end
 
+  describe '#cached?' do
+    it "should return true if the file is cached" do
+      @uploader.instance_variable_set(:@cache_id, '1369894322-345-2255')
+
+      @uploader.should be_cached
+    end
+
+    it "should return false if the file is not cached" do
+      @uploader.instance_variable_set(:@cache_id, nil)
+
+      @uploader.should_not be_cached
+    end
+  end
+
   describe '#cache_dir' do
     it "should default to the config option" do
       @uploader.cache_dir.should == 'uploads/tmp'
