@@ -261,7 +261,7 @@ module CarrierWave
       image.format(@format.to_s.downcase) if @format
       image = yield(image)
       image.write(current_path)
-      ::MiniMagick::Image.open(current_path)
+      image.run_command("identify", current_path)
     rescue ::MiniMagick::Error, ::MiniMagick::Invalid => e
       raise CarrierWave::ProcessingError, I18n.translate(:"errors.messages.mini_magick_processing_error", :e => e, :default => I18n.translate(:"errors.messages.mini_magick_processing_error", :e => e, :locale => :en))
     end
