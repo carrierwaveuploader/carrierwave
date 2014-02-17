@@ -258,10 +258,15 @@ module CarrierWave
     def manipulate!
       cache_stored_file! if !cached?
       image = ::MiniMagick::Image.open(current_path)
-      image.format(@format.to_s.downcase) if @format
-      image = yield(image)
-      image.write(current_path)
-      image.run_command("identify", current_path)
+
+      begin
+        image.format(@format.to_s.downcase) if @format
+        image = yield(image)
+        image.write(current_path)
+        image.run_command("identify", current_path)
+      ensure
+        image.destroy!
+      end
     rescue ::MiniMagick::Error, ::MiniMagick::Invalid => e
       raise CarrierWave::ProcessingError, I18n.translate(:"errors.messages.mini_magick_processing_error", :e => e, :default => I18n.translate(:"errors.messages.mini_magick_processing_error", :e => e, :locale => :en))
     end
