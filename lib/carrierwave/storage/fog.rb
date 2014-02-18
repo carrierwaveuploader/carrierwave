@@ -17,6 +17,7 @@ module CarrierWave
     #
     # [:fog_attributes]                   (optional) additional attributes to set on files
     # [:fog_public]                       (optional) public readability, defaults to true
+    # [:fog_public_url]                   (optional) always return non-authenticated URLs.  Defaults to false.
     # [:fog_authenticated_url_expiration] (optional) time (in seconds) that authenticated urls
     #   will be valid, when fog_public is false and provider is AWS or Google, defaults to 600
     # [:fog_use_ssl_for_aws]              (optional) #public_url will use https for the AWS generated URL]
@@ -320,7 +321,7 @@ module CarrierWave
         # [NilClass] no url available
         #
         def url(options = {})
-          if !@uploader.fog_public
+          if !@uploader.fog_public && !@uploader.fog_public_url
             authenticated_url(options)
           else
             public_url

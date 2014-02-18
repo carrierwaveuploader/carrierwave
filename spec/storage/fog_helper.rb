@@ -251,6 +251,48 @@ end
           end
         end
 
+        describe 'fog_public_url' do
+          before do
+            directory_key = "#{CARRIERWAVE_DIRECTORY}public"
+            @directory = @storage.connection.directories.create(:key => directory_key, :public => false)
+            @uploader.stub!(:fog_public).and_return(false)
+            @uploader.stub!(:fog_directory).and_return(directory_key)
+            @uploader.stub!(:store_path).and_return('uploads/public.txt')
+            @fog_file = @storage.store!(@file)
+          end
+
+          after do
+            @directory.files.new(:key => 'uploads/public.txt').destroy
+            @directory.destroy
+          end
+
+          context "true" do
+            before do
+              @uploader.stub!(:fog_public_url).and_return(true)
+            end
+
+            it "should always return the public URL" do
+              @fog_file.url.should == @fog_file.public_url
+            end
+          end
+          context "false" do
+            before do
+              @uploader.stub!(:fog_public).and_return(false)
+            end
+            it "should have an authenticated_url" do
+              if ['AWS', 'Rackspace', 'Google'].include?(@provider)
+                @fog_file.authenticated_url.should_not be_nil
+                @fog_file.url.should == @fog_file.authenticated_url
+              end
+            end
+            it "should handle query params" do
+              if @provider == 'AWS' && !Fog.mocking?
+                headers = Excon.get(@fog_file.url(:query => {"response-content-disposition" => "attachment"})).headers
+                headers["Content-Disposition"].should == "attachment"
+              end
+            end
+          end
+        end
       end
 
     end
