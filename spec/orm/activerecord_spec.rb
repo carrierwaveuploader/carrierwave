@@ -376,6 +376,12 @@ describe CarrierWave::ActiveRecord do
       it "should clear the serialization column" do
         expect(@event.attributes['image']).to be_blank
       end
+
+      it "should return to false after being saved" do
+        @event.save!
+        @event.remove_image.should == false
+        @event.remove_image?.should == false
+      end
     end
 
     describe "#remote_image_url=" do

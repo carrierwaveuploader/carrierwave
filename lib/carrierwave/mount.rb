@@ -246,6 +246,10 @@ module CarrierWave
           end
         end
 
+        def mark_remove_#{column}_false
+          _mounter(:#{column}).remove = false
+        end
+
       RUBY
     end
 
