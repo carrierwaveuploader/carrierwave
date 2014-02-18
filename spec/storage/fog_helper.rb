@@ -7,10 +7,10 @@ def fog_tests(fog_credentials)
         before do
           CarrierWave.configure do |config|
             config.reset_config
-            config.fog_attributes      = {}
-            config.fog_credentials     = fog_credentials
-            config.fog_directory       = CARRIERWAVE_DIRECTORY
-            config.fog_public          = true
+            config.fog_attributes = {}
+            config.fog_credentials = fog_credentials
+            config.fog_directory = CARRIERWAVE_DIRECTORY
+            config.fog_public = true
             config.fog_use_ssl_for_aws = true
           end
 
@@ -34,27 +34,30 @@ end
           it "should cache_stored_file! after store!" do
             uploader = @uploader.new
             uploader.store!(@file)
-            lambda{ uploader.cache_stored_file! }.should_not raise_error
+            lambda { uploader.cache_stored_file! }.should_not raise_error
           end
         end
 
         describe '#store!' do
+
+          let(:store_path) { 'uploads/test+.jpg' }
+
           before do
-            @uploader.stub!(:store_path).and_return('uploads/test+.jpg')
+            @uploader.stub!(:store_path).and_return(store_path)
             @fog_file = @storage.store!(@file)
           end
 
           it "should upload the file" do
-            @directory.files.get('uploads/test+.jpg').body.should == 'this is stuff'
+            @directory.files.get(store_path).body.should == 'this is stuff'
           end
 
           it "should have a path" do
-            @fog_file.path.should == 'uploads/test+.jpg'
+            @fog_file.path.should == store_path
           end
 
           it "should have a content_type" do
             @fog_file.content_type.should == 'image/jpeg'
-            @directory.files.get('uploads/test+.jpg').content_type.should == 'image/jpeg'
+            @directory.files.get(store_path).content_type.should == 'image/jpeg'
           end
 
           it "should have an extension" do
@@ -151,6 +154,17 @@ end
                 @fog_file.url.should == 'http://foo.bar/uploads/test%2B.jpg'
               end
             end
+
+          end
+
+          context "without extension" do
+
+            let(:store_path) { 'uploads/test' }
+
+            it "should have no extension" do
+              @fog_file.extension.should be_nil
+            end
+
           end
 
           it "should return filesize" do
@@ -159,7 +173,7 @@ end
 
           it "should be deletable" do
             @fog_file.delete
-            @directory.files.head('uploads/test+.jpg').should == nil
+            @directory.files.head(store_path).should == nil
           end
         end
 
