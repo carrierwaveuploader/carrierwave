@@ -18,8 +18,8 @@ module CarrierWave
 
         def original_filename
           if file.meta.include? 'content-disposition'
-            match = file.meta['content-disposition'].match(/filename=(\"?)(.+)\1/)
-            return match[2] unless match.nil?
+            match = file.meta['content-disposition'].match(/filename="(.*?)"/)
+            return match[ 1 ] if !match.nil? && !match[ 1 ].empty?
           end
           File.basename(file.base_uri.path)
         end
