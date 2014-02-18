@@ -17,11 +17,12 @@ module CarrierWave
         end
 
         def original_filename
-          if file.meta.include? 'content-disposition'
-            match = file.meta['content-disposition'].match(/filename=(\"?)(.+)\1/)
-            return match[2] unless match.nil?
+          filename = filename_from_header || File.basename(file.base_uri.path)
+          mime_type = MIME::Types[file.content_type].first
+          unless File.extname(filename).present? || mime_type.blank?
+            filename = "#{filename}.#{mime_type.extensions.first}"
           end
-          File.basename(file.base_uri.path)
+          filename
         end
 
         def respond_to?(*args)
@@ -43,6 +44,13 @@ module CarrierWave
 
         rescue Exception => e
           raise CarrierWave::DownloadError, "could not download file: #{e.message}"
+        end
+
+        def filename_from_header
+          if file.meta.include? 'content-disposition'
+            match = file.meta['content-disposition'].match(/filename=(\"?)(.+)\1/)
+            return match[2] unless match.nil?
+          end
         end
 
         def method_missing(*args, &block)

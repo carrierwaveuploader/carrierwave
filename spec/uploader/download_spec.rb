@@ -20,6 +20,7 @@ describe CarrierWave::Uploader::Download do
 
       sham_rack_app = ShamRack.at('www.example.com').stub
       sham_rack_app.register_resource('/test.jpg', File.read(file_path('test.jpg')), 'image/jpg')
+      sham_rack_app.register_resource('/test-with-no-extension/test', File.read(file_path('test.jpg')), 'image/jpeg')
       sham_rack_app.register_resource('/test%20with%20spaces/test.jpg', File.read(file_path('test.jpg')), 'image/jpg')
       sham_rack_app.handle do |request|
         if request.path_info == '/content-disposition'
@@ -106,6 +107,11 @@ describe CarrierWave::Uploader::Download do
     it "should read content-disposition headers" do
       @uploader.download!('http://www.example.com/content-disposition')
       @uploader.url.should == '/uploads/tmp/1369894322-345-2255/another_test.jpg'
+    end
+
+    it 'should set file extension based on content-type if missing' do
+      @uploader.download!('http://www.example.com/test-with-no-extension/test')
+      @uploader.url.should == '/uploads/tmp/1369894322-345-2255/test.jpeg'
     end
 
     it 'should not obscure original exception message' do
