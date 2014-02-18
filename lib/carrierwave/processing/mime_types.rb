@@ -59,7 +59,8 @@ module CarrierWave
     #
     def set_content_type(override=false)
       if override || file.content_type.blank? || generic_content_type?
-        new_content_type = ::MIME::Types.type_for(file.original_filename).first.to_s
+        fname = file.respond_to?(:original_filename) ? file.original_filename : file.filename
+        new_content_type = ::MIME::Types.type_for(fname).first.to_s
         if file.respond_to?(:content_type=)
           file.content_type = new_content_type
         else
