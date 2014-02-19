@@ -29,13 +29,21 @@ describe CarrierWave::Uploader do
     before do
       @file = File.open(file_path('test.jpg'))
 
+      CarrierWave.stub!(:generate_cache_id).and_return('1390890634-26112-2122')
+
+      @cached_file = mock('a cached file')
+      @cached_file.stub!(:delete)
+
       @stored_file = mock('a stored file')
       @stored_file.stub!(:path).and_return('/path/to/somewhere')
       @stored_file.stub!(:url).and_return('http://www.example.com')
 
       @storage = mock('a storage engine')
+      @storage.stub!(:cache!).and_return(@cached_file)
+      @storage.stub!(:retrieve_from_cache!).and_return(@cached_file)
       @storage.stub!(:store!).and_return(@stored_file)
       @storage.stub!(:identifier).and_return('this-is-me')
+      @storage.stub!(:delete_dir!).with("uploads/tmp/#{CarrierWave.generate_cache_id}")
 
       @uploader_class.storage.stub!(:new).with(@uploader).and_return(@storage)
     end
@@ -107,51 +115,17 @@ describe CarrierWave::Uploader do
 
       it "should not delete the old cache_id" do
         @uploader.cache!(@file)
-        cache_path = @uploader.send(:cache_path) # WARNING: violating private
-        cache_id_dir = File.dirname(cache_path)
-        cache_parent_dir = File.split(cache_id_dir).first
-        File.should be_directory(cache_parent_dir)
-        File.should be_directory(cache_id_dir)
 
+        @storage.should_not_receive(:delete_dir!)
         @uploader.store!
-
-        File.should be_directory(cache_parent_dir)
-        File.should be_directory(cache_id_dir)
       end
     end
 
     it "should delete the old cache_id" do
       @uploader.cache!(@file)
-      cache_path = @uploader.send(:cache_path) # WARNING: violating private
-      cache_id_dir = File.dirname(cache_path)
-      cache_parent_dir = File.split(cache_id_dir).first
-      File.should be_directory(cache_parent_dir)
-      File.should be_directory(cache_id_dir)
 
+      @storage.should_receive(:delete_dir!)
       @uploader.store!
-
-      File.should be_directory(cache_parent_dir)
-      File.should_not be_directory(cache_id_dir)
-    end
-
-    context "when the old cache_id directory is not empty" do
-      before do
-        @uploader.cache!(@file)
-        cache_path = @uploader.send(:cache_path) # WARNING: violating private
-        @cache_id_dir = File.dirname(cache_path)
-        @existing_file = File.join(@cache_id_dir, "exsting_file.txt")
-        File.open(@existing_file, "wb"){|f| f << "I exist"}
-      end
-
-      it "should not delete the old cache_id" do
-        @uploader.store!
-        File.should be_directory(@cache_id_dir)
-      end
-
-      it "should not delete other existing files in old cache_id dir" do
-        @uploader.store!
-        File.should exist @existing_file
-      end
     end
 
     it "should do nothing when trying to store an empty file" do
@@ -170,11 +144,15 @@ describe CarrierWave::Uploader do
 
   describe '#retrieve_from_store!' do
     before do
+      @cached_file = mock('a cached file')
+      @cached_file.stub!(:delete)
+
       @stored_file = mock('a stored file')
       @stored_file.stub!(:path).and_return('/path/to/somewhere')
       @stored_file.stub!(:url).and_return('http://www.example.com')
 
       @storage = mock('a storage engine')
+      @storage.stub!(:retrieve_from_cache!).and_return(@cached_file)
       @storage.stub!(:retrieve!).and_return(@stored_file)
       @storage.stub!(:identifier).and_return('this-is-me')
 
@@ -264,12 +242,19 @@ describe CarrierWave::Uploader do
       before do
         @file = File.open(file_path('test.jpg'))
 
+        CarrierWave.stub!(:generate_cache_id).and_return('1390890634-26112-2122')
+
+        @cached_file = mock('a cached file')
+        @cached_file.stub!(:delete)
+
         @stored_file = mock('a stored file')
         @stored_file.stub!(:path).and_return('/path/to/somewhere')
         @stored_file.stub!(:url).and_return('http://www.example.com')
 
         @storage = mock('a storage engine')
+        @storage.stub!(:cache!).and_return(@cached_file)
         @storage.stub!(:store!).and_return(@stored_file)
+        @storage.stub!(:delete_dir!).with("uploads/tmp/#{CarrierWave.generate_cache_id}")
 
         @uploader_class.storage.stub!(:new).with(@uploader).and_return(@storage)
       end

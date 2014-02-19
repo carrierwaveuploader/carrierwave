@@ -88,9 +88,9 @@ describe CarrierWave::Mount do
       it "should inherit defined processors properly" do
         @uploader1.processors.should == [[:rotate, [], nil]]
         @uploader2.processors.should == [[:rotate, [], nil], [:shrink, [], nil]]
-        @uploader1.versions[:thumb][:uploader].processors.should == [[:compress, [], nil]]
-        @uploader2.versions[:thumb][:uploader].processors.should == [[:compress, [], nil]]
-        @uploader2.versions[:secret][:uploader].processors.should == [[:encrypt, [], nil]]
+        @uploader1.versions[:thumb].processors.should == [[:compress, [], nil]]
+        @uploader2.versions[:thumb].processors.should == [[:compress, [], nil]]
+        @uploader2.versions[:secret].processors.should == [[:encrypt, [], nil]]
       end
     end
 

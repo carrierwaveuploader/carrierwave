@@ -25,6 +25,21 @@ module CarrierWave
       def retrieve!(identifier)
       end
 
+      def cache!(new_file)
+        raise NotImplementedError.new("Need to implement #cache! if you want to use #{self.class.name} as a cache storage.")
+      end
+
+      def retrieve_from_cache!(identifier)
+        raise NotImplementedError.new("Need to implement #retrieve_from_cache! if you want to use #{self.class.name} as a cache storage.")
+      end
+
+      def delete_dir!(path)
+        raise NotImplementedError.new("Need to implement #delete_dir! if you want to use #{self.class.name} as a cache storage.")
+      end
+
+      def clean_cache!(seconds)
+        raise NotImplementedError.new("Need to implement #clean_cache! if you want to use #{self.class.name} as a cache storage.")
+      end
     end # Abstract
   end # Storage
 end # CarrierWave

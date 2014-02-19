@@ -9,6 +9,7 @@ module CarrierWave
 
   class << self
     attr_accessor :root, :base_path
+    attr_writer :tmp_path
 
     def configure(&block)
       CarrierWave::Uploader::Base.configure(&block)
@@ -16,6 +17,10 @@ module CarrierWave
 
     def clean_cached_files!(seconds=60*60*24)
       CarrierWave::Uploader::Base.clean_cached_files!(seconds)
+    end
+
+    def tmp_path
+      @tmp_path ||= File.expand_path(File.join('..', 'tmp'), root)
     end
   end
 

@@ -37,6 +37,10 @@ def public_path( *paths )
   File.expand_path(File.join(File.dirname(__FILE__), 'public', *paths))
 end
 
+def tmp_path( *paths )
+  File.expand_path(File.join(File.dirname(__FILE__), 'tmp', *paths))
+end
+
 CarrierWave.root = public_path
 I18n.load_path << File.expand_path(File.join(File.dirname(__FILE__), "..", "lib", "carrierwave", "locale", 'en.yml'))
 
