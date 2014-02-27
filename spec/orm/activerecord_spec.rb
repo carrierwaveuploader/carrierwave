@@ -384,6 +384,15 @@ describe CarrierWave::ActiveRecord do
       end
     end
 
+    describe "remove_image=" do
+      it "should mark the image as changed if changed" do
+        expect(@event.image_changed?).to be_false
+        @event.remove_image.should be_nil
+        @event.remove_image = "1"
+        expect(@event.image_changed?).to be_true
+      end
+    end
+
     describe "#remote_image_url=" do
 
       # FIXME ideally image_changed? and remote_image_url_changed? would return true

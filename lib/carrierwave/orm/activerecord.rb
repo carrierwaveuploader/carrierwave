@@ -45,6 +45,11 @@ module CarrierWave
           super
         end
 
+        def remove_#{column}=(value)
+          send(:"#{column}_will_change!")
+          super
+        end
+
         def remove_#{column}!
           super
           _mounter(:#{column}).remove = true
