@@ -189,20 +189,8 @@ plugins or client-side software.
 
 ## Setting the content type
 
-If you care about the content type of your files and notice that it's not being set
-as expected, you can configure your uploaders to use `CarrierWave::MimeTypes`.
-This adds a dependency on the [mime-types](http://rubygems.org/gems/mime-types) gem,
-but is recommended when using fog, and fog already has a dependency on mime-types.
-
-```ruby
-require 'carrierwave/processing/mime_types'
-
-class MyUploader < CarrierWave::Uploader::Base
-  include CarrierWave::MimeTypes
-
-  process :set_content_type
-end
-```
+As of v0.10.0, the `mime-types` gem is a runtime dependency and the content type is set automatically. 
+You no longer need to do this manually.
 
 ## Adding versions
 
