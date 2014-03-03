@@ -1,4 +1,6 @@
-=== Version 0.9.0 2013-07-06
+releases are now documented here: https://github.com/carrierwaveuploader/carrierwave/releases/
+
+### Version 0.9.0 2013-07-06
 
 * [BREAKING CHANGE] Use integer time (UTC) to generate cache IDs [@bensie]
 * [changed] Recommend using ActionController::Base.helpers instead of Sprockets::Rails::Helper for asset pipeline [@c0]
@@ -12,7 +14,7 @@
 * [fixed] Fixed bug in serializing to xml or json where both :only and :except are passed [@Knack]
 * [fixed] Fix recreate_versions! when version if proc returns false [@arthurnn]
 
-=== Version 0.8.0 2013-01-08
+### Version 0.8.0 2013-01-08
 
 * [BREAKING CHANGE] Remove 'fog_endpoint' in favor of 'host' and/or 'endpoint' in fog_credentials [bensie]
 * [changed] Remove autoload in favor of standard 'require' to help with thread safety [bensie]
@@ -21,12 +23,12 @@
 * [added] Add #extension CarrierWave::Storage::Fog::File for fetching a file extension [sweatypitts]
 * [fixed] Marshaling uploader objects no longer raises a TypeError on anonymous classes [bensie]
 
-=== Version 0.7.1 2012-11-08
+### Version 0.7.1 2012-11-08
 
 * [added] add a override to allow fog configuration per uploader [dei79]
 * [fixed] Fix a regression when removing uploads [mattolson]
 
-=== Version 0.7.0 2012-10-19
+### Version 0.7.0 2012-10-19
 
 * [BREAKING CHANGE] Rename 'fog_host' config option to 'asset_host' and add support for file storage [DouweM]
 * [changed] Changed after_destroy with after_commit ... :on => :destroy [Cristian Sorinel]
@@ -46,17 +48,17 @@
 * [fixed] Fix reference to column in serializable_hash [malclocke]
 * [fixed] Fix inconsistence in file API [oelmekki]
 
-=== Version 0.6.2 2012-04-12
+### Version 0.6.2 2012-04-12
 
 * [fixed] Don't double-generate cache_id [skyeagle]
 * [added] Escape plus signs (+) in remote URLs [adrianpike]
 * [added] Enhance multi-page PDF support in RMagick [xtreme-tanzeeb-khalili]
 
-=== Version 0.6.1 2012-04-02
+### Version 0.6.1 2012-04-02
 
 * [fixed] Calling #serializable_hash with no options [matthewrudy]
 
-=== Version 0.6.0 2012-03-27
+### Version 0.6.0 2012-03-27
 
 * [BREAKING CHANGE] Require Rails 3.2 or Rails master (4.0) - depends on activesupport/activemodel [bensie]
 * [BREAKING CHANGE] Remove :S3 storage option in favor of Fog [bensie]
@@ -79,7 +81,7 @@
 * [fixed] Fix possible race condition with CarrierWave.root [bensie]
 * [fixed] ActiveSupport::Memoizable deprecation warning [slbug]
 
-=== Version 0.5.8 2011-11-10
+### Version 0.5.8 2011-11-10
 
 * [added] Allow custom error messages [bartt]
 * [added] Add config.base_path to use as a prefix for uploader URLs [die-antwort]
@@ -88,7 +90,7 @@
 * [fixed] Support for Sinatra 1.3 (with backward compatibility) [bensie]
 * [fixed] Fog get_object_url deprecated, use get_object_https_url or get_object_http_url [scottmessinger]
 
-=== Version 0.5.7 2011-08-12
+### Version 0.5.7 2011-08-12
 
 * [BREAKING CHANGE] Extracted Mongoid support into a separate gem (carrierwave-mongoid) [jnicklas]
 * [BREAKING CHANGE] Remove ImageScience support due to lack maintenance and 1.9.2 compatibility [jnicklas]
@@ -99,14 +101,14 @@
 * [fixed] Fixed that store! can call process! twice [gzigzigzeo]
 * [fixed] Performance enhancements by reducing use of rescue [jamescook]
 
-=== Version 0.5.6 2011-07-12
+### Version 0.5.6 2011-07-12
 
 * [fixed] Remove cache file and directories after storing [scottwb]
 * [fixed] Add missing active_support/deprecation require [trevorturk]
 * [fixed] Remove redundant requires of sequel and datamapper [solnic]
 * [fixed] Running tests with REMOTE=true [geemus]
 
-=== Version 0.5.5 2011-07-09
+### Version 0.5.5 2011-07-09
 
 * [BREAKING CHANGE] Extracted DataMapper support into a separate gem (carrierwave-datamapper) [jnicklas]
 * [BREAKING CHANGE] Extracted Sequel support into a separate gem (carrierwave-sequel) [jnicklas]
@@ -128,7 +130,7 @@
 * [fixed] Fix validates_size/length_of in Rails 3.0.6 and above, closes #342 [bensie]
 * [fixed] Various Active Support compatibility updates [slbug, bensie, et al]
 
-=== Version 0.5.4 2011-05-18
+### Version 0.5.4 2011-05-18
 
 * [changed] Fog: Performance enhancements for AWS and Google [geemus]
 * [changed] Fog: Try to use subdomain public url on s3 [geemus]
@@ -136,7 +138,7 @@
 * [changed] Relax development gem dependency versions where possible and fix tests [trevorturk]
 * [changed] Upgrade to RSpec 2 [jnicklas]
 
-=== Version 0.5.3 2011-03-22
+### Version 0.5.3 2011-03-22
 
 * [changed] Cloud Files storage so delete and url return nil if object not found instead of exception [minter]
 * [added] New fog storage provider that supports Amazon S3, Rackspace Cloud Files, and Google Storare for Developers [geemus]
@@ -151,7 +153,7 @@
 * [fixed] Fix paperclip compatibility mappings [valakirka]
 * [fixed] Ensure temporary files can be deleted on Windows [Eleo]
 
-=== Version 0.5.2 2011-02-18
+### Version 0.5.2 2011-02-18
 
 * [changed] Require active_support/core_ext/string/multibyte to fix downcasing unicode filenames during sanitizing [nashbridges]
 * [changed] Use fog ~> 0.4, Fog::AWS::Storage.new -> Fog::Storage.new(:provider => 'AWS') [trevorturk]
@@ -169,7 +171,7 @@
 * [fixed] An intermittent bug with ImageScience resize_to_fill method [LupineDev]
 * [fixed] DataMapper#save should remove the avatar if remove_avatar? returns true [wprater]
 
-=== Version 0.5.1 2010-12-01
+### Version 0.5.1 2010-12-01
 
 * [changed] s3_access renamed to s3_access_policy [Jonas Nicklas]
 * [changed] Depend on activesupport ~> 3.0 for Rails 3.1 compatibility [Trevor Turk]
@@ -185,7 +187,7 @@
 * [fixed] Stack level too deep errors when using to_json [Trevor Turk]
 * [fixed] Documentation for mount_uploader [Nathan Kleyn]
 
-=== Version 0.5 2010-09-23
+### Version 0.5 2010-09-23
 
 * [changed] Use ActiveModel instead of ActiveRecord validations to support Mongoid validations as well [Jeroen van Dijk, saberma]
 * [changed] Support S3 file storage with the fog gem, instead of the aws gem (Trevor Turk)
@@ -202,7 +204,7 @@
 * [fixed] Escape URLs passed to remote file downloader so URLs with spaces work (Mauricio Zaffari)
 * [fixed] Correct filename used in generators (Fred Wu)
 
-=== Version 0.4.6 2010-07-20
+### Version 0.4.6 2010-07-20
 
 * [removed] Support for MongoMapper, see: http://groups.google.com/group/carrierwave/browse_thread/thread/56df146b83878c22
 * [changed] AWS support now uses the aws gem, instead of using aws-s3 or right-aws as previously
@@ -217,14 +219,14 @@
 * [fixed] Support DataMapper 1.0
 * [fixed] SanitizedFile#copy_to preserves content_type. Should fix GridFS content type not being set.
 
-=== Version 0.4.5 2010-02-20
+### Version 0.4.5 2010-02-20
 
 * [added] Support for Rackspace Cloudfiles
 * [added] GridFS now accepts a port
 * [fixed] s3_headers is now properly initialized
 * [fixed] work around DataMapper's patching of core method
 
-=== Version 0.4.4 2010-01-31
+### Version 0.4.4 2010-01-31
 
 * [added] Support for downloading remote files
 * [added] CarrierWave.clean_cached_files! to remove old cached files
@@ -234,19 +236,19 @@
 * [fixed] Content type is stored on GridStore and Amazon S3
 * [fixed] Metadata is no longer broken for S3
 
-=== Version 0.4.3 2009-12-19
+### Version 0.4.3 2009-12-19
 
 * [fixed] cnamed URLs on S3 no longer have a third slash after http
 * [fixed] fixed deprecation warnings on Rails 2.3.5
 
-=== Version 0.4.2 2009-11-26
+### Version 0.4.2 2009-11-26
 
 * [added] RightAWS as an alternative S3 implementation
 * [added] An option to enable/disable processing for tests
 * [added] Mongoid ORM support
 * [fixed] DataMapper now works both with and without dm-validations
 
-=== Version 0.4.1 2009-10-26
+### Version 0.4.1 2009-10-26
 
 * [changed] Major changes to the ImageScience module, it actually works now!
 * [fixed] Bug in configuration where it complais that it can't dup Symbol
@@ -254,7 +256,7 @@
 * [removed] Support for Sequel < 2.12
 * [removed] `crop_resized` and `resize` aliases in RMagick, use `resize_to_fill` and `resize_to_fit` respectively
 
-=== Version 0.4.0 2009-10-12
+### Version 0.4.0 2009-10-12
 
 * [changed] the `public` option has been renamed `root` and the old `root` option was removed. No more ambiguity.
 * [changed] Major *breaking* changes to the configuration syntax.
@@ -265,21 +267,21 @@
 
 * [added] Support for MongoDB's GridFS store
 
-=== Version 0.3.4 2009-09-01
+### Version 0.3.4 2009-09-01
 
 * [added] `default_url` as a replacement for `default_path`
 * [deprecated] `default_path` is deprecated
 
-=== Version 0.3.4 2009-08-31
+### Version 0.3.4 2009-08-31
 
 * [fixed] Deleting no longer causes TypeError in MongoMapper
 
-=== Version 0.3.3 2009-08-29
+### Version 0.3.3 2009-08-29
 
 * [added] Support for MongoMapper
 * [added] Support for CNamed Bucket URLs for Amazon S3
 
-=== Version 0.3.2 2009-07-18
+### Version 0.3.2 2009-07-18
 
 Incremental upgrade
 
@@ -288,7 +290,7 @@ Incremental upgrade
 * [fixed] Performance issues with S3 support
 * [fixed] Sequel support for newer verions of Sequel (thanks Pavel!)
 
-=== Version 0.3.1 2009-07-01
+### Version 0.3.1 2009-07-01
 
 A bugfix release. Drop in compatible with 0.3.0.
 
@@ -296,7 +298,7 @@ A bugfix release. Drop in compatible with 0.3.0.
 * [fixed] The file returned by S3 storage now has the path set to the full store path
 * [added] File returned by S3 storage now responds to S3 specific methods
 
-=== 0.3 2009-06-20
+### 0.3 2009-06-20
 
 This is a stabilization release. Most features are now working as expected and
 most bugs should be fixed.
@@ -308,18 +310,18 @@ most bugs should be fixed.
 * [fixed] ActiveRecord no longer saves the record twice
 * [added] Added convenient macro style class methods to rmagick processing
 
-=== 0.2.4 2009-06-11
+### 0.2.4 2009-06-11
 
 * [added] `resize_to_limit` method for rmagick
 * [added] Now deletes files from Amazon S3 when record is destroyed
 
-=== 0.2.3 2009-05-13
+### 0.2.3 2009-05-13
 
 * [changed] Mount now no longer returns nil if there is no stored file, it returns a blank uploader instead
 * [added] Possibility to specify a default path
 * [added] Paperclip compatibility module
 
-=== 0.2.1 2009-05-01
+### 0.2.1 2009-05-01
 
 * [changed] Url method now optionally takes versions as parameters (like Paperclip)
 * [added] A field which allows files to be removed with a checkbox in mount
@@ -328,7 +330,7 @@ most bugs should be fixed.
 * [added] Option to not copy files to cache dir, to prevent writes on read only fs systems (this is a workaround and needs a better solution)
 
 
-=== 0.2 2009-04-15
+### 0.2 2009-04-15
 
 * [changed] The version is no longer stored in the store dir. This will break the paths for files uploaded with 0.1
 * [changed] CarrierWave::Uploader is now a module, not a class, so you need to include it, not inherit from it.
@@ -339,6 +341,6 @@ most bugs should be fixed.
 * [added] Support for Sequel
 * [added] CarrierWave::Uploader#read to read the contents of the uploaded files
 
-=== 0.1 2009-03-12
+### 0.1 2009-03-12
 
 This is a very experimental release that has not been well tested. All of the major features are in place though. Please note that there currently is a bug with load paths in Merb, which means you need to manually require uploaders.
