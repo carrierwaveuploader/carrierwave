@@ -51,6 +51,62 @@ module CarrierWave
         CarrierWave::SanitizedFile.new(path)
       end
 
+      ##
+      # Stores given file to cache directory.
+      #
+      # === Parameters
+      #
+      # [new_file (File, IOString, Tempfile)] any kind of file object
+      #
+      # === Returns
+      #
+      # [CarrierWave::SanitizedFile] a sanitized file
+      #
+      def cache!(new_file)
+        new_file.move_to(::File.expand_path(uploader.cache_path, uploader.root), uploader.permissions, uploader.directory_permissions, true)
+      end
+
+      ##
+      # Retrieves the file with the given cache_name from the cache.
+      #
+      # === Parameters
+      #
+      # [cache_name (String)] uniquely identifies a cache file
+      #
+      # === Raises
+      #
+      # [CarrierWave::InvalidParameter] if the cache_name is incorrectly formatted.
+      #
+      def retrieve_from_cache!(identifier)
+        CarrierWave::SanitizedFile.new(::File.expand_path(uploader.cache_path(identifier), uploader.root))
+      end
+
+      ##
+      # Deletes a cache dir
+      #
+      def delete_dir!(path)
+        if path
+          begin
+            Dir.rmdir(::File.expand_path(path, uploader.root))
+          rescue Errno::ENOENT
+            # Ignore: path does not exist
+          rescue Errno::ENOTDIR
+            # Ignore: path is not a dir
+          rescue Errno::ENOTEMPTY, Errno::EEXIST
+            # Ignore: dir is not empty
+          end
+        end
+      end
+
+      def clean_cache!(seconds)
+        Dir.glob(::File.expand_path(::File.join(uploader.cache_dir, '*'), CarrierWave.root)).each do |dir|
+          time = dir.scan(/(\d+)-\d+-\d+/).first.map { |t| t.to_i }
+          time = Time.at(*time)
+          if time < (Time.now.utc - seconds)
+            FileUtils.rm_rf(dir)
+          end
+        end
+      end
     end # File
   end # Storage
 end # CarrierWave

@@ -5,7 +5,7 @@ module CarrierWave
       extend ActiveSupport::Concern
 
       included do
-        class_attribute :_storage, :instance_writer => false
+        class_attribute :_storage, :_cache_storage, :instance_writer => false
 
         add_config :root
         add_config :base_path
@@ -76,6 +76,33 @@ module CarrierWave
         end
         alias_method :storage=, :storage
 
+        ##
+        # Sets the cache storage engine to be used when storing cache files with this uploader.
+        # Same as .storage except for required methods being #cache!(CarrierWave::SanitizedFile),
+        # #retrieve_from_cache! and #delete_dir!.
+        #
+        # === Parameters
+        #
+        # [storage (Symbol, Class)] The cache storage engine to use for this uploader
+        #
+        # === Returns
+        #
+        # [Class] the cache storage engine to be used with this uploader
+        #
+        # === Examples
+        #
+        #     cache_storage :file
+        #     cache_storage CarrierWave::Storage::File
+        #     cache_storage MyCustomStorageEngine
+        #
+        def cache_storage(storage = nil)
+          if storage
+            self._cache_storage = storage.is_a?(Symbol) ? eval(storage_engines[storage]) : storage
+          end
+          _cache_storage
+        end
+        alias_method :cache_storage=, :cache_storage
+
         def add_config(name)
           class_eval <<-RUBY, __FILE__, __LINE__ + 1
             def self.eager_load_fog(fog_credentials)
@@ -130,6 +157,7 @@ module CarrierWave
               :fog  => "CarrierWave::Storage::Fog"
             }
             config.storage = :file
+            config.cache_storage = :file
             config.fog_attributes = {}
             config.fog_credentials = {}
             config.fog_public = true

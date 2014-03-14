@@ -14,43 +14,6 @@ describe CarrierWave::Uploader do
     FileUtils.rm_rf(public_path)
   end
 
-  describe '.clean_cached_files!' do
-    before do
-      five_days_ago_int  = 1369894322
-      three_days_ago_int = 1370067122
-      yesterday_int      = 1370239922
-      now_int            = 1369894322
-
-      @cache_dir = File.expand_path(@uploader_class.cache_dir, CarrierWave.root)
-      FileUtils.mkdir_p File.expand_path("#{five_days_ago_int}-234-2213", @cache_dir)
-      FileUtils.mkdir_p File.expand_path("#{three_days_ago_int}-234-2213", @cache_dir)
-      FileUtils.mkdir_p File.expand_path("#{yesterday_int}-234-2213", @cache_dir)
-    end
-
-    after { FileUtils.rm_rf(@cache_dir) }
-
-    it "should clear all files older than, by defaul, 24 hours in the default cache directory" do
-      Timecop.freeze(Time.at(1370261522)) do
-        @uploader_class.clean_cached_files!
-      end
-      Dir.glob("#{@cache_dir}/*").size.should == 1
-    end
-
-    it "should permit to set since how many seconds delete the cached files" do
-      Timecop.freeze(Time.at(1370261522)) do
-        @uploader_class.clean_cached_files!(60*60*24*4)
-      end
-      Dir.glob("#{@cache_dir}/*").size.should == 2
-    end
-
-    it "should be aliased on the CarrierWave module" do
-      Timecop.freeze(Time.at(1370261522)) do
-        CarrierWave.clean_cached_files!
-      end
-      Dir.glob("#{@cache_dir}/*").size.should == 1
-    end
-  end
-
   describe '#cache_dir' do
     it "should default to the config option" do
       @uploader.cache_dir.should == 'uploads/tmp'
@@ -160,6 +123,7 @@ describe CarrierWave::Uploader do
         CarrierWave.stub!(:generate_cache_id).and_return('1369894322-345-2255')
 
         @cached_path = public_path('uploads/tmp/1369894322-345-2255/test_move.jpeg')
+        @workfile_path = tmp_path('1369894322-345-2255/test_move.jpeg')
         @uploader_class.permissions = 0777
         @uploader_class.directory_permissions = 0777
       end
@@ -182,7 +146,9 @@ describe CarrierWave::Uploader do
         end
 
         it "should use move_to() during cache!()" do
-          CarrierWave::SanitizedFile.any_instance.should_receive(:move_to).with(@cached_path, 0777, 0777)
+          moved_file = double('moved file').as_null_object
+          CarrierWave::SanitizedFile.any_instance.should_receive(:move_to).with(@workfile_path, 0777, 0777).and_return(moved_file)
+          moved_file.should_receive(:move_to).with(@cached_path, 0777, 0777, true)
           @uploader.cache!(@tmpfile)
         end
 
@@ -206,12 +172,14 @@ describe CarrierWave::Uploader do
         end
 
         it "should use copy_to() during cache!()" do
-          CarrierWave::SanitizedFile.any_instance.should_receive(:copy_to).with(@cached_path, 0777, 0777)
+          moved_file = double('moved file').as_null_object
+          CarrierWave::SanitizedFile.any_instance.should_receive(:copy_to).with(@workfile_path, 0777, 0777).and_return(moved_file)
+          moved_file.should_receive(:move_to).with(@cached_path, 0777, 0777, true)
           @uploader.cache!(@tmpfile)
         end
 
-        it "should not use move_to() during cache!()" do
-          CarrierWave::SanitizedFile.any_instance.should_not_receive(:move_to)
+        it "should not use move_to() in moving to temporary location during cache!()" do
+          CarrierWave::SanitizedFile.any_instance.should_not_receive(:move_to).with(@workfile_path, 0777, 0777)
           @uploader.cache!(@tmpfile)
         end
       end
