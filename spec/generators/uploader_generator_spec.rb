@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'generator_spec'
 require 'generators/uploader_generator'
 
 describe UploaderGenerator, :type => :generator do
