@@ -142,7 +142,7 @@ module CarrierWave
     # [Boolean] Whether the file exists
     #
     def exists?
-      return File.exists?(self.path) if self.path
+      return File.exist?(self.path) if self.path
       return false
     end
 
@@ -296,7 +296,7 @@ module CarrierWave
     def mkdir!(path, directory_permissions)
       options = {}
       options[:mode] = directory_permissions if directory_permissions
-      FileUtils.mkdir_p(File.dirname(path), options) unless File.exists?(File.dirname(path))
+      FileUtils.mkdir_p(File.dirname(path), options) unless File.exist?(File.dirname(path))
     end
 
     def chmod!(path, permissions)
