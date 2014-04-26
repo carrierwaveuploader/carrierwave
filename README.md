@@ -669,6 +669,22 @@ end
 That's it! You can still use the `CarrierWave::Uploader#url` method to return
 the url to the file on Google.
 
+## Optimized Loading of Fog
+
+Since Carrierwave doesn't know which parts of Fog you intend to use, it will just load the entire library. If you prefer to load fewer classes into your application, you need to load those parts of Fog yourself *before* loading Carrierwave:
+
+```ruby
+gem "carrierwave", require: false
+gem "fog", "~> 1.20", require: false
+```
+
+And in e.g. your uploader or an initializer:
+
+```ruby
+require 'fog/aws/storage'
+require 'carrierwave'
+```
+
 ## Dynamic Asset Host
 
 The `asset_host` config property can be assigned a proc (or anything that responds to `call`) for generating the host dynamically. The proc-compliant object gets an instance of the current `CarrierWave::Storage::Fog::File` or `CarrierWave::SanitizedFile` as its only argument.

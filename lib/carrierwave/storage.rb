@@ -2,7 +2,7 @@ require "carrierwave/storage/abstract"
 require "carrierwave/storage/file"
 
 begin
-  require "fog"
+  require "fog" unless defined?(::Fog)
 rescue LoadError
 end
 
