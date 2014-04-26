@@ -12,7 +12,6 @@ require 'timecop'
 require 'open-uri'
 require 'sham_rack'
 require 'mini_magick'
-require 'generator_spec'
 
 require 'mysql2'
 
