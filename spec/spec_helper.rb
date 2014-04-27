@@ -12,9 +12,11 @@ require 'timecop'
 require 'open-uri'
 require 'sham_rack'
 require 'mini_magick'
-
-require 'mysql2'
-
+if RUBY_ENGINE == 'jruby'
+  require 'activerecord-jdbcmysql-adapter'
+else
+  require 'mysql2'
+end
 require 'fog'
 require 'storage/fog_helper'
 
@@ -126,4 +128,7 @@ RSpec.configure do |config|
   config.include CarrierWave::Test::MockStorage
   config.include CarrierWave::Test::I18nHelpers
   config.include CarrierWave::Test::ManipulationHelpers
+  if RUBY_ENGINE == 'jruby'
+    config.filter_run_excluding :rmagick => true
+  end
 end

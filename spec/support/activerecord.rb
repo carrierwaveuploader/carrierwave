@@ -1,4 +1,8 @@
-require 'mysql2'
+if RUBY_ENGINE == 'jruby'
+  require 'activerecord-jdbcmysql-adapter'
+else
+  require 'mysql2'
+end
 require 'active_record'
 require 'carrierwave/orm/activerecord'
 

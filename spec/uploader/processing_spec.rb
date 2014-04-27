@@ -83,7 +83,7 @@ describe CarrierWave::Uploader do
       @uploader.process!("test.jpg")
     end
 
-    context "when using RMagick" do
+    context "when using RMagick", :rmagick => true do
       before do
         def @uploader.cover
           manipulate! { |frame, index| frame if index.zero? }
