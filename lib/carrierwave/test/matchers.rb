@@ -27,6 +27,10 @@ module CarrierWave
           "expected #{@actual.inspect} to not be identical to #{@expected.inspect}"
         end
 
+        def failure_message_when_negated
+          negative_failure_message
+        end
+
         def description
           "be identical to #{@expected.inspect}"
         end
@@ -55,6 +59,10 @@ module CarrierWave
           "expected #{@actual.current_path.inspect} not to have permissions #{@expected.to_s(8)}, but it did"
         end
 
+        def failure_message_when_negated
+          negative_failure_message
+        end
+
         def description
           "have permissions #{@expected.to_s(8)}"
         end
@@ -81,6 +89,10 @@ module CarrierWave
 
         def negative_failure_message
           "expected #{File.dirname @actual.current_path.inspect} not to have permissions #{@expected.to_s(8)}, but it did"
+        end
+
+        def failure_message_when_negated
+          negative_failure_message
         end
 
         def description
@@ -114,6 +126,10 @@ module CarrierWave
           "expected #{@actual.current_path.inspect} to be larger than #{@width} by #{@height}, but it wasn't."
         end
 
+        def failure_message_when_negated
+          negative_failure_message
+        end
+
         def description
           "be no larger than #{@width} by #{@height}"
         end
@@ -143,6 +159,10 @@ module CarrierWave
 
         def negative_failure_message
           "expected #{@actual.current_path.inspect} not to have an exact size of #{@width} by #{@height}, but it did."
+        end
+
+        def failure_message_when_negated
+          negative_failure_message
         end
 
         def description
@@ -175,6 +195,10 @@ module CarrierWave
           "expected #{@actual.current_path.inspect} not to have an exact size of #{@height}, but it did."
         end
 
+        def failure_message_when_negated
+          negative_failure_message
+        end
+
         def description
           "have an exact height of #{@height}"
         end
@@ -203,6 +227,10 @@ module CarrierWave
 
         def negative_failure_message
           "expected #{@actual.current_path.inspect} not to have an exact size of #{@width}, but it did."
+        end
+
+        def failure_message_when_negated
+          negative_failure_message
         end
 
         def description
@@ -235,6 +263,10 @@ module CarrierWave
           "expected #{@actual.current_path.inspect} not to be wider than #{@width}, but it is."
         end
 
+        def failure_message_when_negated
+          negative_failure_message
+        end
+
         def description
           "have a width less than or equal to #{@width}"
         end
@@ -263,6 +295,10 @@ module CarrierWave
 
         def negative_failure_message
           "expected #{@actual.current_path.inspect} not to be taller than #{@height}, but it is."
+        end
+
+        def failure_message_when_negated
+          negative_failure_message
         end
 
         def description
