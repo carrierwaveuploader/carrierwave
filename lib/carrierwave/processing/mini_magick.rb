@@ -81,7 +81,7 @@ module CarrierWave
         process :resize_to_fill => [width, height, gravity]
       end
 
-      def resize_and_pad(width, height, background=:transparent, gravity=::Magick::CenterGravity)
+      def resize_and_pad(width, height, background=:transparent, gravity='Center')
         process :resize_and_pad => [width, height, background, gravity]
       end
     end
