@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe CarrierWave::RMagick do
+describe CarrierWave::RMagick, :rmagick => true do
 
   before do
     @klass = Class.new do
