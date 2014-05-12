@@ -158,6 +158,16 @@ describe CarrierWave::ActiveRecord do
 
         expect(Hash.from_xml(@event.to_xml(:only => [:foo], :except => [:id]))["event#{$arclass}"]["image"]).to be_nil
       end
+
+      it "resets cached value on record reload" do
+        @event.image = CarrierWave::SanitizedFile.new(stub_file('new.jpeg', 'image/jpeg'))
+        @event.save!
+
+        expect(@event.reload.image).to be_present
+        @class.find(@event.id).update_column(:image, nil)
+
+        expect(@event.reload.image).to be_blank
+      end
     end
 
     describe '#image=' do
