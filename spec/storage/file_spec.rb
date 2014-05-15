@@ -29,12 +29,12 @@ describe CarrierWave::Storage::File do
 
       it "should not delete the old cache_id" do
         @uploader.store!
-        File.should be_directory(@cache_id_dir)
+        expect(File).to be_directory(@cache_id_dir)
       end
 
       it "should not delete other existing files in old cache_id dir" do
         @uploader.store!
-        File.should exist @existing_file
+        expect(File).to exist @existing_file
       end
     end
   end
@@ -57,21 +57,21 @@ describe CarrierWave::Storage::File do
       Timecop.freeze(Time.at(1370261522)) do
         @uploader_class.clean_cached_files!
       end
-      Dir.glob("#{@cache_dir}/*").size.should == 1
+      expect(Dir.glob("#{@cache_dir}/*").size).to eq(1)
     end
 
     it "should permit to set since how many seconds delete the cached files" do
       Timecop.freeze(Time.at(1370261522)) do
         @uploader_class.clean_cached_files!(60*60*24*4)
       end
-      Dir.glob("#{@cache_dir}/*").size.should == 2
+      expect(Dir.glob("#{@cache_dir}/*").size).to eq(2)
     end
 
     it "should be aliased on the CarrierWave module" do
       Timecop.freeze(Time.at(1370261522)) do
         CarrierWave.clean_cached_files!
       end
-      Dir.glob("#{@cache_dir}/*").size.should == 1
+      expect(Dir.glob("#{@cache_dir}/*").size).to eq(1)
     end
   end
 end
