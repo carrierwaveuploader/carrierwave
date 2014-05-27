@@ -674,7 +674,7 @@ the url to the file on Google.
 Since Carrierwave doesn't know which parts of Fog you intend to use, it will just load the entire library. If you prefer to load fewer classes into your application, you need to load those parts of Fog yourself *before* loading Carrierwave:
 
 ```ruby
-gem "fog", "~> 1.20", require "fog/aws/storage"
+gem "fog", "~> 1.20", require: "fog/aws/storage"
 gem "carrierwave"
 ```
 
