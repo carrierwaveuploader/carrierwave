@@ -12,21 +12,21 @@ describe CarrierWave::Storage::Fog::File do
 
     context "with normal url" do
       before do
-        subject.stub!(:url).and_return{ 'http://example.com/path/to/foo.txt' }
+        allow(subject).to receive(:url){ 'http://example.com/path/to/foo.txt' }
       end
 
       it "should extract filename from url" do
-        subject.filename.should == 'foo.txt'
+        expect(subject.filename).to eq('foo.txt')
       end
     end
 
     context "when url contains '/' in query string" do
       before do
-        subject.stub!(:url).and_return{ 'http://example.com/path/to/foo.txt?bar=baz/fubar' }
+        allow(subject).to receive(:url){ 'http://example.com/path/to/foo.txt?bar=baz/fubar' }
       end
 
       it "should extract correct part" do
-        subject.filename.should == 'foo.txt'
+        expect(subject.filename).to eq('foo.txt')
       end
     end
   end

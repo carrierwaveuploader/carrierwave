@@ -9,8 +9,8 @@ module Rails; end unless defined?(Rails)
 describe CarrierWave::Compatibility::Paperclip do
 
   before do
-    Rails.stub(:root).and_return('/rails/root')
-    Rails.stub(:env).and_return('test')
+    allow(Rails).to receive(:root).and_return('/rails/root')
+    allow(Rails).to receive(:env).and_return('test')
     @uploader_class = Class.new(CarrierWave::Uploader::Base) do
       include CarrierWave::Compatibility::Paperclip
 
@@ -19,10 +19,10 @@ describe CarrierWave::Compatibility::Paperclip do
 
     end
 
-    @model = mock('a model')
-    @model.stub!(:id).and_return(23)
-    @model.stub!(:ook).and_return('eek')
-    @model.stub!(:money).and_return('monkey.png')
+    @model = double('a model')
+    allow(@model).to receive(:id).and_return(23)
+    allow(@model).to receive(:ook).and_return('eek')
+    allow(@model).to receive(:money).and_return('monkey.png')
 
     @uploader = @uploader_class.new(@model, :monkey)
   end
@@ -33,37 +33,37 @@ describe CarrierWave::Compatibility::Paperclip do
 
   describe '#store_path' do
     it "should mimics paperclip default" do
-      @uploader.store_path("monkey.png").should == "/rails/root/public/system/monkeys/23/original/monkey.png"
+      expect(@uploader.store_path("monkey.png")).to eq("/rails/root/public/system/monkeys/23/original/monkey.png")
     end
 
     it "should interpolate the root path" do
-      @uploader.stub!(:paperclip_path).and_return(":rails_root/foo/bar")
-      @uploader.store_path("monkey.png").should == Rails.root + "/foo/bar"
+      allow(@uploader).to receive(:paperclip_path).and_return(":rails_root/foo/bar")
+      expect(@uploader.store_path("monkey.png")).to eq(Rails.root + "/foo/bar")
     end
 
     it "should interpolate the attachment" do
-      @uploader.stub!(:paperclip_path).and_return("/foo/:attachment/bar")
-      @uploader.store_path("monkey.png").should == "/foo/monkeys/bar"
+      allow(@uploader).to receive(:paperclip_path).and_return("/foo/:attachment/bar")
+      expect(@uploader.store_path("monkey.png")).to eq("/foo/monkeys/bar")
     end
 
     it "should interpolate the id" do
-      @uploader.stub!(:paperclip_path).and_return("/foo/:id/bar")
-      @uploader.store_path("monkey.png").should == "/foo/23/bar"
+      allow(@uploader).to receive(:paperclip_path).and_return("/foo/:id/bar")
+      expect(@uploader.store_path("monkey.png")).to eq("/foo/23/bar")
     end
 
     it "should interpolate the id partition" do
-      @uploader.stub!(:paperclip_path).and_return("/foo/:id_partition/bar")
-      @uploader.store_path("monkey.png").should == "/foo/000/000/023/bar"
+      allow(@uploader).to receive(:paperclip_path).and_return("/foo/:id_partition/bar")
+      expect(@uploader.store_path("monkey.png")).to eq("/foo/000/000/023/bar")
     end
 
     it "should interpolate the basename" do
-      @uploader.stub!(:paperclip_path).and_return("/foo/:basename/bar")
-      @uploader.store_path("monkey.png").should == "/foo/monkey/bar"
+      allow(@uploader).to receive(:paperclip_path).and_return("/foo/:basename/bar")
+      expect(@uploader.store_path("monkey.png")).to eq("/foo/monkey/bar")
     end
 
     it "should interpolate the extension" do
-      @uploader.stub!(:paperclip_path).and_return("/foo/:extension/bar")
-      @uploader.store_path("monkey.png").should == "/foo/png/bar"
+      allow(@uploader).to receive(:paperclip_path).and_return("/foo/:extension/bar")
+      expect(@uploader.store_path("monkey.png")).to eq("/foo/png/bar")
     end
 
   end
@@ -81,13 +81,13 @@ describe CarrierWave::Compatibility::Paperclip do
     end
 
     it 'should allow you to add custom interpolations' do
-      @uploader.stub!(:paperclip_path).and_return("/foo/:id/:ook")
-      @uploader.store_path("monkey.png").should == '/foo/23/eek'
+      allow(@uploader).to receive(:paperclip_path).and_return("/foo/:id/:ook")
+      expect(@uploader.store_path("monkey.png")).to eq('/foo/23/eek')
     end
 
     it 'mimics paperclips arguments' do
-      @uploader.stub!(:paperclip_path).and_return("/foo/:aak")
-      @uploader.store_path("monkey.png").should == '/foo/original'
+      allow(@uploader).to receive(:paperclip_path).and_return("/foo/:aak")
+      expect(@uploader.store_path("monkey.png")).to eq('/foo/original')
     end
 
     context 'when multiple uploaders include the compatibility module' do
@@ -103,8 +103,8 @@ describe CarrierWave::Compatibility::Paperclip do
       end
 
       it 'should not share custom interpolations' do
-        @uploader.stub!(:paperclip_path).and_return("/foo/:id/:ook")
-        @uploader.store_path('monkey.jpg').should == '/foo/23/:ook'
+        allow(@uploader).to receive(:paperclip_path).and_return("/foo/:id/:ook")
+        expect(@uploader.store_path('monkey.jpg')).to eq('/foo/23/:ook')
       end
 
     end
@@ -132,8 +132,8 @@ describe CarrierWave::Compatibility::Paperclip do
       it 'should interpolate for all versions correctly' do
         @file = File.open(file_path('test.jpg'))
         @uploader.store!(@file)
-        @uploader.thumb.path.should == "#{public_path}/foo/eek/23/thumb"
-        @uploader.list.path.should == "#{public_path}/foo/eek/23/list"
+        expect(@uploader.thumb.path).to eq("#{public_path}/foo/eek/23/thumb")
+        expect(@uploader.list.path).to eq("#{public_path}/foo/eek/23/list")
       end
     end
   end

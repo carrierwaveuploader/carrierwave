@@ -14,7 +14,7 @@ describe CarrierWave do
       CarrierWave.configure do |config|
         config.test_config = "foo"
       end
-      CarrierWave::Uploader::Base.test_config.should == 'foo'
+      expect(CarrierWave::Uploader::Base.test_config).to eq('foo')
     end
   end
 end
@@ -30,38 +30,38 @@ describe CarrierWave::Uploader::Base do
       @uploader_class.configure do |config|
         config.foo_bar = "monkey"
       end
-      @uploader_class.foo_bar.should == 'monkey'
+      expect(@uploader_class.foo_bar).to eq('monkey')
     end
   end
 
   describe ".storage" do
     it "should set the storage if an argument is given" do
-      storage = mock('some kind of storage')
+      storage = double('some kind of storage')
       @uploader_class.storage storage
-      @uploader_class.storage.should == storage
+      expect(@uploader_class.storage).to eq(storage)
     end
 
     it "should default to file" do
-      @uploader_class.storage.should == CarrierWave::Storage::File
+      expect(@uploader_class.storage).to eq(CarrierWave::Storage::File)
     end
 
     it "should set the storage from the configured shortcuts if a symbol is given" do
       @uploader_class.storage :file
-      @uploader_class.storage.should == CarrierWave::Storage::File
+      expect(@uploader_class.storage).to eq(CarrierWave::Storage::File)
     end
 
     it "should remember the storage when inherited" do
       @uploader_class.storage :fog
       subclass = Class.new(@uploader_class)
-      subclass.storage.should == CarrierWave::Storage::Fog
+      expect(subclass.storage).to eq(CarrierWave::Storage::Fog)
     end
 
     it "should be changeable when inherited" do
       @uploader_class.storage :fog
       subclass = Class.new(@uploader_class)
-      subclass.storage.should == CarrierWave::Storage::Fog
+      expect(subclass.storage).to eq(CarrierWave::Storage::Fog)
       subclass.storage :file
-      subclass.storage.should == CarrierWave::Storage::File
+      expect(subclass.storage).to eq(CarrierWave::Storage::File)
     end
   end
 
@@ -70,7 +70,7 @@ describe CarrierWave::Uploader::Base do
     it "should add a class level accessor" do
       @uploader_class.add_config :foo_bar
       @uploader_class.foo_bar = 'foo'
-      @uploader_class.foo_bar.should == 'foo'
+      expect(@uploader_class.foo_bar).to eq('foo')
     end
 
     ['foo', :foo, 45, ['foo', :bar]].each do |val|
@@ -79,13 +79,13 @@ describe CarrierWave::Uploader::Base do
         @child_class = Class.new(@uploader_class)
 
         @uploader_class.foo_bar = val
-        @uploader_class.foo_bar.should == val
-        @child_class.foo_bar.should == val
+        expect(@uploader_class.foo_bar).to eq(val)
+        expect(@child_class.foo_bar).to eq(val)
 
         @child_class.foo_bar = "bar"
-        @child_class.foo_bar.should == "bar"
+        expect(@child_class.foo_bar).to eq("bar")
 
-        @uploader_class.foo_bar.should == val
+        expect(@uploader_class.foo_bar).to eq(val)
       end
     end
 
@@ -93,13 +93,13 @@ describe CarrierWave::Uploader::Base do
     it "should add an instance level accessor" do
       @uploader_class.add_config :foo_bar
       @uploader_class.foo_bar = 'foo'
-      @uploader_class.new.foo_bar.should == 'foo'
+      expect(@uploader_class.new.foo_bar).to eq('foo')
     end
 
     it "should add a convenient in-class setter" do
       @uploader_class.add_config :foo_bar
       @uploader_class.foo_bar "monkey"
-      @uploader_class.foo_bar.should == "monkey"
+      expect(@uploader_class.foo_bar).to eq("monkey")
     end
 
     describe "assigning a proc to a config attribute" do
@@ -112,12 +112,12 @@ describe CarrierWave::Uploader::Base do
         let(:this_proc) { proc { "a return value" } }
 
         it "calls the proc without arguments" do
-          @uploader_class.new.hoobatz.should == "a return value"
+          expect(@uploader_class.new.hoobatz).to eq("a return value")
         end
       end
 
       context "when the proc accepts one argument" do
-        let(:this_proc) { proc { |arg1| arg1.should be_an_instance_of(@uploader_class) } }
+        let(:this_proc) { proc { |arg1| expect(arg1).to be_an_instance_of(@uploader_class) } }
 
         it "calls the proc with an instance of the uploader" do
           @uploader_class.new.hoobatz
