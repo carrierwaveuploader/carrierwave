@@ -172,7 +172,7 @@ module CarrierWave
     private
 
       def workfile_path(for_file=original_filename)
-        File.join(CarrierWave.tmp_path, @cache_id, for_file)
+        File.join(CarrierWave.tmp_path, @cache_id, version_name.to_s, for_file)
       end
 
       attr_reader :cache_id, :original_filename
