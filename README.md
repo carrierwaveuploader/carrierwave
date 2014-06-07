@@ -114,7 +114,7 @@ class UserController < ApplicationController
 	.
 	
 	private
-  def recipe_params
+  def user_params
     params.require(:user).permit(:username, :email, ..., :avatar)
   end
 end
