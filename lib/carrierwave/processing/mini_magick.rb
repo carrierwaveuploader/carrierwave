@@ -295,6 +295,7 @@ module CarrierWave
     def manipulate!
       cache_stored_file! if !cached?
       image = ::MiniMagick::Image.open(current_path)
+
       begin
         image.format(@format.to_s.downcase) if @format
         image = yield(image)
