@@ -103,10 +103,19 @@ module CarrierWave
     #
     #     image.convert(:png)
     #
-    def convert(format)
+    def convert(format, page=0)
       @format = format
+      @page = page
       manipulate! do |img|
-        img.format(format.to_s.downcase)
+        img = yield(img) if block_given?
+        img
+      end
+    end
+
+    def convert_all_pages(format)
+      @format = format
+      @page = nil
+      manipulate! do |img|
         img = yield(img) if block_given?
         img
       end
@@ -260,7 +269,7 @@ module CarrierWave
       image = ::MiniMagick::Image.open(current_path)
 
       begin
-        image.format(@format.to_s.downcase) if @format
+        image.format(@format.to_s.downcase, @page) if @format
         image = yield(image)
         image.write(current_path)
         image.run_command("identify", current_path)
