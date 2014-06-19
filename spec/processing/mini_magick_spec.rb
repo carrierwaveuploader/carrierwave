@@ -25,8 +25,8 @@ describe CarrierWave::MiniMagick do
       img['format'].should =~ /PNG/
     end
 
-    it "should convert the first page when no page number is specified" do
-      ::MiniMagick::Image.any_instance.should_receive(:format).with('png', 0).once
+    it "should convert all pages when no page number is specified" do
+      ::MiniMagick::Image.any_instance.should_receive(:format).with('png', nil).once
       @instance.convert('png')
     end
 
@@ -53,13 +53,6 @@ describe CarrierWave::MiniMagick do
     it "should scale up the image if it smaller than the given dimensions" do
       @instance.resize_to_fill(1000, 1000)
       @instance.should have_dimensions(1000, 1000)
-    end
-  end
-
-  describe '#convert_all_pages' do
-    it "should convert all pages" do
-      ::MiniMagick::Image.any_instance.should_receive(:format).with('png', nil).once
-      @instance.convert_all_pages('png')
     end
   end
 

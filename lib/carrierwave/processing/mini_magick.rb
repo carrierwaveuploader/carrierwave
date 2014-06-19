@@ -103,18 +103,9 @@ module CarrierWave
     #
     #     image.convert(:png)
     #
-    def convert(format, page=0)
+    def convert(format, page=nil)
       @format = format
       @page = page
-      manipulate! do |img|
-        img = yield(img) if block_given?
-        img
-      end
-    end
-
-    def convert_all_pages(format)
-      @format = format
-      @page = nil
       manipulate! do |img|
         img = yield(img) if block_given?
         img
