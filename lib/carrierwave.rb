@@ -35,7 +35,7 @@ if defined?(Merb)
     Dir.glob(File.join(Merb.load_paths[:uploaders])).each {|f| require f }
   end
 
-elsif defined?(Rails)
+elsif defined?(Rails) && defined?(Rails::Railtie)
 
   module CarrierWave
     class Railtie < Rails::Railtie
