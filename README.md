@@ -5,7 +5,7 @@ It works well with Rack based web applications, such as Ruby on Rails.
 
 [![Build Status](https://travis-ci.org/carrierwaveuploader/carrierwave.png?branch=master)](http://travis-ci.org/carrierwaveuploader/carrierwave)
 [![Code Climate](https://codeclimate.com/github/carrierwaveuploader/carrierwave.png)](https://codeclimate.com/github/carrierwaveuploader/carrierwave)
-[![Inline docs](http://inch-pages.github.io/github/carrierwaveuploader/carrierwave.png)](http://inch-pages.github.io/github/carrierwaveuploader/carrierwave)
+[![Inline docs](http://inch-ci.org/github/carrierwaveuploader/carrierwave.png)](http://inch-ci.org/github/carrierwaveuploader/carrierwave)
 
 ## Information
 
