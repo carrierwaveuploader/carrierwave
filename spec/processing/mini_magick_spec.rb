@@ -12,6 +12,7 @@ describe CarrierWave::MiniMagick do
     FileUtils.cp(file_path('landscape.jpg'), file_path('landscape_copy.jpg'))
     @instance.stub(:current_path).and_return(file_path('landscape_copy.jpg'))
     @instance.stub(:cached?).and_return true
+    @instance.stub(:url).and_return nil
   end
 
   after do
@@ -160,4 +161,13 @@ describe CarrierWave::MiniMagick do
       end
     end
   end
+
+  describe "return_width_and_height" do
+    it "should return the width and height of the image" do
+      @instance.resize_to_fill(200, 300)
+      @instance.width.should == 200
+      @instance.height.should == 300
+    end
+  end
+
 end
