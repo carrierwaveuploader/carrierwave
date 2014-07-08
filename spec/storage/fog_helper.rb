@@ -25,7 +25,7 @@ end
 
           # @uploader = FogSpecUploader.new
           @uploader = eval("FogSpec#{@provider}Uploader")
-          @uploader.stub!(:store_path).and_return('uploads/test.jpg')
+          @uploader.stub(:store_path).and_return('uploads/test.jpg')
 
           @storage = CarrierWave::Storage::Fog.new(@uploader)
           @directory = @storage.connection.directories.get(CARRIERWAVE_DIRECTORY) || @storage.connection.directories.create(:key => CARRIERWAVE_DIRECTORY, :public => true)
@@ -50,7 +50,7 @@ end
           let(:store_path) { 'uploads/test+.jpg' }
 
           before do
-            @uploader.stub!(:store_path).and_return(store_path)
+            @uploader.stub(:store_path).and_return(store_path)
             @fog_file = @storage.store!(file)
           end
 
@@ -187,7 +187,7 @@ end
         describe '#retrieve!' do
           before do
             @directory.files.create(:key => 'uploads/test.jpg', :body => 'A test, 1234', :public => true)
-            @uploader.stub!(:store_path).with('test.jpg').and_return('uploads/test.jpg')
+            @uploader.stub(:store_path).with('test.jpg').and_return('uploads/test.jpg')
             @fog_file = @storage.retrieve!('test.jpg')
           end
 
@@ -217,7 +217,7 @@ end
 
         describe '#cache!' do
           before do
-            @uploader.stub!(:cache_path).and_return('uploads/tmp/test+.jpg')
+            @uploader.stub(:cache_path).and_return('uploads/tmp/test+.jpg')
             @fog_file = @storage.cache!(file)
           end
 
@@ -229,7 +229,7 @@ end
         describe '#retrieve_from_cache!' do
           before do
             @directory.files.create(:key => 'uploads/tmp/test.jpg', :body => 'A test, 1234', :public => true)
-            @uploader.stub!(:cache_path).with('test.jpg').and_return('uploads/tmp/test.jpg')
+            @uploader.stub(:cache_path).with('test.jpg').and_return('uploads/tmp/test.jpg')
             @fog_file = @storage.retrieve_from_cache!('test.jpg')
           end
 
@@ -287,8 +287,8 @@ end
             before do
               directory_key = "#{CARRIERWAVE_DIRECTORY}public"
               @directory = @storage.connection.directories.create(:key => directory_key, :public => true)
-              @uploader.stub!(:fog_directory).and_return(directory_key)
-              @uploader.stub!(:store_path).and_return('uploads/public.txt')
+              @uploader.stub(:fog_directory).and_return(directory_key)
+              @uploader.stub(:store_path).and_return('uploads/public.txt')
               @fog_file = @storage.store!(file)
             end
 
@@ -309,9 +309,9 @@ end
             before do
               directory_key = "#{CARRIERWAVE_DIRECTORY}private"
               @directory = @storage.connection.directories.create(:key => directory_key, :public => true)
-              @uploader.stub!(:fog_directory).and_return(directory_key)
-              @uploader.stub!(:fog_public).and_return(false)
-              @uploader.stub!(:store_path).and_return('uploads/private.txt')
+              @uploader.stub(:fog_directory).and_return(directory_key)
+              @uploader.stub(:fog_public).and_return(false)
+              @uploader.stub(:store_path).and_return('uploads/private.txt')
               @fog_file = @storage.store!(file)
             end
 

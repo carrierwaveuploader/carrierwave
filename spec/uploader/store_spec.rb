@@ -29,23 +29,23 @@ describe CarrierWave::Uploader do
     before do
       @file = File.open(file_path('test.jpg'))
 
-      CarrierWave.stub!(:generate_cache_id).and_return('1390890634-26112-2122')
+      CarrierWave.stub(:generate_cache_id).and_return('1390890634-26112-2122')
 
-      @cached_file = mock('a cached file')
-      @cached_file.stub!(:delete)
+      @cached_file = double('a cached file')
+      @cached_file.stub(:delete)
 
-      @stored_file = mock('a stored file')
-      @stored_file.stub!(:path).and_return('/path/to/somewhere')
-      @stored_file.stub!(:url).and_return('http://www.example.com')
+      @stored_file = double('a stored file')
+      @stored_file.stub(:path).and_return('/path/to/somewhere')
+      @stored_file.stub(:url).and_return('http://www.example.com')
 
-      @storage = mock('a storage engine')
-      @storage.stub!(:cache!).and_return(@cached_file)
-      @storage.stub!(:retrieve_from_cache!).and_return(@cached_file)
-      @storage.stub!(:store!).and_return(@stored_file)
-      @storage.stub!(:identifier).and_return('this-is-me')
-      @storage.stub!(:delete_dir!).with("uploads/tmp/#{CarrierWave.generate_cache_id}")
+      @storage = double('a storage engine')
+      @storage.stub(:cache!).and_return(@cached_file)
+      @storage.stub(:retrieve_from_cache!).and_return(@cached_file)
+      @storage.stub(:store!).and_return(@stored_file)
+      @storage.stub(:identifier).and_return('this-is-me')
+      @storage.stub(:delete_dir!).with("uploads/tmp/#{CarrierWave.generate_cache_id}")
 
-      @uploader_class.storage.stub!(:new).with(@uploader).and_return(@storage)
+      @uploader_class.storage.stub(:new).with(@uploader).and_return(@storage)
     end
 
     it "should set the current path" do
@@ -133,8 +133,8 @@ describe CarrierWave::Uploader do
     end
 
     it "should not re-store a retrieved file" do
-      @stored_file = mock('a stored file')
-      @storage.stub!(:retrieve!).and_return(@stored_file)
+      @stored_file = double('a stored file')
+      @storage.stub(:retrieve!).and_return(@stored_file)
 
       @uploader_class.storage.should_not_receive(:store!)
       @uploader.retrieve_from_store!('monkey.txt')
@@ -144,19 +144,19 @@ describe CarrierWave::Uploader do
 
   describe '#retrieve_from_store!' do
     before do
-      @cached_file = mock('a cached file')
-      @cached_file.stub!(:delete)
+      @cached_file = double('a cached file')
+      @cached_file.stub(:delete)
 
-      @stored_file = mock('a stored file')
-      @stored_file.stub!(:path).and_return('/path/to/somewhere')
-      @stored_file.stub!(:url).and_return('http://www.example.com')
+      @stored_file = double('a stored file')
+      @stored_file.stub(:path).and_return('/path/to/somewhere')
+      @stored_file.stub(:url).and_return('http://www.example.com')
 
-      @storage = mock('a storage engine')
-      @storage.stub!(:retrieve_from_cache!).and_return(@cached_file)
-      @storage.stub!(:retrieve!).and_return(@stored_file)
-      @storage.stub!(:identifier).and_return('this-is-me')
+      @storage = double('a storage engine')
+      @storage.stub(:retrieve_from_cache!).and_return(@cached_file)
+      @storage.stub(:retrieve!).and_return(@stored_file)
+      @storage.stub(:identifier).and_return('this-is-me')
 
-      @uploader_class.storage.stub!(:new).with(@uploader).and_return(@storage)
+      @uploader_class.storage.stub(:new).with(@uploader).and_return(@storage)
     end
 
     it "should set the current path" do
@@ -242,21 +242,21 @@ describe CarrierWave::Uploader do
       before do
         @file = File.open(file_path('test.jpg'))
 
-        CarrierWave.stub!(:generate_cache_id).and_return('1390890634-26112-2122')
+        CarrierWave.stub(:generate_cache_id).and_return('1390890634-26112-2122')
 
-        @cached_file = mock('a cached file')
-        @cached_file.stub!(:delete)
+        @cached_file = double('a cached file')
+        @cached_file.stub(:delete)
 
-        @stored_file = mock('a stored file')
-        @stored_file.stub!(:path).and_return('/path/to/somewhere')
-        @stored_file.stub!(:url).and_return('http://www.example.com')
+        @stored_file = double('a stored file')
+        @stored_file.stub(:path).and_return('/path/to/somewhere')
+        @stored_file.stub(:url).and_return('http://www.example.com')
 
-        @storage = mock('a storage engine')
-        @storage.stub!(:cache!).and_return(@cached_file)
-        @storage.stub!(:store!).and_return(@stored_file)
-        @storage.stub!(:delete_dir!).with("uploads/tmp/#{CarrierWave.generate_cache_id}")
+        @storage = double('a storage engine')
+        @storage.stub(:cache!).and_return(@cached_file)
+        @storage.stub(:store!).and_return(@stored_file)
+        @storage.stub(:delete_dir!).with("uploads/tmp/#{CarrierWave.generate_cache_id}")
 
-        @uploader_class.storage.stub!(:new).with(@uploader).and_return(@storage)
+        @uploader_class.storage.stub(:new).with(@uploader).and_return(@storage)
       end
 
       it "should set the current path" do
@@ -278,14 +278,14 @@ describe CarrierWave::Uploader do
 
     describe '#retrieve_from_store!' do
       before do
-        @stored_file = mock('a stored file')
-        @stored_file.stub!(:path).and_return('/path/to/somewhere')
-        @stored_file.stub!(:url).and_return('http://www.example.com')
+        @stored_file = double('a stored file')
+        @stored_file.stub(:path).and_return('/path/to/somewhere')
+        @stored_file.stub(:url).and_return('http://www.example.com')
 
-        @storage = mock('a storage engine')
-        @storage.stub!(:retrieve!).and_return(@stored_file)
+        @storage = double('a storage engine')
+        @storage.stub(:retrieve!).and_return(@stored_file)
 
-        @uploader_class.storage.stub!(:new).with(@uploader).and_return(@storage)
+        @uploader_class.storage.stub(:new).with(@uploader).and_return(@storage)
       end
 
       it "should set the current path" do
@@ -318,7 +318,7 @@ describe CarrierWave::Uploader do
       @file = File.open(file_path('test.jpg'))
       @uploader_class.permissions = 0777
       @uploader_class.directory_permissions = 0777
-      CarrierWave.stub!(:generate_cache_id).and_return('1369894322-345-2255')
+      CarrierWave.stub(:generate_cache_id).and_return('1369894322-345-2255')
     end
 
     context "set to true" do

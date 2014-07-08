@@ -12,7 +12,7 @@ describe CarrierWave::Storage::Fog::File do
 
     context "with normal url" do
       before do
-        subject.stub!(:url).and_return{ 'http://example.com/path/to/foo.txt' }
+        subject.stub(:url).and_return{ 'http://example.com/path/to/foo.txt' }
       end
 
       it "should extract filename from url" do
@@ -22,7 +22,7 @@ describe CarrierWave::Storage::Fog::File do
 
     context "when url contains '/' in query string" do
       before do
-        subject.stub!(:url).and_return{ 'http://example.com/path/to/foo.txt?bar=baz/fubar' }
+        subject.stub(:url).and_return{ 'http://example.com/path/to/foo.txt?bar=baz/fubar' }
       end
 
       it "should extract correct part" do

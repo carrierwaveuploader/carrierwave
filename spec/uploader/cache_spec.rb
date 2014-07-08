@@ -23,7 +23,7 @@ describe CarrierWave::Uploader do
   describe '#cache!' do
 
     before do
-      CarrierWave.stub!(:generate_cache_id).and_return('1369894322-345-2255')
+      CarrierWave.stub(:generate_cache_id).and_return('1369894322-345-2255')
     end
 
     it "should cache a file" do
@@ -98,13 +98,13 @@ describe CarrierWave::Uploader do
       it "should not raise an error when trying to cache a string" do
         running {
           @uploader.cache!(file_path('test.jpg'))
-        }.should_not raise_error(CarrierWave::FormNotMultipart)
+        }.should_not raise_error
       end
 
       it "should raise an error when trying to cache a pathname and " do
         running {
           @uploader.cache!(Pathname.new(file_path('test.jpg')))
-        }.should_not raise_error(CarrierWave::FormNotMultipart)
+        }.should_not raise_error
       end
 
     end
@@ -120,7 +120,7 @@ describe CarrierWave::Uploader do
         @tmpfile = File.open(tmpfile)
 
         ## stub
-        CarrierWave.stub!(:generate_cache_id).and_return('1369894322-345-2255')
+        CarrierWave.stub(:generate_cache_id).and_return('1369894322-345-2255')
 
         @cached_path = public_path('uploads/tmp/1369894322-345-2255/test_move.jpeg')
         @workfile_path = tmp_path('1369894322-345-2255/test_move.jpeg')
@@ -260,7 +260,7 @@ describe CarrierWave::Uploader do
     describe '#cache!' do
 
       before do
-        CarrierWave.stub!(:generate_cache_id).and_return('1369894322-345-2255')
+        CarrierWave.stub(:generate_cache_id).and_return('1369894322-345-2255')
       end
 
       it "should set the filename to the file's reversed filename" do

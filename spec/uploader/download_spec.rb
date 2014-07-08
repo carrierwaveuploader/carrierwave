@@ -16,7 +16,7 @@ describe CarrierWave::Uploader::Download do
   describe '#download!' do
 
     before do
-      CarrierWave.stub!(:generate_cache_id).and_return('1369894322-345-2255')
+      CarrierWave.stub(:generate_cache_id).and_return('1369894322-345-2255')
 
       sham_rack_app = ShamRack.at('www.example.com').stub
       sham_rack_app.register_resource('/test.jpg', File.read(file_path('test.jpg')), 'image/jpg')

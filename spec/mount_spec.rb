@@ -226,8 +226,8 @@ describe CarrierWave::Mount do
     describe '#image_cache' do
 
       before do
-        @instance.stub!(:write_uploader)
-        @instance.stub!(:read_uploader).and_return(nil)
+        @instance.stub(:write_uploader)
+        @instance.stub(:read_uploader).and_return(nil)
       end
 
       it "should return nil when nothing has been assigned" do
@@ -250,8 +250,8 @@ describe CarrierWave::Mount do
     describe '#image_cache=' do
 
       before do
-        @instance.stub!(:write_uploader)
-        @instance.stub!(:read_uploader).and_return(nil)
+        @instance.stub(:write_uploader)
+        @instance.stub(:read_uploader).and_return(nil)
         CarrierWave::SanitizedFile.new(file_path('test.jpg')).copy_to(public_path('uploads/tmp/1369894322-123-1234/test.jpg'))
       end
 
@@ -327,8 +327,8 @@ describe CarrierWave::Mount do
     describe '#store_image!' do
 
       before do
-        @instance.stub!(:write_uploader)
-        @instance.stub!(:read_uploader).and_return(nil)
+        @instance.stub(:write_uploader)
+        @instance.stub(:read_uploader).and_return(nil)
       end
 
       it "should do nothing when no file has been uploaded" do
@@ -355,8 +355,8 @@ describe CarrierWave::Mount do
     describe '#remove_image!' do
 
       before do
-        @instance.stub!(:write_uploader)
-        @instance.stub!(:read_uploader).and_return(nil)
+        @instance.stub(:write_uploader)
+        @instance.stub(:read_uploader).and_return(nil)
       end
 
       it "should do nothing when no file has been uploaded" do
@@ -573,7 +573,7 @@ describe CarrierWave::Mount do
     describe '#image' do
 
       before do
-        @instance.stub!(:read_uploader).and_return('test.jpg')
+        @instance.stub(:read_uploader).and_return('test.jpg')
       end
 
       it "should return an instance of a subclass of CarrierWave::Uploader::Base" do

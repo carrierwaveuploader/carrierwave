@@ -17,23 +17,23 @@ describe CarrierWave::Uploader do
     before do
       @file = File.open(file_path('test.jpg'))
 
-      CarrierWave.stub!(:generate_cache_id).and_return('1390890634-26112-2122')
+      CarrierWave.stub(:generate_cache_id).and_return('1390890634-26112-2122')
 
-      @cached_file = mock('a cached file')
-      @cached_file.stub!(:delete)
+      @cached_file = double('a cached file')
+      @cached_file.stub(:delete)
 
-      @stored_file = mock('a stored file')
-      @stored_file.stub!(:path).and_return('/path/to/somewhere')
-      @stored_file.stub!(:url).and_return('http://www.example.com')
-      @stored_file.stub!(:identifier).and_return('this-is-me')
-      @stored_file.stub!(:delete)
+      @stored_file = double('a stored file')
+      @stored_file.stub(:path).and_return('/path/to/somewhere')
+      @stored_file.stub(:url).and_return('http://www.example.com')
+      @stored_file.stub(:identifier).and_return('this-is-me')
+      @stored_file.stub(:delete)
 
-      @storage = mock('a storage engine')
-      @storage.stub!(:store!).and_return(@stored_file)
-      @storage.stub!(:cache!).and_return(@cached_file)
-      @storage.stub!(:delete_dir!).with("uploads/tmp/#{CarrierWave.generate_cache_id}")
+      @storage = double('a storage engine')
+      @storage.stub(:store!).and_return(@stored_file)
+      @storage.stub(:cache!).and_return(@cached_file)
+      @storage.stub(:delete_dir!).with("uploads/tmp/#{CarrierWave.generate_cache_id}")
 
-      @uploader_class.storage.stub!(:new).and_return(@storage)
+      @uploader_class.storage.stub(:new).and_return(@storage)
       @uploader.store!(@file)
     end
 

@@ -37,19 +37,19 @@ describe CarrierWave::SanitizedFile do
 
   describe '#original_filename' do
     it "should default to the original_filename" do
-      file = mock('file', :original_filename => 'llama.jpg')
+      file = double('file', :original_filename => 'llama.jpg')
       sanitized_file = CarrierWave::SanitizedFile.new(file)
       sanitized_file.original_filename.should == "llama.jpg"
     end
 
     it "should defer to the base name of the path if original_filename is unavailable" do
-      file = mock('file', :path => '/path/to/test.jpg')
+      file = double('file', :path => '/path/to/test.jpg')
       sanitized_file = CarrierWave::SanitizedFile.new(file)
       sanitized_file.original_filename.should == "test.jpg"
     end
 
     it "should be nil otherwise" do
-      file = mock('file')
+      file = double('file')
       sanitized_file = CarrierWave::SanitizedFile.new(file)
       sanitized_file.original_filename.should be_nil
     end
@@ -186,9 +186,9 @@ describe CarrierWave::SanitizedFile do
 
     it "should handle Mime::Type object" do
       @file = File.open(file_path('sponsored.doc'))
-      @file.stub!(:content_type).and_return(MIME::Type.new('application/msword'))
+      @file.stub(:content_type).and_return(MIME::Type.new('application/msword'))
       @sanitized_file = CarrierWave::SanitizedFile.new(@file)
-      @sanitized_file.stub!(:file).and_return(@file)
+      @sanitized_file.stub(:file).and_return(@file)
       lambda { @sanitized_file.content_type }.should_not raise_error
       @sanitized_file.content_type.should == 'application/msword'
     end
