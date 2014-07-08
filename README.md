@@ -170,7 +170,7 @@ white-listed characters in the file name. If you want to support local scripts (
 have to override `sanitize_regexp` method. It should return regular expression which would match
 all *non*-allowed symbols.
 
-With Ruby 1.9 and higher you can simply write (as it has [Oniguruma](http://oniguruma.rubyforge.org/oniguruma/)
+With Ruby 2.0 and higher you can simply write (as it has [Onigmo](https://github.com/k-takata/Onigmo)
 built-in):
 
 ```ruby
@@ -189,7 +189,7 @@ plugins or client-side software.
 
 ## Setting the content type
 
-As of v0.10.0, the `mime-types` gem is a runtime dependency and the content type is set automatically. 
+As of v0.10.0, the `mime-types` gem is a runtime dependency and the content type is set automatically.
 You no longer need to do this manually.
 
 ## Adding versions
