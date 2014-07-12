@@ -23,17 +23,16 @@ module CarrierWave
           "expected #{@actual.inspect} to be identical to #{@expected.inspect}"
         end
 
-        def negative_failure_message
-          "expected #{@actual.inspect} to not be identical to #{@expected.inspect}"
-        end
-
         def failure_message_when_negated
-          negative_failure_message
+          "expected #{@actual.inspect} to not be identical to #{@expected.inspect}"
         end
 
         def description
           "be identical to #{@expected.inspect}"
         end
+
+        # RSpec 2 compatibility:
+        alias_method :negative_failure_message, :failure_message_when_negated
       end
 
       def be_identical_to(expected)
@@ -55,17 +54,16 @@ module CarrierWave
           "expected #{@actual.current_path.inspect} to have permissions #{@expected.to_s(8)}, but they were #{(File.stat(@actual.path).mode & 0777).to_s(8)}"
         end
 
-        def negative_failure_message
-          "expected #{@actual.current_path.inspect} not to have permissions #{@expected.to_s(8)}, but it did"
-        end
-
         def failure_message_when_negated
-          negative_failure_message
+          "expected #{@actual.current_path.inspect} not to have permissions #{@expected.to_s(8)}, but it did"
         end
 
         def description
           "have permissions #{@expected.to_s(8)}"
         end
+
+        # RSpec 2 compatibility:
+        alias_method :negative_failure_message, :failure_message_when_negated
       end
 
       def have_permissions(expected)
@@ -87,17 +85,16 @@ module CarrierWave
           "expected #{File.dirname @actual.current_path.inspect} to have permissions #{@expected.to_s(8)}, but they were #{(File.stat(@actual.path).mode & 0777).to_s(8)}"
         end
 
-        def negative_failure_message
-          "expected #{File.dirname @actual.current_path.inspect} not to have permissions #{@expected.to_s(8)}, but it did"
-        end
-
         def failure_message_when_negated
-          negative_failure_message
+          "expected #{File.dirname @actual.current_path.inspect} not to have permissions #{@expected.to_s(8)}, but it did"
         end
 
         def description
           "have permissions #{@expected.to_s(8)}"
         end
+
+        # RSpec 2 compatibility:
+        alias_method :negative_failure_message, :failure_message_when_negated
       end
 
       def have_directory_permissions(expected)
@@ -122,17 +119,16 @@ module CarrierWave
           "expected #{@actual.current_path.inspect} to be no larger than #{@width} by #{@height}, but it was #{@actual_width} by #{@actual_height}."
         end
 
-        def negative_failure_message
-          "expected #{@actual.current_path.inspect} to be larger than #{@width} by #{@height}, but it wasn't."
-        end
-
         def failure_message_when_negated
-          negative_failure_message
+          "expected #{@actual.current_path.inspect} to be larger than #{@width} by #{@height}, but it wasn't."
         end
 
         def description
           "be no larger than #{@width} by #{@height}"
         end
+
+        # RSpec 2 compatibility:
+        alias_method :negative_failure_message, :failure_message_when_negated
       end
 
       def be_no_larger_than(width, height)
@@ -157,17 +153,16 @@ module CarrierWave
           "expected #{@actual.current_path.inspect} to have an exact size of #{@width} by #{@height}, but it was #{@actual_width} by #{@actual_height}."
         end
 
-        def negative_failure_message
-          "expected #{@actual.current_path.inspect} not to have an exact size of #{@width} by #{@height}, but it did."
-        end
-
         def failure_message_when_negated
-          negative_failure_message
+          "expected #{@actual.current_path.inspect} not to have an exact size of #{@width} by #{@height}, but it did."
         end
 
         def description
           "have an exact size of #{@width} by #{@height}"
         end
+
+        # RSpec 2 compatibility:
+        alias_method :negative_failure_message, :failure_message_when_negated
       end
 
       def have_dimensions(width, height)
@@ -191,17 +186,16 @@ module CarrierWave
           "expected #{@actual.current_path.inspect} to have an exact size of #{@height}, but it was #{@actual_height}."
         end
 
-        def negative_failure_message
-          "expected #{@actual.current_path.inspect} not to have an exact size of #{@height}, but it did."
-        end
-
         def failure_message_when_negated
-          negative_failure_message
+          "expected #{@actual.current_path.inspect} not to have an exact size of #{@height}, but it did."
         end
 
         def description
           "have an exact height of #{@height}"
         end
+
+        # RSpec 2 compatibility:
+        alias_method :negative_failure_message, :failure_message_when_negated
       end
 
       def have_height(height)
@@ -225,17 +219,16 @@ module CarrierWave
           "expected #{@actual.current_path.inspect} to have an exact size of #{@width}, but it was #{@actual_width}."
         end
 
-        def negative_failure_message
-          "expected #{@actual.current_path.inspect} not to have an exact size of #{@width}, but it did."
-        end
-
         def failure_message_when_negated
-          negative_failure_message
+          "expected #{@actual.current_path.inspect} not to have an exact size of #{@width}, but it did."
         end
 
         def description
           "have an exact width of #{@width}"
         end
+
+        # RSpec 2 compatibility:
+        alias_method :negative_failure_message, :failure_message_when_negated
       end
 
       def have_width(width)
@@ -259,17 +252,16 @@ module CarrierWave
           "expected #{@actual.current_path.inspect} to be no wider than #{@width}, but it was #{@actual_width}."
         end
 
-        def negative_failure_message
-          "expected #{@actual.current_path.inspect} not to be wider than #{@width}, but it is."
-        end
-
         def failure_message_when_negated
-          negative_failure_message
+          "expected #{@actual.current_path.inspect} not to be wider than #{@width}, but it is."
         end
 
         def description
           "have a width less than or equal to #{@width}"
         end
+
+        # RSpec 2 compatibility:
+        alias_method :negative_failure_message, :failure_message_when_negated
       end
 
       def be_no_wider_than(width)
@@ -293,17 +285,16 @@ module CarrierWave
           "expected #{@actual.current_path.inspect} to be no taller than #{@height}, but it was #{@actual_height}."
         end
 
-        def negative_failure_message
-          "expected #{@actual.current_path.inspect} not to be taller than #{@height}, but it is."
-        end
-
         def failure_message_when_negated
-          negative_failure_message
+          "expected #{@actual.current_path.inspect} not to be taller than #{@height}, but it is."
         end
 
         def description
           "have a height less than or equal to #{@height}"
         end
+
+        # RSpec 2 compatibility:
+        alias_method :negative_failure_message, :failure_message_when_negated
       end
 
       def be_no_taller_than(height)
