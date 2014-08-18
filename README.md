@@ -431,7 +431,7 @@ instance.recreate_versions!(:thumb, :large)
 Or on a mounted uploader:
 
 ```ruby
-User.all.each do |user|
+User.find_each do |user|
   user.avatar.recreate_versions!
 end
 ```
@@ -439,7 +439,7 @@ end
 Note: `recreate_versions!` will throw an exception on records without an image. To avoid this, scope the records to those with images or check if an image exists within the block. If you're using ActiveRecord, recreating versions for a user avatar might look like this:
 
 ```ruby
-User.all.each do |user|
+User.find_each do |user|
   user.avatar.recreate_versions! if user.avatar?
 end
 ```
