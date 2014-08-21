@@ -185,6 +185,13 @@ describe CarrierWave::Uploader do
       end
 
     end
+
+    it "should use different workfiles for different versions" do
+      @uploader_class.version :small
+      @uploader_class.version :large
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      expect(@uploader.small.send(:workfile_path)).not_to eq @uploader.large.send(:workfile_path)
+    end
   end
 
   describe '#retrieve_from_cache!' do
