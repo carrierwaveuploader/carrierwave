@@ -658,6 +658,12 @@ describe CarrierWave::ActiveRecord do
         expect(@event.save).to be_false
         expect(File.exist?(public_path('uploads/old.jpeg'))).to be_true
       end
+
+      it "should only delete the file once when the file is removed" do
+        @event.remove_image = true
+        expect_any_instance_of(CarrierWave::SanitizedFile).to receive(:delete).exactly(1).times
+        expect(@event.save).to be_true
+      end
     end
 
     describe 'with an overriden filename' do
