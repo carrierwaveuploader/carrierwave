@@ -5,7 +5,7 @@ require 'spec_helper'
 describe CarrierWave::MimeTypes do
 
   before do
-    @klass = Class.new do
+    @klass = Class.new(CarrierWave::Uploader::Base) do
       attr_accessor :content_type
       include CarrierWave::MimeTypes
     end

@@ -322,11 +322,15 @@ module CarrierWave
       frames.append(true) if block_given?
 
       write_block = create_info_block(options[:write])
+
       if options[:format] || @format
         frames.write("#{options[:format] || @format}:#{current_path}", &write_block)
+        move_to = current_path.chomp(File.extname(current_path)) + ".#{options[:format] || @format}"
+        file.move_to(move_to, permissions, directory_permissions)
       else
         frames.write(current_path, &write_block)
       end
+
       destroy_image(frames)
     rescue ::Magick::ImageMagickError => e
       raise CarrierWave::ProcessingError, I18n.translate(:"errors.messages.rmagick_processing_error", :e => e, :default => I18n.translate(:"errors.messages.rmagick_processing_error", :e => e, :locale => :en))

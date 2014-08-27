@@ -300,6 +300,12 @@ module CarrierWave
         image.format(@format.to_s.downcase) if @format
         image = yield(image)
         image.write(current_path)
+
+        if @format
+          move_to = current_path.chomp(File.extname(current_path)) + ".#{@format}"
+          file.move_to(move_to, permissions, directory_permissions)
+        end
+
         image.run_command("identify", current_path)
       ensure
         image.destroy!
