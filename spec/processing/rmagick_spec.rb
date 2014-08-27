@@ -5,23 +5,25 @@ require 'spec_helper'
 describe CarrierWave::RMagick, :rmagick => true do
 
   before do
-    @klass = Class.new do
+    @klass = Class.new(CarrierWave::Uploader::Base) do
       include CarrierWave::RMagick
     end
     @instance = @klass.new
     FileUtils.cp(file_path('landscape.jpg'), file_path('landscape_copy.jpg'))
-    @instance.stub(:current_path).and_return(file_path('landscape_copy.jpg'))
     @instance.stub(:cached?).and_return true
+    @instance.stub(:file).and_return(CarrierWave::SanitizedFile.new(file_path('landscape_copy.jpg')))
   end
 
   after do
-    FileUtils.rm(file_path('landscape_copy.jpg'))
+    FileUtils.rm(file_path('landscape_copy.jpg')) if File.exist?(file_path('landscape_copy.jpg'))
+    FileUtils.rm(file_path('landscape_copy.png')) if File.exist?(file_path('landscape_copy.png'))
   end
 
   describe '#convert' do
     it "should convert the image to the given format" do
       @instance.convert(:png)
       ::Magick::Image.read(@instance.current_path).first.format.should == 'PNG'
+      @instance.file.extension.should == 'png'
     end
   end
 
@@ -37,6 +39,7 @@ describe CarrierWave::RMagick, :rmagick => true do
       @instance.resize_to_fill(200, 200)
       @instance.should have_dimensions(200, 200)
       ::Magick::Image.read(@instance.current_path).first.format.should == 'PNG'
+      @instance.file.extension.should == 'png'
     end
 
     it "should scale up the image if it smaller than the given dimensions" do
@@ -57,6 +60,7 @@ describe CarrierWave::RMagick, :rmagick => true do
       @instance.resize_and_pad(200, 200)
       @instance.should have_dimensions(200, 200)
       ::Magick::Image.read(@instance.current_path).first.format.should == 'PNG'
+      @instance.file.extension.should == 'png'
     end
 
     it "should pad with white" do
@@ -125,6 +129,7 @@ describe CarrierWave::RMagick, :rmagick => true do
       @instance.resize_to_limit(200, 200)
       @instance.should have_dimensions(200, 150)
       ::Magick::Image.read(@instance.current_path).first.format.should == 'PNG'
+      @instance.file.extension.should == 'png'
     end
 
     it "should not scale up the image if it smaller than the given dimensions" do
@@ -145,6 +150,7 @@ describe CarrierWave::RMagick, :rmagick => true do
       @instance.resize_to_geometry_string('200x200^')
       @instance.should have_dimensions(267, 200)
       ::Magick::Image.read(@instance.current_path).first.format.should == 'PNG'
+      @instance.file.extension.should == 'png'
     end
 
     it "should resize the image to have 125% larger dimensions" do
@@ -169,8 +175,8 @@ describe CarrierWave::RMagick, :rmagick => true do
       ::Magick::Image.stub(:read => image)
       ::Magick::Image::Info.any_instance.should_receive(:quality=).with(50)
       ::Magick::Image::Info.any_instance.should_receive(:depth=).with(8)
-      
-      @instance.manipulate! do |image, index, options| 
+
+      @instance.manipulate! do |image, index, options|
         options[:write] = {
           :quality => 50,
           :depth => 8
@@ -182,7 +188,7 @@ describe CarrierWave::RMagick, :rmagick => true do
     it 'should support passing read options to RMagick' do
       ::Magick::Image::Info.any_instance.should_receive(:density=).with(10)
       ::Magick::Image::Info.any_instance.should_receive(:size=).with("200x200")
-      
+
       @instance.manipulate! :read => {
           :density => 10,
           :size => %{"200x200"}
