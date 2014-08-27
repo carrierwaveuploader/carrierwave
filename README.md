@@ -100,8 +100,8 @@ automatically be stored when the record is saved.
 
 ```ruby
 u = User.new
-u.avatar = params[:file]
-u.avatar = File.open('somewhere')
+u.avatar = params[:file] # Assign a file like this, or
+u.avatar = File.open('somewhere') # like this
 u.save!
 u.avatar.url # => '/url/to/file.png'
 u.avatar.current_path # => 'path/to/file.png'
