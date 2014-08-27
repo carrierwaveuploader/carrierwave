@@ -30,7 +30,7 @@ module CarrierWave
       after_commit :"remove_#{column}!", :on => :destroy
       after_commit :"mark_remove_#{column}_false", :on => :update
       before_update :"store_previous_model_for_#{column}"
-      after_save :"remove_previously_stored_#{column}"
+      after_commit :"remove_previously_stored_#{column}", :on => :update
 
       class_eval <<-RUBY, __FILE__, __LINE__+1
         def #{column}=(new_file)
