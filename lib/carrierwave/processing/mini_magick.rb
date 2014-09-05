@@ -39,6 +39,7 @@ module CarrierWave
   #           img
   #         end
   #       end
+  #     end
   #
   # === Note
   #
@@ -49,7 +50,7 @@ module CarrierWave
   #
   # http://mini_magick.rubyforge.org/
   # and
-  # https://github.com/minimagic/minimagick/
+  # https://github.com/minimagick/minimagick/
   #
   #
   module MiniMagick
