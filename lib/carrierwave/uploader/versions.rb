@@ -282,7 +282,7 @@ module CarrierWave
       end
 
       def retrieve_versions_from_store!(identifier)
-        versions.each { |name, v| v.retrieve_from_store!(identifier) }
+        versions.each { |name, v| v.retrieve_from_store!(v.identifier || identifier) }
       end
 
     end # Versions
