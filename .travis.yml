@@ -22,13 +22,6 @@ gemfile:
 matrix:
   allow_failures:
     - rvm: ruby-head
-  include:
-    - rvm: 1.8.7
-      gemfile: gemfiles/rails-3-2-stable.gemfile
-    - rvm: 1.9.2
-      gemfile: gemfiles/rails-3-2-stable.gemfile
-    - rvm: ree
-      gemfile: gemfiles/rails-3-2-stable.gemfile
 
 before_script:
   - "mysql -e 'create database carrierwave_test;'"

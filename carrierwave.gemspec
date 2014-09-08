@@ -42,7 +42,7 @@ Gem::Specification.new do |s|
   if RUBY_ENGINE != 'jruby'
     s.add_development_dependency "rmagick"
   end
-  s.add_development_dependency "nokogiri", "~> 1.5.10" # 1.6 requires ruby > 1.8.7
-  s.add_development_dependency "timecop", "0.6.1" # 0.6.2 requires ruby > 1.8.7
+  s.add_development_dependency "nokogiri", "~> 1.6.3"
+  s.add_development_dependency "timecop", "0.7.1"
   s.add_development_dependency "generator_spec"
 end
