@@ -111,7 +111,7 @@ describe CarrierWave::Uploader::Download do
 
     it 'should set file extension based on content-type if missing' do
       @uploader.download!('http://www.example.com/test-with-no-extension/test')
-      @uploader.url.should == '/uploads/tmp/1369894322-345-2255/test.jpeg'
+      @uploader.url.should match %r{/uploads/tmp/1369894322-345-2255/test\.jp(e|e?g)$}
     end
 
     it 'should not obscure original exception message' do
