@@ -102,6 +102,35 @@ describe CarrierWave::Uploader do
       @uploader.store!
     end
 
+    context "with the cache_only option set to true" do
+      before do
+        @uploader_class.cache_only = true
+      end
+
+      it "should not instruct the storage engine to store the file" do
+        @uploader.cache!(@file)
+        @storage.should_not_receive(:store!)
+        @uploader.store!
+      end
+
+      it "should still be cached" do
+        @uploader.store!(@file)
+        @uploader.should be_cached
+      end
+
+      it "should not reset the cache_name" do
+        @uploader.cache!(@file)
+        @uploader.store!
+        @uploader.cache_name.should_not be_nil
+      end
+
+      it "should not delete the old file" do
+        @uploader.cache!(@file)
+        @uploader.file.should_not_receive(:delete)
+        @uploader.store!
+      end
+    end
+
     context "with the delete_tmp_file_after_storage option set to false" do
       before do
         @uploader_class.delete_tmp_file_after_storage = false
