@@ -146,7 +146,7 @@ end
 
 ## Securing uploads
 
-Certain file might be dangerous if uploaded to the wrong location, such as php
+Certain files might be dangerous if uploaded to the wrong location, such as php
 files or other script files. CarrierWave allows you to specify a white-list of
 allowed extensions.
 
