@@ -20,6 +20,21 @@ describe CarrierWave::Uploader do
     end
   end
 
+  describe '#sanitized_file' do
+    before do
+      @uploader.store! CarrierWave::SanitizedFile.new(File.open(file_path('test.jpg')))
+    end
+
+    it "should return a sanitized file" do
+      @uploader.sanitized_file.should be_an_instance_of(CarrierWave::SanitizedFile)
+    end
+
+    it "should only read file once" do
+      @uploader.file.should_receive(:read).once.and_return('this is stuff')
+      @uploader.sanitized_file
+    end
+  end
+
   describe '#cache!' do
 
     before do
