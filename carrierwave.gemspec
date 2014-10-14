@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.summary = "Ruby file upload library"
   s.email = ["jonas.nicklas@gmail.com"]
   s.extra_rdoc_files = ["README.md"]
-  s.files = Dir.glob("{bin,lib}/**/*") + %w(README.md)
+  s.files = Dir["{bin,lib}/**/*", "README.md"]
   s.homepage = %q{https://github.com/carrierwaveuploader/carrierwave}
   s.rdoc_options = ["--main"]
   s.require_paths = ["lib"]
