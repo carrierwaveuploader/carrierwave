@@ -67,7 +67,7 @@ module CarrierWave
 
         def build_version(name, options)
           uploader = Class.new(self)
-          const_set("Uploader#{uploader.object_id}".gsub('-', '_'), uploader)
+          const_set("Uploader#{uploader.object_id}".tr('-', '_'), uploader)
           uploader.version_names += [name]
           uploader.versions = {}
           uploader.processors = []

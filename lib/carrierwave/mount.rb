@@ -259,7 +259,7 @@ module CarrierWave
       return uploader if uploader && !block_given?
 
       uploader = Class.new(uploader || CarrierWave::Uploader::Base)
-      const_set("Uploader#{uploader.object_id}".gsub('-', '_'), uploader)
+      const_set("Uploader#{uploader.object_id}".tr('-', '_'), uploader)
 
       if block_given?
         uploader.class_eval(&block)

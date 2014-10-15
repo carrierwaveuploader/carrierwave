@@ -43,8 +43,8 @@ describe CarrierWave::Mount do
     end
 
     it "should allow marshalling uploaders and versions" do
-      Object.const_set("MyClass#{@class.object_id}".gsub('-', '_'), @class)
-      Object.const_set("Uploader#{@uploader.object_id}".gsub('-', '_'), @uploader)
+      Object.const_set("MyClass#{@class.object_id}".tr('-', '_'), @class)
+      Object.const_set("Uploader#{@uploader.object_id}".tr('-', '_'), @uploader)
       @uploader.class_eval do
         def rotate
         end
