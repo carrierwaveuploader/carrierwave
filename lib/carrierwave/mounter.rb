@@ -33,6 +33,7 @@ module CarrierWave
     end
 
     def cache(new_files)
+      return if not new_files or new_files == ""
       @uploaders = new_files.map do |new_file|
         uploader = blank_uploader
         uploader.cache!(new_file)
@@ -50,11 +51,11 @@ module CarrierWave
     end
 
     def cache_names
-      uploaders.map(&:cache_name)
+      uploaders.map(&:cache_name).compact
     end
 
     def cache_names=(cache_names)
-      return if uploaders.any?(&:cached?)
+      return if not cache_names or cache_names == "" or uploaders.any?(&:cached?)
       @uploaders = cache_names.map do |cache_name|
         uploader = blank_uploader
         uploader.retrieve_from_cache!(cache_name)
@@ -64,7 +65,7 @@ module CarrierWave
     end
 
     def remote_urls=(urls)
-      return if urls.all?(&:blank?)
+      return if not urls or urls == "" or urls.all?(&:blank?)
 
       @remote_urls = urls
       @download_error = nil
@@ -109,6 +110,7 @@ module CarrierWave
 
     def remove!
       uploaders.reject(&:blank?).each(&:remove!)
+      @uploaders = []
     end
 
     def serialization_column

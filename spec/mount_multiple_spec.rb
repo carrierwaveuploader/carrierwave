@@ -123,21 +123,18 @@ describe CarrierWave::MountMultiple do
       end
 
     end
-  end
-end
-
-__END__
 
     describe '#images=' do
 
-      it "should cache a file" do
-        @instance.images = stub_file('test.jpg')
-        @instance.images.should be_an_instance_of(@uploader)
+      it "should cache files" do
+        @instance.images = [stub_file('test.jpg'), stub_file('old.jpeg')]
+        @instance.images[0].should be_an_instance_of(@uploader)
+        @instance.images[1].should be_an_instance_of(@uploader)
       end
 
-      it "should copy a file into into the cache directory" do
-        @instance.images = stub_file('test.jpg')
-        @instance.images.current_path.should =~ /^#{public_path('uploads/tmp')}/
+      it "should copy files into the cache directory" do
+        @instance.images = [stub_file('test.jpg')]
+        @instance.images[0].current_path.should =~ /^#{public_path('uploads/tmp')}/
       end
 
       it "should do nothing when nil is assigned" do
@@ -147,7 +144,7 @@ __END__
 
       it "should do nothing when an empty string is assigned" do
         @instance.should_not_receive(:write_uploader)
-        @instance.images = stub_file('test.jpg')
+        @instance.images = [stub_file('test.jpg')]
       end
 
       it "should fail silently if the images fails a white list integrity check" do
@@ -156,8 +153,8 @@ __END__
             %w(txt)
           end
         end
-        @instance.images = stub_file('test.jpg')
-        @instance.images.should be_blank
+        @instance.images = [stub_file('bork.txt'), stub_file('test.jpg')]
+        @instance.images.should be_empty
       end
 
       it "should fail silently if the images fails a black list integrity check" do
@@ -166,8 +163,8 @@ __END__
             %w(jpg)
           end
         end
-        @instance.images = stub_file('test.jpg')
-        @instance.images.should be_blank
+        @instance.images = [stub_file('bork.txt'), stub_file('test.jpg')]
+        @instance.images.should be_empty
       end
 
       it "should fail silently if the images fails to be processed" do
@@ -177,7 +174,8 @@ __END__
             raise CarrierWave::ProcessingError, "Ohh noez!"
           end
         end
-        @instance.images = stub_file('test.jpg')
+        @instance.images = [stub_file('test.jpg')]
+        @instance.images.should be_empty
       end
 
     end
@@ -195,38 +193,38 @@ __END__
       end
 
       it "should be true when a file has been cached" do
-        @instance.images = stub_file('test.jpg')
+        @instance.images = [stub_file('test.jpg')]
         @instance.images?.should be_true
       end
 
     end
 
-    describe '#images_url' do
+    describe '#images_urls' do
 
       it "should return nil when nothing has been assigned" do
         @instance.should_receive(:read_uploader).with(:images).and_return(nil)
-        @instance.images_url.should be_nil
+        @instance.images_urls.should be_empty
       end
 
       it "should return nil when an empty string has been assigned" do
         @instance.should_receive(:read_uploader).with(:images).and_return('')
-        @instance.images_url.should be_nil
+        @instance.images_urls.should be_empty
       end
 
       it "should get the url from a retrieved file" do
         @instance.should_receive(:read_uploader).at_least(:once).with(:images).and_return('test.jpg')
-        @instance.images_url.should == '/uploads/test.jpg'
+        @instance.images_urls[0].should == '/uploads/test.jpg'
       end
 
       it "should get the url from a cached file" do
-        @instance.images = stub_file('test.jpg')
-        @instance.images_url.should =~ %r{uploads/tmp/[\d\-]+/test.jpg}
+        @instance.images = [stub_file('test.jpg')]
+        @instance.images_urls[0].should =~ %r{uploads/tmp/[\d\-]+/test.jpg}
       end
 
       it "should get the url from a cached file's version" do
         @uploader.version(:thumb)
-        @instance.images = stub_file('test.jpg')
-        @instance.images_url(:thumb).should =~ %r{uploads/tmp/[\d\-]+/thumb_test.jpg}
+        @instance.images = [stub_file('test.jpg')]
+        @instance.images_urls(:thumb)[0].should =~ %r{uploads/tmp/[\d\-]+/thumb_test.jpg}
       end
 
     end
@@ -239,18 +237,18 @@ __END__
       end
 
       it "should return nil when nothing has been assigned" do
-        @instance.images_cache.should be_nil
+        @instance.images_cache.should be_empty
       end
 
       it "should be nil when a file has been stored" do
-        @instance.images = stub_file('test.jpg')
-        @instance.images.store!
-        @instance.images_cache.should be_nil
+        @instance.images = [stub_file('test.jpg')]
+        @instance.store_images!
+        @instance.images_cache.should be_empty
       end
 
       it "should be the cache name when a file has been cached" do
-        @instance.images = stub_file('test.jpg')
-        @instance.images_cache.should =~ %r(^[\d]+\-[\d]+\-[\d]{4}/test\.jpg$)
+        @instance.images = [stub_file('test.jpg')]
+        @instance.images_cache[0].should =~ %r(^[\d]+\-[\d]+\-[\d]{4}/test\.jpg$)
       end
 
     end
@@ -265,23 +263,23 @@ __END__
 
       it "should do nothing when nil is assigned" do
         @instance.images_cache = nil
-        @instance.images.should be_blank
+        @instance.images.should be_empty
       end
 
       it "should do nothing when an empty string is assigned" do
         @instance.images_cache = ''
-        @instance.images.should be_blank
+        @instance.images.should be_empty
       end
 
       it "retrieve from cache when a cache name is assigned" do
-        @instance.images_cache = '1369894322-123-1234/test.jpg'
-        @instance.images.current_path.should == public_path('uploads/tmp/1369894322-123-1234/test.jpg')
+        @instance.images_cache = ['1369894322-123-1234/test.jpg']
+        @instance.images[0].current_path.should == public_path('uploads/tmp/1369894322-123-1234/test.jpg')
       end
 
       it "should not write over a previously assigned file" do
-        @instance.images = stub_file('test.jpg')
-        @instance.images_cache = '1369894322-123-1234/monkey.jpg'
-        @instance.images.current_path.should =~ /test.jpg$/
+        @instance.images = [stub_file('test.jpg')]
+        @instance.images_cache = ['1369894322-123-1234/monkey.jpg']
+        @instance.images[0].current_path.should =~ /test.jpg$/
       end
     end
 
@@ -296,38 +294,38 @@ __END__
         ShamRack.unmount_all
       end
 
-      describe '#remote_images_url' do
+      describe '#remote_images_urls' do
         it "should return nil" do
-          @instance.remote_images_url.should be_nil
+          @instance.remote_images_urls.should be_nil
         end
 
         it "should return previously cached URL" do
-          @instance.remote_images_url = 'http://www.example.com/test.jpg'
-          @instance.remote_images_url.should == 'http://www.example.com/test.jpg'
+          @instance.remote_images_urls = ['http://www.example.com/test.jpg']
+          @instance.remote_images_urls.should == ['http://www.example.com/test.jpg']
         end
       end
 
-      describe '#remote_images_url=' do
+      describe '#remote_images_urls=' do
 
         it "should do nothing when nil is assigned" do
-          @instance.remote_images_url = nil
-          @instance.images.should be_blank
+          @instance.remote_images_urls = nil
+          @instance.images.should be_empty
         end
 
         it "should do nothing when an empty string is assigned" do
-          @instance.remote_images_url = ''
-          @instance.images.should be_blank
+          @instance.remote_images_urls = ''
+          @instance.images.should be_empty
         end
 
         it "retrieve from cache when a cache name is assigned" do
-          @instance.remote_images_url = 'http://www.example.com/test.jpg'
-          @instance.images.current_path.should =~ /test.jpg$/
+          @instance.remote_images_urls = ['http://www.example.com/test.jpg']
+          @instance.images[0].current_path.should =~ /test.jpg$/
         end
 
         it "should write over a previously assigned file" do
-          @instance.images = stub_file('portrait.jpg')
-          @instance.remote_images_url = 'http://www.example.com/test.jpg'
-          @instance.images.current_path.should =~ /test.jpg$/
+          @instance.images = [stub_file('portrait.jpg')]
+          @instance.remote_images_urls = ['http://www.example.com/test.jpg']
+          @instance.images[0].current_path.should =~ /test.jpg$/
         end
       end
     end
@@ -341,21 +339,21 @@ __END__
 
       it "should do nothing when no file has been uploaded" do
         @instance.store_images!
-        @instance.images.should be_blank
+        @instance.images.should be_empty
       end
 
       it "store an assigned file" do
-        @instance.images = stub_file('test.jpg')
+        @instance.images = [stub_file('test.jpg')]
         @instance.store_images!
-        @instance.images.current_path.should == public_path('uploads/test.jpg')
+        @instance.images[0].current_path.should == public_path('uploads/test.jpg')
       end
 
       it "should remove an uploaded file when remove_images? returns true" do
-        @instance.images = stub_file('test.jpg')
-        path = @instance.images.current_path
+        @instance.images = [stub_file('test.jpg')]
+        path = @instance.images[0].current_path
         @instance.remove_images = true
         @instance.store_images!
-        @instance.images.should be_blank
+        @instance.images.should be_empty
         File.exist?(path).should be_false
       end
     end
@@ -369,14 +367,14 @@ __END__
 
       it "should do nothing when no file has been uploaded" do
         @instance.remove_images!
-        @instance.images.should be_blank
+        @instance.images.should be_empty
       end
 
       it "should remove an uploaded file" do
-        @instance.images = stub_file('test.jpg')
-        path = @instance.images.current_path
+        @instance.images = [stub_file('test.jpg')]
+        path = @instance.images[0].current_path
         @instance.remove_images!
-        @instance.images.should be_blank
+        @instance.images.should be_empty
         File.exist?(path).should be_false
       end
     end
@@ -426,7 +424,7 @@ __END__
       end
 
       it "should be nil after a file is cached" do
-        @instance.images = stub_file('test.jpg')
+        @instance.images = [stub_file('test.jpg')]
         @instance.images_integrity_error.should be_nil
       end
 
@@ -440,7 +438,7 @@ __END__
         end
 
         it "should be an error instance if file was cached" do
-          @instance.images = stub_file('test.jpg')
+          @instance.images = [stub_file('test.jpg')]
           e = @instance.images_integrity_error
           e.should be_an_instance_of(CarrierWave::IntegrityError)
           e.message.lines.grep(/^You are not allowed to upload/).should be_true
@@ -450,15 +448,15 @@ __END__
           sham_rack_app = ShamRack.at('www.example.com').stub
           sham_rack_app.register_resource('/test.jpg', File.read(file_path('test.jpg')), 'images/jpg')
 
-          @instance.remote_images_url = "http://www.example.com/test.jpg"
+          @instance.remote_images_urls = ["http://www.example.com/test.jpg"]
           e = @instance.images_integrity_error
           e.should be_an_instance_of(CarrierWave::IntegrityError)
           e.message.lines.grep(/^You are not allowed to upload/).should be_true
         end
 
-        it "should be an error instance when images file is assigned and remote_images_url is blank" do
-          @instance.images = stub_file('test.jpg')
-          @instance.remote_images_url = ""
+        it "should be an error instance when images file is assigned and remote_images_urls is blank" do
+          @instance.images = [stub_file('test.jpg')]
+          @instance.remote_images_urls = ""
           e = @instance.images_integrity_error
           e.should be_an_instance_of(CarrierWave::IntegrityError)
           e.message.lines.grep(/^You are not allowed to upload/).should be_true
@@ -473,7 +471,7 @@ __END__
       end
 
       it "should be nil after a file is cached" do
-        @instance.images = stub_file('test.jpg')
+        @instance.images = [stub_file('test.jpg')]
         @instance.images_processing_error.should be_nil
       end
 
@@ -488,7 +486,7 @@ __END__
         end
 
         it "should be an error instance if file was cached" do
-          @instance.images = stub_file('test.jpg')
+          @instance.images = [stub_file('test.jpg')]
           @instance.images_processing_error.should be_an_instance_of(CarrierWave::ProcessingError)
         end
 
@@ -496,7 +494,7 @@ __END__
           sham_rack_app = ShamRack.at('www.example.com').stub
           sham_rack_app.register_resource('/test.jpg', File.read(file_path('test.jpg')), 'images/jpg')
 
-          @instance.remote_images_url = "http://www.example.com/test.jpg"
+          @instance.remote_images_urls = ["http://www.example.com/test.jpg"]
           @instance.images_processing_error.should be_an_instance_of(CarrierWave::ProcessingError)
         end
       end
@@ -513,12 +511,12 @@ __END__
       end
 
       it "should be nil if file download was successful" do
-        @instance.remote_images_url = "http://www.example.com/test.jpg"
+        @instance.remote_images_urls = ["http://www.example.com/test.jpg"]
         @instance.images_download_error.should be_nil
       end
 
       it "should be an error instance if file could not be found" do
-        @instance.remote_images_url = "http://www.example.com/missing.jpg"
+        @instance.remote_images_urls = ["http://www.example.com/missing.jpg"]
         @instance.images_download_error.should be_an_instance_of(CarrierWave::DownloadError)
       end
     end
@@ -534,25 +532,25 @@ __END__
       end
 
       it "should be nil if file download was successful" do
-        @instance.remote_images_url = "http://www.example.com/test.jpg"
+        @instance.remote_images_urls = ["http://www.example.com/test.jpg"]
         @instance.images_download_error.should be_nil
       end
 
       it "should be an error instance if file could not be found" do
-        @instance.remote_images_url = "http://www.example.com/missing.jpg"
+        @instance.remote_images_urls = ["http://www.example.com/missing.jpg"]
         @instance.images_download_error.should be_an_instance_of(CarrierWave::DownloadError)
       end
     end
 
     describe '#write_images_identifier' do
       it "should write to the column" do
-        @instance.should_receive(:write_uploader).with(:images, "test.jpg")
-        @instance.images = stub_file('test.jpg')
+        @instance.should_receive(:write_uploader).with(:images, ["test.jpg"])
+        @instance.images = [stub_file('test.jpg')]
         @instance.write_images_identifier
       end
 
       it "should remove from the column when remove_images is true" do
-        @instance.images = stub_file('test.jpg')
+        @instance.images = [stub_file('test.jpg')]
         @instance.store_images!
         @instance.remove_images = true
         @instance.should_receive(:write_uploader).with(:images, nil)
@@ -560,10 +558,10 @@ __END__
       end
     end
 
-    describe '#images_identifier' do
+    describe '#images_identifiers' do
       it "should return the identifier from the mounted column" do
         @instance.should_receive(:read_uploader).with(:images).and_return("test.jpg")
-        @instance.images_identifier.should == 'test.jpg'
+        @instance.images_identifiers.should == ['test.jpg']
       end
     end
 
@@ -585,11 +583,11 @@ __END__
       end
 
       it "should return an instance of a subclass of CarrierWave::Uploader::Base" do
-        @instance.images.should be_a(CarrierWave::Uploader::Base)
+        @instance.images[0].should be_a(CarrierWave::Uploader::Base)
       end
 
       it "should set the path to the store dir" do
-        @instance.images.current_path.should == public_path('uploads/test.jpg')
+        @instance.images[0].current_path.should == public_path('uploads/test.jpg')
       end
 
     end
@@ -607,14 +605,15 @@ __END__
           end
         end
         @instance = @class.new
+        @instance.images = [stub_file("test.jpg")]
       end
 
       it "should return an instance of a subclass of CarrierWave::Uploader::Base" do
-        @instance.images.should be_a(CarrierWave::Uploader::Base)
+        @instance.images[0].should be_a(CarrierWave::Uploader::Base)
       end
 
       it "should apply any custom modifications" do
-        @instance.images.monkey.should == "blah"
+        @instance.images[0].monkey.should == "blah"
       end
     end
 
@@ -633,20 +632,21 @@ __END__
           end
         end
         @instance = @class.new
+        @instance.images = [stub_file("test.jpg")]
       end
 
       it "should return an instance of the uploader specified" do
-        @instance.images.should be_a_kind_of(@uploader)
+        @instance.images[0].should be_a_kind_of(@uploader)
       end
 
       it "should apply any custom modifications to the instance" do
-        @instance.images.fish.should == "blub"
+        @instance.images[0].fish.should == "blub"
       end
 
       it "should apply any custom modifications to all defined versions" do
-        @instance.images.thumb.fish.should == "blub"
-        @instance.images.thumb.mini.fish.should == "blub"
-        @instance.images.thumb.maxi.fish.should == "blub"
+        @instance.images[0].thumb.fish.should == "blub"
+        @instance.images[0].thumb.mini.fish.should == "blub"
+        @instance.images[0].thumb.maxi.fish.should == "blub"
       end
 
       it "should not apply any custom modifications to the uploader class" do
@@ -675,7 +675,7 @@ __END__
 
     it "should raise an error if the images fails an integrity check when cached" do
       running {
-        @instance.images = stub_file('test.jpg')
+        @instance.images = [stub_file('test.jpg')]
       }.should raise_error(CarrierWave::IntegrityError)
     end
 
@@ -684,7 +684,7 @@ __END__
       sham_rack_app.register_resource('/test.jpg', File.read(file_path('test.jpg')), 'images/jpg')
 
       running {
-        @instance.remote_images_url = "http://www.example.com/test.jpg"
+        @instance.remote_images_urls = ["http://www.example.com/test.jpg"]
       }.should raise_error(CarrierWave::IntegrityError)
     end
   end
@@ -710,7 +710,7 @@ __END__
 
     it "should raise an error if the images fails to be processed when cached" do
       running {
-        @instance.images = stub_file('test.jpg')
+        @instance.images = [stub_file('test.jpg')]
       }.should raise_error(CarrierWave::ProcessingError)
     end
 
@@ -719,7 +719,7 @@ __END__
       sham_rack_app.register_resource('/test.jpg', File.read(file_path('test.jpg')), 'images/jpg')
 
       running {
-        @instance.remote_images_url = "http://www.example.com/test.jpg"
+        @instance.remote_images_urls = ["http://www.example.com/test.jpg"]
       }.should raise_error(CarrierWave::ProcessingError)
     end
 
@@ -745,7 +745,7 @@ __END__
       end
 
       running {
-        @instance.remote_images_url = "http://www.example.com/test.jpg"
+        @instance.remote_images_urls = ["http://www.example.com/test.jpg"]
       }.should raise_error(CarrierWave::DownloadError)
     end
 
@@ -765,21 +765,21 @@ __END__
 
     describe '#images' do
       it "should retrieve a file from the storage if a value is stored in the database" do
-        @instance.should_receive(:read_uploader).at_least(:once).with(:monkey).and_return('test.jpg')
-        @instance.images.should be_an_instance_of(@uploader)
-        @instance.images.current_path.should == public_path('uploads/test.jpg')
+        @instance.should_receive(:read_uploader).at_least(:once).with(:monkey).and_return(['test.jpg'])
+        @instance.images[0].should be_an_instance_of(@uploader)
+        @instance.images[0].current_path.should == public_path('uploads/test.jpg')
       end
     end
 
     describe '#write_images_identifier' do
       it "should write to the given column" do
-        @instance.should_receive(:write_uploader).with(:monkey, "test.jpg")
-        @instance.images = stub_file('test.jpg')
+        @instance.should_receive(:write_uploader).with(:monkey, ["test.jpg"])
+        @instance.images = [stub_file('test.jpg')]
         @instance.write_images_identifier
       end
 
       it "should remove from the given column when remove_images is true" do
-        @instance.images = stub_file('test.jpg')
+        @instance.images = [stub_file('test.jpg')]
         @instance.store_images!
         @instance.remove_images = true
         @instance.should_receive(:write_uploader).with(:monkey, nil)

@@ -167,7 +167,7 @@ module CarrierWave
           _mounter(:#{column}).present?
         end
 
-        def #{column}_url(*args)
+        def #{column}_urls(*args)
           _mounter(:#{column}).urls(*args)
         end
 
@@ -179,11 +179,11 @@ module CarrierWave
           _mounter(:#{column}).cache_names = cache_name
         end
 
-        def remote_#{column}_url
+        def remote_#{column}_urls
           _mounter(:#{column}).remote_urls
         end
 
-        def remote_#{column}_url=(urls)
+        def remote_#{column}_urls=(urls)
           _mounter(:#{column}).remote_urls = urls
         end
 
