@@ -237,20 +237,21 @@ describe CarrierWave::Mount do
       end
 
       it "should return nil when nothing has been assigned" do
-        @instance.images_cache.should be_empty
+        @instance.images_cache.should be_nil
       end
 
       it "should be nil when a file has been stored" do
         @instance.images = [stub_file('test.jpg')]
         @instance.store_images!
-        @instance.images_cache.should be_empty
+        @instance.images_cache.should be_nil
       end
 
       it "should be the cache name when a file has been cached" do
-        @instance.images = [stub_file('test.jpg')]
-        @instance.images_cache[0].should =~ %r(^[\d]+\-[\d]+\-[\d]{4}/test\.jpg$)
+        @instance.images = [stub_file('test.jpg'), stub_file('old.jpeg')]
+        res = JSON.parse(@instance.images_cache)
+        res[0].should =~ %r(^[\d]+\-[\d]+\-[\d]{4}/test\.jpg$)
+        res[1].should =~ %r(^[\d]+\-[\d]+\-[\d]{4}/old\.jpeg$)
       end
-
     end
 
     describe '#images_cache=' do
@@ -272,13 +273,13 @@ describe CarrierWave::Mount do
       end
 
       it "retrieve from cache when a cache name is assigned" do
-        @instance.images_cache = ['1369894322-123-1234/test.jpg']
+        @instance.images_cache = ['1369894322-123-1234/test.jpg'].to_json
         @instance.images[0].current_path.should == public_path('uploads/tmp/1369894322-123-1234/test.jpg')
       end
 
       it "should not write over a previously assigned file" do
         @instance.images = [stub_file('test.jpg')]
-        @instance.images_cache = ['1369894322-123-1234/monkey.jpg']
+        @instance.images_cache = ['1369894322-123-1234/monkey.jpg'].to_json
         @instance.images[0].current_path.should =~ /test.jpg$/
       end
     end

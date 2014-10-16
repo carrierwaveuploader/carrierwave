@@ -92,7 +92,6 @@ module CarrierWave
     # [image_processing_error]  Returns an error object if the last file to be assigned caused a processing error
     # [image_download_error]    Returns an error object if the last file to be remotely assigned caused a download error
     #
-    # [write_image_identifier]  Uses the write_uploader method to set the identifier.
     # [image_identifier]        Reads out the identifier of the file
     #
     # === Parameters
@@ -203,15 +202,17 @@ module CarrierWave
     end
 
     ##
-    # Mounts the given uploader on the given column. This means that assigning
-    # and reading from the column will upload and retrieve files. Supposing
-    # that a User class has an uploader mounted on image, you can assign and
-    # retrieve files like this:
+    # Mounts the given uploader on the given array column. This means that
+    # assigning and reading from the array column will upload and retrieve
+    # multiple files. Supposing that a User class has an uploader mounted on
+    # images, and that images can store an array, for example it could be a
+    # PostgreSQL JSON column. You can assign and retrieve files like this:
     #
-    #     @user.image # => <Uploader>
-    #     @user.image.store!(some_file_object)
+    #     @user.images # => []
+    #     @user.images = [some_file_object]
+    #     @user.images # => [<Uploader>]
     #
-    #     @user.image.url # => '/some_url.png'
+    #     @user.images[0].url # => '/some_url.png'
     #
     # It is also possible (but not recommended) to omit the uploader, which
     # will create an anonymous uploader class.
@@ -223,32 +224,31 @@ module CarrierWave
     # === Added instance methods
     #
     # Supposing a class has used +mount_uploaders+ to mount an uploader on a column
-    # named +image+, in that case the following methods will be added to the class:
+    # named +images+, in that case the following methods will be added to the class:
     #
-    # [image]                   Returns an instance of the uploader only if anything has been uploaded
-    # [image=]                  Caches the given file
+    # [images]                  Returns an array of uploaders for each uploaded file
+    # [images=]                 Caches the given files
     #
-    # [image_url]               Returns the url to the uploaded file
+    # [images_urls]             Returns the urls to the uploaded files
     #
-    # [image_cache]             Returns a string that identifies the cache location of the file
-    # [image_cache=]            Retrieves the file from the cache based on the given cache name
+    # [images_cache]            Returns a string that identifies the cache location of the files
+    # [images_cache=]           Retrieves the files from the cache based on the given cache name
     #
-    # [remote_image_url]        Returns previously cached remote url
-    # [remote_image_url=]       Retrieve the file from the remote url
+    # [remote_image_urls]       Returns previously cached remote urls
+    # [remote_image_urls=]      Retrieve files from the given remote urls
     #
-    # [remove_image]            An attribute reader that can be used with a checkbox to mark a file for removal
-    # [remove_image=]           An attribute writer that can be used with a checkbox to mark a file for removal
-    # [remove_image?]           Whether the file should be removed when store_image! is called.
+    # [remove_images]           An attribute reader that can be used with a checkbox to mark the files for removal
+    # [remove_images=]          An attribute writer that can be used with a checkbox to mark the files for removal
+    # [remove_images?]          Whether the files should be removed when store_image! is called.
     #
-    # [store_image!]            Stores a file that has been assigned with +image=+
-    # [remove_image!]           Removes the uploaded file from the filesystem.
+    # [store_images!]           Stores all files that have been assigned with +images=+
+    # [remove_images!]          Removes the uploaded file from the filesystem.
     #
-    # [image_integrity_error]   Returns an error object if the last file to be assigned caused an integrity error
-    # [image_processing_error]  Returns an error object if the last file to be assigned caused a processing error
-    # [image_download_error]    Returns an error object if the last file to be remotely assigned caused a download error
+    # [images_integrity_error]  Returns an error object if the last files to be assigned caused an integrity error
+    # [images_processing_error] Returns an error object if the last files to be assigned caused a processing error
+    # [images_download_error]   Returns an error object if the last files to be remotely assigned caused a download error
     #
-    # [write_image_identifier]  Uses the write_uploader method to set the identifier.
-    # [image_identifier]        Reads out the identifier of the file
+    # [image_identifiers]       Reads out the identifiers of the files
     #
     # === Parameters
     #
@@ -270,19 +270,19 @@ module CarrierWave
     #     class Song
     #       mount_uploaders :lyrics, LyricsUploader
     #       mount_uploaders :alternative_lyrics, LyricsUploader
-    #       mount_uploaders :file, SongUploader
+    #       mount_uploaders :files, SongUploader
     #     end
     #
     # This will add an anonymous uploader with only the default settings:
     #
     #     class Data
-    #       mount_uploaders :csv
+    #       mount_uploaders :csv_files
     #     end
     #
     # this will add an anonymous uploader overriding the store_dir:
     #
     #     class Product
-    #       mount_uploaders :blueprint do
+    #       mount_uploaders :blueprints do
     #         def store_dir
     #           'blueprints'
     #         end
@@ -309,11 +309,12 @@ module CarrierWave
         end
 
         def #{column}_cache
-          _mounter(:#{column}).cache_names
+          names = _mounter(:#{column}).cache_names
+          names.to_json if names.present?
         end
 
         def #{column}_cache=(cache_name)
-          _mounter(:#{column}).cache_names = cache_name
+          _mounter(:#{column}).cache_names = JSON.parse(cache_name) if cache_name.present?
         end
 
         def remote_#{column}_urls
