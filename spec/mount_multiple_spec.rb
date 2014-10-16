@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe CarrierWave::MountMultiple do
+describe CarrierWave::Mount do
 
   after do
     FileUtils.rm_rf(public_path)
@@ -12,7 +12,7 @@ describe CarrierWave::MountMultiple do
 
     before do
       @class = Class.new
-      @class.send(:extend, CarrierWave::MountMultiple)
+      @class.send(:extend, CarrierWave::Mount)
 
       @uploader = Class.new(CarrierWave::Uploader::Base)
 
@@ -60,7 +60,7 @@ describe CarrierWave::MountMultiple do
     describe "expected behavior with subclassed uploaders" do
       before do
         @class = Class.new
-        @class.send(:extend, CarrierWave::MountMultiple)
+        @class.send(:extend, CarrierWave::Mount)
         @uploader1 = Class.new(CarrierWave::Uploader::Base) do
           [:rotate, :compress, :encrypt, :shrink].each { |m| define_method(m) {} }
         end
@@ -571,7 +571,7 @@ describe CarrierWave::MountMultiple do
 
     before do
       @class = Class.new
-      @class.send(:extend, CarrierWave::MountMultiple)
+      @class.send(:extend, CarrierWave::Mount)
       @class.mount_uploaders(:images)
       @instance = @class.new
     end
@@ -598,7 +598,7 @@ describe CarrierWave::MountMultiple do
     describe 'and no uploader given' do
       before do
         @class = Class.new
-        @class.send(:extend, CarrierWave::MountMultiple)
+        @class.send(:extend, CarrierWave::Mount)
         @class.mount_uploaders(:images) do
           def monkey
             'blah'
@@ -620,7 +620,7 @@ describe CarrierWave::MountMultiple do
     describe 'and an uploader given' do
       before do
         @class = Class.new
-        @class.send(:extend, CarrierWave::MountMultiple)
+        @class.send(:extend, CarrierWave::Mount)
         @uploader = Class.new(CarrierWave::Uploader::Base)
         @uploader.version :thumb do
           version :mini
@@ -659,7 +659,7 @@ describe CarrierWave::MountMultiple do
 
     before do
       @class = Class.new
-      @class.send(:extend, CarrierWave::MountMultiple)
+      @class.send(:extend, CarrierWave::Mount)
 
       @uploader = Class.new(CarrierWave::Uploader::Base)
 
@@ -693,7 +693,7 @@ describe CarrierWave::MountMultiple do
 
     before do
       @class = Class.new
-      @class.send(:extend, CarrierWave::MountMultiple)
+      @class.send(:extend, CarrierWave::Mount)
 
       @uploader = Class.new(CarrierWave::Uploader::Base)
 
@@ -729,7 +729,7 @@ describe CarrierWave::MountMultiple do
 
     before do
       @class = Class.new
-      @class.send(:extend, CarrierWave::MountMultiple)
+      @class.send(:extend, CarrierWave::Mount)
 
       @uploader = Class.new(CarrierWave::Uploader::Base)
 
@@ -755,7 +755,7 @@ describe CarrierWave::MountMultiple do
 
     before do
       @class = Class.new
-      @class.send(:extend, CarrierWave::MountMultiple)
+      @class.send(:extend, CarrierWave::Mount)
 
       @uploader = Class.new(CarrierWave::Uploader::Base)
 
