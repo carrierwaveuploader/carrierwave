@@ -223,12 +223,12 @@ module CarrierWave
           return if frozen?
 
           column = _mounter(:#{column}).serialization_column
-          value = _mounter(:#{column}).write_identifiers
+          value = _mounter(:#{column}).identifiers
           write_uploader(column, value)
         end
 
         def #{column}_identifiers
-          _mounter(:#{column}).identifiers
+          _mounter(:#{column}).read_identifiers
         end
 
         def store_previous_model_for_#{column}

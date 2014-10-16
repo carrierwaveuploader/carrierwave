@@ -16,7 +16,7 @@ module CarrierWave
       record.class.uploaders[column].new(record, column)
     end
 
-    def write_identifiers
+    def identifiers
       if remove?
         nil
       else
@@ -24,12 +24,12 @@ module CarrierWave
       end
     end
 
-    def identifiers
+    def read_identifiers
       [record.read_uploader(serialization_column)].flatten.reject(&:blank?)
     end
 
     def uploaders
-      @uploaders ||= identifiers.map do |identifier|
+      @uploaders ||= read_identifiers.map do |identifier|
         uploader = blank_uploader
         uploader.retrieve_from_store!(identifier) if identifier.present?
         uploader

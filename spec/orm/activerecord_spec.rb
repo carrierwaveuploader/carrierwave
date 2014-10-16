@@ -21,6 +21,14 @@ class Event < ActiveRecord::Base; end # setup a basic AR class for testing
 $arclass = 0
 
 describe CarrierWave::ActiveRecord do
+  before do
+    sham_rack_app = ShamRack.at('www.example.com').stub
+    sham_rack_app.register_resource('/test.jpg', File.read(file_path('test.jpg')), 'images/jpg')
+  end
+
+  after do
+    ShamRack.unmount_all
+  end
 
   describe '#mount_uploader' do
 
@@ -400,7 +408,7 @@ describe CarrierWave::ActiveRecord do
         expect(@event.image_changed?).to be_false
         @event.remote_image_url = 'http://www.example.com/test.jpg'
         expect(@event.image_changed?).to be_true
-        @event.save
+        @event.save!
         @event.reload
         expect(@event.image_changed?).to be_false
       end

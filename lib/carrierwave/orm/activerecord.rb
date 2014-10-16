@@ -52,8 +52,8 @@ module CarrierWave
 
         def remove_#{column}!
           super
-          _mounter(:#{column}).remove = true
-          _mounter(:#{column}).write_identifier
+          self.remove_#{column} = true
+          write_#{column}_identifier
         end
 
         def serializable_hash(options=nil)
@@ -64,7 +64,7 @@ module CarrierWave
 
           self.class.uploaders.each do |column, uploader|
             if (!only && !except) || (only && only.include?(column.to_s)) || (!only && except && !except.include?(column.to_s))
-              hash[column.to_s] = _mounter(column).uploader.serializable_hash
+              hash[column.to_s] = (_mounter(column).uploaders[0] || _mounter(column).blank_uploader).serializable_hash
             end
           end
           super(options).merge(hash)

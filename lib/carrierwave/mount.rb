@@ -224,7 +224,7 @@ module CarrierWave
           return if frozen?
 
           column = _mounter(:#{column}).serialization_column
-          value = _mounter(:#{column}).write_identifiers
+          value = _mounter(:#{column}).identifiers
 
           if value and value.first.present?
             write_uploader(column, value.first)
@@ -234,7 +234,7 @@ module CarrierWave
         end
 
         def #{column}_identifier
-          _mounter(:#{column}).identifiers[0]
+          _mounter(:#{column}).read_identifiers[0]
         end
 
         def store_previous_model_for_#{column}
