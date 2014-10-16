@@ -221,10 +221,13 @@ module CarrierWave
 
         def write_#{column}_identifier
           return if frozen?
+          mounter = _mounter(:#{column})
 
-          column = _mounter(:#{column}).serialization_column
-          value = _mounter(:#{column}).identifiers
-          write_uploader(column, value)
+          if mounter.remove?
+            write_uploader(mounter.serialization_column, nil)
+          else
+            write_uploader(mounter.serialization_column, mounter.identifiers)
+          end
         end
 
         def #{column}_identifiers

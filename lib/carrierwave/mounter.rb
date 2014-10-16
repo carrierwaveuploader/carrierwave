@@ -17,11 +17,7 @@ module CarrierWave
     end
 
     def identifiers
-      if remove?
-        nil
-      else
-        uploaders.map(&:identifier)
-      end
+      uploaders.map(&:identifier)
     end
 
     def read_identifiers
