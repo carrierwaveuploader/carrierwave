@@ -237,22 +237,19 @@ module CarrierWave
           _mounter(:#{column}).read_identifiers[0]
         end
 
-        def store_previous_model_for_#{column}
-          serialization_column = _mounter(:#{column}).serialization_column
-
-          if #{column}.remove_previously_stored_files_after_update && send(:"\#{serialization_column}_changed?")
-            @previous_model_for_#{column} ||= self.find_previous_model_for_#{column}
-          end
-        end
-
-        def find_previous_model_for_#{column}
-          self.class.find(to_key.first)
-        end
-
         def remove_previously_stored_#{column}
-          if @previous_model_for_#{column} && @previous_model_for_#{column}.#{column}.path != #{column}.path
-            @previous_model_for_#{column}.#{column}.remove!
-            @previous_model_for_#{column} = nil
+          before, after = changes[_mounter(:#{column}).serialization_column]
+
+          if before and #{column}.remove_previously_stored_files_after_update
+            if before.is_a?(String)
+              uploader = _mounter(:#{column}).blank_uploader
+              uploader.retrieve_from_store!(before)
+              before = uploader
+            end
+            after_path = after.respond_to?(:path) ? after.path : after
+            unless before.path == after_path
+              before.remove!
+            end
           end
         end
 
