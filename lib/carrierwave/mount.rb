@@ -135,22 +135,8 @@ module CarrierWave
     #     end
     #
     def mount_uploader(column, uploader=nil, options={}, &block)
-      include CarrierWave::Mount::Extension
+      mount_base(column, uploader, options, &block)
 
-      uploader = build_uploader(uploader, &block)
-      uploaders[column.to_sym] = uploader
-      uploader_options[column.to_sym] = options
-
-      # Make sure to write over accessors directly defined on the class.
-      # Simply super to the included module below.
-      class_eval <<-RUBY, __FILE__, __LINE__+1
-        def #{column}; super; end
-        def #{column}=(new_file); super; end
-      RUBY
-
-      # Mixing this in as a Module instead of class_evaling directly, so we
-      # can maintain the ability to super to any of these methods from within
-      # the class.
       mod = Module.new
       include mod
       mod.class_eval <<-RUBY, __FILE__, __LINE__+1
@@ -161,10 +147,6 @@ module CarrierWave
 
         def #{column}=(new_file)
           _mounter(:#{column}).cache([new_file])
-        end
-
-        def #{column}?
-          _mounter(:#{column}).present?
         end
 
         def #{column}_url(*args)
@@ -185,38 +167,6 @@ module CarrierWave
 
         def remote_#{column}_url=(url)
           _mounter(:#{column}).remote_urls = [url]
-        end
-
-        def remove_#{column}
-          _mounter(:#{column}).remove
-        end
-
-        def remove_#{column}!
-          _mounter(:#{column}).remove!
-        end
-
-        def remove_#{column}=(value)
-          _mounter(:#{column}).remove = value
-        end
-
-        def remove_#{column}?
-          _mounter(:#{column}).remove?
-        end
-
-        def store_#{column}!
-          _mounter(:#{column}).store!
-        end
-
-        def #{column}_integrity_error
-          _mounter(:#{column}).integrity_error
-        end
-
-        def #{column}_processing_error
-          _mounter(:#{column}).processing_error
-        end
-
-        def #{column}_download_error
-          _mounter(:#{column}).download_error
         end
 
         def write_#{column}_identifier
@@ -249,11 +199,6 @@ module CarrierWave
             end
           end
         end
-
-        def mark_remove_#{column}_false
-          _mounter(:#{column}).remove = false
-        end
-
       RUBY
     end
 
@@ -345,22 +290,8 @@ module CarrierWave
     #     end
     #
     def mount_uploaders(column, uploader=nil, options={}, &block)
-      include CarrierWave::Mount::Extension
+      mount_base(column, uploader, options, &block)
 
-      uploader = build_uploader(uploader, &block)
-      uploaders[column.to_sym] = uploader
-      uploader_options[column.to_sym] = options
-
-      # Make sure to write over accessors directly defined on the class.
-      # Simply super to the included module below.
-      class_eval <<-RUBY, __FILE__, __LINE__+1
-        def #{column}; super; end
-        def #{column}=(new_file); super; end
-      RUBY
-
-      # Mixing this in as a Module instead of class_evaling directly, so we
-      # can maintain the ability to super to any of these methods from within
-      # the class.
       mod = Module.new
       include mod
       mod.class_eval <<-RUBY, __FILE__, __LINE__+1
@@ -371,10 +302,6 @@ module CarrierWave
 
         def #{column}=(new_files)
           _mounter(:#{column}).cache(new_files)
-        end
-
-        def #{column}?
-          _mounter(:#{column}).present?
         end
 
         def #{column}_urls(*args)
@@ -395,6 +322,47 @@ module CarrierWave
 
         def remote_#{column}_urls=(urls)
           _mounter(:#{column}).remote_urls = urls
+        end
+
+        def write_#{column}_identifier
+          return if frozen?
+          mounter = _mounter(:#{column})
+
+          if mounter.remove?
+            write_uploader(mounter.serialization_column, nil)
+          else
+            write_uploader(mounter.serialization_column, mounter.identifiers)
+          end
+        end
+
+        def #{column}_identifiers
+          _mounter(:#{column}).read_identifiers
+        end
+      RUBY
+    end
+
+    private
+
+    def mount_base(column, uploader=nil, options={}, &block)
+      include CarrierWave::Mount::Extension
+
+      uploader = build_uploader(uploader, &block)
+      uploaders[column.to_sym] = uploader
+      uploader_options[column.to_sym] = options
+
+      # Make sure to write over accessors directly defined on the class.
+      # Simply super to the included module below.
+      class_eval <<-RUBY, __FILE__, __LINE__+1
+        def #{column}; super; end
+        def #{column}=(new_file); super; end
+      RUBY
+
+      mod = Module.new
+      include mod
+      mod.class_eval <<-RUBY, __FILE__, __LINE__+1
+
+        def #{column}?
+          _mounter(:#{column}).present?
         end
 
         def remove_#{column}
@@ -429,49 +397,11 @@ module CarrierWave
           _mounter(:#{column}).download_error
         end
 
-        def write_#{column}_identifier
-          return if frozen?
-          mounter = _mounter(:#{column})
-
-          if mounter.remove?
-            write_uploader(mounter.serialization_column, nil)
-          else
-            write_uploader(mounter.serialization_column, mounter.identifiers)
-          end
-        end
-
-        def #{column}_identifiers
-          _mounter(:#{column}).read_identifiers
-        end
-
-        def store_previous_model_for_#{column}
-          serialization_column = _mounter(:#{column}).serialization_column
-
-          if #{column}.remove_previously_stored_files_after_update && send(:"\#{serialization_column}_changed?")
-            @previous_model_for_#{column} ||= self.find_previous_model_for_#{column}
-          end
-        end
-
-        def find_previous_model_for_#{column}
-          self.class.find(to_key.first)
-        end
-
-        def remove_previously_stored_#{column}
-          if @previous_model_for_#{column} && @previous_model_for_#{column}.#{column}.path != #{column}.path
-            @previous_model_for_#{column}.#{column}.remove!
-            @previous_model_for_#{column} = nil
-          end
-        end
-
         def mark_remove_#{column}_false
           _mounter(:#{column}).remove = false
         end
-
       RUBY
     end
-
-
-    private
 
     def build_uploader(uploader, &block)
       return uploader if uploader && !block_given?
