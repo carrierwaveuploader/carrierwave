@@ -12,12 +12,14 @@ module CarrierWave
       @options = record.class.uploader_options[column]
     end
 
-    def write_identifier
-      return if record.frozen?
+    def blank_uploader
+      record.class.uploaders[column].new(record, column)
+    end
 
+    def write_identifiers
       if remove?
         nil
-      elsif uploader.identifier.present?
+      else
         uploaders.map(&:identifier)
       end
     end
@@ -28,7 +30,7 @@ module CarrierWave
 
     def uploaders
       @uploaders ||= identifiers.map do |identifier|
-        uploader = record.class.uploaders[column].new(record, column)
+        uploader = blank_uploader
         uploader.retrieve_from_store!(identifier) if identifier.present?
         uploader
       end
@@ -36,7 +38,7 @@ module CarrierWave
 
     def cache(new_files)
       @uploaders = new_files.map do |new_file|
-        uploader = record.class.uploaders[column].new(record, column)
+        uploader = blank_uploader
         uploader.cache!(new_file)
         uploader
       end
@@ -52,13 +54,13 @@ module CarrierWave
     end
 
     def cache_names
-      uploader.map(&:cache_names)
+      uploaders.map(&:cache_name)
     end
 
     def cache_names=(cache_names)
-      # unless uploader.cached?
+      return if uploaders.any?(&:cached?)
       @uploaders = cache_names.map do |cache_name|
-        uploader = record.class.uploaders[column].new(record, column)
+        uploader = blank_uploader
         uploader.retrieve_from_cache!(cache_name)
         uploader
       end
@@ -66,14 +68,14 @@ module CarrierWave
     end
 
     def remote_urls=(urls)
-      return if url.blank?
+      return if urls.all?(&:blank?)
 
       @remote_urls = urls
       @download_error = nil
       @integrity_error = nil
 
       @uploaders = urls.map do |url|
-        uploader = record.class.uploaders[column].new(record, column)
+        uploader = blank_uploader
         uploader.download!(url)
         uploader
       end

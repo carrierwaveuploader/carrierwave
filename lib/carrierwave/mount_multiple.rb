@@ -220,6 +220,8 @@ module CarrierWave
         end
 
         def write_#{column}_identifier
+          return if frozen?
+
           column = _mounter(:#{column}).serialization_column
           value = _mounter(:#{column}).write_identifiers
           write_uploader(column, value)
