@@ -156,11 +156,11 @@ module CarrierWave
       mod.class_eval <<-RUBY, __FILE__, __LINE__+1
 
         def #{column}
-          _mounter(:#{column}).uploader
+          _mounter(:#{column}).uploaders
         end
 
-        def #{column}=(new_file)
-          _mounter(:#{column}).cache(new_file)
+        def #{column}=(new_files)
+          _mounter(:#{column}).cache(new_files)
         end
 
         def #{column}?
@@ -168,23 +168,23 @@ module CarrierWave
         end
 
         def #{column}_url(*args)
-          _mounter(:#{column}).url(*args)
+          _mounter(:#{column}).urls(*args)
         end
 
         def #{column}_cache
-          _mounter(:#{column}).cache_name
+          _mounter(:#{column}).cache_names
         end
 
         def #{column}_cache=(cache_name)
-          _mounter(:#{column}).cache_name = cache_name
+          _mounter(:#{column}).cache_names = cache_name
         end
 
         def remote_#{column}_url
-          _mounter(:#{column}).remote_url
+          _mounter(:#{column}).remote_urls
         end
 
-        def remote_#{column}_url=(url)
-          _mounter(:#{column}).remote_url = url
+        def remote_#{column}_url=(urls)
+          _mounter(:#{column}).remote_urls = urls
         end
 
         def remove_#{column}
@@ -220,11 +220,13 @@ module CarrierWave
         end
 
         def write_#{column}_identifier
-          _mounter(:#{column}).write_identifier
+          column = _mounter(:#{column}).serialization_column
+          value = _mounter(:#{column}).write_identifiers
+          write_uploader(column, value)
         end
 
-        def #{column}_identifier
-          _mounter(:#{column}).identifier
+        def #{column}_identifiers
+          _mounter(:#{column}).identifiers
         end
 
         def store_previous_model_for_#{column}

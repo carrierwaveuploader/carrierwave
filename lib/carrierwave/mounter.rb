@@ -3,7 +3,7 @@ module CarrierWave
   # this is an internal class, used by CarrierWave::Mount so that
   # we don't pollute the model with a lot of methods.
   class Mounter #:nodoc:
-    attr_reader :column, :record, :remote_url, :integrity_error, :processing_error, :download_error
+    attr_reader :column, :record, :remote_urls, :integrity_error, :processing_error, :download_error
     attr_accessor :remove
 
     def initialize(record, column, options={})
@@ -16,25 +16,31 @@ module CarrierWave
       return if record.frozen?
 
       if remove?
-        record.write_uploader(serialization_column, nil)
+        nil
       elsif uploader.identifier.present?
-        record.write_uploader(serialization_column, uploader.identifier)
+        uploaders.map(&:identifier)
       end
     end
 
-    def identifier
-      record.read_uploader(serialization_column)
+    def identifiers
+      [record.read_uploader(serialization_column)].flatten.reject(&:blank?)
     end
 
-    def uploader
-      @uploader ||= record.class.uploaders[column].new(record, column)
-      @uploader.retrieve_from_store!(identifier) if @uploader.blank? && identifier.present?
-
-      @uploader
+    def uploaders
+      @uploaders ||= identifiers.map do |identifier|
+        uploader = record.class.uploaders[column].new(record, column)
+        uploader.retrieve_from_store!(identifier) if identifier.present?
+        uploader
+      end
     end
 
-    def cache(new_file)
-      uploader.cache!(new_file)
+    def cache(new_files)
+      @uploaders = new_files.map do |new_file|
+        uploader = record.class.uploaders[column].new(record, column)
+        uploader.cache!(new_file)
+        uploader
+      end
+
       @integrity_error = nil
       @processing_error = nil
     rescue CarrierWave::IntegrityError => e
@@ -45,23 +51,32 @@ module CarrierWave
       raise e unless option(:ignore_processing_errors)
     end
 
-    def cache_name
-      uploader.cache_name
+    def cache_names
+      uploader.map(&:cache_names)
     end
 
-    def cache_name=(cache_name)
-      uploader.retrieve_from_cache!(cache_name) unless uploader.cached?
+    def cache_names=(cache_names)
+      # unless uploader.cached?
+      @uploaders = cache_names.map do |cache_name|
+        uploader = record.class.uploaders[column].new(record, column)
+        uploader.retrieve_from_cache!(cache_name)
+        uploader
+      end
     rescue CarrierWave::InvalidParameter
     end
 
-    def remote_url=(url)
+    def remote_urls=(urls)
       return if url.blank?
 
-      @remote_url = url
+      @remote_urls = urls
       @download_error = nil
       @integrity_error = nil
 
-      uploader.download!(url)
+      @uploaders = urls.map do |url|
+        uploader = record.class.uploaders[column].new(record, column)
+        uploader.download!(url)
+        uploader
+      end
 
     rescue CarrierWave::DownloadError => e
       @download_error = e
@@ -75,21 +90,19 @@ module CarrierWave
     end
 
     def store!
-      return if uploader.blank?
-
       if remove?
-        uploader.remove!
+        remove!
       else
-        uploader.store!
+        uploaders.reject(&:blank?).each(&:store!)
       end
     end
 
-    def url(*args)
-      uploader.url(*args)
+    def urls(*args)
+      uploaders.map { |u| u.url(*args) }
     end
 
     def blank?
-      uploader.blank?
+      uploaders.empty?
     end
 
     def remove?
@@ -97,7 +110,7 @@ module CarrierWave
     end
 
     def remove!
-      uploader.remove!
+      uploaders.reject(&:blank?).each(&:remove!)
     end
 
     def serialization_column

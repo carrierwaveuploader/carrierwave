@@ -31,15 +31,16 @@ describe CarrierWave::MountMultiple do
         end
       end
 
-      @instance.images = stub_file('test.jpg')
-      @instance.images.should be_an_instance_of(@uploader)
+      @instance.images = [stub_file('test.jpg')]
+      @instance.images[0].should be_an_instance_of(@uploader)
     end
 
     it "should inherit uploaders to subclasses" do
       @subclass = Class.new(@class)
       @subclass_instance = @subclass.new
-      @subclass_instance.images = stub_file('test.jpg')
-      @subclass_instance.images.should be_an_instance_of(@uploader)
+      @subclass_instance.images = [stub_file('test.jpg'), stub_file('new.jpeg')]
+      @subclass_instance.images[0].should be_an_instance_of(@uploader)
+      @subclass_instance.images[1].should be_an_instance_of(@uploader)
     end
 
     it "should allow marshalling uploaders and versions" do
@@ -52,7 +53,7 @@ describe CarrierWave::MountMultiple do
       @uploader.version :thumb do
         process :rotate
       end
-      @instance.images = stub_file('test.jpg')
+      @instance.images = [stub_file('test.jpg')]
       lambda { Marshal.dump @instance.images }.should_not raise_error
     end
 
@@ -60,7 +61,9 @@ describe CarrierWave::MountMultiple do
       before do
         @class = Class.new
         @class.send(:extend, CarrierWave::MountMultiple)
-        @uploader1 = Class.new(CarrierWave::Uploader::Base)
+        @uploader1 = Class.new(CarrierWave::Uploader::Base) do
+          [:rotate, :compress, :encrypt, :shrink].each { |m| define_method(m) {} }
+        end
         @uploader1.process :rotate
         @uploader1.version :thumb do
           process :compress
@@ -73,16 +76,18 @@ describe CarrierWave::MountMultiple do
         @class.mount_uploaders(:images1, @uploader1)
         @class.mount_uploaders(:images2, @uploader2)
         @instance = @class.new
+        @instance.images1 = [stub_file('test.jpg')]
+        @instance.images2 = [stub_file('test.jpg')]
       end
 
       it "should inherit defined versions" do
-        @instance.images1.should respond_to(:thumb)
-        @instance.images2.should respond_to(:thumb)
+        @instance.images1[0].should respond_to(:thumb)
+        @instance.images2[0].should respond_to(:thumb)
       end
 
       it "should not inherit versions defined in subclasses" do
-        @instance.images1.should_not respond_to(:secret)
-        @instance.images2.should respond_to(:secret)
+        @instance.images1[0].should_not respond_to(:secret)
+        @instance.images2[0].should respond_to(:secret)
       end
 
       it "should inherit defined processors properly" do
@@ -96,29 +101,32 @@ describe CarrierWave::MountMultiple do
 
     describe '#images' do
 
-      it "should return a blank uploader when nothing has been assigned" do
-        @instance.should_receive(:read_uploader).with(:images).twice.and_return(nil)
-        @instance.images.should be_an_instance_of(@uploader)
-        @instance.images.should be_blank
+      it "should return an empty array when nothing has been assigned" do
+        @instance.should_receive(:read_uploader).with(:images).and_return(nil)
+        @instance.images.should eq []
       end
 
-      it "should return a blank uploader when an empty string has been assigned" do
-        @instance.should_receive(:read_uploader).with(:images).twice.and_return('')
-        @instance.images.should be_an_instance_of(@uploader)
-        @instance.images.should be_blank
+      it "should return an empty array when an empty string has been assigned" do
+        @instance.should_receive(:read_uploader).with(:images).and_return('')
+        @instance.images.should eq []
       end
 
       it "should retrieve a file from the storage if a value is stored in the database" do
-        @instance.should_receive(:read_uploader).with(:images).at_least(:once).and_return('test.jpg')
-        @instance.images.should be_an_instance_of(@uploader)
+        @instance.should_receive(:read_uploader).with(:images).at_least(:once).and_return(['test.jpg', 'new.jpeg'])
+        @instance.images[0].should be_an_instance_of(@uploader)
+        @instance.images[1].should be_an_instance_of(@uploader)
       end
 
       it "should set the path to the store dir" do
         @instance.should_receive(:read_uploader).with(:images).at_least(:once).and_return('test.jpg')
-        @instance.images.current_path.should == public_path('uploads/test.jpg')
+        @instance.images[0].current_path.should == public_path('uploads/test.jpg')
       end
 
     end
+  end
+end
+
+__END__
 
     describe '#images=' do
 
