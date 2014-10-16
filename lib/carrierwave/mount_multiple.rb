@@ -3,17 +3,16 @@
 module CarrierWave
 
   ##
-  # If a Class is extended with this module, it gains the mount_uploader
+  # If a Class is extended with this module, it gains the mount_uploaders
   # method, which is used for mapping attributes to uploaders and allowing
   # easy assignment.
   #
-  # You can use mount_uploader with pretty much any class, however it is
+  # You can use mount_uploaders with pretty much any class, however it is
   # intended to be used with some kind of persistent storage, like an ORM.
   # If you want to persist the uploaded files in a particular Class, it
   # needs to implement a `read_uploader` and a `write_uploader` method.
   #
-  module Mount
-    include MountMultiple
+  module MountMultiple
 
     ##
     # === Returns
@@ -68,7 +67,7 @@ module CarrierWave
     #
     # === Added instance methods
     #
-    # Supposing a class has used +mount_uploader+ to mount an uploader on a column
+    # Supposing a class has used +mount_uploaders+ to mount an uploader on a column
     # named +image+, in that case the following methods will be added to the class:
     #
     # [image]                   Returns an instance of the uploader only if anything has been uploaded
@@ -114,28 +113,28 @@ module CarrierWave
     # Mounting uploaders on different columns.
     #
     #     class Song
-    #       mount_uploader :lyrics, LyricsUploader
-    #       mount_uploader :alternative_lyrics, LyricsUploader
-    #       mount_uploader :file, SongUploader
+    #       mount_uploaders :lyrics, LyricsUploader
+    #       mount_uploaders :alternative_lyrics, LyricsUploader
+    #       mount_uploaders :file, SongUploader
     #     end
     #
     # This will add an anonymous uploader with only the default settings:
     #
     #     class Data
-    #       mount_uploader :csv
+    #       mount_uploaders :csv
     #     end
     #
     # this will add an anonymous uploader overriding the store_dir:
     #
     #     class Product
-    #       mount_uploader :blueprint do
+    #       mount_uploaders :blueprint do
     #         def store_dir
     #           'blueprints'
     #         end
     #       end
     #     end
     #
-    def mount_uploader(column, uploader=nil, options={}, &block)
+    def mount_uploaders(column, uploader=nil, options={}, &block)
       include CarrierWave::Mount::Extension
 
       uploader = build_uploader(uploader, &block)
@@ -292,6 +291,5 @@ module CarrierWave
       end
 
     end # Extension
-
-  end # Mount
+  end # MountMultiple
 end # CarrierWave
