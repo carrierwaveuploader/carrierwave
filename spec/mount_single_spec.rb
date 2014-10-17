@@ -200,6 +200,16 @@ describe CarrierWave::Mount do
         @instance.image_url.should be_nil
       end
 
+      it "should return fallback url when nothing has been assigned" do
+        @uploader.class_eval do
+          def default_url
+            "foo/bar.jpg"
+          end
+        end
+        @instance.should_receive(:read_uploader).with(:image).and_return(nil)
+        @instance.image_url.should eq("foo/bar.jpg")
+      end
+
       it "should return nil when an empty string has been assigned" do
         @instance.should_receive(:read_uploader).with(:image).and_return('')
         @instance.image_url.should be_nil

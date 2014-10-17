@@ -149,7 +149,7 @@ module CarrierWave
         end
 
         def #{column}_url(*args)
-          _mounter(:#{column}).urls(*args)[0]
+          #{column}.url(*args)
         end
 
         def #{column}_cache
