@@ -3,6 +3,7 @@
 require 'rubygems'
 require 'bundler/setup'
 
+require 'pry'
 require 'tempfile'
 require 'time'
 require 'logger'
