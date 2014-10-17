@@ -118,6 +118,48 @@ Other ORM support has been extracted into separate gems:
 
 There are more extensions listed in [the wiki](https://github.com/carrierwaveuploader/carrierwave/wiki)
 
+## Multiple file uploads
+
+CarrierWave also has convenient support for multiple file upload fields.
+
+### ActiveRecord
+
+Add a column which can store an array. This could be an array column or a JSON
+column for example. Your choice depends on what your database suppors. For
+example, create a migration like this:
+
+
+	rails g migration add_avatars_to_users avatars:json
+	rake db:migrate
+
+Open your model file and mount the uploader:
+
+```ruby
+class User < ActiveRecord::Base
+  mount_uploaders :avatars, AvatarUploader
+end
+```
+
+Make sure your file input fields are set up as multiple file fields. For
+example in Rails you'll want to do something like this:
+
+```erb
+<%= form.file_field :files, multiple: true %>
+```
+
+Now you can cache files by assigning them to the attribute, they will
+automatically be stored when the record is saved.
+
+```ruby
+u = User.new
+u.avatars = params[:files] # Assign an array of files like this
+u.avatars = [File.open('somewhere')] # or like this
+u.save!
+u.avatars[0].url # => '/url/to/file.png'
+u.avatars[0].current_path # => 'path/to/file.png'
+u.avatars[0].identifier # => 'file.png'
+```
+
 ## Changing the storage directory
 
 In order to change where uploaded files are put, just override the `store_dir`
