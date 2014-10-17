@@ -12,8 +12,12 @@ module CarrierWave
       @options = record.class.uploader_options[column]
     end
 
+    def uploader_class
+      record.class.uploaders[column]
+    end
+
     def blank_uploader
-      record.class.uploaders[column].new(record, column)
+      uploader_class.new(record, column)
     end
 
     def identifiers
@@ -115,6 +119,26 @@ module CarrierWave
 
     def serialization_column
       option(:mount_on) || column
+    end
+
+    def remove_previous(before=nil, after=nil)
+      if before
+        before = before.reject(&:blank?).map do |value|
+          if value.is_a?(String)
+            uploader = blank_uploader
+            uploader.retrieve_from_store!(before)
+            uploader
+          else
+            value
+          end
+        end
+        after_paths = after.reject(&:blank?).map { |value| value.respond_to?(:path) ? value.path : value }
+        before.each do |uploader|
+          if uploader.remove_previously_stored_files_after_update and not after_paths.include?(uploader.path)
+            uploader.remove!
+          end
+        end
+      end
     end
 
     attr_accessor :uploader_options

@@ -185,18 +185,7 @@ module CarrierWave
 
         def remove_previously_stored_#{column}
           before, after = changes[_mounter(:#{column}).serialization_column]
-
-          if before and #{column}.remove_previously_stored_files_after_update
-            if before.is_a?(String)
-              uploader = _mounter(:#{column}).blank_uploader
-              uploader.retrieve_from_store!(before)
-              before = uploader
-            end
-            after_path = after.respond_to?(:path) ? after.path : after
-            unless before.path == after_path
-              before.remove!
-            end
-          end
+          _mounter(:#{column}).remove_previous([before], [after])
         end
       RUBY
     end
@@ -331,13 +320,17 @@ module CarrierWave
 
           if mounter.remove?
             write_uploader(mounter.serialization_column, nil)
-          else
+          elsif mounter.identifiers.any?
             write_uploader(mounter.serialization_column, mounter.identifiers)
           end
         end
 
         def #{column}_identifiers
           _mounter(:#{column}).read_identifiers
+        end
+
+        def remove_previously_stored_#{column}
+          _mounter(:#{column}).remove_previous(*changes[_mounter(:#{column}).serialization_column])
         end
       RUBY
     end
