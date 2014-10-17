@@ -1,14 +1,14 @@
 if RUBY_ENGINE == 'jruby'
-  require 'activerecord-jdbcmysql-adapter'
+  require 'activerecord-jdbcpostgresql-adapter'
 else
-  require 'mysql2'
+  require 'pg'
 end
 require 'active_record'
 require 'carrierwave/orm/activerecord'
 
 # Change this if MySQL is unavailable
 dbconfig = {
-  :adapter  => 'mysql2',
+  :adapter  => 'postgresql',
   :database => 'carrierwave_test',
   :username => 'root',
   :encoding => 'utf8'
@@ -16,7 +16,7 @@ dbconfig = {
 
 database = dbconfig.delete(:database)
 
-ActiveRecord::Base.establish_connection(dbconfig)
+ActiveRecord::Base.establish_connection(dbconfig.merge(database: "template1"))
 begin
   ActiveRecord::Base.connection.create_database database
 rescue ActiveRecord::StatementInvalid => e # database already exists

@@ -29,9 +29,9 @@ Gem::Specification.new do |s|
   s.add_dependency "json", ">= 1.7"
   s.add_dependency "mime-types", ">= 1.16"
   if RUBY_ENGINE == 'jruby'
-    s.add_development_dependency 'activerecord-jdbcmysql-adapter'
+    s.add_development_dependency 'activerecord-jdbcpostgresql-adapter'
   else
-    s.add_development_dependency "mysql2"
+    s.add_development_dependency "pg"
   end
   s.add_development_dependency "rails", ">= 3.2.0"
   s.add_development_dependency "cucumber", "~> 1.3.2"
