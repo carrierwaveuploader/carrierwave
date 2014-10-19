@@ -59,46 +59,29 @@ module CarrierWave
     end
 
     module MockFiles
-      def stub_merb_tempfile(filename)
-        raise "#{path} file does not exist" unless File.exist?(file_path(filename))
-
-        t = Tempfile.new(filename)
-        FileUtils.copy_file(file_path(filename), t.path)
-
-        return t
-      end
-
       def stub_tempfile(filename, mime_type=nil, fake_name=nil)
         raise "#{path} file does not exist" unless File.exist?(file_path(filename))
 
-        t = Tempfile.new(filename)
-        FileUtils.copy_file(file_path(filename), t.path)
-
-        # This is stupid, but for some reason rspec won't play nice...
-        eval <<-EOF
-        def t.original_filename; '#{fake_name || filename}'; end
-        def t.content_type; '#{mime_type}'; end
-        def t.local_path; path; end
-        EOF
-
-        return t
+        tempfile = Tempfile.new(filename)
+        FileUtils.copy_file(file_path(filename), tempfile.path)
+        tempfile.stub(:original_filename => fake_name || filename,
+                      :content_type => mime_type)
+        tempfile
       end
 
+      alias_method :stub_merb_tempfile, :stub_tempfile
+
       def stub_stringio(filename, mime_type=nil, fake_name=nil)
-        if filename
-          t = StringIO.new( IO.read( file_path( filename ) ) )
-        else
-          t = StringIO.new
-        end
-        t.stub(:local_path => "",
-                :original_filename => filename || fake_name,
-                :content_type => mime_type)
-        return t
+        file = IO.read( file_path( filename ) ) if filename
+        stringio = StringIO.new(file)
+        stringio.stub(:local_path => "",
+                      :original_filename => filename || fake_name,
+                      :content_type => mime_type)
+        stringio
       end
 
       def stub_file(filename, mime_type=nil, fake_name=nil)
-        f = File.open(file_path(filename))
-        return f
+        File.open(file_path(filename))
       end
     end
 
