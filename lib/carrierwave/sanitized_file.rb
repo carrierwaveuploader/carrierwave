@@ -16,7 +16,7 @@ module CarrierWave
   #
   class SanitizedFile
 
-    attr_accessor :file
+    attr_accessor :file, :keep_file
 
     class << self
       attr_writer :sanitize_regexp
@@ -27,7 +27,12 @@ module CarrierWave
     end
 
     def initialize(file)
-      self.file = file
+      self.file      = file
+      self.keep_file = false
+    end
+
+    def keep_file!
+      self.keep_file = true
     end
 
     ##

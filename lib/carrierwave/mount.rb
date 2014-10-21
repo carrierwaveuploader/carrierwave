@@ -241,6 +241,11 @@ module CarrierWave
 
         def remove_previously_stored_#{column}
           if @previous_model_for_#{column} && @previous_model_for_#{column}.#{column}.path != #{column}.path
+            #{column}.versions.each do |name, v|
+              if @previous_model_for_#{column}.#{column}.versions[name].path == v.path
+                @previous_model_for_#{column}.#{column}.versions[name].file.keep_file!
+              end
+            end
             @previous_model_for_#{column}.#{column}.remove!
             @previous_model_for_#{column} = nil
           end
