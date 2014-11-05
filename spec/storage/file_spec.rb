@@ -53,7 +53,7 @@ describe CarrierWave::Storage::File do
 
     after { FileUtils.rm_rf(@cache_dir) }
 
-    it "should clear all files older than, by defaul, 24 hours in the default cache directory" do
+    it "should clear all files older than, by default, 24 hours in the default cache directory" do
       Timecop.freeze(Time.at(1370261522)) do
         @uploader_class.clean_cached_files!
       end
