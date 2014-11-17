@@ -836,7 +836,7 @@ Will add these callbacks:
 ```ruby
 after_save :store_avatar!
 before_save :write_avatar_identifier
-after_commit :remove_avatar! :on => :destroy
+after_commit :remove_avatar!, :on => :destroy
 before_update :store_previous_model_for_avatar
 after_save :remove_previously_stored_avatar
 ```
