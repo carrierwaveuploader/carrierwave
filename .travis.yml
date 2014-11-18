@@ -7,10 +7,10 @@ notifications:
 rvm:
  - 1.9.3
  - 2.0.0
- - 2.1.1
- - 2.1.2
+ - 2.1.5
  - ruby-head
  - jruby
+ - jruby-head
 
 gemfile:
   - Gemfile
@@ -21,7 +21,10 @@ gemfile:
 
 matrix:
   allow_failures:
-    - rvm: ruby-head
+    rvm:
+      - ruby-head
+      - jruby-head
+
 
 before_script:
   - "mysql -e 'create database carrierwave_test;'"
