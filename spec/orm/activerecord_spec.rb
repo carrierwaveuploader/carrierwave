@@ -619,6 +619,11 @@ describe CarrierWave::ActiveRecord do
       @class = Class.new(Event)
       @class.table_name = "events"
       @uploader = Class.new(CarrierWave::Uploader::Base)
+      @uploader.version :thumb do
+        def full_filename(for_file = model.avatar.file)
+          "thumb.jpeg"
+        end
+      end
       @class.mount_uploader(:image, @uploader)
       @event = @class.new
       @event.image = stub_file('old.jpeg')
@@ -631,6 +636,12 @@ describe CarrierWave::ActiveRecord do
     end
 
     describe 'normally' do
+      it "should not remove version with fixed path" do
+        @event.image = stub_file('new.jpeg')
+        expect(@event.save).to be_true
+        expect(File.exist?(public_path('uploads/thumb.jpeg'))).to be_true
+      end
+
       it "should remove old file if old file had a different path" do
         @event.image = stub_file('new.jpeg')
         expect(@event.save).to be_true
