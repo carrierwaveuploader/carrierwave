@@ -20,7 +20,7 @@ module CarrierWave
         if file.respond_to?(:url) and not file.url.blank?
           file.method(:url).arity == 0 ? file.url : file.url(options)
         elsif file.respond_to?(:path)
-          path = encode_path(file.path.gsub(File.expand_path(root), ''))
+          path = encode_path(file.path.sub(File.expand_path(root), ''))
 
           if host = asset_host
             if host.respond_to? :call
