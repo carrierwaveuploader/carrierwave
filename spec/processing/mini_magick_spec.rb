@@ -154,16 +154,16 @@ describe CarrierWave::MiniMagick do
       end
 
       it "should fail to process a non image file" do
-        lambda {@instance.resize_to_limit(200, 200)}.should raise_exception(CarrierWave::ProcessingError, /^Failed to manipulate with MiniMagick, maybe it is not an image\? Original Error:/)
+        lambda {@instance.resize_to_limit(200, 200)}.should raise_exception(CarrierWave::ProcessingError, /^Failed to manipulate with MiniMagick, maybe it is not an image\?/)
       end
 
       it "should use I18n" do
         change_locale_and_store_translations(:nl, :errors => {
           :messages => {
-            :mini_magick_processing_error => "Kon bestand niet met MiniMagick bewerken, misschien is het geen beeld bestand? MiniMagick foutmelding: %{e}"
+            :mini_magick_processing_error => "Kon bestand niet met MiniMagick bewerken, misschien is het geen beeld bestand?"
           }
         }) do
-          lambda {@instance.resize_to_limit(200, 200)}.should raise_exception(CarrierWave::ProcessingError, /^Kon bestand niet met MiniMagick bewerken, misschien is het geen beeld bestand\? MiniMagick foutmelding:/)
+          lambda {@instance.resize_to_limit(200, 200)}.should raise_exception(CarrierWave::ProcessingError, /^Kon bestand niet met MiniMagick bewerken, misschien is het geen beeld bestand\?/)
         end
       end
 
@@ -171,7 +171,7 @@ describe CarrierWave::MiniMagick do
         change_locale_and_store_translations(:foo, {}) do
           lambda do
             @instance.resize_to_limit(200, 200)
-          end.should raise_exception( CarrierWave::ProcessingError, /Not a JPEG/ )
+          end.should raise_exception( CarrierWave::ProcessingError )
         end
       end
     end
