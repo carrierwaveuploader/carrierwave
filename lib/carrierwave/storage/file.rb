@@ -100,7 +100,7 @@ module CarrierWave
 
       def clean_cache!(seconds)
         Dir.glob(::File.expand_path(::File.join(uploader.cache_dir, '*'), CarrierWave.root)).each do |dir|
-          time = dir.scan(/(\d+)-\d+-\d+/).first.map { |t| t.to_i }
+          time = dir.scan(/(\d+)-\d+-\d+$/).first.map(&:to_i)
           time = Time.at(*time)
           if time < (Time.now.utc - seconds)
             FileUtils.rm_rf(dir)
