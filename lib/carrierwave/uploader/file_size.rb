@@ -19,7 +19,7 @@ module CarrierWave
       # === Examples
       #
       #     def size_range
-      #       3256....5748
+      #       3256...5748
       #     end
       #
       def size_range; end
