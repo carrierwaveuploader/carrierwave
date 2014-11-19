@@ -72,6 +72,17 @@ module CarrierWave
         size
       end
 
+      ##
+      # Read the content type of the file
+      #
+      # === Returns
+      #
+      # [String] content type of the file
+      #
+      def content_type
+        file.respond_to?(:content_type) ? file.content_type : nil
+      end
+
     end # Proxy
   end # Uploader
 end # CarrierWave

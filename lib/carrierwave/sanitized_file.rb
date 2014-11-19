@@ -2,6 +2,7 @@
 
 require 'pathname'
 require 'active_support/core_ext/string/multibyte'
+require 'mime/types'
 
 module CarrierWave
 
@@ -30,7 +31,7 @@ module CarrierWave
     end
 
     ##
-    # Returns the filename as is, without sanizting it.
+    # Returns the filename as is, without sanitizing it.
     #
     # === Returns
     #
@@ -141,7 +142,7 @@ module CarrierWave
     # [Boolean] Whether the file exists
     #
     def exists?
-      return File.exists?(self.path) if self.path
+      return File.exist?(self.path) if self.path
       return false
     end
 
@@ -153,11 +154,15 @@ module CarrierWave
     # [String] contents of the file
     #
     def read
-      if is_path?
+      if @content
+        @content
+      elsif is_path?
         File.open(@file, "rb") {|file| file.read}
       else
         @file.rewind if @file.respond_to?(:rewind)
-        @file.read
+        @content = @file.read
+        @file.close if @file.respond_to?(:close) && @file.respond_to?(:closed?) && !@file.closed?
+        @content
       end
     end
 
@@ -170,7 +175,7 @@ module CarrierWave
     # [permissions (Integer)] permissions to set on the file in its new location.
     # [directory_permissions (Integer)] permissions to set on created directories.
     #
-    def move_to(new_path, permissions=nil, directory_permissions=nil)
+    def move_to(new_path, permissions=nil, directory_permissions=nil, keep_filename=false)
       return if self.empty?
       new_path = File.expand_path(new_path)
 
@@ -181,7 +186,11 @@ module CarrierWave
         File.open(new_path, "wb") { |f| f.write(read) }
       end
       chmod!(new_path, permissions)
-      self.file = new_path
+      if keep_filename
+        self.file = {:tempfile => new_path, :filename => original_filename}
+      else
+        self.file = new_path
+      end
       self
     end
 
@@ -240,7 +249,11 @@ module CarrierWave
     #
     def content_type
       return @content_type if @content_type
-      @file.content_type.to_s.chomp if @file.respond_to?(:content_type) and @file.content_type
+      if @file.respond_to?(:content_type) and @file.content_type
+        @content_type = @file.content_type.to_s.chomp
+      elsif path
+        @content_type = ::MIME::Types.type_for(path).first.to_s
+      end
     end
 
     ##
@@ -271,7 +284,7 @@ module CarrierWave
       if file.is_a?(Hash)
         @file = file["tempfile"] || file[:tempfile]
         @original_filename = file["filename"] || file[:filename]
-        @content_type = file["content_type"] || file[:content_type]
+        @content_type = file["content_type"] || file[:content_type] || file["type"] || file[:type]
       else
         @file = file
         @original_filename = nil
@@ -283,7 +296,7 @@ module CarrierWave
     def mkdir!(path, directory_permissions)
       options = {}
       options[:mode] = directory_permissions if directory_permissions
-      FileUtils.mkdir_p(File.dirname(path), options) unless File.exists?(File.dirname(path))
+      FileUtils.mkdir_p(File.dirname(path), options) unless File.exist?(File.dirname(path))
     end
 
     def chmod!(path, permissions)
@@ -292,7 +305,7 @@ module CarrierWave
 
     # Sanitize the filename, to prevent hacking
     def sanitize(name)
-      name = name.gsub("\\", "/") # work-around for IE
+      name = name.tr("\\", "/") # work-around for IE
       name = File.basename(name)
       name = name.gsub(sanitize_regexp,"_")
       name = "_#{name}" if name =~ /\A\.+\z/

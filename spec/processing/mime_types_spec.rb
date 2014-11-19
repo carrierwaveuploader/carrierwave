@@ -5,7 +5,7 @@ require 'spec_helper'
 describe CarrierWave::MimeTypes do
 
   before do
-    @klass = Class.new do
+    @klass = Class.new(CarrierWave::Uploader::Base) do
       attr_accessor :content_type
       include CarrierWave::MimeTypes
     end
@@ -29,6 +29,7 @@ describe CarrierWave::MimeTypes do
     end
 
     it "set content_type if content_type is nil" do
+      pending 'This spec is deprecated because Proxy now read content type itself.'
       @instance.file.content_type = nil
       @instance.file.should_receive(:content_type=).with('image/jpeg')
       @instance.set_content_type
@@ -64,7 +65,7 @@ describe CarrierWave::MimeTypes do
       end
 
       it "should raise a MIME::InvalidContentType error" do
-        # lambda {@instance.set_content_type}.should raise_exception(::MIME::InvalidContentType, /^Failed to process file with MIME::Types, maybe not valid content-type\? Original Error:/)
+        # lambda {@instance.set_content_type}.should raise_exception(::MIME::InvalidContentType, /^Failed to process file with MIME::Types, maybe not valid content-type\?/)
       end
     end
   end

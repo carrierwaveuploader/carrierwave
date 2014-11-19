@@ -11,7 +11,7 @@ module CarrierWave
         class_attribute :processors, :instance_writer => false
         self.processors = []
 
-        after :cache, :process!
+        before :cache, :process!
       end
 
       module ClassMethods
@@ -54,20 +54,14 @@ module CarrierWave
         #     end
         #
         def process(*args)
-          if !args.first.is_a?(Hash) && args.last.is_a?(Hash)
-            conditions = args.pop
-            args.map!{ |arg| {arg => []}.merge(conditions) }
+          new_processors = args.inject({}) do |hash, arg|
+            arg = { arg => [] } unless arg.is_a?(Hash)
+            hash.merge!(arg)
           end
 
-          args.each do |arg|
-            if arg.is_a?(Hash)
-              condition = arg.delete(:if)
-              arg.each do |method, args|
-                self.processors += [[method, args, condition]]
-              end
-            else
-              self.processors += [[arg, [], nil]]
-            end
+          condition = new_processors.delete(:if)
+          new_processors.each do |processor, processor_args|
+            self.processors += [[processor, processor_args, condition]]
           end
         end
 
@@ -77,13 +71,17 @@ module CarrierWave
       # Apply all process callbacks added through CarrierWave.process
       #
       def process!(new_file=nil)
-        if enable_processing
-          self.class.processors.each do |method, args, condition|
-            if(condition)
-              next if !(condition.respond_to?(:call) ? condition.call(self, :args => args, :method => method, :file => new_file) : self.send(condition, new_file))
+        return unless enable_processing
+
+        self.class.processors.each do |method, args, condition|
+          if(condition)
+            if condition.respond_to?(:call)
+              next unless condition.call(self, :args => args, :method => method, :file => new_file)
+            else
+              next unless self.send(condition, new_file)
             end
-            self.send(method, *args)
           end
+          self.send(method, *args)
         end
       end
 

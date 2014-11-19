@@ -3,7 +3,7 @@ unless defined?(FOG_CREDENTIALS)
   credentials = []
 
   if Fog.mocking?
-    # Local and Rackspace don't have fog mock support yet
+    # Local and Rackspace don't have fog double support yet
     mappings = {
       'AWS'       => [:aws_access_key_id, :aws_secret_access_key],
       'Google'    => [:google_storage_access_key_id, :google_storage_secret_access_key],

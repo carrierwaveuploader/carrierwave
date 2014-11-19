@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require "fog"
+require "fog" unless defined?(::Fog)
 
 module CarrierWave
   module Storage
@@ -96,6 +96,58 @@ module CarrierWave
         CarrierWave::Storage::Fog::File.new(uploader, self, uploader.store_path(identifier))
       end
 
+      ##
+      # Stores given file to cache directory.
+      #
+      # === Parameters
+      #
+      # [new_file (File, IOString, Tempfile)] any kind of file object
+      #
+      # === Returns
+      #
+      # [CarrierWave::SanitizedFile] a sanitized file
+      #
+      def cache!(new_file)
+        f = CarrierWave::Storage::Fog::File.new(uploader, self, uploader.cache_path)
+        f.store(new_file)
+        f
+      end
+
+      ##
+      # Retrieves the file with the given cache_name from the cache.
+      #
+      # === Parameters
+      #
+      # [cache_name (String)] uniquely identifies a cache file
+      #
+      # === Raises
+      #
+      # [CarrierWave::InvalidParameter] if the cache_name is incorrectly formatted.
+      #
+      def retrieve_from_cache!(identifier)
+        CarrierWave::Storage::Fog::File.new(uploader, self, uploader.cache_path(identifier))
+      end
+
+      ##
+      # Deletes a cache dir
+      #
+      def delete_dir!(path)
+        # do nothing, because there's no such things as 'empty directory'
+      end
+
+      def clean_cache!(seconds)
+        connection.directories.new(
+          :key    => uploader.fog_directory,
+          :public => uploader.fog_public
+        ).files.all(:prefix => uploader.cache_dir).each do |file|
+          time = file.key.scan(/(\d+)-\d+-\d+/).first.map { |t| t.to_i }
+          time = Time.at(*time)
+          if time < (Time.now.utc - seconds)
+            file.destroy
+          end
+        end
+      end
+
       def connection
         @connection ||= begin
           options = credentials = uploader.fog_credentials
@@ -137,13 +189,13 @@ module CarrierWave
         # [NilClass] no authenticated url available
         #
         def authenticated_url(options = {})
-          if ['AWS', 'Google', 'Rackspace'].include?(@uploader.fog_credentials[:provider])
+          if ['AWS', 'Google', 'Rackspace', 'OpenStack'].include?(@uploader.fog_credentials[:provider])
             # avoid a get by using local references
             local_directory = connection.directories.new(:key => @uploader.fog_directory)
             local_file = local_directory.files.new(:key => path)
             if @uploader.fog_credentials[:provider] == "AWS"
               local_file.url(::Fog::Time.now + @uploader.fog_authenticated_url_expiration, options)
-            elsif @uploader.fog_credentials[:provider] == "Rackspace"
+            elsif ['Rackspace', 'OpenStack'].include?(@uploader.fog_credentials[:provider])
               connection.get_object_https_url(@uploader.fog_directory, path, ::Fog::Time.now + @uploader.fog_authenticated_url_expiration)
             else
               local_file.url(::Fog::Time.now + @uploader.fog_authenticated_url_expiration)
@@ -192,10 +244,11 @@ module CarrierWave
         #
         # === Returns
         #
-        # [String] extension of file
+        # [String] extension of file or nil if the file has no extension
         #
         def extension
-          path.split('.').last
+          path_elements = path.split('.')
+          path_elements.last if path_elements.size > 1
         end
 
         ##
@@ -255,15 +308,19 @@ module CarrierWave
         #
         # [Boolean] true on success or raises error
         def store(new_file)
-          fog_file = new_file.to_file
-          @content_type ||= new_file.content_type
-          @file = directory.files.create({
-            :body         => fog_file ? fog_file : new_file.read,
-            :content_type => @content_type,
-            :key          => path,
-            :public       => @uploader.fog_public
-          }.merge(@uploader.fog_attributes))
-          fog_file.close if fog_file && !fog_file.closed?
+          if new_file.is_a?(self.class)
+            new_file.copy_to(path)
+          else
+            fog_file = new_file.to_file
+            @content_type ||= new_file.content_type
+            @file = directory.files.create({
+              :body         => fog_file ? fog_file : new_file.read,
+              :content_type => @content_type,
+              :key          => path,
+              :public       => @uploader.fog_public
+            }.merge(@uploader.fog_attributes))
+            fog_file.close if fog_file && !fog_file.closed?
+          end
           true
         end
 
@@ -338,8 +395,24 @@ module CarrierWave
         #
         def filename(options = {})
           if file_url = url(options)
-            URI.decode(file_url).gsub(/.*\/(.*?$)/, '\1')
+            URI.decode(file_url.split('?').first).gsub(/.*\/(.*?$)/, '\1')
           end
+        end
+
+        ##
+        # Creates a copy of this file and returns it.
+        #
+        # === Parameters
+        #
+        # [new_path (String)] The path where the file should be copied to.
+        #
+        # === Returns
+        #
+        # @return [CarrierWave::Storage::Fog::File] the location where the file will be stored.
+        #
+        def copy_to(new_path)
+          connection.copy_object(@uploader.fog_directory, file.key, @uploader.fog_directory, new_path, acl_header)
+          CarrierWave::Storage::Fog::File.new(@uploader, @base, new_path)
         end
 
       private
@@ -382,6 +455,9 @@ module CarrierWave
           @file ||= directory.files.head(path)
         end
 
+        def acl_header
+          {'x-amz-acl' => @uploader.fog_public ? 'public-read' : 'private'}
+        end
       end
 
     end # Fog

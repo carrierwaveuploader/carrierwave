@@ -2,33 +2,44 @@
 
 require 'spec_helper'
 
-describe CarrierWave::RMagick do
+describe CarrierWave::RMagick, :rmagick => true do
 
   before do
-    @klass = Class.new do
+    @klass = Class.new(CarrierWave::Uploader::Base) do
       include CarrierWave::RMagick
     end
     @instance = @klass.new
     FileUtils.cp(file_path('landscape.jpg'), file_path('landscape_copy.jpg'))
-    @instance.stub(:current_path).and_return(file_path('landscape_copy.jpg'))
     @instance.stub(:cached?).and_return true
+    @instance.stub(:file).and_return(CarrierWave::SanitizedFile.new(file_path('landscape_copy.jpg')))
   end
 
   after do
-    FileUtils.rm(file_path('landscape_copy.jpg'))
+    FileUtils.rm(file_path('landscape_copy.jpg')) if File.exist?(file_path('landscape_copy.jpg'))
+    FileUtils.rm(file_path('landscape_copy.png')) if File.exist?(file_path('landscape_copy.png'))
   end
 
   describe '#convert' do
     it "should convert the image to the given format" do
-      # TODO: find some way to spec this
       @instance.convert(:png)
+      ::Magick::Image.read(@instance.current_path).first.format.should == 'PNG'
+      @instance.file.extension.should == 'png'
     end
   end
 
   describe '#resize_to_fill' do
-    it "should resize the image to exactly the given dimensions" do
+    it "should resize the image to exactly the given dimensions and maintain file type" do
       @instance.resize_to_fill(200, 200)
       @instance.should have_dimensions(200, 200)
+      ::Magick::Image.read(@instance.current_path).first.format.should == 'JPEG'
+    end
+
+    it "should resize the image to exactly the given dimensions and maintain updated file type" do
+      @instance.convert('png')
+      @instance.resize_to_fill(200, 200)
+      @instance.should have_dimensions(200, 200)
+      ::Magick::Image.read(@instance.current_path).first.format.should == 'PNG'
+      @instance.file.extension.should == 'png'
     end
 
     it "should scale up the image if it smaller than the given dimensions" do
@@ -38,9 +49,46 @@ describe CarrierWave::RMagick do
   end
 
   describe '#resize_and_pad' do
-    it "should resize the image to exactly the given dimensions" do
+    it "should resize the image to exactly the given dimensions and maintain file type" do
       @instance.resize_and_pad(200, 200)
       @instance.should have_dimensions(200, 200)
+      ::Magick::Image.read(@instance.current_path).first.format.should == 'JPEG'
+    end
+
+    it "should resize the image to exactly the given dimensions and maintain updated file type" do
+      @instance.convert('png')
+      @instance.resize_and_pad(200, 200)
+      @instance.should have_dimensions(200, 200)
+      ::Magick::Image.read(@instance.current_path).first.format.should == 'PNG'
+      @instance.file.extension.should == 'png'
+    end
+
+    it "should pad with white" do
+      @instance.resize_and_pad(200, 200)
+      color = color_of_pixel(@instance.current_path, 0, 0)
+      color.should include('#FFFFFF')
+      color.should_not include('#FFFFFF00')
+    end
+
+    it "should pad with transparent" do
+      @instance.convert('png')
+      @instance.resize_and_pad(200, 200, :transparent)
+      color = color_of_pixel(@instance.current_path, 0, 0)
+      color.should include('#FFFFFF00')
+    end
+
+    it "should not pad with transparent" do
+      @instance.resize_and_pad(200, 200, :transparent)
+      @instance.convert('png')
+      color = color_of_pixel(@instance.current_path, 0, 0)
+      color.should include('#FFFFFF')
+      color.should_not include('#FFFFFF00')
+    end
+
+    it "should pad with given color" do
+      @instance.resize_and_pad(200, 200, '#888')
+      color = color_of_pixel(@instance.current_path, 0, 0)
+      color.should include('#888888')
     end
 
     it "should scale up the image if it smaller than the given dimensions" do
@@ -50,9 +98,17 @@ describe CarrierWave::RMagick do
   end
 
   describe '#resize_to_fit' do
-    it "should resize the image to fit within the given dimensions" do
+    it "should resize the image to fit within the given dimensions and maintain file type" do
       @instance.resize_to_fit(200, 200)
       @instance.should have_dimensions(200, 150)
+      ::Magick::Image.read(@instance.current_path).first.format.should == 'JPEG'
+    end
+
+    it "should resize the image to fit within the given dimensions and maintain updated file type" do
+      @instance.convert('png')
+      @instance.resize_to_fit(200, 200)
+      @instance.should have_dimensions(200, 150)
+      ::Magick::Image.read(@instance.current_path).first.format.should == 'PNG'
     end
 
     it "should scale up the image if it smaller than the given dimensions" do
@@ -62,9 +118,18 @@ describe CarrierWave::RMagick do
   end
 
   describe '#resize_to_limit' do
-    it "should resize the image to fit within the given dimensions" do
+    it "should resize the image to fit within the given dimensions and maintain file type" do
       @instance.resize_to_limit(200, 200)
       @instance.should have_dimensions(200, 150)
+      ::Magick::Image.read(@instance.current_path).first.format.should == 'JPEG'
+    end
+
+    it "should resize the image to fit within the given dimensions and maintain updated file type" do
+      @instance.convert('png')
+      @instance.resize_to_limit(200, 200)
+      @instance.should have_dimensions(200, 150)
+      ::Magick::Image.read(@instance.current_path).first.format.should == 'PNG'
+      @instance.file.extension.should == 'png'
     end
 
     it "should not scale up the image if it smaller than the given dimensions" do
@@ -74,9 +139,18 @@ describe CarrierWave::RMagick do
   end
 
   describe '#resize_to_geometry_string' do
-    it "should resize the image to comply with `200x200^` Geometry String spec" do
+    it "should resize the image to comply with `200x200^` Geometry String spec and maintain file type" do
       @instance.resize_to_geometry_string('200x200^')
       @instance.should have_dimensions(267, 200)
+      ::Magick::Image.read(@instance.current_path).first.format.should == 'JPEG'
+    end
+
+    it "should resize the image to comply with `200x200^` Geometry String spec and maintain updated file type" do
+      @instance.convert('png')
+      @instance.resize_to_geometry_string('200x200^')
+      @instance.should have_dimensions(267, 200)
+      ::Magick::Image.read(@instance.current_path).first.format.should == 'PNG'
+      @instance.file.extension.should == 'png'
     end
 
     it "should resize the image to have 125% larger dimensions" do
@@ -101,8 +175,8 @@ describe CarrierWave::RMagick do
       ::Magick::Image.stub(:read => image)
       ::Magick::Image::Info.any_instance.should_receive(:quality=).with(50)
       ::Magick::Image::Info.any_instance.should_receive(:depth=).with(8)
-      
-      @instance.manipulate! do |image, index, options| 
+
+      @instance.manipulate! do |image, index, options|
         options[:write] = {
           :quality => 50,
           :depth => 8
@@ -114,7 +188,7 @@ describe CarrierWave::RMagick do
     it 'should support passing read options to RMagick' do
       ::Magick::Image::Info.any_instance.should_receive(:density=).with(10)
       ::Magick::Image::Info.any_instance.should_receive(:size=).with("200x200")
-      
+
       @instance.manipulate! :read => {
           :density => 10,
           :size => %{"200x200"}
@@ -131,16 +205,24 @@ describe CarrierWave::RMagick do
       end
 
       it "should fail to process a non image file" do
-        lambda {@instance.resize_to_limit(200, 200)}.should raise_exception(CarrierWave::ProcessingError, /^Failed to manipulate with rmagick, maybe it is not an image\? Original Error:/)
+        lambda {@instance.resize_to_limit(200, 200)}.should raise_exception(CarrierWave::ProcessingError, /^Failed to manipulate with rmagick, maybe it is not an image\?/)
       end
 
       it "should use I18n" do
         change_locale_and_store_translations(:nl, :errors => {
           :messages => {
-            :rmagick_processing_error => "Kon bestand niet met rmagick bewerken, misschien is het geen beeld bestand? rmagick foutmelding: %{e}"
+            :rmagick_processing_error => "Kon bestand niet met rmagick bewerken, misschien is het geen beeld bestand?"
           }
         }) do
-          lambda {@instance.resize_to_limit(200, 200)}.should raise_exception(CarrierWave::ProcessingError, /^Kon bestand niet met rmagick bewerken, misschien is het geen beeld bestand\? rmagick foutmelding:/)
+          lambda {@instance.resize_to_limit(200, 200)}.should raise_exception(CarrierWave::ProcessingError, /^Kon bestand niet met rmagick bewerken, misschien is het geen beeld bestand\?/)
+        end
+      end
+
+      it "should not suppress errors when translation is unavailable" do
+        change_locale_and_store_translations(:foo, {}) do
+          lambda do
+            @instance.resize_to_limit(200, 200)
+          end.should raise_exception( CarrierWave::ProcessingError )
         end
       end
     end

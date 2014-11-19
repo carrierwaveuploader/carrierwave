@@ -62,9 +62,7 @@ module CarrierWave
 
     included do
       begin
-        require "rmagick"
-      rescue LoadError
-        require "RMagick"
+        require "RMagick" unless defined?(::Magick)
       rescue LoadError => e
         e.message << " (You may need to install the rmagick gem)"
         raise e
@@ -116,6 +114,7 @@ module CarrierWave
     #
     def convert(format)
       manipulate!(:format => format)
+      @format = format
     end
 
     ##
@@ -214,7 +213,7 @@ module CarrierWave
     def resize_and_pad(width, height, background=:transparent, gravity=::Magick::CenterGravity)
       manipulate! do |img|
         img.resize_to_fit!(width, height)
-        new_img = ::Magick::Image.new(width, height)
+        new_img = ::Magick::Image.new(width, height) { self.background_color = background == :transparent ? 'rgba(255,255,255,0)' : background.to_s }
         if background == :transparent
           filled = new_img.matte_floodfill(1, 1)
         else
@@ -314,33 +313,27 @@ module CarrierWave
 
       read_block = create_info_block(options[:read])
       image = ::Magick::Image.read(current_path, &read_block)
+      frames = ::Magick::ImageList.new
 
-      frames = if image.size > 1
-        list = ::Magick::ImageList.new
-        image.each_with_index do |frame, index|
-          processed_frame = if block_given?
-            yield *[frame, index, options].take(block.arity)
-          else
-            frame
-          end
-          list << processed_frame if processed_frame
-        end
-        block_given? ? list : list.append(true)
-      else
-        frame = image.first
-        frame = yield( *[frame, 0, options].take(block.arity) ) if block_given?
-        frame
+      image.each_with_index do |frame, index|
+        frame = yield *[frame, index, options].take(block.arity) if block_given?
+        frames << frame if frame
       end
+      frames.append(true) if block_given?
 
       write_block = create_info_block(options[:write])
-      if options[:format]
-        frames.write("#{options[:format]}:#{current_path}", &write_block)
+
+      if options[:format] || @format
+        frames.write("#{options[:format] || @format}:#{current_path}", &write_block)
+        move_to = current_path.chomp(File.extname(current_path)) + ".#{options[:format] || @format}"
+        file.move_to(move_to, permissions, directory_permissions)
       else
         frames.write(current_path, &write_block)
       end
+
       destroy_image(frames)
     rescue ::Magick::ImageMagickError => e
-      raise CarrierWave::ProcessingError, I18n.translate(:"errors.messages.rmagick_processing_error", :e => e)
+      raise CarrierWave::ProcessingError, I18n.translate(:"errors.messages.rmagick_processing_error", :e => e, :default => I18n.translate(:"errors.messages.rmagick_processing_error", :e => e, :locale => :en))
     end
 
   private

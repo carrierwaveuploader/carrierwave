@@ -9,6 +9,7 @@ module CarrierWave
 
   class << self
     attr_accessor :root, :base_path
+    attr_writer :tmp_path
 
     def configure(&block)
       CarrierWave::Uploader::Base.configure(&block)
@@ -16,6 +17,10 @@ module CarrierWave
 
     def clean_cached_files!(seconds=60*60*24)
       CarrierWave::Uploader::Base.clean_cached_files!(seconds)
+    end
+
+    def tmp_path
+      @tmp_path ||= File.expand_path(File.join('..', 'tmp'), root)
     end
   end
 
@@ -44,6 +49,13 @@ elsif defined?(Rails)
           require 'carrierwave/orm/activerecord'
         end
       end
+
+      ##
+      # Loads the Carrierwave locale files before the Rails application locales
+      # letting the Rails application overrite the carrierwave locale defaults
+      config.before_configuration do
+        I18n.load_path << File.join(File.dirname(__FILE__), "carrierwave", "locale", 'en.yml')
+      end
     end
   end
 
@@ -65,6 +77,7 @@ end
 require "carrierwave/utilities"
 require "carrierwave/error"
 require "carrierwave/sanitized_file"
+require "carrierwave/mounter"
 require "carrierwave/mount"
 require "carrierwave/processing"
 require "carrierwave/version"

@@ -43,8 +43,8 @@ describe CarrierWave::Mount do
     end
 
     it "should allow marshalling uploaders and versions" do
-      Object.const_set("MyClass#{@class.object_id}".gsub('-', '_'), @class)
-      Object.const_set("Uploader#{@uploader.object_id}".gsub('-', '_'), @uploader)
+      Object.const_set("MyClass#{@class.object_id}".tr('-', '_'), @class)
+      Object.const_set("Uploader#{@uploader.object_id}".tr('-', '_'), @uploader)
       @uploader.class_eval do
         def rotate
         end
@@ -88,22 +88,22 @@ describe CarrierWave::Mount do
       it "should inherit defined processors properly" do
         @uploader1.processors.should == [[:rotate, [], nil]]
         @uploader2.processors.should == [[:rotate, [], nil], [:shrink, [], nil]]
-        @uploader1.versions[:thumb][:uploader].processors.should == [[:compress, [], nil]]
-        @uploader2.versions[:thumb][:uploader].processors.should == [[:compress, [], nil]]
-        @uploader2.versions[:secret][:uploader].processors.should == [[:encrypt, [], nil]]
+        @uploader1.versions[:thumb].processors.should == [[:compress, [], nil]]
+        @uploader2.versions[:thumb].processors.should == [[:compress, [], nil]]
+        @uploader2.versions[:secret].processors.should == [[:encrypt, [], nil]]
       end
     end
 
     describe '#image' do
 
       it "should return a blank uploader when nothing has been assigned" do
-        @instance.should_receive(:read_uploader).with(:image).twice.and_return(nil)
+        @instance.should_receive(:read_uploader).with(:image).and_return(nil)
         @instance.image.should be_an_instance_of(@uploader)
         @instance.image.should be_blank
       end
 
       it "should return a blank uploader when an empty string has been assigned" do
-        @instance.should_receive(:read_uploader).with(:image).twice.and_return('')
+        @instance.should_receive(:read_uploader).with(:image).and_return('')
         @instance.image.should be_an_instance_of(@uploader)
         @instance.image.should be_blank
       end
@@ -200,6 +200,16 @@ describe CarrierWave::Mount do
         @instance.image_url.should be_nil
       end
 
+      it "should return fallback url when nothing has been assigned" do
+        @uploader.class_eval do
+          def default_url
+            "foo/bar.jpg"
+          end
+        end
+        @instance.should_receive(:read_uploader).with(:image).and_return(nil)
+        @instance.image_url.should eq("foo/bar.jpg")
+      end
+
       it "should return nil when an empty string has been assigned" do
         @instance.should_receive(:read_uploader).with(:image).and_return('')
         @instance.image_url.should be_nil
@@ -226,8 +236,8 @@ describe CarrierWave::Mount do
     describe '#image_cache' do
 
       before do
-        @instance.stub!(:write_uploader)
-        @instance.stub!(:read_uploader).and_return(nil)
+        @instance.stub(:write_uploader)
+        @instance.stub(:read_uploader).and_return(nil)
       end
 
       it "should return nil when nothing has been assigned" do
@@ -242,7 +252,7 @@ describe CarrierWave::Mount do
 
       it "should be the cache name when a file has been cached" do
         @instance.image = stub_file('test.jpg')
-        @instance.image_cache.should =~ %r(^[\d]{8}\-[\d]{4}\-[\d]+\-[\d]{4}/test\.jpg$)
+        @instance.image_cache.should =~ %r(^[\d]+\-[\d]+\-[\d]{4}/test\.jpg$)
       end
 
     end
@@ -250,9 +260,9 @@ describe CarrierWave::Mount do
     describe '#image_cache=' do
 
       before do
-        @instance.stub!(:write_uploader)
-        @instance.stub!(:read_uploader).and_return(nil)
-        CarrierWave::SanitizedFile.new(file_path('test.jpg')).copy_to(public_path('uploads/tmp/19990512-1202-123-1234/test.jpg'))
+        @instance.stub(:write_uploader)
+        @instance.stub(:read_uploader).and_return(nil)
+        CarrierWave::SanitizedFile.new(file_path('test.jpg')).copy_to(public_path('uploads/tmp/1369894322-123-1234/test.jpg'))
       end
 
       it "should do nothing when nil is assigned" do
@@ -266,13 +276,13 @@ describe CarrierWave::Mount do
       end
 
       it "retrieve from cache when a cache name is assigned" do
-        @instance.image_cache = '19990512-1202-123-1234/test.jpg'
-        @instance.image.current_path.should == public_path('uploads/tmp/19990512-1202-123-1234/test.jpg')
+        @instance.image_cache = '1369894322-123-1234/test.jpg'
+        @instance.image.current_path.should == public_path('uploads/tmp/1369894322-123-1234/test.jpg')
       end
 
       it "should not write over a previously assigned file" do
         @instance.image = stub_file('test.jpg')
-        @instance.image_cache = '19990512-1202-123-1234/monkey.jpg'
+        @instance.image_cache = '1369894322-123-1234/monkey.jpg'
         @instance.image.current_path.should =~ /test.jpg$/
       end
     end
@@ -327,8 +337,8 @@ describe CarrierWave::Mount do
     describe '#store_image!' do
 
       before do
-        @instance.stub!(:write_uploader)
-        @instance.stub!(:read_uploader).and_return(nil)
+        @instance.stub(:write_uploader)
+        @instance.stub(:read_uploader).and_return(nil)
       end
 
       it "should do nothing when no file has been uploaded" do
@@ -355,8 +365,8 @@ describe CarrierWave::Mount do
     describe '#remove_image!' do
 
       before do
-        @instance.stub!(:write_uploader)
-        @instance.stub!(:read_uploader).and_return(nil)
+        @instance.stub(:write_uploader)
+        @instance.stub(:read_uploader).and_return(nil)
       end
 
       it "should do nothing when no file has been uploaded" do
@@ -443,6 +453,14 @@ describe CarrierWave::Mount do
           sham_rack_app.register_resource('/test.jpg', File.read(file_path('test.jpg')), 'image/jpg')
 
           @instance.remote_image_url = "http://www.example.com/test.jpg"
+          e = @instance.image_integrity_error
+          e.should be_an_instance_of(CarrierWave::IntegrityError)
+          e.message.lines.grep(/^You are not allowed to upload/).should be_true
+        end
+
+        it "should be an error instance when image file is assigned and remote_image_url is blank" do
+          @instance.image = stub_file('test.jpg')
+          @instance.remote_image_url = ""
           e = @instance.image_integrity_error
           e.should be_an_instance_of(CarrierWave::IntegrityError)
           e.message.lines.grep(/^You are not allowed to upload/).should be_true
@@ -539,7 +557,7 @@ describe CarrierWave::Mount do
         @instance.image = stub_file('test.jpg')
         @instance.store_image!
         @instance.remove_image = true
-        @instance.should_receive(:write_uploader).with(:image, "")
+        @instance.should_receive(:write_uploader).with(:image, nil)
         @instance.write_image_identifier
       end
     end
@@ -565,7 +583,7 @@ describe CarrierWave::Mount do
     describe '#image' do
 
       before do
-        @instance.stub!(:read_uploader).and_return('test.jpg')
+        @instance.stub(:read_uploader).and_return('test.jpg')
       end
 
       it "should return an instance of a subclass of CarrierWave::Uploader::Base" do
@@ -766,7 +784,7 @@ describe CarrierWave::Mount do
         @instance.image = stub_file('test.jpg')
         @instance.store_image!
         @instance.remove_image = true
-        @instance.should_receive(:write_uploader).with(:monkey, "")
+        @instance.should_receive(:write_uploader).with(:monkey, nil)
         @instance.write_image_identifier
       end
     end

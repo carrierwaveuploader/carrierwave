@@ -1,8 +1,7 @@
 source "https://rubygems.org"
 
 gem "rails", :github => "rails/rails", :branch => "master"
-gem "activerecord-deprecated_finders", :github => "rails/activerecord-deprecated_finders"
-gem "journey", :github => "rails/journey"
+gem "arel", :github => "rails/arel", :branch => "master"
 gem "carrierwave", :path => "../"
 
 gemspec :path => "../"

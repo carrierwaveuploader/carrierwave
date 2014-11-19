@@ -39,6 +39,7 @@ module CarrierWave
   #           img
   #         end
   #       end
+  #     end
   #
   # === Note
   #
@@ -49,7 +50,7 @@ module CarrierWave
   #
   # http://mini_magick.rubyforge.org/
   # and
-  # https://github.com/minimagic/minimagick/
+  # https://github.com/minimagick/minimagick/
   #
   #
   module MiniMagick
@@ -81,7 +82,7 @@ module CarrierWave
         process :resize_to_fill => [width, height, gravity]
       end
 
-      def resize_and_pad(width, height, background=:transparent, gravity=::Magick::CenterGravity)
+      def resize_and_pad(width, height, background=:transparent, gravity='Center')
         process :resize_and_pad => [width, height, background, gravity]
       end
     end
@@ -103,9 +104,10 @@ module CarrierWave
     #
     #     image.convert(:png)
     #
-    def convert(format)
+    def convert(format, page=nil)
+      @format = format
+      @page = page
       manipulate! do |img|
-        img.format(format.to_s.downcase)
         img = yield(img) if block_given?
         img
       end
@@ -235,6 +237,43 @@ module CarrierWave
     end
 
     ##
+    # Return the mini magic instance of the image
+    #
+    # === Returns
+    #
+    # #<MiniMagick::Image>
+    #
+    def mini_magic_image
+      if url
+        ::MiniMagick::Image.open(url)
+      else
+        ::MiniMagick::Image.open(current_path)
+      end
+    end
+
+    ##
+    # Gives the width of the image, useful for model validation
+    #
+    # === Returns
+    #
+    # [Integer] the image's width in pixels
+    #
+    def width
+      mini_magic_image[:width]
+    end
+
+    ##
+    # Gives the height of the image, useful for model validation
+    #
+    # === Returns
+    #
+    # [Integer] the image's height in pixels
+    #
+    def height
+      mini_magic_image[:height]
+    end
+
+    ##
     # Manipulate the image with MiniMagick. This method will load up an image
     # and then pass each of its frames to the supplied block. It will then
     # save the image to disk.
@@ -257,11 +296,25 @@ module CarrierWave
     def manipulate!
       cache_stored_file! if !cached?
       image = ::MiniMagick::Image.open(current_path)
-      image = yield(image)
-      image.write(current_path)
-      ::MiniMagick::Image.open(current_path)
+
+      begin
+        image.format(@format.to_s.downcase, @page) if @format
+        image = yield(image)
+        image.write(current_path)
+
+        if @format
+          move_to = current_path.chomp(File.extname(current_path)) + ".#{@format}"
+          file.move_to(move_to, permissions, directory_permissions)
+        end
+
+        image.run_command("identify", current_path)
+      ensure
+        image.destroy!
+      end
     rescue ::MiniMagick::Error, ::MiniMagick::Invalid => e
-      raise CarrierWave::ProcessingError, I18n.translate(:"errors.messages.mini_magick_processing_error", :e => e)
+      default = I18n.translate(:"errors.messages.mini_magick_processing_error", :e => e, :locale => :en)
+      message = I18n.translate(:"errors.messages.mini_magick_processing_error", :e => e, :default => default)
+      raise CarrierWave::ProcessingError, message
     end
 
   end # MiniMagick

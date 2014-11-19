@@ -1,0 +1,11 @@
+nb:
+  errors:
+    messages:
+      carrierwave_processing_error: kunne ikke behandles
+      carrierwave_integrity_error: er ikke en tillatt filtype
+      carrierwave_download_error: kunne ikke lastes ned
+      extension_white_list_error: "Du kan ikke laste opp %{extension}-filer, tillatte filtyper: %{allowed_types}"
+      extension_black_list_error: "Du kan ikke laste opp %{extension}-filer, forbudte filtyper: %{prohibited_types}"
+      rmagick_processing_error: "Kunne ikke manipulere med rmagick. Er du sikker på at det er et bilde? Feilmelding: %{e}"
+      mime_types_processing_error: "Kunne ikke behandle fil med MIME::Types. Er du sikker på at content-type er korrekt? Feilmelding: %{e}"
+      mini_magick_processing_error: "Kunne ikke manipulere med MiniMagick. Er du sikker på at det er et bilde? Feilmelding: %{e}"

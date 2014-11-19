@@ -3,19 +3,19 @@
 This gem provides a simple and extremely flexible way to upload files from Ruby applications.
 It works well with Rack based web applications, such as Ruby on Rails.
 
-[![Build Status](https://secure.travis-ci.org/jnicklas/carrierwave.png)](http://travis-ci.org/jnicklas/carrierwave)
-[![Code Quality](https://codeclimate.com/badge.png)](https://codeclimate.com/github/jnicklas/carrierwave)
+[![Build Status](https://travis-ci.org/carrierwaveuploader/carrierwave.svg?branch=master)](http://travis-ci.org/carrierwaveuploader/carrierwave)
+[![Code Climate](http://img.shields.io/codeclimate/github/carrierwaveuploader/carrierwave.svg)](https://codeclimate.com/github/carrierwaveuploader/carrierwave)
 
 ## Information
 
 * RDoc documentation [available on RubyDoc.info](http://rubydoc.info/gems/carrierwave/frames)
-* Source code [available on GitHub](http://github.com/jnicklas/carrierwave)
-* More information, known limitations, and how-tos [available on the wiki](https://github.com/jnicklas/carrierwave/wiki)
+* Source code [available on GitHub](http://github.com/carrierwaveuploader/carrierwave)
+* More information, known limitations, and how-tos [available on the wiki](https://github.com/carrierwaveuploader/carrierwave/wiki)
 
 ## Getting Help
 
 * Please ask the [Google Group](http://groups.google.com/group/carrierwave) for help if you have any questions.
-* Please report bugs on the [issue tracker](http://github.com/jnicklas/carrierwave/issues) but read the "getting help" section in the wiki first.
+* Please report bugs on the [issue tracker](http://github.com/carrierwaveuploader/carrierwave/issues) but read the "getting help" section in the wiki first.
 
 ## Installation
 
@@ -80,11 +80,12 @@ need to require the relevant extension manually, e.g.:
 require 'carrierwave/orm/activerecord'
 ```
 
-Add a string column to the model you want to mount the uploader on:
+Add a string column to the model you want to mount the uploader by creating
+a migration:
 
-```ruby
-add_column :users, :avatar, :string
-```
+
+	rails g migration add_avatar_to_users avatar:string
+	rake db:migrate
 
 Open your model file and mount the uploader:
 
@@ -99,8 +100,8 @@ automatically be stored when the record is saved.
 
 ```ruby
 u = User.new
-u.avatar = params[:file]
-u.avatar = File.open('somewhere')
+u.avatar = params[:file] # Assign a file like this, or
+u.avatar = File.open('somewhere') # like this
 u.save!
 u.avatar.url # => '/url/to/file.png'
 u.avatar.current_path # => 'path/to/file.png'
@@ -111,11 +112,53 @@ u.avatar.identifier # => 'file.png'
 
 Other ORM support has been extracted into separate gems:
 
-* [carrierwave-datamapper](https://github.com/jnicklas/carrierwave-datamapper)
-* [carrierwave-mongoid](https://github.com/jnicklas/carrierwave-mongoid)
+* [carrierwave-datamapper](https://github.com/carrierwaveuploader/carrierwave-datamapper)
+* [carrierwave-mongoid](https://github.com/carrierwaveuploader/carrierwave-mongoid)
 * [carrierwave-sequel](https://github.com/jnicklas/carrierwave-sequel)
 
-There are more extensions listed in [the wiki](https://github.com/jnicklas/carrierwave/wiki)
+There are more extensions listed in [the wiki](https://github.com/carrierwaveuploader/carrierwave/wiki)
+
+## Multiple file uploads
+
+CarrierWave also has convenient support for multiple file upload fields.
+
+### ActiveRecord
+
+Add a column which can store an array. This could be an array column or a JSON
+column for example. Your choice depends on what your database suppors. For
+example, create a migration like this:
+
+
+	rails g migration add_avatars_to_users avatars:json
+	rake db:migrate
+
+Open your model file and mount the uploader:
+
+```ruby
+class User < ActiveRecord::Base
+  mount_uploaders :avatars, AvatarUploader
+end
+```
+
+Make sure your file input fields are set up as multiple file fields. For
+example in Rails you'll want to do something like this:
+
+```erb
+<%= form.file_field :files, multiple: true %>
+```
+
+Now you can cache files by assigning them to the attribute, they will
+automatically be stored when the record is saved.
+
+```ruby
+u = User.new
+u.avatars = params[:files] # Assign an array of files like this
+u.avatars = [File.open('somewhere')] # or like this
+u.save!
+u.avatars[0].url # => '/url/to/file.png'
+u.avatars[0].current_path # => 'path/to/file.png'
+u.avatars[0].identifier # => 'file.png'
+```
 
 ## Changing the storage directory
 
@@ -145,7 +188,7 @@ end
 
 ## Securing uploads
 
-Certain file might be dangerous if uploaded to the wrong location, such as php
+Certain files might be dangerous if uploaded to the wrong location, such as php
 files or other script files. CarrierWave allows you to specify a white-list of
 allowed extensions.
 
@@ -169,18 +212,18 @@ white-listed characters in the file name. If you want to support local scripts (
 have to override `sanitize_regexp` method. It should return regular expression which would match
 all *non*-allowed symbols.
 
-With Ruby 1.9 and higher you can simply write (as it has [Oniguruma](http://oniguruma.rubyforge.org/oniguruma/)
+With Ruby 2.0 and higher you can simply write (as it has [Onigmo](https://github.com/k-takata/Onigmo)
 built-in):
 
 ```ruby
-  CarrierWave::SanitizedFile.sanitize_regexp = /[^[:word:]\.\-\+]/
+CarrierWave::SanitizedFile.sanitize_regexp = /[^[:word:]\.\-\+]/
 ```
 
 With Ruby 1.8 you have to manually specify all character ranges. For example, for files which may
 contain Russian letters:
 
 ```ruby
-  CarrierWave::SanitizedFile.sanitize_regexp = /[^a-zA-Zа-яА-ЯёЁ0-9\.\-\+_]/u
+CarrierWave::SanitizedFile.sanitize_regexp = /[^a-zA-Zа-яА-ЯёЁ0-9\.\-\+_]/u
 ```
 
 Also make sure that allowing non-latin characters won't cause a compatibility issue with a third-party
@@ -188,29 +231,26 @@ plugins or client-side software.
 
 ## Setting the content type
 
-If you care about the content type of your files and notice that it's not being set
-as expected, you can configure your uploaders to use `CarrierWave::MimeTypes`.
-This adds a dependency on the [mime-types](http://rubygems.org/gems/mime-types) gem,
-but is recommended when using fog, and fog already has a dependency on mime-types.
-
-```ruby
-require 'carrierwave/processing/mime_types'
-
-class MyUploader < CarrierWave::Uploader::Base
-  include CarrierWave::MimeTypes
-
-  process :set_content_type
-end
-```
+As of v0.10.0, the `mime-types` gem is a runtime dependency and the content type is set automatically.
+You no longer need to do this manually.
 
 ## Adding versions
 
-Often you'll want to add different versions of the same file. The classic
-example is image thumbnails. There is built in support for this:
+Often you'll want to add different versions of the same file. The classic example is image thumbnails. There is built in support for this*:
+
+*Note: You must have Imagemagick and MiniMagick installed to do image resizing. MiniMagick is a Ruby interface for Imagemagick which is a C program. This is why MiniMagick fails on 'bundle install' without Imagemagick installed.
+
+Some documentation refers to RMagick instead of MiniMagick but MiniMagick is recommended.
+
+To install Imagemagick on OSX with homebrew type the following:
+
+```
+$ brew install imagemagick
+```
 
 ```ruby
 class MyUploader < CarrierWave::Uploader::Base
-  include CarrierWave::RMagick
+  include CarrierWave::MiniMagick
 
   process :resize_to_fit => [800, 800]
 
@@ -359,7 +399,13 @@ easily add a checkbox to the form which will remove the file when checked.
 <% end %>
 ```
 
-If you want to remove the file manually, you can call <code>remove_avatar!</code>.
+If you want to remove the file manually, you can call <code>remove_avatar!</code>, then save the object.
+
+```erb
+@user.remove_avatar!
+@user.save
+#=> true
+```
 
 ## Uploading files from a remote location
 
@@ -396,12 +442,28 @@ class MyUploader < CarrierWave::Uploader::Base
 end
 ```
 
+Or if you are using the Rails asset pipeline:
+
+```ruby
+class MyUploader < CarrierWave::Uploader::Base
+  def default_url
+    ActionController::Base.helpers.asset_path("fallback/" + [version_name, "default.png"].compact.join('_'))
+  end
+end
+```
+
 ## Recreating versions
 
 You might come to a situation where you want to retroactively change a version
-or add a new one. You can use the recreate_versions! method to recreate the
+or add a new one. You can use the `recreate_versions!` method to recreate the
 versions from the base file. This uses a naive approach which will re-upload and
 process the specified version or all versions, if none is passed as an argument.
+
+When you are generating random unique filenames you have to call `save!` on
+the model after using `recreate_versions!`. This is necessary because
+`recreate_versions!` doesn't save the new filename to the database. Calling
+`save!` yourself will prevent that the database and file system are running
+out of sync.
 
 ```ruby
 instance = MyUploader.new
@@ -411,8 +473,16 @@ instance.recreate_versions!(:thumb, :large)
 Or on a mounted uploader:
 
 ```ruby
-User.all.each do |user|
+User.find_each do |user|
   user.avatar.recreate_versions!
+end
+```
+
+Note: `recreate_versions!` will throw an exception on records without an image. To avoid this, scope the records to those with images or check if an image exists within the block. If you're using ActiveRecord, recreating versions for a user avatar might look like this:
+
+```ruby
+User.find_each do |user|
+  user.avatar.recreate_versions! if user.avatar?
 end
 ```
 
@@ -439,9 +509,8 @@ end
 
 If you're using Rails, create an initializer for this:
 
-```ruby
-config/initializers/carrierwave.rb
-```
+	config/initializers/carrierwave.rb
+
 
 ## Testing with CarrierWave
 
@@ -457,6 +526,9 @@ if Rails.env.test? or Rails.env.cucumber?
   end
 end
 ```
+
+Remember, if you have already set `storage :something` in your uploader, the `storage`
+setting from this initializer will be ignored.
 
 If you need to test your processing, you should test it in isolation, and enable
 processing only for those tests that need it.
@@ -510,7 +582,7 @@ Processing can be enabled for a single version by setting the processing flag on
 [Fog](http://github.com/fog/fog) is used to support Amazon S3. Ensure you have it in your Gemfile:
 
 ```ruby
-gem "fog", "~> 1.3.1"
+gem "fog"
 ```
 
 You'll need to provide your fog_credentials and a fog_directory (also known as a bucket) in an initializer.
@@ -527,9 +599,9 @@ CarrierWave.configure do |config|
     :host                   => 's3.example.com',             # optional, defaults to nil
     :endpoint               => 'https://s3.example.com:8080' # optional, defaults to nil
   }
-  config.fog_directory  = 'name_of_directory'                     # required
-  config.fog_public     = false                                   # optional, defaults to true
-  config.fog_attributes = {'Cache-Control'=>'max-age=315576000'}  # optional, defaults to {}
+  config.fog_directory  = 'name_of_directory'                          # required
+  config.fog_public     = false                                        # optional, defaults to true
+  config.fog_attributes = {'Cache-Control'=>"max-age=#{365.day.to_i}"} # optional, defaults to {}
 end
 ```
 
@@ -548,18 +620,36 @@ That's it! You can still use the `CarrierWave::Uploader#url` method to return th
 [Fog](http://github.com/fog/fog) is used to support Rackspace Cloud Files. Ensure you have it in your Gemfile:
 
 ```ruby
-gem "fog", "~> 1.3.1"
+gem "fog"
 ```
 
 You'll need to configure a directory (also known as a container), username and API key in the initializer.
 For the sake of performance it is assumed that the directory already exists, so please create it if need be.
+
+Using a US-based account:
 
 ```ruby
 CarrierWave.configure do |config|
   config.fog_credentials = {
     :provider           => 'Rackspace',
     :rackspace_username => 'xxxxxx',
-    :rackspace_api_key  => 'yyyyyy'
+    :rackspace_api_key  => 'yyyyyy',
+    :rackspace_region   => :ord                # optional, defaults to :dfw
+  }
+  config.fog_directory = 'name_of_directory'
+end
+```
+
+Using a UK-based account:
+
+```ruby
+CarrierWave.configure do |config|
+  config.fog_credentials = {
+    :provider           => 'Rackspace',
+    :rackspace_username => 'xxxxxx',
+    :rackspace_api_key  => 'yyyyyy',
+    :rackspace_auth_url  => Fog::Rackspace::UK_AUTH_ENDPOINT,
+    :rackspace_region   => :lon
   }
   config.fog_directory = 'name_of_directory'
 end
@@ -589,7 +679,7 @@ the url to the file on Rackspace Cloud Files.
 [Fog](http://github.com/fog/fog) is used to support Google Storage for Developers. Ensure you have it in your Gemfile:
 
 ```ruby
-gem "fog", "~> 1.3.1"
+gem "fog"
 ```
 
 You'll need to configure a directory (also known as a bucket), access key id and secret access key in the initializer.
@@ -620,6 +710,22 @@ end
 
 That's it! You can still use the `CarrierWave::Uploader#url` method to return
 the url to the file on Google.
+
+## Optimized Loading of Fog
+
+Since Carrierwave doesn't know which parts of Fog you intend to use, it will just load the entire library. If you prefer to load fewer classes into your application, you need to load those parts of Fog yourself *before* loading Carrierwave:
+
+```ruby
+gem "fog", "~> 1.20", require: "fog/aws/storage"
+gem "carrierwave"
+```
+
+And in e.g. your uploader or an initializer:
+
+```ruby
+require 'fog/aws/storage'
+require 'carrierwave'
+```
 
 ## Dynamic Asset Host
 
@@ -662,7 +768,7 @@ class AvatarUploader < CarrierWave::Uploader::Base
   process :convert => 'png'
 
   def filename
-    super.chomp(File.extname(super)) + '.png'
+    super.chomp(File.extname(super)) + '.png' if original_filename.present?
   end
 end
 ```
@@ -729,6 +835,8 @@ errors:
     carrierwave_processing_error: "Cannot resize image."
     carrierwave_integrity_error: "Not an image."
     carrierwave_download_error: "Couldn't download image."
+    extension_white_list_error: "You are not allowed to upload %{extension} files, allowed types: %{allowed_types}"
+    extension_black_list_error: "You are not allowed to upload %{extension} files, prohibited types: %{prohibited_types}"
 ```
 
 ## Large files
@@ -754,13 +862,45 @@ When the `move_to_cache` and/or `move_to_store` methods return true, files will 
 
 This has only been tested with the local filesystem store.
 
+## Skipping ActiveRecord callbacks
+
+By default, mounting an uploader into an ActiveRecord model will add a few
+callbacks. For example, this code:
+
+```ruby
+class User
+  mount_uploader :avatar, AvatarUploader
+end
+```
+
+Will add these callbacks:
+
+```ruby
+after_save :store_avatar!
+before_save :write_avatar_identifier
+after_commit :remove_avatar!, :on => :destroy
+before_update :store_previous_model_for_avatar
+after_save :remove_previously_stored_avatar
+```
+
+If you want to skip any of these callbacks (eg. you want to keep the existing
+avatar, even after uploading a new one), you can use ActiveRecord’s
+`skip_callback` method.
+
+```ruby
+class User
+  mount_uploader :avatar, AvatarUploader
+  skip_callback :save, :after, :remove_previously_stored_avatar
+end
+```
+
 ## Contributing to CarrierWave
 
-See [CONTRIBUTING.md](https://github.com/jnicklas/carrierwave/blob/master/CONTRIBUTING.md)
+See [CONTRIBUTING.md](https://github.com/carrierwaveuploader/carrierwave/blob/master/CONTRIBUTING.md)
 
 ## License
 
-Copyright (c) 2008-2013 Jonas Nicklas
+Copyright (c) 2008-2014 Jonas Nicklas
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

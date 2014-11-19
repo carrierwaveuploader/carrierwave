@@ -17,7 +17,12 @@ module CarrierWave
         end
 
         def original_filename
-          File.basename(file.base_uri.path)
+          filename = filename_from_header || File.basename(file.base_uri.path)
+          mime_type = MIME::Types[file.content_type].first
+          unless File.extname(filename).present? || mime_type.blank?
+            filename = "#{filename}.#{mime_type.extensions.first}"
+          end
+          filename
         end
 
         def respond_to?(*args)
@@ -32,13 +37,20 @@ module CarrierWave
 
         def file
           if @file.blank?
-            @file = Kernel.open(@uri.to_s)
+            @file = Kernel.open(@uri.to_s, "User-Agent" => "CarrierWave/#{CarrierWave::VERSION}")
             @file = @file.is_a?(String) ? StringIO.new(@file) : @file
           end
           @file
 
         rescue Exception => e
           raise CarrierWave::DownloadError, "could not download file: #{e.message}"
+        end
+
+        def filename_from_header
+          if file.meta.include? 'content-disposition'
+            match = file.meta['content-disposition'].match(/filename="?([^"]+)/)
+            return match[1] unless match.nil? || match[1].empty?
+          end
         end
 
         def method_missing(*args, &block)
@@ -54,12 +66,10 @@ module CarrierWave
       # [url (String)] The URL where the remote file is stored
       #
       def download!(uri)
-        unless uri.blank?
-          processed_uri = process_uri(uri)
-          file = RemoteFile.new(processed_uri)
-          raise CarrierWave::DownloadError, "trying to download a file which is not served over HTTP" unless file.http?
-          cache!(file)
-        end
+        processed_uri = process_uri(uri)
+        file = RemoteFile.new(processed_uri)
+        raise CarrierWave::DownloadError, "trying to download a file which is not served over HTTP" unless file.http?
+        cache!(file)
       end
 
       ##

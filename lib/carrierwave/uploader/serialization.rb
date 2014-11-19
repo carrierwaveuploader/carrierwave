@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require "multi_json"
+require "json"
 require "active_support/core_ext/hash"
 
 module CarrierWave
@@ -8,16 +8,16 @@ module CarrierWave
     module Serialization
       extend ActiveSupport::Concern
 
-      def serializable_hash
+      def serializable_hash(options = nil)
         {"url" => url}.merge Hash[versions.map { |name, version| [name, { "url" => version.url }] }]
       end
 
       def as_json(options=nil)
-        Hash[mounted_as || "uploader", serializable_hash]
+        serializable_hash
       end
 
-      def to_json
-        MultiJson.encode(as_json)
+      def to_json(options=nil)
+        JSON.generate(as_json)
       end
 
       def to_xml(options={})

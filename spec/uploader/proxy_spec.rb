@@ -19,7 +19,7 @@ describe CarrierWave::Uploader do
     end
 
     it "should not be true when the file is empty" do
-      @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
+      @uploader.retrieve_from_cache!('1369894322-345-2255/test.jpeg')
       @uploader.should be_blank
     end
 
@@ -48,6 +48,22 @@ describe CarrierWave::Uploader do
     it "should get the size of a cached file" do
       @uploader.cache!(File.open(file_path('test.jpg')))
       @uploader.size.should == 13
+    end
+  end
+
+  describe '#content_type' do
+    it "should be nil when nothing has been done" do
+      @uploader.content_type.should be_nil
+    end
+
+    it "should get the content type when the file has been cached" do
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      @uploader.content_type.should == 'image/jpeg'
+    end
+
+    it "should get the content type when the file is empty" do
+      @uploader.retrieve_from_cache!('1369894322-345-2255/test.jpeg')
+      @uploader.content_type.should == 'image/jpeg'
     end
   end
 

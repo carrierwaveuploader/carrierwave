@@ -14,48 +14,31 @@ describe CarrierWave::Uploader do
     FileUtils.rm_rf(public_path)
   end
 
-  describe '.clean_cached_files!' do
-    before do
-      @cache_dir = File.expand_path(@uploader_class.cache_dir, CarrierWave.root)
-      FileUtils.mkdir_p File.expand_path('20071201-1234-234-2213', @cache_dir)
-      FileUtils.mkdir_p File.expand_path('20071203-1234-234-2213', @cache_dir)
-      FileUtils.mkdir_p File.expand_path('20071205-1234-234-2213', @cache_dir)
-    end
-
-    after { FileUtils.rm_rf(@cache_dir) }
-
-    it "should clear all files older than, by defaul, 24 hours in the default cache directory" do
-      Timecop.freeze(Time.utc(2007, 12, 6, 10, 12)) do
-        @uploader_class.clean_cached_files!
-      end
-      Dir.glob("#{@cache_dir}/*").size.should == 1
-    end
-
-    it "should permit to set since how many seconds delete the cached files" do
-      Timecop.freeze(Time.utc(2007, 12, 6, 10, 12)) do
-        @uploader_class.clean_cached_files!(60*60*24*4)
-      end
-      Dir.glob("#{@cache_dir}/*").should have(2).element
-    end
-
-    it "should be aliased on the CarrierWave module" do
-      Timecop.freeze(Time.utc(2007, 12, 6, 10, 12)) do
-        CarrierWave.clean_cached_files!
-      end
-      Dir.glob("#{@cache_dir}/*").size.should == 1
-    end
-  end
-
   describe '#cache_dir' do
     it "should default to the config option" do
       @uploader.cache_dir.should == 'uploads/tmp'
     end
   end
 
+  describe '#sanitized_file' do
+    before do
+      @uploader.store! CarrierWave::SanitizedFile.new(File.open(file_path('test.jpg')))
+    end
+
+    it "should return a sanitized file" do
+      @uploader.sanitized_file.should be_an_instance_of(CarrierWave::SanitizedFile)
+    end
+
+    it "should only read file once" do
+      @uploader.file.should_receive(:read).once.and_return('this is stuff')
+      @uploader.sanitized_file
+    end
+  end
+
   describe '#cache!' do
 
     before do
-      CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+      CarrierWave.stub(:generate_cache_id).and_return('1369894322-345-2255')
     end
 
     it "should cache a file" do
@@ -70,7 +53,7 @@ describe CarrierWave::Uploader do
 
     it "should store the cache name" do
       @uploader.cache!(File.open(file_path('test.jpg')))
-      @uploader.cache_name.should == '20071201-1234-345-2255/test.jpg'
+      @uploader.cache_name.should == '1369894322-345-2255/test.jpg'
     end
 
     it "should set the filename to the file's sanitized filename" do
@@ -80,13 +63,13 @@ describe CarrierWave::Uploader do
 
     it "should move it to the tmp dir" do
       @uploader.cache!(File.open(file_path('test.jpg')))
-      @uploader.file.path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpg')
+      @uploader.file.path.should == public_path('uploads/tmp/1369894322-345-2255/test.jpg')
       @uploader.file.exists?.should be_true
     end
 
     it "should set the url" do
       @uploader.cache!(File.open(file_path('test.jpg')))
-      @uploader.url.should == '/uploads/tmp/20071201-1234-345-2255/test.jpg'
+      @uploader.url.should == '/uploads/tmp/1369894322-345-2255/test.jpg'
     end
 
     it "should raise an error when trying to cache a string" do
@@ -130,13 +113,13 @@ describe CarrierWave::Uploader do
       it "should not raise an error when trying to cache a string" do
         running {
           @uploader.cache!(file_path('test.jpg'))
-        }.should_not raise_error(CarrierWave::FormNotMultipart)
+        }.should_not raise_error
       end
 
       it "should raise an error when trying to cache a pathname and " do
         running {
           @uploader.cache!(Pathname.new(file_path('test.jpg')))
-        }.should_not raise_error(CarrierWave::FormNotMultipart)
+        }.should_not raise_error
       end
 
     end
@@ -152,9 +135,10 @@ describe CarrierWave::Uploader do
         @tmpfile = File.open(tmpfile)
 
         ## stub
-        CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+        CarrierWave.stub(:generate_cache_id).and_return('1369894322-345-2255')
 
-        @cached_path = public_path('uploads/tmp/20071201-1234-345-2255/test_move.jpeg')
+        @cached_path = public_path('uploads/tmp/1369894322-345-2255/test_move.jpeg')
+        @workfile_path = tmp_path('1369894322-345-2255/test_move.jpeg')
         @uploader_class.permissions = 0777
         @uploader_class.directory_permissions = 0777
       end
@@ -177,7 +161,9 @@ describe CarrierWave::Uploader do
         end
 
         it "should use move_to() during cache!()" do
-          CarrierWave::SanitizedFile.any_instance.should_receive(:move_to).with(@cached_path, 0777, 0777)
+          moved_file = double('moved file').as_null_object
+          CarrierWave::SanitizedFile.any_instance.should_receive(:move_to).with(@workfile_path, 0777, 0777).and_return(moved_file)
+          moved_file.should_receive(:move_to).with(@cached_path, 0777, 0777, true)
           @uploader.cache!(@tmpfile)
         end
 
@@ -201,54 +187,63 @@ describe CarrierWave::Uploader do
         end
 
         it "should use copy_to() during cache!()" do
-          CarrierWave::SanitizedFile.any_instance.should_receive(:copy_to).with(@cached_path, 0777, 0777)
+          moved_file = double('moved file').as_null_object
+          CarrierWave::SanitizedFile.any_instance.should_receive(:copy_to).with(@workfile_path, 0777, 0777).and_return(moved_file)
+          moved_file.should_receive(:move_to).with(@cached_path, 0777, 0777, true)
           @uploader.cache!(@tmpfile)
         end
 
-        it "should not use move_to() during cache!()" do
-          CarrierWave::SanitizedFile.any_instance.should_not_receive(:move_to)
+        it "should not use move_to() in moving to temporary location during cache!()" do
+          CarrierWave::SanitizedFile.any_instance.should_not_receive(:move_to).with(@workfile_path, 0777, 0777)
           @uploader.cache!(@tmpfile)
         end
       end
 
     end
+
+    it "should use different workfiles for different versions" do
+      @uploader_class.version :small
+      @uploader_class.version :large
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      expect(@uploader.small.send(:workfile_path)).not_to eq @uploader.large.send(:workfile_path)
+    end
   end
 
   describe '#retrieve_from_cache!' do
     it "should cache a file" do
-      @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
+      @uploader.retrieve_from_cache!('1369894322-345-2255/test.jpeg')
       @uploader.file.should be_an_instance_of(CarrierWave::SanitizedFile)
     end
 
     it "should be cached" do
-      @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
+      @uploader.retrieve_from_cache!('1369894322-345-2255/test.jpeg')
       @uploader.should be_cached
     end
 
     it "should set the path to the tmp dir" do
-      @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
-      @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpeg')
+      @uploader.retrieve_from_cache!('1369894322-345-2255/test.jpeg')
+      @uploader.current_path.should == public_path('uploads/tmp/1369894322-345-2255/test.jpeg')
     end
 
     it "should overwrite a file that has already been cached" do
-      @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
-      @uploader.retrieve_from_cache!('20071201-1234-345-2255/bork.txt')
-      @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/bork.txt')
+      @uploader.retrieve_from_cache!('1369894322-345-2255/test.jpeg')
+      @uploader.retrieve_from_cache!('1369894322-345-2255/bork.txt')
+      @uploader.current_path.should == public_path('uploads/tmp/1369894322-345-2255/bork.txt')
     end
 
     it "should store the cache_name" do
-      @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
-      @uploader.cache_name.should == '20071201-1234-345-2255/test.jpeg'
+      @uploader.retrieve_from_cache!('1369894322-345-2255/test.jpeg')
+      @uploader.cache_name.should == '1369894322-345-2255/test.jpeg'
     end
 
     it "should store the filename" do
-      @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
+      @uploader.retrieve_from_cache!('1369894322-345-2255/test.jpeg')
       @uploader.filename.should == 'test.jpeg'
     end
 
     it "should set the url" do
-      @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpeg')
-      @uploader.url.should == '/uploads/tmp/20071201-1234-345-2255/test.jpeg'
+      @uploader.retrieve_from_cache!('1369894322-345-2255/test.jpeg')
+      @uploader.url.should == '/uploads/tmp/1369894322-345-2255/test.jpeg'
     end
 
     it "should raise an error when the cache_id has an invalid format" do
@@ -263,10 +258,10 @@ describe CarrierWave::Uploader do
 
     it "should raise an error when the original_filename contains invalid characters" do
       running {
-        @uploader.retrieve_from_cache!('20071201-1234-345-2255/te/st.jpeg')
+        @uploader.retrieve_from_cache!('1369894322-345-2255/te/st.jpeg')
       }.should raise_error(CarrierWave::InvalidParameter)
       running {
-        @uploader.retrieve_from_cache!('20071201-1234-345-2255/te??%st.jpeg')
+        @uploader.retrieve_from_cache!('1369894322-345-2255/te??%st.jpeg')
       }.should raise_error(CarrierWave::InvalidParameter)
 
       @uploader.file.should be_nil
@@ -287,7 +282,7 @@ describe CarrierWave::Uploader do
     describe '#cache!' do
 
       before do
-        CarrierWave.stub!(:generate_cache_id).and_return('20071201-1234-345-2255')
+        CarrierWave.stub(:generate_cache_id).and_return('1369894322-345-2255')
       end
 
       it "should set the filename to the file's reversed filename" do
@@ -297,27 +292,27 @@ describe CarrierWave::Uploader do
 
       it "should move it to the tmp dir with the filename unreversed" do
         @uploader.cache!(File.open(file_path('test.jpg')))
-        @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpg')
+        @uploader.current_path.should == public_path('uploads/tmp/1369894322-345-2255/test.jpg')
         @uploader.file.exists?.should be_true
       end
     end
 
     describe '#retrieve_from_cache!' do
       it "should set the path to the tmp dir" do
-        @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpg')
-        @uploader.current_path.should == public_path('uploads/tmp/20071201-1234-345-2255/test.jpg')
+        @uploader.retrieve_from_cache!('1369894322-345-2255/test.jpg')
+        @uploader.current_path.should == public_path('uploads/tmp/1369894322-345-2255/test.jpg')
       end
 
       it "should set the filename to the reversed name of the file" do
-        @uploader.retrieve_from_cache!('20071201-1234-345-2255/test.jpg')
+        @uploader.retrieve_from_cache!('1369894322-345-2255/test.jpg')
         @uploader.filename.should == "gpj.tset"
       end
     end
   end
   describe '.generate_cache_id' do
     it 'should generate dir name bsed on UTC time' do
-      Timecop.travel(Time.utc(2013, 2, 22, 10, 12)) do
-        CarrierWave.generate_cache_id.should match(/\A20130222-1012-\d+-\d+\Z/)
+      Timecop.travel(Time.at(1369896000)) do
+        CarrierWave.generate_cache_id.should match(/\A1369896000-\d+-\d+\Z/)
       end
     end
   end

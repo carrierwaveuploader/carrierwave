@@ -47,7 +47,7 @@ Given /^that the uploader has the store_dir overridden to '(.*?)'$/ do |store_di
 end
 
 Given /^that the version '(.*?)' has the store_dir overridden to '(.*?)'$/ do |version, store_dir|
-  @klass.versions[version.to_sym][:uploader].class_eval do
+  @klass.versions[version.to_sym].class_eval do
     define_method(:store_dir) do
       file_path(store_dir)
     end

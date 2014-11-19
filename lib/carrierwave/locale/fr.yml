@@ -1,0 +1,11 @@
+fr:
+  errors:
+    messages:
+      carrierwave_processing_error: "Impossible de redimensionner l'image."
+      carrierwave_integrity_error: "Ce n'est pas une image."
+      carrierwave_download_error: "Impossible de télécharger l'image."
+      extension_white_list_error: "Vous n'êtes pas autorisé à uploader des fichiers %{extension}, types autorisés: %{allowed_types}"
+      extension_black_list_error: "Vous n'êtes pas autorisé à uploader des fichiers %{extension}, types interdits: %{prohibited_types}"
+      rmagick_processing_error: "La manipulation d'image avec rmagick a échoué. Peut-être que ce n'est pas une image ? Erreur originale: %{e}"
+      mime_types_processing_error: "Le traitement de fichier avec MIME::Types a échoué. Peut-être que ce n'est pas un type valide ? Erreur originale: %{e}"
+      mini_magick_processing_error: "La manipulation d'image avec MiniMagick a échoué. Peut-être que ce n'est pas une image ? Erreur originale: %{e}"
