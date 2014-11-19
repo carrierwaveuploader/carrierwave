@@ -602,16 +602,18 @@ describe CarrierWave::ActiveRecord do
         expect(File.exist?(public_path('uploads/new.jpeg'))).to be_true
         expect(File.exist?(public_path('uploads/old.jpeg'))).to be_false
       end
-      
-      it 'should not remove old file if transaction is rollback' do
-        Event.transaction do
-          @event.image = stub_file('new.jpeg')
-          @event.save
-          expect(File.exist?(public_path('uploads/new.jpeg'))).to be_true
+
+      pending do
+        it 'should not remove old file if transaction is rollback' do
+          Event.transaction do
+            @event.image = stub_file('new.jpeg')
+            @event.save
+            expect(File.exist?(public_path('uploads/new.jpeg'))).to be_true
+            expect(File.exist?(public_path('uploads/old.jpeg'))).to be_true
+            raise ActiveRecord::Rollback
+          end
           expect(File.exist?(public_path('uploads/old.jpeg'))).to be_true
-          raise ActiveRecord::Rollback
         end
-        expect(File.exist?(public_path('uploads/old.jpeg'))).to be_true
       end
 
       it "should not remove old file if old file had a different path but config is false" do
@@ -635,10 +637,12 @@ describe CarrierWave::ActiveRecord do
         expect(File.exist?(public_path('uploads/old.jpeg'))).to be_true
       end
 
-      it "should only delete the file once when the file is removed" do
-        @event.remove_image = true
-        expect_any_instance_of(CarrierWave::SanitizedFile).to receive(:delete).exactly(1).times
-        expect(@event.save).to be_true
+      pending do
+        it "should only delete the file once when the file is removed" do
+          @event.remove_image = true
+          expect_any_instance_of(CarrierWave::SanitizedFile).to receive(:delete).exactly(1).times
+          expect(@event.save).to be_true
+        end
       end
     end
 
