@@ -69,6 +69,12 @@ module CarrierWave
           end
           super(options).merge(hash)
         end
+
+        # Reset cached mounter on record reload
+        def reload
+          @_mounters = nil
+          super
+        end
       RUBY
 
     end
