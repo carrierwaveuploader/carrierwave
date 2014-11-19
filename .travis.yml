@@ -18,7 +18,7 @@ gemfile:
 sudo: false
 
 before_script:
-  - "mysql -e 'create database carrierwave_test;'"
+  - psql -c 'create database carrierwave_test;' -U postgres
 
 matrix:
   allow_failures:
