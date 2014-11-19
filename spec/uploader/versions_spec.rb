@@ -475,6 +475,7 @@ describe CarrierWave::Uploader do
       before do
         @uploader_class.storage = mock_storage('base')
         @uploader_class.version(:thumb).storage = mock_storage('thumb')
+        @uploader_class.version(:preview).storage = mock_storage('preview')
 
         @file = File.open(file_path('test.jpg'))
 
@@ -486,14 +487,22 @@ describe CarrierWave::Uploader do
         @thumb_stored_file.stub(:path).and_return('/path/to/somewhere/thumb')
         @thumb_stored_file.stub(:url).and_return('http://www.example.com/thumb')
 
+        @preview_stored_file = double('a preview version of a stored file')
+        @preview_stored_file.stub(:path).and_return('/path/to/somewhere/preview')
+        @preview_stored_file.stub(:url).and_return('http://www.example.com/preview')
+
         @storage = double('a storage engine')
         @storage.stub(:retrieve!).and_return(@base_stored_file)
 
         @thumb_storage = double('a storage engine for thumbnails')
         @thumb_storage.stub(:retrieve!).and_return(@thumb_stored_file)
 
+        @preview_storage = double('a storage engine for previewnails')
+        @preview_storage.stub(:retrieve!).and_return(@preview_stored_file)
+
         @uploader_class.storage.stub(:new).with(@uploader).and_return(@storage)
         @uploader_class.version(:thumb).storage.stub(:new).with(@uploader.thumb).and_return(@thumb_storage)
+        @uploader_class.version(:preview).storage.stub(:new).with(@uploader.preview).and_return(@preview_storage)
       end
 
       it "should set the current path" do
@@ -519,6 +528,22 @@ describe CarrierWave::Uploader do
       it "should not set the filename" do
         @uploader.retrieve_from_store!('monkey.txt')
         @uploader.filename.should be_nil
+      end
+
+      it "should process conditional versions if the condition method returns true" do
+        @uploader_class.version(:preview).version_options[:if] = :true?
+        @uploader.should_receive(:true?).at_least(:once).and_return(true)
+        @uploader.retrieve_from_store!('monkey.txt')
+        @uploader.thumb.should be_present
+        @uploader.preview.should be_present
+      end
+
+      it "should not process conditional versions if the condition method returns false" do
+        @uploader_class.version(:preview).version_options[:if] = :false?
+        @uploader.should_receive(:false?).at_least(:once).and_return(false)
+        @uploader.retrieve_from_store!('monkey.txt')
+        @uploader.thumb.should be_present
+        @uploader.preview.should be_blank
       end
     end
   end
