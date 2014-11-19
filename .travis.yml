@@ -1,8 +1,4 @@
-before_install:
-  - gem install bundler
-
-notifications:
-  email: false
+language: ruby
 
 rvm:
  - 1.9.3
@@ -19,12 +15,16 @@ gemfile:
   - gemfiles/rails-4-1-stable.gemfile
   - gemfiles/rails-master.gemfile
 
+sudo: false
+
+before_script:
+  - "mysql -e 'create database carrierwave_test;'"
+
 matrix:
   allow_failures:
     rvm:
       - ruby-head
       - jruby-head
 
-
-before_script:
-  - "mysql -e 'create database carrierwave_test;'"
+notifications:
+  email: false
