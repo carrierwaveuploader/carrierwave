@@ -488,9 +488,11 @@ describe CarrierWave::Uploader do
 
         @storage = double('a storage engine')
         @storage.stub(:retrieve!).and_return(@base_stored_file)
+        @storage.stub(:identifier).and_return('base_identifier')
 
         @thumb_storage = double('a storage engine for thumbnails')
         @thumb_storage.stub(:retrieve!).and_return(@thumb_stored_file)
+        @thumb_storage.stub(:identifier).and_return('thumb_identifier')
 
         @uploader_class.storage.stub(:new).with(@uploader).and_return(@storage)
         @uploader_class.version(:thumb).storage.stub(:new).with(@uploader.thumb).and_return(@thumb_storage)
@@ -510,9 +512,13 @@ describe CarrierWave::Uploader do
 
       it "should pass the identifier to the storage engine" do
         @storage.should_receive(:retrieve!).with('monkey.txt').and_return(@base_stored_file)
-        @thumb_storage.should_receive(:retrieve!).with('monkey.txt').and_return(@thumb_stored_file)
         @uploader.retrieve_from_store!('monkey.txt')
         @uploader.file.should == @base_stored_file
+      end
+
+      it "should pass version's identifier to the version storage engine" do
+        @thumb_storage.should_receive(:retrieve!).with('thumb_identifier').and_return(@thumb_stored_file)
+        @uploader.retrieve_from_store!('monkey.txt')
         @uploader.thumb.file.should == @thumb_stored_file
       end
 
