@@ -27,6 +27,16 @@ describe CarrierWave::MiniMagick do
       img['format'].should =~ /PNG/
       @instance.file.extension.should == 'png'
     end
+
+    it "should convert all pages when no page number is specified" do
+      ::MiniMagick::Image.any_instance.should_receive(:format).with('png', nil).once
+      @instance.convert('png')
+    end
+
+    it "should convert specific page" do
+      ::MiniMagick::Image.any_instance.should_receive(:format).with('png', 1).once
+      @instance.convert('png', 1)
+    end
   end
 
   describe '#resize_to_fill' do
