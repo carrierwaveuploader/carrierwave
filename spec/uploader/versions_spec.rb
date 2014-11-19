@@ -164,6 +164,31 @@ describe CarrierWave::Uploader do
       end
     end
 
+    it "shouldn't raise an error in this test" do
+      @child_uploader_class = Class.new(@uploader_class)
+      @child_uploader = @child_uploader_class.new
+
+      @uploader_class.version :thumb do
+      end
+      # should next code affect original uploader?!
+      @child_uploader_class.version :thumb do
+        process :foo
+      end
+
+      @class = Class.new
+      @class.send(:extend, CarrierWave::Mount)
+      @class.mount_uploader(:image, @uploader_class)
+      @instance = @class.new
+
+      # this line is failing.
+      # it tries to call `foo` method, but why?
+      # `@instance.image` is a @uploader_class but not @child_uploader_class.
+      # should `process :foo` affect *parent class*?!
+      @instance.image = stub_file('test.jpg')
+
+      @instance.image.should be_a(@uploader_class)
+    end
+
   end
 
   describe 'with a version' do
