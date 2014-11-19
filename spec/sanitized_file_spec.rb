@@ -184,6 +184,11 @@ describe CarrierWave::SanitizedFile do
       @sanitized_file.content_type.should == 'image/png'
     end
 
+    it "preserves file's content_type when passed as type (Rack)" do
+      @sanitized_file = CarrierWave::SanitizedFile.new(:type => 'image/png')
+      @sanitized_file.content_type.should == 'image/png'
+    end
+
     it "should handle Mime::Type object" do
       @file = File.open(file_path('sponsored.doc'))
       @file.stub(:content_type).and_return(MIME::Type.new('application/msword'))
