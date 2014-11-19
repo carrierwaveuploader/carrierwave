@@ -13,7 +13,7 @@ module CarrierWave
       end
 
       def as_json(options=nil)
-        Hash[mounted_as || "uploader", serializable_hash]
+        serializable_hash
       end
 
       def to_json(options=nil)

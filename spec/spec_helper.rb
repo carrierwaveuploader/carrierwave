@@ -13,11 +13,6 @@ require 'timecop'
 require 'open-uri'
 require 'sham_rack'
 require 'mini_magick'
-if RUBY_ENGINE == 'jruby'
-  require 'activerecord-jdbcmysql-adapter'
-else
-  require 'mysql2'
-end
 require 'fog'
 require 'storage/fog_helper'
 

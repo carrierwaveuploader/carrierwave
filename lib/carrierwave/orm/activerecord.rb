@@ -14,6 +14,35 @@ module CarrierWave
     def mount_uploader(column, uploader=nil, options={}, &block)
       super
 
+      class_eval <<-RUBY, __FILE__, __LINE__+1
+        def remote_#{column}_url=(url)
+          column = _mounter(:#{column}).serialization_column
+          send(:"\#{column}_will_change!")
+          super
+        end
+      RUBY
+    end
+
+    ##
+    # See +CarrierWave::Mount#mount_uploaders+ for documentation
+    #
+    def mount_uploaders(column, uploader=nil, options={}, &block)
+      super
+
+      class_eval <<-RUBY, __FILE__, __LINE__+1
+        def remote_#{column}_urls=(url)
+          column = _mounter(:#{column}).serialization_column
+          send(:"\#{column}_will_change!")
+          super
+        end
+      RUBY
+    end
+
+  private
+
+    def mount_base(column, uploader=nil, options={}, &block)
+      super
+
       alias_method :read_uploader, :read_attribute
       alias_method :write_uploader, :write_attribute
       public :read_uploader
@@ -29,17 +58,10 @@ module CarrierWave
       before_save :"write_#{column}_identifier"
       after_commit :"remove_#{column}!", :on => :destroy
       after_commit :"mark_remove_#{column}_false", :on => :update
-      before_update :"store_previous_model_for_#{column}"
       after_commit :"remove_previously_stored_#{column}", :on => :update
 
       class_eval <<-RUBY, __FILE__, __LINE__+1
         def #{column}=(new_file)
-          column = _mounter(:#{column}).serialization_column
-          send(:"\#{column}_will_change!")
-          super
-        end
-
-        def remote_#{column}_url=(url)
           column = _mounter(:#{column}).serialization_column
           send(:"\#{column}_will_change!")
           super
@@ -52,22 +74,8 @@ module CarrierWave
 
         def remove_#{column}!
           super
-          _mounter(:#{column}).remove = true
-          _mounter(:#{column}).write_identifier
-        end
-
-        def serializable_hash(options=nil)
-          hash = {}
-
-          except = options && options[:except] && Array.wrap(options[:except]).map(&:to_s)
-          only   = options && options[:only]   && Array.wrap(options[:only]).map(&:to_s)
-
-          self.class.uploaders.each do |column, uploader|
-            if (!only && !except) || (only && only.include?(column.to_s)) || (!only && except && !except.include?(column.to_s))
-              hash[column.to_s] = _mounter(column).uploader.serializable_hash
-            end
-          end
-          super(options).merge(hash)
+          self.remove_#{column} = true
+          write_#{column}_identifier
         end
 
         # Reset cached mounter on record reload
@@ -76,7 +84,6 @@ module CarrierWave
           super
         end
       RUBY
-
     end
 
   end # ActiveRecord

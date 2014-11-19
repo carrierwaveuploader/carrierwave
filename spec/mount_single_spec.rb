@@ -97,13 +97,13 @@ describe CarrierWave::Mount do
     describe '#image' do
 
       it "should return a blank uploader when nothing has been assigned" do
-        @instance.should_receive(:read_uploader).with(:image).twice.and_return(nil)
+        @instance.should_receive(:read_uploader).with(:image).and_return(nil)
         @instance.image.should be_an_instance_of(@uploader)
         @instance.image.should be_blank
       end
 
       it "should return a blank uploader when an empty string has been assigned" do
-        @instance.should_receive(:read_uploader).with(:image).twice.and_return('')
+        @instance.should_receive(:read_uploader).with(:image).and_return('')
         @instance.image.should be_an_instance_of(@uploader)
         @instance.image.should be_blank
       end
@@ -198,6 +198,16 @@ describe CarrierWave::Mount do
       it "should return nil when nothing has been assigned" do
         @instance.should_receive(:read_uploader).with(:image).and_return(nil)
         @instance.image_url.should be_nil
+      end
+
+      it "should return fallback url when nothing has been assigned" do
+        @uploader.class_eval do
+          def default_url
+            "foo/bar.jpg"
+          end
+        end
+        @instance.should_receive(:read_uploader).with(:image).and_return(nil)
+        @instance.image_url.should eq("foo/bar.jpg")
       end
 
       it "should return nil when an empty string has been assigned" do

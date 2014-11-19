@@ -77,6 +77,7 @@ end
 require "carrierwave/utilities"
 require "carrierwave/error"
 require "carrierwave/sanitized_file"
+require "carrierwave/mounter"
 require "carrierwave/mount"
 require "carrierwave/processing"
 require "carrierwave/version"
