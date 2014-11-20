@@ -182,9 +182,13 @@ module CarrierWave
         def #{column}_identifier
           _mounter(:#{column}).read_identifiers[0]
         end
+        
+        def store_previous_changes_for_#{column}
+          @_previous_changes_for_#{column} = changes[_mounter(:#{column}).serialization_column]
+        end
 
         def remove_previously_stored_#{column}
-          before, after = changes[_mounter(:#{column}).serialization_column]
+          before, after = @_previous_changes_for_#{column}
           _mounter(:#{column}).remove_previous([before], [after])
         end
       RUBY
@@ -328,9 +332,13 @@ module CarrierWave
         def #{column}_identifiers
           _mounter(:#{column}).read_identifiers
         end
+        
+        def store_previous_changes_for_#{column}
+          @_previous_changes_for_#{column} = changes[_mounter(:#{column}).serialization_column]
+        end
 
         def remove_previously_stored_#{column}
-          _mounter(:#{column}).remove_previous(*changes[_mounter(:#{column}).serialization_column])
+          _mounter(:#{column}).remove_previous(*@_previous_changes_for_#{column})
         end
       RUBY
     end
