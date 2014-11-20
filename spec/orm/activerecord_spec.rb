@@ -603,19 +603,6 @@ describe CarrierWave::ActiveRecord do
         expect(File.exist?(public_path('uploads/old.jpeg'))).to be_false
       end
 
-      pending do
-        it 'should not remove old file if transaction is rollback' do
-          Event.transaction do
-            @event.image = stub_file('new.jpeg')
-            @event.save
-            expect(File.exist?(public_path('uploads/new.jpeg'))).to be_true
-            expect(File.exist?(public_path('uploads/old.jpeg'))).to be_true
-            raise ActiveRecord::Rollback
-          end
-          expect(File.exist?(public_path('uploads/old.jpeg'))).to be_true
-        end
-      end
-
       it "should not remove old file if old file had a different path but config is false" do
         @uploader.remove_previously_stored_files_after_update = false
         @event.image = stub_file('new.jpeg')
@@ -710,7 +697,7 @@ describe CarrierWave::ActiveRecord do
       expect(File.exist?(public_path('uploads/old.jpeg'))).to be_true
       expect(File.exist?(public_path('uploads/thumb_old.jpeg'))).to be_true
     end
-    
+
     it 'should not remove old file if transaction is rollback' do
       Event.transaction do
         @event.image = stub_file('new.jpeg')
