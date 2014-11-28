@@ -18,4 +18,10 @@ describe UploaderGenerator, :type => :generator do
     run_generator %w(MyModule::Avatar)
     assert_file 'app/uploaders/my_module/avatar_uploader.rb', /class MyModule::AvatarUploader < CarrierWave::Uploader::Base/
   end
+
+  it "should not append '_uploader' if user specifies it" do
+    run_generator %w(attachment_uploader)
+    assert_file 'app/uploaders/attachment_uploader.rb', /class AttachmentUploader < CarrierWave::Uploader::Base/
+  end
+
 end
