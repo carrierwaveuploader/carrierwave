@@ -53,6 +53,9 @@ end
         end
 
         it "should upload the file" do
+          # reading the file after upload should return the body, not a closed tempfile
+          @fog_file.read.should == 'this is stuff'
+          # make sure it actually uploaded to the service, too
           @directory.files.get(store_path).body.should == 'this is stuff'
         end
 
