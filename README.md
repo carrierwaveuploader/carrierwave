@@ -125,7 +125,7 @@ CarrierWave also has convenient support for multiple file upload fields.
 ### ActiveRecord
 
 Add a column which can store an array. This could be an array column or a JSON
-column for example. Your choice depends on what your database suppors. For
+column for example. Your choice depends on what your database supports. For
 example, create a migration like this:
 
 
