@@ -281,6 +281,10 @@ module CarrierWave
       CarrierWave::SanitizedFile.sanitize_regexp
     end
 
+    def underlying_sanitized_file_reader(&blk)
+      with_reader(&blk)
+    end
+
   private
 
     def file=(file)
@@ -331,7 +335,7 @@ module CarrierWave
       return filename, "" # In case we weren't able to split the extension
     end
 
-    protected
+
     def move_stream(new_path)
       File.open(new_path, "wb") do |f| 
         with_reader do |data|
@@ -340,7 +344,7 @@ module CarrierWave
       end
     end
 
-    def with_reader
+    def with_reader(&blk)
       if @content
         yield @content
       elsif is_path?
@@ -349,12 +353,13 @@ module CarrierWave
             yield current_data
           end
         end
+      elsif @file.respond_to?(:underlying_sanitized_file_reader)
+        @file.underlying_sanitized_file_reader(&blk)
       else
         @file.rewind if @file.respond_to?(:rewind)
         while current_data = @file.read(DEFAULT_STREAM_SIZE)
           yield current_data
         end
-        @file.close if @file.respond_to?(:close) && @file.respond_to?(:closed?) && !@file.closed?
       end
     end
   end # SanitizedFile
