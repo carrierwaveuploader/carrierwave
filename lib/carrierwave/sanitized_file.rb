@@ -344,6 +344,15 @@ module CarrierWave
       end
     end
 
+    # HACK: This exists only until all clients implement proper
+    #       IO-like behaviour where the standard read(args)
+    #       method is respected.
+    #       This will allow us to move over slowly to a new streaming
+    #       api without requiring a re-write of exising plugins. 
+    def allows_buffered_read?(io_like)
+      !(io_like.method(:read).arity == 0)
+    end
+
     def with_reader(&blk)
       if @content
         yield @content
@@ -357,8 +366,12 @@ module CarrierWave
         @file.underlying_sanitized_file_reader(&blk)
       else
         @file.rewind if @file.respond_to?(:rewind)
-        while current_data = @file.read(DEFAULT_STREAM_SIZE)
-          yield current_data
+        if allows_buffered_read?(@file)
+          while current_data = @file.read(DEFAULT_STREAM_SIZE)
+            yield current_data
+          end
+        else
+          yield @file.read
         end
       end
     end
