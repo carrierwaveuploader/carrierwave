@@ -511,6 +511,16 @@ If you're using Rails, create an initializer for this:
 
 	config/initializers/carrierwave.rb
 
+If you want CarrierWave to fail noisily in development, you can change these configs in your environment file:
+
+```ruby
+CarrierWave.configure do |config|
+  config.ignore_integrity_errors = false
+  config.ignore_processing_errors = false
+  config.ignore_download_errors = false
+end
+```
+
 
 ## Testing with CarrierWave
 
