@@ -177,20 +177,20 @@ module CarrierWave
     #
     def move_to(new_path, permissions=nil, directory_permissions=nil, keep_filename=false)
       return if self.empty?
-      new_path = File.expand_path(new_path)
+      # new_path = File.expand_path(new_path)
 
-      mkdir!(new_path, directory_permissions)
-      if exists?
-        FileUtils.mv(path, new_path) unless new_path == path
-      else
-        File.open(new_path, "wb") { |f| f.write(read) }
-      end
-      chmod!(new_path, permissions)
-      if keep_filename
-        self.file = {:tempfile => new_path, :filename => original_filename}
-      else
-        self.file = new_path
-      end
+      # mkdir!(new_path, directory_permissions)
+      # if exists?
+      #   FileUtils.mv(path, new_path) unless new_path == path
+      # else
+      #   File.open(new_path, "wb") { |f| f.write(read) }
+      # end
+      # chmod!(new_path, permissions)
+      # if keep_filename
+      #   self.file = {:tempfile => new_path, :filename => original_filename}
+      # else
+      #   self.file = new_path
+      # end
       self
     end
 
@@ -209,16 +209,17 @@ module CarrierWave
     #
     def copy_to(new_path, permissions=nil, directory_permissions=nil)
       return if self.empty?
-      new_path = File.expand_path(new_path)
+      # new_path = File.expand_path(new_path)
 
-      mkdir!(new_path, directory_permissions)
-      if exists?
-        FileUtils.cp(path, new_path) unless new_path == path
-      else
-        File.open(new_path, "wb") { |f| f.write(read) }
-      end
-      chmod!(new_path, permissions)
-      self.class.new({:tempfile => new_path, :content_type => content_type})
+      # mkdir!(new_path, directory_permissions)
+      # if exists?
+      #   FileUtils.cp(path, new_path) unless new_path == path
+      # else
+      #   File.open(new_path, "wb") { |f| f.write(read) }
+      # end
+      # chmod!(new_path, permissions)
+      # self.class.new({:tempfile => new_path, :content_type => content_type})
+      self
     end
 
     ##
