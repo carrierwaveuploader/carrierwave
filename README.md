@@ -889,8 +889,9 @@ Will add these callbacks:
 after_save :store_avatar!
 before_save :write_avatar_identifier
 after_commit :remove_avatar!, :on => :destroy
-before_update :store_previous_model_for_avatar
-after_save :remove_previously_stored_avatar
+after_commit :"mark_remove_avatar_false", :on => :update
+after_save :"store_previous_changes_for_avatar"
+after_commit :remove_previously_stored_avatar, :on => :update
 ```
 
 If you want to skip any of these callbacks (eg. you want to keep the existing
@@ -900,7 +901,7 @@ avatar, even after uploading a new one), you can use ActiveRecord’s
 ```ruby
 class User
   mount_uploader :avatar, AvatarUploader
-  skip_callback :save, :after, :remove_previously_stored_avatar
+  skip_callback :commit, :after, :remove_previously_stored_avatar
 end
 ```
 
