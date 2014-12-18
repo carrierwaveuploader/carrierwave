@@ -142,7 +142,7 @@ end
             end
 
             it 'should retrieve file name' do
-              @fog_file.filename.should == 'test+.jpg'
+              @fog_file.filename.should == 'test%2B.jpg'
             end
           end
 

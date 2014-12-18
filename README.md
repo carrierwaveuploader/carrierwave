@@ -136,7 +136,7 @@ Open your model file and mount the uploader:
 
 ```ruby
 class User < ActiveRecord::Base
-  mount_uploaders :avatars, AvatarUploader
+  mount_uploader :avatars, AvatarUploader
 end
 ```
 
