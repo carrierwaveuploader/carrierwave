@@ -396,7 +396,8 @@ module CarrierWave
         def filename(options = {})
           if file_url = url(options)
             uri = URI.parse(file_url)
-            Pathname(uri.path).basename.to_s
+            path = URI.decode uri.path
+            Pathname(path).basename.to_s
           end
         end
 
