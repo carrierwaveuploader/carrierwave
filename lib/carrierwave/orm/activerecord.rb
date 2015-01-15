@@ -85,6 +85,12 @@ module CarrierWave
           @_mounters = nil
           super
         end
+
+        # Reset cached mounter on record dup
+        def initialize_dup(other)
+          @_mounters = nil
+          super
+        end
       RUBY
     end
 

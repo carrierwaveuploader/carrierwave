@@ -1485,4 +1485,12 @@ describe CarrierWave::ActiveRecord do
       expect(File.exist?(public_path('uploads/old.jpeg'))).to be_true
     end
   end
+
+  describe "#dup" do
+    it "appropriately removes the model reference from the new models uploader" do
+      @event.save
+      new_event = @event.dup
+      expect(new_event.image.model).not_to eq @event
+    end
+  end
 end
