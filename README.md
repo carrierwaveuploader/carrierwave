@@ -723,19 +723,25 @@ the url to the file on Google.
 
 ## Optimized Loading of Fog
 
-Since Carrierwave doesn't know which parts of Fog you intend to use, it will just load the entire library. If you prefer to load fewer classes into your application, you need to load those parts of Fog yourself *before* loading Carrierwave:
+Since Carrierwave doesn't know which parts of Fog you intend to use, it will just load the entire library. If you prefer to load fewer classes into your application, you need to load those parts of Fog yourself *before* loading CarrierWave in your Gemfile.  Ex:
 
 ```ruby
-gem "fog", "~> 1.20", require: "fog/aws/storage"
+gem "fog", "~> 1.27", require: "fog/aws/storage"
 gem "carrierwave"
 ```
 
-And in e.g. your uploader or an initializer:
+A couple of notes about versions:
+* This functionality was introduced in Fog v1.20.
+* This functionality is slated for CarrierWave v0.11.
+
+If you're not relying on Gemfile entries alone and are requiring "carrierwave" anywhere, ensure you require "fog/aws/storage" before it.  Ex:
 
 ```ruby
-require 'fog/aws/storage'
-require 'carrierwave'
+require "fog/aws/storage"
+require "carrierwave"
 ```
+
+When in doubt, inspect `Fog.constants` to see what has been loaded.
 
 ## Dynamic Asset Host
 
