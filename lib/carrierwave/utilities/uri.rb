@@ -3,8 +3,8 @@
 module CarrierWave
   module Utilities
     module Uri
+      private
 
-    private
       def encode_path(path)
         # based on Ruby < 2.0's URI.encode
         safe_string = URI::REGEXP::PATTERN::UNRESERVED + '\/'

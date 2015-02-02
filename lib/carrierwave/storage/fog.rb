@@ -1,10 +1,9 @@
 # encoding: utf-8
 
-require "fog" unless defined?(::Fog)
+require 'fog' unless defined?(::Fog)
 
 module CarrierWave
   module Storage
-
     ##
     # Stores things using the "fog" gem.
     #
@@ -131,16 +130,16 @@ module CarrierWave
       ##
       # Deletes a cache dir
       #
-      def delete_dir!(path)
+      def delete_dir!(_path)
         # do nothing, because there's no such things as 'empty directory'
       end
 
       def clean_cache!(seconds)
         connection.directories.new(
-          :key    => uploader.fog_directory,
-          :public => uploader.fog_public
-        ).files.all(:prefix => uploader.cache_dir).each do |file|
-          time = file.key.scan(/(\d+)-\d+-\d+/).first.map { |t| t.to_i }
+          key: uploader.fog_directory,
+          public: uploader.fog_public
+        ).files.all(prefix: uploader.cache_dir).each do |file|
+          time = file.key.scan(/(\d+)-\d+-\d+/).first.map(&:to_i)
           time = Time.at(*time)
           if time < (Time.now.utc - seconds)
             file.destroy
@@ -189,13 +188,13 @@ module CarrierWave
         # [NilClass] no authenticated url available
         #
         def authenticated_url(options = {})
-          if ['AWS', 'Google', 'Rackspace', 'OpenStack'].include?(@uploader.fog_credentials[:provider])
+          if %w(AWS Google Rackspace OpenStack).include?(@uploader.fog_credentials[:provider])
             # avoid a get by using local references
-            local_directory = connection.directories.new(:key => @uploader.fog_directory)
-            local_file = local_directory.files.new(:key => path)
-            if @uploader.fog_credentials[:provider] == "AWS"
+            local_directory = connection.directories.new(key: @uploader.fog_directory)
+            local_file = local_directory.files.new(key: path)
+            if @uploader.fog_credentials[:provider] == 'AWS'
               local_file.url(::Fog::Time.now + @uploader.fog_authenticated_url_expiration, options)
-            elsif ['Rackspace', 'OpenStack'].include?(@uploader.fog_credentials[:provider])
+            elsif %w(Rackspace OpenStack).include?(@uploader.fog_credentials[:provider])
               connection.get_object_https_url(@uploader.fog_directory, path, ::Fog::Time.now + @uploader.fog_authenticated_url_expiration)
             else
               local_file.url(::Fog::Time.now + @uploader.fog_authenticated_url_expiration)
@@ -223,9 +222,7 @@ module CarrierWave
         #
         # [String] returns new content type value
         #
-        def content_type=(new_content_type)
-          @content_type = new_content_type
-        end
+        attr_writer :content_type
 
         ##
         # Remove the file from service
@@ -236,7 +233,7 @@ module CarrierWave
         #
         def delete
           # avoid a get by just using local reference
-          directory.files.new(:key => path).destroy
+          directory.files.new(key: path).destroy
         end
 
         ##
@@ -260,7 +257,7 @@ module CarrierWave
         #
         def headers
           location = caller.first
-          warning = "[yellow][WARN] headers is deprecated, use attributes instead[/]"
+          warning = '[yellow][WARN] headers is deprecated, use attributes instead[/]'
           warning << " [light_black](#{location})[/]"
           Formatador.display_line(warning)
           attributes
@@ -314,10 +311,10 @@ module CarrierWave
             fog_file = new_file.to_file
             @content_type ||= new_file.content_type
             @file = directory.files.create({
-              :body         => (fog_file ? fog_file : new_file).read,
-              :content_type => @content_type,
-              :key          => path,
-              :public       => @uploader.fog_public
+              body: (fog_file ? fog_file : new_file).read,
+              content_type: @content_type,
+              key: path,
+              public: @uploader.fog_public
             }.merge(@uploader.fog_attributes))
             fog_file.close if fog_file && !fog_file.closed?
           end
@@ -346,10 +343,10 @@ module CarrierWave
             case @uploader.fog_credentials[:provider]
             when 'AWS'
               # check if some endpoint is set in fog_credentials
-              if @uploader.fog_credentials.has_key?(:endpoint)
+              if @uploader.fog_credentials.key?(:endpoint)
                 "#{@uploader.fog_credentials[:endpoint]}/#{@uploader.fog_directory}/#{encoded_path}"
               else
-                protocol = @uploader.fog_use_ssl_for_aws ? "https" : "http"
+                protocol = @uploader.fog_use_ssl_for_aws ? 'https' : 'http'
                 # if directory is a valid subdomain, use that style for access
                 if @uploader.fog_directory.to_s =~ /^(?:[a-z]|\d(?!\d{0,2}(?:\d{1,3}){3}$))(?:[a-z0-9\.]|(?![\-])|\-(?![\.])){1,61}[a-z0-9]$/
                   "#{protocol}://#{@uploader.fog_directory}.s3.amazonaws.com/#{encoded_path}"
@@ -362,7 +359,7 @@ module CarrierWave
               "https://commondatastorage.googleapis.com/#{@uploader.fog_directory}/#{encoded_path}"
             else
               # avoid a get by just using local reference
-              directory.files.new(:key => path).public_url
+              directory.files.new(key: path).public_url
             end
           end
         end
@@ -415,7 +412,7 @@ module CarrierWave
           CarrierWave::Storage::Fog::File.new(@uploader, @base, new_path)
         end
 
-      private
+        private
 
         ##
         # connection to service
@@ -438,8 +435,8 @@ module CarrierWave
         def directory
           @directory ||= begin
             connection.directories.new(
-              :key    => @uploader.fog_directory,
-              :public => @uploader.fog_public
+              key: @uploader.fog_directory,
+              public: @uploader.fog_public
             )
           end
         end
@@ -456,11 +453,9 @@ module CarrierWave
         end
 
         def acl_header
-          {'x-amz-acl' => @uploader.fog_public ? 'public-read' : 'private'}
+          { 'x-amz-acl' => @uploader.fog_public ? 'public-read' : 'private' }
         end
       end
-
     end # Fog
-
   end # Storage
 end # CarrierWave

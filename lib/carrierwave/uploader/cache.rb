@@ -1,7 +1,6 @@
 # encoding: utf-8
 
 module CarrierWave
-
   class FormNotMultipart < UploadError
     def message
       "You tried to assign a String or a Pathname to an uploader, for security reasons, this is not allowed.\n\n If this is a file upload, please check that your upload form is multipart encoded."
@@ -16,7 +15,7 @@ module CarrierWave
   # [String] a cache id in the format TIMEINT-PID-RND
   #
   def self.generate_cache_id
-    Time.now.utc.to_i.to_s + '-' + Process.pid.to_s + '-' + ("%04d" % rand(9999))
+    Time.now.utc.to_i.to_s + '-' + Process.pid.to_s + '-' + ('%04d' % rand(9999))
   end
 
   module Uploader
@@ -27,7 +26,6 @@ module CarrierWave
       include CarrierWave::Uploader::Configuration
 
       module ClassMethods
-
         ##
         # Removes cached files which are older than one day. You could call this method
         # from a rake task to clean out old cached files.
@@ -41,7 +39,7 @@ module CarrierWave
         # This only works as long as you haven't done anything funky with your cache_dir.
         # It's recommended that you keep cache files in one place only.
         #
-        def clean_cached_files!(seconds=60*60*24)
+        def clean_cached_files!(seconds = 60 * 60 * 24)
           cache_storage.new(CarrierWave::Uploader::Base.new).clean_cache!(seconds)
         end
       end
@@ -72,8 +70,8 @@ module CarrierWave
         if _content.is_a?(File) # could be if storage is Fog
           sanitized = CarrierWave::Storage::Fog.new(self).retrieve!(File.basename(_content.path))
         else
-          sanitized = SanitizedFile.new :tempfile => StringIO.new(_content),
-            :filename => File.basename(path), :content_type => file.content_type
+          sanitized = SanitizedFile.new tempfile: StringIO.new(_content),
+                                        filename: File.basename(path), content_type: file.content_type
         end
         sanitized
       end
@@ -86,7 +84,7 @@ module CarrierWave
       # [String] a cache name, in the format YYYYMMDD-HHMM-PID-RND/filename.txt
       #
       def cache_name
-        File.join(cache_id, full_original_filename) if cache_id and original_filename
+        File.join(cache_id, full_original_filename) if cache_id && original_filename
       end
 
       ##
@@ -109,7 +107,7 @@ module CarrierWave
         new_file = CarrierWave::SanitizedFile.new(new_file)
 
         unless new_file.empty?
-          raise CarrierWave::FormNotMultipart if new_file.is_path? && ensure_multipart_form
+          fail CarrierWave::FormNotMultipart if new_file.is_path? && ensure_multipart_form
 
           self.cache_id = CarrierWave.generate_cache_id unless cache_id
 
@@ -163,13 +161,13 @@ module CarrierWave
       #
       # [String] the cache path
       #
-      def cache_path(for_file=full_filename(original_filename))
+      def cache_path(for_file = full_filename(original_filename))
         File.join(*[cache_dir, @cache_id, for_file].compact)
       end
 
-    private
+      private
 
-      def workfile_path(for_file=original_filename)
+      def workfile_path(for_file = original_filename)
         File.join(CarrierWave.tmp_path, @cache_id, version_name.to_s, for_file)
       end
 
@@ -179,12 +177,12 @@ module CarrierWave
       alias_method :full_original_filename, :original_filename
 
       def cache_id=(cache_id)
-        raise CarrierWave::InvalidParameter, "invalid cache id" unless cache_id =~ /\A[\d]+\-[\d]+\-[\d]{4}\z/
+        fail CarrierWave::InvalidParameter, 'invalid cache id' unless cache_id =~ /\A[\d]+\-[\d]+\-[\d]{4}\z/
         @cache_id = cache_id
       end
 
       def original_filename=(filename)
-        raise CarrierWave::InvalidParameter, "invalid filename" if filename =~ CarrierWave::SanitizedFile.sanitize_regexp
+        fail CarrierWave::InvalidParameter, 'invalid filename' if filename =~ CarrierWave::SanitizedFile.sanitize_regexp
         @original_filename = filename
       end
 

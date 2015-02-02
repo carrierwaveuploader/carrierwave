@@ -17,7 +17,7 @@ module CarrierWave
       # [String] the location where this file is accessible via a url
       #
       def url(options = {})
-        if file.respond_to?(:url) and not file.url.blank?
+        if file.respond_to?(:url) && !file.url.blank?
           file.method(:url).arity == 0 ? file.url : file.url(options)
         elsif file.respond_to?(:path)
           path = encode_path(file.path.sub(File.expand_path(root), ''))
@@ -29,7 +29,7 @@ module CarrierWave
               "#{host}#{path}"
             end
           else
-            (base_path || "") + path
+            (base_path || '') + path
           end
         end
       end
@@ -37,7 +37,6 @@ module CarrierWave
       def to_s
         url || ''
       end
-
     end # Url
   end # Uploader
 end # CarrierWave

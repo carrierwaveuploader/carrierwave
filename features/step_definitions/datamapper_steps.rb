@@ -21,7 +21,7 @@ When /^I save the datamapper record$/ do
 end
 
 When /^I reload the datamapper record$/ do
-  @instance = @instance.class.first(:id => @instance.key)
+  @instance = @instance.class.first(id: @instance.key)
 end
 
 When /^I delete the datamapper record$/ do

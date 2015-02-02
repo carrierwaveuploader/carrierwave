@@ -1,30 +1,28 @@
 # encoding: utf-8
 
-require "carrierwave/uploader/configuration"
-require "carrierwave/uploader/callbacks"
-require "carrierwave/uploader/proxy"
-require "carrierwave/uploader/url"
-require "carrierwave/uploader/mountable"
-require "carrierwave/uploader/cache"
-require "carrierwave/uploader/store"
-require "carrierwave/uploader/download"
-require "carrierwave/uploader/remove"
-require "carrierwave/uploader/extension_whitelist"
-require "carrierwave/uploader/extension_blacklist"
-require "carrierwave/uploader/file_size"
-require "carrierwave/uploader/processing"
-require "carrierwave/uploader/versions"
-require "carrierwave/uploader/default_url"
+require 'carrierwave/uploader/configuration'
+require 'carrierwave/uploader/callbacks'
+require 'carrierwave/uploader/proxy'
+require 'carrierwave/uploader/url'
+require 'carrierwave/uploader/mountable'
+require 'carrierwave/uploader/cache'
+require 'carrierwave/uploader/store'
+require 'carrierwave/uploader/download'
+require 'carrierwave/uploader/remove'
+require 'carrierwave/uploader/extension_whitelist'
+require 'carrierwave/uploader/extension_blacklist'
+require 'carrierwave/uploader/file_size'
+require 'carrierwave/uploader/processing'
+require 'carrierwave/uploader/versions'
+require 'carrierwave/uploader/default_url'
 
-require "carrierwave/uploader/serialization"
+require 'carrierwave/uploader/serialization'
 
 module CarrierWave
-
   ##
   # See CarrierWave::Uploader::Base
   #
   module Uploader
-
     ##
     # An uploader is a class that allows you to easily handle the caching and storage of
     # uploaded files. Please refer to the README for configuration options.
@@ -60,6 +58,5 @@ module CarrierWave
       include CarrierWave::Uploader::DefaultUrl
       include CarrierWave::Uploader::Serialization
     end # Base
-
   end # Uploader
 end # CarrierWave

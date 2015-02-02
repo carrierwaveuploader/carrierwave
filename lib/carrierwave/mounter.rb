@@ -1,12 +1,11 @@
 module CarrierWave
-
   # this is an internal class, used by CarrierWave::Mount so that
   # we don't pollute the model with a lot of methods.
   class Mounter #:nodoc:
     attr_reader :column, :record, :remote_urls, :integrity_error, :processing_error, :download_error
     attr_accessor :remove
 
-    def initialize(record, column, options={})
+    def initialize(record, column, _options = {})
       @record = record
       @column = column
       @options = record.class.uploader_options[column]
@@ -37,7 +36,7 @@ module CarrierWave
     end
 
     def cache(new_files)
-      return if not new_files or new_files == ""
+      return if !new_files || new_files == ''
       @uploaders = new_files.map do |new_file|
         uploader = blank_uploader
         uploader.cache!(new_file)
@@ -59,7 +58,7 @@ module CarrierWave
     end
 
     def cache_names=(cache_names)
-      return if not cache_names or cache_names == "" or uploaders.any?(&:cached?)
+      return if !cache_names || cache_names == '' || uploaders.any?(&:cached?)
       @uploaders = cache_names.map do |cache_name|
         uploader = blank_uploader
         uploader.retrieve_from_cache!(cache_name)
@@ -69,7 +68,7 @@ module CarrierWave
     end
 
     def remote_urls=(urls)
-      return if not urls or urls == "" or urls.all?(&:blank?)
+      return if !urls || urls == '' || urls.all?(&:blank?)
 
       @remote_urls = urls
       @download_error = nil
@@ -121,7 +120,7 @@ module CarrierWave
       option(:mount_on) || column
     end
 
-    def remove_previous(before=nil, after=nil)
+    def remove_previous(before = nil, after = nil)
       if before
         before = before.reject(&:blank?).map do |value|
           if value.is_a?(String)
@@ -134,7 +133,7 @@ module CarrierWave
         end
         after_paths = after.reject(&:blank?).map { |value| value.respond_to?(:path) ? value.path : value }
         before.each do |uploader|
-          if uploader.remove_previously_stored_files_after_update and not after_paths.include?(uploader.path)
+          if uploader.remove_previously_stored_files_after_update && !after_paths.include?(uploader.path)
             uploader.remove!
           end
         end
@@ -143,12 +142,11 @@ module CarrierWave
 
     attr_accessor :uploader_options
 
-  private
+    private
 
     def option(name)
       self.uploader_options ||= {}
       self.uploader_options[name] ||= record.class.uploader_option(column, name)
     end
-
   end # Mounter
 end # CarrierWave

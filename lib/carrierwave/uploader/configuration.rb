@@ -1,11 +1,10 @@
 module CarrierWave
-
   module Uploader
     module Configuration
       extend ActiveSupport::Concern
 
       included do
-        class_attribute :_storage, :_cache_storage, :instance_writer => false
+        class_attribute :_storage, :_cache_storage, instance_writer: false
 
         add_config :root
         add_config :base_path
@@ -45,7 +44,6 @@ module CarrierWave
       end
 
       module ClassMethods
-
         ##
         # Sets the storage engine to be used when storing files with this uploader.
         # Can be any class that implements a #store!(CarrierWave::SanitizedFile) and a #retrieve!
@@ -114,7 +112,7 @@ module CarrierWave
             def self.#{name}(value=nil)
               @#{name} = value if value
               eager_load_fog(value) if value && '#{name}' == 'fog_credentials'
-              return @#{name} if self.object_id == #{self.object_id} || defined?(@#{name})
+              return @#{name} if self.object_id == #{object_id} || defined?(@#{name})
               name = superclass.#{name}
               return nil if name.nil? && !instance_variable_defined?("@#{name}")
               @#{name} = name && !name.is_a?(Module) && !name.is_a?(Symbol) && !name.is_a?(Numeric) && !name.is_a?(TrueClass) && !name.is_a?(FalseClass) ? name.dup : name
@@ -135,7 +133,7 @@ module CarrierWave
               value = self.class.#{name} unless instance_variable_defined?(:@#{name})
               if value.instance_of?(Proc)
                 value.arity >= 1 ? value.call(self) : value.call
-              else 
+              else
                 value
               end
             end
@@ -154,8 +152,8 @@ module CarrierWave
             config.permissions = 0644
             config.directory_permissions = 0755
             config.storage_engines = {
-              :file => "CarrierWave::Storage::File",
-              :fog  => "CarrierWave::Storage::Fog"
+              file: 'CarrierWave::Storage::File',
+              fog: 'CarrierWave::Storage::Fog'
             }
             config.storage = :file
             config.cache_storage = :file
@@ -183,8 +181,6 @@ module CarrierWave
           end
         end
       end
-
     end
   end
 end
-

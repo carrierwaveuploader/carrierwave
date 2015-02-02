@@ -23,9 +23,7 @@ module CarrierWave
       #
       # [String] a filename
       #
-      def filename
-        @filename
-      end
+      attr_reader :filename
 
       ##
       # Calculates the path where the file should be stored. If +for_file+ is given, it will be
@@ -39,7 +37,7 @@ module CarrierWave
       #
       # [String] the store path
       #
-      def store_path(for_file=filename)
+      def store_path(for_file = filename)
         File.join([store_dir, full_filename(for_file)].compact)
       end
 
@@ -52,9 +50,9 @@ module CarrierWave
       #
       # [new_file (File, IOString, Tempfile)] any kind of file object
       #
-      def store!(new_file=nil)
+      def store!(new_file = nil)
         cache!(new_file) if new_file && ((@cache_id != parent_cache_id) || @cache_id.nil?)
-        if !cache_only and @file and @cache_id
+        if !cache_only && @file && @cache_id
           with_callbacks(:store, new_file) do
             new_file = storage.store!(@file)
             if delete_tmp_file_after_storage
@@ -80,7 +78,7 @@ module CarrierWave
         end
       end
 
-    private
+      private
 
       def full_filename(for_file)
         for_file
@@ -89,7 +87,6 @@ module CarrierWave
       def storage
         @storage ||= self.class.storage.new(self)
       end
-
     end # Store
   end # Uploader
 end # CarrierWave

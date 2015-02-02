@@ -3,7 +3,6 @@
 module CarrierWave
   module Uploader
     module Proxy
-
       ##
       # === Returns
       #
@@ -82,7 +81,6 @@ module CarrierWave
       def content_type
         file.respond_to?(:content_type) ? file.content_type : nil
       end
-
     end # Proxy
   end # Uploader
 end # CarrierWave

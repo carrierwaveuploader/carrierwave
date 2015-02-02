@@ -3,28 +3,26 @@
 require 'spec_helper'
 
 describe CarrierWave::Uploader do
-
   before do
     @uploader_class = Class.new(CarrierWave::Uploader::Base)
     @uploader_class.configure do |config|
-
       config.fog_credentials = {
-          :provider               => 'AWS',         # required
-          :aws_access_key_id      => 'XXXX',        # required
-          :aws_secret_access_key  => 'YYYY',        # required
-          :region                 => 'us-east-1'    # optional, defaults to 'us-east-1'
+        provider: 'AWS',         # required
+        aws_access_key_id: 'XXXX',        # required
+        aws_secret_access_key: 'YYYY',        # required
+        region: 'us-east-1'    # optional, defaults to 'us-east-1'
       }
 
-      config.fog_directory = "defaultbucket"
+      config.fog_directory = 'defaultbucket'
     end
 
     @uploader = @uploader_class.new
     @uploader_overridden = @uploader_class.new
     @uploader_overridden.fog_credentials = {
-        :provider               => 'AWS',               # required
-        :aws_access_key_id      => 'ZZZZ',              # required
-        :aws_secret_access_key  => 'AAAA',              # required
-        :region                 => 'us-east-2'          # optional, defaults to 'us-east-1'
+      provider: 'AWS',               # required
+      aws_access_key_id: 'ZZZZ',              # required
+      aws_secret_access_key: 'AAAA',              # required
+      region: 'us-east-2'          # optional, defaults to 'us-east-1'
     }
     @uploader_overridden.fog_public = false
   end

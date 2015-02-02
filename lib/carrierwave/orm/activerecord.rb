@@ -5,16 +5,15 @@ require 'carrierwave/validations/active_model'
 
 module CarrierWave
   module ActiveRecord
-
     include CarrierWave::Mount
 
     ##
     # See +CarrierWave::Mount#mount_uploader+ for documentation
     #
-    def mount_uploader(column, uploader=nil, options={}, &block)
+    def mount_uploader(column, uploader = nil, options = {}, &block)
       super
 
-      class_eval <<-RUBY, __FILE__, __LINE__+1
+      class_eval <<-RUBY, __FILE__, __LINE__ + 1
         def remote_#{column}_url=(url)
           column = _mounter(:#{column}).serialization_column
           send(:"\#{column}_will_change!")
@@ -26,10 +25,10 @@ module CarrierWave
     ##
     # See +CarrierWave::Mount#mount_uploaders+ for documentation
     #
-    def mount_uploaders(column, uploader=nil, options={}, &block)
+    def mount_uploaders(column, uploader = nil, options = {}, &block)
       super
 
-      class_eval <<-RUBY, __FILE__, __LINE__+1
+      class_eval <<-RUBY, __FILE__, __LINE__ + 1
         def remote_#{column}_urls=(url)
           column = _mounter(:#{column}).serialization_column
           send(:"\#{column}_will_change!")
@@ -38,9 +37,9 @@ module CarrierWave
       RUBY
     end
 
-  private
+    private
 
-    def mount_base(column, uploader=nil, options={}, &block)
+    def mount_base(column, uploader = nil, options = {}, &block)
       super
 
       alias_method :read_uploader, :read_attribute
@@ -56,13 +55,13 @@ module CarrierWave
 
       after_save :"store_#{column}!"
       before_save :"write_#{column}_identifier"
-      after_commit :"remove_#{column}!", :on => :destroy
-      after_commit :"mark_remove_#{column}_false", :on => :update
+      after_commit :"remove_#{column}!", on: :destroy
+      after_commit :"mark_remove_#{column}_false", on: :update
 
       after_save :"store_previous_changes_for_#{column}"
-      after_commit :"remove_previously_stored_#{column}", :on => :update
+      after_commit :"remove_previously_stored_#{column}", on: :update
 
-      class_eval <<-RUBY, __FILE__, __LINE__+1
+      class_eval <<-RUBY, __FILE__, __LINE__ + 1
         def #{column}=(new_file)
           column = _mounter(:#{column}).serialization_column
           send(:"\#{column}_will_change!")
@@ -87,7 +86,6 @@ module CarrierWave
         end
       RUBY
     end
-
   end # ActiveRecord
 end # CarrierWave
 

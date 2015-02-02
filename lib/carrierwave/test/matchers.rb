@@ -2,13 +2,11 @@
 
 module CarrierWave
   module Test
-
     ##
     # These are some matchers that can be used in RSpec specs, to simplify the testing
     # of uploaders.
     #
     module Matchers
-
       class BeIdenticalTo # :nodoc:
         def initialize(expected)
           @expected = expected
@@ -312,7 +310,7 @@ module CarrierWave
               rescue LoadError
                 require 'RMagick'
               rescue LoadError
-                puts "WARNING: Failed to require rmagick, image processing may fail!"
+                puts 'WARNING: Failed to require rmagick, image processing may fail!'
               end
             end
             MagickWrapper.new(filename)
@@ -349,8 +347,6 @@ module CarrierWave
           @image = ::MiniMagick::Image.open(filename)
         end
       end
-
     end # Matchers
   end # Test
 end # CarrierWave
-

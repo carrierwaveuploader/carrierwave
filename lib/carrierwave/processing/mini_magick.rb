@@ -1,7 +1,6 @@
 # encoding: utf-8
 
 module CarrierWave
-
   ##
   # This module simplifies manipulation with MiniMagick by providing a set
   # of convenient helper methods. If you want to use them, you'll need to
@@ -58,32 +57,32 @@ module CarrierWave
 
     included do
       begin
-        require "mini_magick"
+        require 'mini_magick'
       rescue LoadError => e
-        e.message << " (You may need to install the mini_magick gem)"
+        e.message << ' (You may need to install the mini_magick gem)'
         raise e
       end
     end
 
     module ClassMethods
       def convert(format)
-        process :convert => format
+        process convert: format
       end
 
       def resize_to_limit(width, height)
-        process :resize_to_limit => [width, height]
+        process resize_to_limit: [width, height]
       end
 
       def resize_to_fit(width, height)
-        process :resize_to_fit => [width, height]
+        process resize_to_fit: [width, height]
       end
 
-      def resize_to_fill(width, height, gravity='Center')
-        process :resize_to_fill => [width, height, gravity]
+      def resize_to_fill(width, height, gravity = 'Center')
+        process resize_to_fill: [width, height, gravity]
       end
 
-      def resize_and_pad(width, height, background=:transparent, gravity='Center')
-        process :resize_and_pad => [width, height, background, gravity]
+      def resize_and_pad(width, height, background = :transparent, gravity = 'Center')
+        process resize_and_pad: [width, height, background, gravity]
       end
     end
 
@@ -104,7 +103,7 @@ module CarrierWave
     #
     #     image.convert(:png)
     #
-    def convert(format, page=nil)
+    def convert(format, page = nil)
       @format = format
       @page = page
       manipulate! do |img|
@@ -178,8 +177,8 @@ module CarrierWave
         cols, rows = img[:dimensions]
         img.combine_options do |cmd|
           if width != cols || height != rows
-            scale_x = width/cols.to_f
-            scale_y = height/rows.to_f
+            scale_x = width / cols.to_f
+            scale_y = height / rows.to_f
             if scale_x >= scale_y
               cols = (scale_x * (cols + 0.5)).round
               rows = (scale_x * (rows + 0.5)).round
@@ -191,7 +190,7 @@ module CarrierWave
             end
           end
           cmd.gravity gravity
-          cmd.background "rgba(255,255,255,0.0)"
+          cmd.background 'rgba(255,255,255,0.0)'
           cmd.extent "#{width}x#{height}" if cols != width || rows != height
         end
         img = yield(img) if block_given?
@@ -219,12 +218,12 @@ module CarrierWave
     #
     # [MiniMagick::Image] additional manipulations to perform
     #
-    def resize_and_pad(width, height, background=:transparent, gravity='Center')
+    def resize_and_pad(width, height, background = :transparent, gravity = 'Center')
       manipulate! do |img|
         img.combine_options do |cmd|
           cmd.thumbnail "#{width}x#{height}>"
           if background == :transparent
-            cmd.background "rgba(255, 255, 255, 0.0)"
+            cmd.background 'rgba(255, 255, 255, 0.0)'
           else
             cmd.background background
           end
@@ -294,7 +293,7 @@ module CarrierWave
     # [CarrierWave::ProcessingError] if manipulation failed.
     #
     def manipulate!
-      cache_stored_file! if !cached?
+      cache_stored_file! unless cached?
       image = ::MiniMagick::Image.open(current_path)
 
       begin
@@ -307,15 +306,14 @@ module CarrierWave
           file.move_to(move_to, permissions, directory_permissions)
         end
 
-        image.run_command("identify", current_path)
+        image.run_command('identify', current_path)
       ensure
         image.destroy!
       end
     rescue ::MiniMagick::Error, ::MiniMagick::Invalid => e
-      default = I18n.translate(:"errors.messages.mini_magick_processing_error", :e => e, :locale => :en)
-      message = I18n.translate(:"errors.messages.mini_magick_processing_error", :e => e, :default => default)
+      default = I18n.translate(:"errors.messages.mini_magick_processing_error", e: e, locale: :en)
+      message = I18n.translate(:"errors.messages.mini_magick_processing_error", e: e, default: default)
       raise CarrierWave::ProcessingError, message
     end
-
   end # MiniMagick
 end # CarrierWave
