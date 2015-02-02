@@ -1,7 +1,6 @@
 # encoding: utf-8
 
 module CarrierWave
-
   ##
   # This module simplifies the use of the mime-types gem to intelligently
   # guess and set the content-type of a file. If you want to use this, you'll
@@ -27,22 +26,22 @@ module CarrierWave
     extend ActiveSupport::Concern
 
     included do
-      CarrierWave::Utilities::Deprecation.new "0.11.0", "CarrierWave::MimeTypes is deprecated and will be removed in the future, get the content_type from the SanitizedFile object directly."
+      CarrierWave::Utilities::Deprecation.new '0.11.0', 'CarrierWave::MimeTypes is deprecated and will be removed in the future, get the content_type from the SanitizedFile object directly.'
       begin
-        require "mime/types"
+        require 'mime/types'
       rescue LoadError => e
-        e.message << " (You may need to install the mime-types gem)"
+        e.message << ' (You may need to install the mime-types gem)'
         raise e
       end
     end
 
     module ClassMethods
-      def set_content_type(override=false)
-        process :set_content_type => override
+      def set_content_type(override = false)
+        process set_content_type: override
       end
     end
 
-    GENERIC_CONTENT_TYPES = %w[application/octet-stream binary/octet-stream]
+    GENERIC_CONTENT_TYPES = %w(application/octet-stream binary/octet-stream)
 
     def generic_content_type?
       GENERIC_CONTENT_TYPES.include? file.content_type
@@ -57,7 +56,7 @@ module CarrierWave
     #                      if it is already set and not a generic content-type,
     #                      false by default
     #
-    def set_content_type(override=false)
+    def set_content_type(override = false)
       if override || file.content_type.blank? || generic_content_type?
         new_content_type = ::MIME::Types.type_for(current_path).first.to_s
         if file.respond_to?(:content_type=)
@@ -67,8 +66,7 @@ module CarrierWave
         end
       end
     rescue ::MIME::InvalidContentType => e
-      raise CarrierWave::ProcessingError, I18n.translate(:"errors.messages.mime_types_processing_error", :e => e)
+      raise CarrierWave::ProcessingError, I18n.translate(:"errors.messages.mime_types_processing_error", e: e)
     end
-
   end # MimeTypes
 end # CarrierWave

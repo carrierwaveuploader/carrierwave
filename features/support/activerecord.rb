@@ -5,7 +5,7 @@ require File.join(File.dirname(__FILE__), '..', '..', 'spec', 'support', 'active
 
 class TestMigration < ActiveRecord::Migration
   def self.up
-    create_table :users, :force => true do |t|
+    create_table :users, force: true do |t|
       t.column :avatar, :string
     end
   end

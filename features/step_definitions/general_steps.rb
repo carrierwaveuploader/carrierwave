@@ -65,7 +65,7 @@ Given /^that the uploader class has a version named '([^\']+)' which process '([
 end
 
 Given /^that the uploader class has a version named '([^\']+)' which is based on version '(.*?)'$/ do |name, based_version_name|
-  @klass.version(name, {:from_version => based_version_name.to_sym})
+  @klass.version(name, from_version: based_version_name.to_sym)
 end
 
 Given /^yo dawg, I put a version called '(.*?)' in your version called '(.*?)'$/ do |v2, v1|

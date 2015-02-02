@@ -3,7 +3,6 @@
 require 'spec_helper'
 
 describe CarrierWave::MimeTypes do
-
   before do
     @klass = Class.new(CarrierWave::Uploader::Base) do
       attr_accessor :content_type
@@ -21,27 +20,26 @@ describe CarrierWave::MimeTypes do
   end
 
   describe '#set_content_type' do
-
-    it "does not set content_type if already set" do
+    it 'does not set content_type if already set' do
       @instance.file.content_type = 'image/jpeg'
       @instance.file.should_not_receive(:content_type=)
       @instance.set_content_type
     end
 
-    it "set content_type if content_type is nil" do
+    it 'set content_type if content_type is nil' do
       pending 'This spec is deprecated because Proxy now read content type itself.'
       @instance.file.content_type = nil
       @instance.file.should_receive(:content_type=).with('image/jpeg')
       @instance.set_content_type
     end
 
-    it "set content_type if content_type is empty" do
+    it 'set content_type if content_type is empty' do
       @instance.file.content_type = ''
       @instance.file.should_receive(:content_type=).with('image/jpeg')
       @instance.set_content_type
     end
 
-    %w[ application/octet-stream binary/octet-stream ].each do |type|
+    %w(application/octet-stream binary/octet-stream).each do |type|
       it "sets content_type if content_type is generic (#{type})" do
         @instance.file.content_type = type
         @instance.file.should_receive(:content_type=).with('image/jpeg')
@@ -49,22 +47,21 @@ describe CarrierWave::MimeTypes do
       end
     end
 
-    it "sets content_type if override is true" do
+    it 'sets content_type if override is true' do
       @instance.file.content_type = 'image/jpeg'
       @instance.file.should_receive(:content_type=).with('image/jpeg')
       @instance.set_content_type(true)
     end
-
   end
 
-  describe "test errors" do
-    context "invalid mime type" do
+  describe 'test errors' do
+    context 'invalid mime type' do
       before do
         @instance.file.content_type = nil
         # TODO: somehow force a ::MIME::InvalidContentType error when set_content_type is called.
       end
 
-      it "should raise a MIME::InvalidContentType error" do
+      it 'should raise a MIME::InvalidContentType error' do
         # lambda {@instance.set_content_type}.should raise_exception(::MIME::InvalidContentType, /^Failed to process file with MIME::Types, maybe not valid content-type\?/)
       end
     end

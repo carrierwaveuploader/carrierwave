@@ -14,14 +14,14 @@ require 'rspec/core/rake_task'
 require 'cucumber'
 require 'cucumber/rake/task'
 
-desc "Run all examples"
+desc 'Run all examples'
 RSpec::Core::RakeTask.new(:spec) do |t|
-  t.rspec_opts = %w[--color]
+  t.rspec_opts = %w(--color)
 end
 
-desc "Run cucumber features"
+desc 'Run cucumber features'
 Cucumber::Rake::Task.new(:features) do |t|
-  t.cucumber_opts = "features --format progress"
+  t.cucumber_opts = 'features --format progress'
 end
 
-task :default => [:spec, :features]
+task default: [:spec, :features]

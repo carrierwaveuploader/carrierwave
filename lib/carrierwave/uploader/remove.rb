@@ -17,7 +17,6 @@ module CarrierWave
           @cache_id = nil
         end
       end
-
     end # Remove
   end # Uploader
 end # CarrierWave

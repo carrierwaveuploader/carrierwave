@@ -3,7 +3,6 @@
 require 'spec_helper'
 
 describe CarrierWave::Uploader do
-
   before do
     @root = CarrierWave.root
     CarrierWave.root = nil
@@ -17,11 +16,10 @@ describe CarrierWave::Uploader do
   end
 
   describe '#root' do
-    it "should default to the current value of CarrierWave.root" do
+    it 'should default to the current value of CarrierWave.root' do
       @uploader.root.should be_nil
       CarrierWave.root = public_path
       @uploader.root.should == public_path
     end
   end
-
 end

@@ -12,7 +12,7 @@ unless defined?(FOG_CREDENTIALS)
     }
 
     for provider, keys in mappings
-      data = {:provider => provider}
+      data = { provider: provider }
       for key in keys
         data[key] = key.to_s
       end
@@ -31,8 +31,8 @@ unless defined?(FOG_CREDENTIALS)
     }
 
     for provider, keys in mappings
-      unless (creds = Fog.credentials.reject {|key, value| ![*keys].include?(key)}).empty?
-        data = {:provider => provider}
+      unless (creds = Fog.credentials.reject { |key, _value| ![*keys].include?(key) }).empty?
+        data = { provider: provider }
         for key in keys
           data[key] = creds[key]
         end

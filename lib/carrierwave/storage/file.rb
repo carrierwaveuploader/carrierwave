@@ -2,14 +2,12 @@
 
 module CarrierWave
   module Storage
-
     ##
     # File storage stores file to the Filesystem (surprising, no?). There's really not much
     # to it, it uses the store_dir defined on the uploader as the storage location. That's
     # pretty much it.
     #
     class File < Abstract
-
       ##
       # Move the file to the uploader's store path.
       #

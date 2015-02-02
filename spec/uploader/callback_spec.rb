@@ -3,8 +3,7 @@
 require 'spec_helper'
 
 describe CarrierWave::Uploader do
-
-  it "should keep callbacks on different classes isolated" do
+  it 'should keep callbacks on different classes isolated' do
     @uploader_class_1 = Class.new(CarrierWave::Uploader::Base)
 
     # First Uploader only has default before-callback
@@ -19,6 +18,4 @@ describe CarrierWave::Uploader do
     # Make sure the first Uploader doesn't inherit the same callback
     @uploader_class_1._before_callbacks[:cache].should == [:check_whitelist!, :check_blacklist!, :check_size!, :process!]
   end
-
-
 end

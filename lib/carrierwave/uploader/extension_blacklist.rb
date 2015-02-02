@@ -16,7 +16,7 @@ module CarrierWave
       # the Regexp expression, also case insensitive.
       #
       # === Returns
-      
+
       # [NilClass, Array[String,Regexp]] a black list of extensions which are prohibited to be uploaded
       #
       # === Examples
@@ -31,15 +31,15 @@ module CarrierWave
       #       [/swf/, 'tiff']
       #     end
       #
- 
+
       def extension_black_list; end
 
-    private
+      private
 
       def check_blacklist!(new_file)
         extension = new_file.extension.to_s
-        if extension_black_list and extension_black_list.detect { |item| extension =~ /\A#{item}\z/i }
-          raise CarrierWave::IntegrityError, I18n.translate(:"errors.messages.extension_black_list_error", :extension => new_file.extension.inspect, :prohibited_types => extension_black_list.join(", "))
+        if extension_black_list && extension_black_list.detect { |item| extension =~ /\A#{item}\z/i }
+          fail CarrierWave::IntegrityError, I18n.translate(:"errors.messages.extension_black_list_error", extension: new_file.extension.inspect, prohibited_types: extension_black_list.join(', '))
         end
       end
     end

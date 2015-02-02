@@ -4,15 +4,13 @@ require 'active_model/validator'
 require 'active_support/concern'
 
 module CarrierWave
-
   # == Active Model Presence Validator
   module Validations
     module ActiveModel
       extend ActiveSupport::Concern
 
       class ProcessingValidator < ::ActiveModel::EachValidator
-
-        def validate_each(record, attribute, value)
+        def validate_each(record, attribute, _value)
           if e = record.send("#{attribute}_processing_error")
             message = (e.message == e.class.to_s) ? :carrierwave_processing_error : e.message
             record.errors.add(attribute, message)
@@ -21,8 +19,7 @@ module CarrierWave
       end
 
       class IntegrityValidator < ::ActiveModel::EachValidator
-
-        def validate_each(record, attribute, value)
+        def validate_each(record, attribute, _value)
           if e = record.send("#{attribute}_integrity_error")
             message = (e.message == e.class.to_s) ? :carrierwave_integrity_error : e.message
             record.errors.add(attribute, message)
@@ -31,8 +28,7 @@ module CarrierWave
       end
 
       class DownloadValidator < ::ActiveModel::EachValidator
-
-        def validate_each(record, attribute, value)
+        def validate_each(record, attribute, _value)
           if e = record.send("#{attribute}_download_error")
             message = (e.message == e.class.to_s) ? :carrierwave_download_error : e.message
             record.errors.add(attribute, message)
@@ -41,7 +37,6 @@ module CarrierWave
       end
 
       module HelperMethods
-
         ##
         # Makes the record invalid if the file couldn't be uploaded due to an integrity error
         #

@@ -26,18 +26,18 @@ module CarrierWave
         end
 
         def respond_to?(*args)
-          super or file.respond_to?(*args)
+          super || file.respond_to?(*args)
         end
 
         def http?
           @uri.scheme =~ /^https?$/
         end
 
-      private
+        private
 
         def file
           if @file.blank?
-            @file = Kernel.open(@uri.to_s, "User-Agent" => "CarrierWave/#{CarrierWave::VERSION}")
+            @file = Kernel.open(@uri.to_s, 'User-Agent' => "CarrierWave/#{CarrierWave::VERSION}")
             @file = @file.is_a?(String) ? StringIO.new(@file) : @file
           end
           @file
@@ -68,7 +68,7 @@ module CarrierWave
       def download!(uri)
         processed_uri = process_uri(uri)
         file = RemoteFile.new(processed_uri)
-        raise CarrierWave::DownloadError, "trying to download a file which is not served over HTTP" unless file.http?
+        fail CarrierWave::DownloadError, 'trying to download a file which is not served over HTTP' unless file.http?
         cache!(file)
       end
 
@@ -88,7 +88,6 @@ module CarrierWave
         encoded_uri << '?' << URI.encode(uri_parts.join('?')) if uri_parts.any?
         URI.parse(encoded_uri) rescue raise CarrierWave::DownloadError, "couldn't parse URL"
       end
-
     end # Download
   end # Uploader
 end # CarrierWave

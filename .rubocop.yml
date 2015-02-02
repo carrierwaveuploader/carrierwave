@@ -1,0 +1,10 @@
+inherit_from: .rubocop_todo.yml
+
+AllCops:
+  Exclude:
+    - lib/generators/templates/**/*
+
+Alias:
+  Exclude:
+    - features/support/env.rb
+    - spec/spec_helper.rb

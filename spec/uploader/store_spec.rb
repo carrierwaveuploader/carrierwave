@@ -3,7 +3,6 @@
 require 'spec_helper'
 
 describe CarrierWave::Uploader do
-
   before do
     @uploader_class = Class.new(CarrierWave::Uploader::Base)
     @uploader = @uploader_class.new
@@ -14,13 +13,13 @@ describe CarrierWave::Uploader do
   end
 
   describe '#store_dir' do
-    it "should default to the config option" do
+    it 'should default to the config option' do
       @uploader.store_dir.should == 'uploads'
     end
   end
 
   describe '#filename' do
-    it "should default to nil" do
+    it 'should default to nil' do
       @uploader.filename.should be_nil
     end
   end
@@ -48,101 +47,101 @@ describe CarrierWave::Uploader do
       @uploader_class.storage.stub(:new).with(@uploader).and_return(@storage)
     end
 
-    it "should set the current path" do
+    it 'should set the current path' do
       @uploader.store!(@file)
       @uploader.current_path.should == '/path/to/somewhere'
     end
 
-    it "should not be cached" do
+    it 'should not be cached' do
       @uploader.store!(@file)
       @uploader.should_not be_cached
     end
 
-    it "should set the url" do
+    it 'should set the url' do
       @uploader.store!(@file)
       @uploader.url.should == 'http://www.example.com'
     end
 
-    it "should set the identifier" do
+    it 'should set the identifier' do
       @uploader.store!(@file)
       @uploader.identifier.should == 'this-is-me'
     end
 
-    it "should, if a file is given as argument, cache that file" do
+    it 'should, if a file is given as argument, cache that file' do
       @uploader.should_receive(:cache!).with(@file)
       @uploader.store!(@file)
     end
 
-    it "should use a previously cached file if no argument is given" do
+    it 'should use a previously cached file if no argument is given' do
       @uploader.cache!(File.open(file_path('test.jpg')))
       @uploader.should_not_receive(:cache!)
       @uploader.store!
     end
 
-    it "should instruct the storage engine to store the file" do
+    it 'should instruct the storage engine to store the file' do
       @uploader.cache!(@file)
       @storage.should_receive(:store!).with(@uploader.file).and_return(:monkey)
       @uploader.store!
     end
 
-    it "should reset the cache_name" do
+    it 'should reset the cache_name' do
       @uploader.cache!(@file)
       @uploader.store!
       @uploader.cache_name.should be_nil
     end
 
-    it "should cache the result given by the storage engine" do
+    it 'should cache the result given by the storage engine' do
       @uploader.store!(@file)
       @uploader.file.should == @stored_file
     end
 
-    it "should delete the old file" do
+    it 'should delete the old file' do
       @uploader.cache!(@file)
       @uploader.file.should_receive(:delete).and_return(true)
       @uploader.store!
     end
 
-    context "with the cache_only option set to true" do
+    context 'with the cache_only option set to true' do
       before do
         @uploader_class.cache_only = true
       end
 
-      it "should not instruct the storage engine to store the file" do
+      it 'should not instruct the storage engine to store the file' do
         @uploader.cache!(@file)
         @storage.should_not_receive(:store!)
         @uploader.store!
       end
 
-      it "should still be cached" do
+      it 'should still be cached' do
         @uploader.store!(@file)
         @uploader.should be_cached
       end
 
-      it "should not reset the cache_name" do
+      it 'should not reset the cache_name' do
         @uploader.cache!(@file)
         @uploader.store!
         @uploader.cache_name.should_not be_nil
       end
 
-      it "should not delete the old file" do
+      it 'should not delete the old file' do
         @uploader.cache!(@file)
         @uploader.file.should_not_receive(:delete)
         @uploader.store!
       end
     end
 
-    context "with the delete_tmp_file_after_storage option set to false" do
+    context 'with the delete_tmp_file_after_storage option set to false' do
       before do
         @uploader_class.delete_tmp_file_after_storage = false
       end
 
-      it "should not delete the old file" do
+      it 'should not delete the old file' do
         @uploader.cache!(@file)
         @uploader.file.should_not_receive(:delete)
         @uploader.store!
       end
 
-      it "should not delete the old cache_id" do
+      it 'should not delete the old cache_id' do
         @uploader.cache!(@file)
 
         @storage.should_not_receive(:delete_dir!)
@@ -150,18 +149,18 @@ describe CarrierWave::Uploader do
       end
     end
 
-    it "should delete the old cache_id" do
+    it 'should delete the old cache_id' do
       @uploader.cache!(@file)
 
       @storage.should_receive(:delete_dir!)
       @uploader.store!
     end
 
-    it "should do nothing when trying to store an empty file" do
+    it 'should do nothing when trying to store an empty file' do
       @uploader.store!(nil)
     end
 
-    it "should not re-store a retrieved file" do
+    it 'should not re-store a retrieved file' do
       @stored_file = double('a stored file')
       @storage.stub(:retrieve!).and_return(@stored_file)
 
@@ -188,33 +187,33 @@ describe CarrierWave::Uploader do
       @uploader_class.storage.stub(:new).with(@uploader).and_return(@storage)
     end
 
-    it "should set the current path" do
+    it 'should set the current path' do
       @uploader.retrieve_from_store!('monkey.txt')
       @uploader.current_path.should == '/path/to/somewhere'
     end
 
-    it "should not be cached" do
+    it 'should not be cached' do
       @uploader.retrieve_from_store!('monkey.txt')
       @uploader.should_not be_cached
     end
 
-    it "should set the url" do
+    it 'should set the url' do
       @uploader.retrieve_from_store!('monkey.txt')
       @uploader.url.should == 'http://www.example.com'
     end
 
-    it "should set the identifier" do
+    it 'should set the identifier' do
       @uploader.retrieve_from_store!('monkey.txt')
       @uploader.identifier.should == 'this-is-me'
     end
 
-    it "should instruct the storage engine to retrieve the file and store the result" do
+    it 'should instruct the storage engine to retrieve the file and store the result' do
       @storage.should_receive(:retrieve!).with('monkey.txt').and_return(@stored_file)
       @uploader.retrieve_from_store!('monkey.txt')
       @uploader.file.should == @stored_file
     end
 
-    it "should overwrite a file that has already been cached" do
+    it 'should overwrite a file that has already been cached' do
       @uploader.retrieve_from_cache!('1369894322-345-2255/test.jpeg')
       @uploader.retrieve_from_store!('bork.txt')
       @uploader.file.should == @stored_file
@@ -224,18 +223,20 @@ describe CarrierWave::Uploader do
   describe 'with an overridden filename' do
     before do
       @uploader_class.class_eval do
-        def filename; "foo.jpg"; end
+        def filename
+          'foo.jpg'
+        end
       end
     end
 
-    it "should create new files if there is a file" do
+    it 'should create new files if there is a file' do
       @file = File.open(file_path('test.jpg'))
       @uploader.store!(@file)
       @path = ::File.expand_path(@uploader.store_path, @uploader.root)
       File.exist?(@path).should be_true
     end
 
-    it "should not create new files if there is no file" do
+    it 'should not create new files if there is no file' do
       @uploader.store!(nil)
       @path = ::File.expand_path(@uploader.store_path, @uploader.root)
       File.exist?(@path).should be_false
@@ -245,11 +246,13 @@ describe CarrierWave::Uploader do
   describe 'without a store dir' do
     before do
       @uploader_class.class_eval do
-        def store_dir; nil; end
+        def store_dir
+          nil
+        end
       end
     end
 
-    it "should create a new file with a valid path and url" do
+    it 'should create a new file with a valid path and url' do
       @file = File.open(file_path('test.jpg'))
       @uploader.store!(@file)
       @path = ::File.expand_path(@uploader.store_path, @uploader.root)
@@ -288,21 +291,20 @@ describe CarrierWave::Uploader do
         @uploader_class.storage.stub(:new).with(@uploader).and_return(@storage)
       end
 
-      it "should set the current path" do
+      it 'should set the current path' do
         @uploader.store!(@file)
         @uploader.current_path.should == '/path/to/somewhere'
       end
 
-      it "should set the url" do
+      it 'should set the url' do
         @uploader.store!(@file)
         @uploader.url.should == 'http://www.example.com'
       end
 
-      it "should, if a file is given as argument, reverse the filename" do
+      it 'should, if a file is given as argument, reverse the filename' do
         @uploader.store!(@file)
         @uploader.filename.should == 'gpj.tset'
       end
-
     end
 
     describe '#retrieve_from_store!' do
@@ -317,32 +319,30 @@ describe CarrierWave::Uploader do
         @uploader_class.storage.stub(:new).with(@uploader).and_return(@storage)
       end
 
-      it "should set the current path" do
+      it 'should set the current path' do
         @uploader.retrieve_from_store!('monkey.txt')
         @uploader.current_path.should == '/path/to/somewhere'
       end
 
-      it "should set the url" do
+      it 'should set the url' do
         @uploader.retrieve_from_store!('monkey.txt')
         @uploader.url.should == 'http://www.example.com'
       end
 
-      it "should pass the identifier to the storage engine" do
+      it 'should pass the identifier to the storage engine' do
         @storage.should_receive(:retrieve!).with('monkey.txt').and_return(@stored_file)
         @uploader.retrieve_from_store!('monkey.txt')
         @uploader.file.should == @stored_file
       end
 
-      it "should not set the filename" do
+      it 'should not set the filename' do
         @uploader.retrieve_from_store!('monkey.txt')
         @uploader.filename.should be_nil
       end
     end
-
   end
 
-  describe "#store! with the move_to_store option" do
-
+  describe '#store! with the move_to_store option' do
     before do
       @file = File.open(file_path('test.jpg'))
       @uploader_class.permissions = 0777
@@ -350,12 +350,12 @@ describe CarrierWave::Uploader do
       CarrierWave.stub(:generate_cache_id).and_return('1369894322-345-2255')
     end
 
-    context "set to true" do
+    context 'set to true' do
       before do
         @uploader_class.move_to_store = true
       end
 
-      it "should move it from the tmp dir to the store dir" do
+      it 'should move it from the tmp dir to the store dir' do
         @uploader.cache!(@file)
 
         @cached_path = @uploader.file.path
@@ -371,7 +371,7 @@ describe CarrierWave::Uploader do
         File.exist?(@stored_path).should be_true
       end
 
-      it "should use move_to() during store!()" do
+      it 'should use move_to() during store!()' do
         @uploader.cache!(@file)
         @stored_path = ::File.expand_path(@uploader.store_path, @uploader.root)
 
@@ -382,12 +382,12 @@ describe CarrierWave::Uploader do
       end
     end
 
-    context "set to false" do
+    context 'set to false' do
       before do
         @uploader_class.move_to_store = false
       end
 
-      it "should use copy_to() during store!()" do
+      it 'should use copy_to() during store!()' do
         @uploader.cache!(@file)
         @stored_path = ::File.expand_path(@uploader.store_path, @uploader.root)
 
@@ -398,5 +398,4 @@ describe CarrierWave::Uploader do
       end
     end
   end
-
 end

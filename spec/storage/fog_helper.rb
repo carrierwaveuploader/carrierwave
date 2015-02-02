@@ -1,7 +1,6 @@
 def fog_tests(fog_credentials)
   describe CarrierWave::Storage::Fog do
     shared_examples_for "#{fog_credentials[:provider]} storage" do
-
       before do
         CarrierWave.configure do |config|
           config.reset_config
@@ -26,17 +25,15 @@ end
         @uploader.stub(:store_path).and_return('uploads/test.jpg')
 
         @storage = CarrierWave::Storage::Fog.new(@uploader)
-        @directory = @storage.connection.directories.get(CARRIERWAVE_DIRECTORY) || @storage.connection.directories.create(:key => CARRIERWAVE_DIRECTORY, :public => true)
+        @directory = @storage.connection.directories.get(CARRIERWAVE_DIRECTORY) || @storage.connection.directories.create(key: CARRIERWAVE_DIRECTORY, public: true)
       end
 
       after do
-        CarrierWave.configure do |config|
-          config.reset_config
-        end
+        CarrierWave.configure(&:reset_config)
       end
 
       describe '#cache_stored_file!' do
-        it "should cache_stored_file! after store!" do
+        it 'should cache_stored_file! after store!' do
           uploader = @uploader.new
           uploader.store!(file)
           lambda { uploader.cache_stored_file! }.should_not raise_error
@@ -44,7 +41,6 @@ end
       end
 
       describe '#store!' do
-
         let(:store_path) { 'uploads/test+.jpg' }
 
         before do
@@ -52,60 +48,60 @@ end
           @fog_file = @storage.store!(file)
         end
 
-        it "should upload the file" do
+        it 'should upload the file' do
           # reading the file after upload should return the body, not a closed tempfile
           @fog_file.read.should == 'this is stuff'
           # make sure it actually uploaded to the service, too
           @directory.files.get(store_path).body.should == 'this is stuff'
         end
 
-        it "should have a path" do
+        it 'should have a path' do
           @fog_file.path.should == store_path
         end
 
-        it "should have a content_type" do
+        it 'should have a content_type' do
           @fog_file.content_type.should == 'image/jpeg'
           @directory.files.get(store_path).content_type.should == 'image/jpeg'
         end
 
-        it "should have an extension" do
-          @fog_file.extension.should == "jpg"
+        it 'should have an extension' do
+          @fog_file.extension.should == 'jpg'
         end
 
-        context "without asset_host" do
-          it "should have a public_url" do
+        context 'without asset_host' do
+          it 'should have a public_url' do
             unless fog_credentials[:provider] == 'Local'
               @fog_file.public_url.should_not be_nil
             end
           end
 
-          it "should have a url" do
+          it 'should have a url' do
             unless fog_credentials[:provider] == 'Local'
               @fog_file.url.should_not be_nil
             end
           end
 
-          it "should use a subdomain URL for AWS if the directory is a valid subdomain" do
+          it 'should use a subdomain URL for AWS if the directory is a valid subdomain' do
             if @provider == 'AWS'
               @uploader.stub(:fog_directory).and_return('assets.site.com')
               @fog_file.public_url.should include('https://assets.site.com.s3.amazonaws.com')
             end
           end
 
-          it "should not use a subdomain URL for AWS if the directory is not a valid subdomain" do
+          it 'should not use a subdomain URL for AWS if the directory is not a valid subdomain' do
             if @provider == 'AWS'
               @uploader.stub(:fog_directory).and_return('SiteAssets')
               @fog_file.public_url.should include('https://s3.amazonaws.com/SiteAssets')
             end
           end
 
-          it "should use https as a default protocol" do
+          it 'should use https as a default protocol' do
             if @provider == 'AWS'
               @fog_file.public_url.should start_with 'https://'
             end
           end
 
-          it "should use https as a default protocol" do
+          it 'should use https as a default protocol' do
             if @provider == 'AWS'
               @uploader.stub(:fog_use_ssl_for_aws).and_return(false)
               @fog_file.public_url.should start_with 'http://'
@@ -113,30 +109,29 @@ end
           end
         end
 
-        context "with asset_host" do
+        context 'with asset_host' do
           before { @uploader.stub(:asset_host).and_return(asset_host) }
 
-          context "when a asset_host is a proc" do
+          context 'when a asset_host is a proc' do
+            let(:asset_host) { proc { 'http://foo.bar' } }
 
-            let(:asset_host) { proc { "http://foo.bar" } }
-
-            describe "args passed to proc" do
+            describe 'args passed to proc' do
               let(:asset_host) { proc { |storage| storage.should be_instance_of ::CarrierWave::Storage::Fog::File } }
 
-              it "should be the uploader" do
+              it 'should be the uploader' do
                 @fog_file.public_url
               end
             end
 
-            it "should have a asset_host rooted public_url" do
+            it 'should have a asset_host rooted public_url' do
               @fog_file.public_url.should == 'http://foo.bar/uploads/test%2B.jpg'
             end
 
-            it "should have a asset_host rooted url" do
+            it 'should have a asset_host rooted url' do
               @fog_file.url.should == 'http://foo.bar/uploads/test%2B.jpg'
             end
 
-            it "should always have the same asset_host rooted url" do
+            it 'should always have the same asset_host rooted url' do
               @fog_file.url.should == 'http://foo.bar/uploads/test%2B.jpg'
               @fog_file.url.should == 'http://foo.bar/uploads/test%2B.jpg'
             end
@@ -146,73 +141,70 @@ end
             end
           end
 
-          context "when a string" do
-            let(:asset_host) { "http://foo.bar" }
+          context 'when a string' do
+            let(:asset_host) { 'http://foo.bar' }
 
-            it "should have a asset_host rooted public_url" do
+            it 'should have a asset_host rooted public_url' do
               @fog_file.public_url.should == 'http://foo.bar/uploads/test%2B.jpg'
             end
 
-            it "should have a asset_host rooted url" do
+            it 'should have a asset_host rooted url' do
               @fog_file.url.should == 'http://foo.bar/uploads/test%2B.jpg'
             end
 
-            it "should always have the same asset_host rooted url" do
+            it 'should always have the same asset_host rooted url' do
               @fog_file.url.should == 'http://foo.bar/uploads/test%2B.jpg'
               @fog_file.url.should == 'http://foo.bar/uploads/test%2B.jpg'
             end
           end
-
         end
 
-        context "without extension" do
-
+        context 'without extension' do
           let(:store_path) { 'uploads/test' }
 
-          it "should have no extension" do
+          it 'should have no extension' do
             @fog_file.extension.should be_nil
           end
-
         end
 
-        it "should return filesize" do
+        it 'should return filesize' do
           @fog_file.size.should == 13
         end
 
-        it "should be deletable" do
+        it 'should be deletable' do
           @fog_file.delete
-          @directory.files.head(store_path).should == nil
+          @directory.files.head(store_path).should.nil?
         end
       end
 
       describe '#retrieve!' do
         before do
-          @directory.files.create(:key => 'uploads/test.jpg', :body => 'A test, 1234', :public => true)
+          @directory.files.create(key: 'uploads/test.jpg', body: 'A test, 1234', public: true)
           @uploader.stub(:store_path).with('test.jpg').and_return('uploads/test.jpg')
           @fog_file = @storage.retrieve!('test.jpg')
         end
 
-        it "should retrieve the file contents" do
-          @fog_file.read.chomp.should == "A test, 1234"
+        it 'should retrieve the file contents' do
+          @fog_file.read.chomp.should == 'A test, 1234'
         end
 
-        it "should have a path" do
+        it 'should have a path' do
           @fog_file.path.should == 'uploads/test.jpg'
         end
 
-        it "should have a public url" do
+        it 'should have a public url' do
           unless fog_credentials[:provider] == 'Local'
             @fog_file.public_url.should_not be_nil
           end
         end
 
-        it "should return filesize" do
+        it 'should return filesize' do
           @fog_file.size.should == 12
         end
 
-        it "should be deletable" do
+        it 'should be deletable' do
           @fog_file.delete
-          @directory.files.head('uploads/test.jpg').should == nil
+          @directory.files.head('uploads/test.jpg').should.nil?
         end
       end
 
@@ -222,94 +214,93 @@ end
           @fog_file = @storage.cache!(file)
         end
 
-        it "should upload the file", focus: true do
+        it 'should upload the file', focus: true do
           @directory.files.get('uploads/tmp/test+.jpg').body.should == 'this is stuff'
         end
       end
 
       describe '#retrieve_from_cache!' do
         before do
-          @directory.files.create(:key => 'uploads/tmp/test.jpg', :body => 'A test, 1234', :public => true)
+          @directory.files.create(key: 'uploads/tmp/test.jpg', body: 'A test, 1234', public: true)
           @uploader.stub(:cache_path).with('test.jpg').and_return('uploads/tmp/test.jpg')
           @fog_file = @storage.retrieve_from_cache!('test.jpg')
         end
 
-        it "should retrieve the file contents" do
-          @fog_file.read.chomp.should == "A test, 1234"
+        it 'should retrieve the file contents' do
+          @fog_file.read.chomp.should == 'A test, 1234'
         end
       end
 
       describe '#delete_dir' do
-        it "should do nothing" do
-          running{ @storage.delete_dir!('foobar') }.should_not raise_error
+        it 'should do nothing' do
+          running { @storage.delete_dir!('foobar') }.should_not raise_error
         end
       end
 
       describe '#clean_cache!' do
-        let(:now){ Time.now.to_i }
+        let(:now) { Time.now.to_i }
         before do
           # clean up
-          @directory.files.each{|file| file.destroy }
+          @directory.files.each(&:destroy)
           # We can't use simple time freezing because of AWS request time check
-          five_days_ago_int  = now - 367270
-          three_days_ago_int = now - 194400
-          yesterday_int      = now - 21600
+          five_days_ago_int  = now - 367_270
+          three_days_ago_int = now - 194_400
+          yesterday_int      = now - 21_600
 
           [five_days_ago_int, three_days_ago_int, yesterday_int].each do |as_of|
-            @directory.files.create(:key => "uploads/tmp/#{as_of}-234-2213/test.jpg", :body => 'A test, 1234', :public => true)
+            @directory.files.create(key: "uploads/tmp/#{as_of}-234-2213/test.jpg", body: 'A test, 1234', public: true)
           end
         end
 
-        it "should clear all files older than, by defaul, 24 hours in the default cache directory" do
+        it 'should clear all files older than, by defaul, 24 hours in the default cache directory' do
           Timecop.freeze(Time.at(now)) do
             @uploader.clean_cached_files!
           end
-          @directory.files.all(:prefix => 'uploads/tmp').size.should == 1
+          @directory.files.all(prefix: 'uploads/tmp').size.should == 1
         end
 
-        it "should permit to set since how many seconds delete the cached files" do
+        it 'should permit to set since how many seconds delete the cached files' do
           Timecop.freeze(Time.at(now)) do
-            @uploader.clean_cached_files!(60*60*24*4)
+            @uploader.clean_cached_files!(60 * 60 * 24 * 4)
           end
-          @directory.files.all(:prefix => 'uploads/tmp').size.should == 2
+          @directory.files.all(prefix: 'uploads/tmp').size.should == 2
         end
 
-        it "should be aliased on the CarrierWave module" do
+        it 'should be aliased on the CarrierWave module' do
           Timecop.freeze(Time.at(now)) do
             CarrierWave.clean_cached_files!
           end
-          @directory.files.all(:prefix => 'uploads/tmp').size.should == 1
+          @directory.files.all(prefix: 'uploads/tmp').size.should == 1
         end
       end
 
       describe 'fog_public' do
-
-        context "true" do
+        context 'true' do
           before do
             directory_key = "#{CARRIERWAVE_DIRECTORY}public"
-            @directory = @storage.connection.directories.create(:key => directory_key, :public => true)
+            @directory = @storage.connection.directories.create(key: directory_key, public: true)
             @uploader.stub(:fog_directory).and_return(directory_key)
             @uploader.stub(:store_path).and_return('uploads/public.txt')
             @fog_file = @storage.store!(file)
           end
 
           after do
-            @directory.files.new(:key => 'uploads/public.txt').destroy
-            @directory.files.new(:key => 'test.jpg').destroy
+            @directory.files.new(key: 'uploads/public.txt').destroy
+            @directory.files.new(key: 'test.jpg').destroy
             @directory.destroy
           end
 
-          it "should be available at public URL" do
+          it 'should be available at public URL' do
             unless Fog.mocking? || fog_credentials[:provider] == 'Local'
               open(@fog_file.public_url).read.should == 'this is stuff'
             end
           end
         end
 
-        context "false" do
+        context 'false' do
           before do
             directory_key = "#{CARRIERWAVE_DIRECTORY}private"
-            @directory = @storage.connection.directories.create(:key => directory_key, :public => true)
+            @directory = @storage.connection.directories.create(key: directory_key, public: true)
             @uploader.stub(:fog_directory).and_return(directory_key)
             @uploader.stub(:fog_public).and_return(false)
             @uploader.stub(:store_path).and_return('uploads/private.txt')
@@ -317,19 +308,19 @@ end
           end
 
           after do
-            @directory.files.new(:key => 'uploads/private.txt').destroy
-            @directory.files.new(:key => 'test.jpg').destroy
+            @directory.files.new(key: 'uploads/private.txt').destroy
+            @directory.files.new(key: 'test.jpg').destroy
             @directory.destroy
           end
 
-          it "should not be available at public URL" do
+          it 'should not be available at public URL' do
             unless Fog.mocking? || fog_credentials[:provider] == 'Local'
-              running{ open(@fog_file.public_url) }.should raise_error
+              running { open(@fog_file.public_url) }.should raise_error
             end
           end
 
-          it "should have an authenticated_url" do
-            if ['AWS', 'Rackspace', 'Google', 'OpenStack'].include?(@provider)
+          it 'should have an authenticated_url' do
+            if %w(AWS Rackspace Google OpenStack).include?(@provider)
               @fog_file.authenticated_url.should_not be_nil
             end
           end
@@ -338,30 +329,29 @@ end
             @fog_file.filename.should == 'private.txt'
           end
 
-          it "should handle query params" do
+          it 'should handle query params' do
             if @provider == 'AWS' && !Fog.mocking?
-              headers = Excon.get(@fog_file.url(:query => {"response-content-disposition" => "attachment"})).headers
-              headers["Content-Disposition"].should == "attachment"
+              headers = Excon.get(@fog_file.url(query: { 'response-content-disposition' => 'attachment' })).headers
+              headers['Content-Disposition'].should == 'attachment'
             end
           end
         end
       end
-
     end
 
-    describe "with a valid Hash" do
+    describe 'with a valid Hash' do
       let(:file) do
         CarrierWave::SanitizedFile.new(
-          :tempfile => stub_merb_tempfile('test.jpg'),
-          :filename => 'test.jpg',
-          :content_type => 'image/jpeg'
+          tempfile: stub_merb_tempfile('test.jpg'),
+          filename: 'test.jpg',
+          content_type: 'image/jpeg'
         )
       end
 
       it_should_behave_like "#{fog_credentials[:provider]} storage"
     end
 
-    describe "with a valid Tempfile" do
+    describe 'with a valid Tempfile' do
       let(:file) do
         CarrierWave::SanitizedFile.new(stub_tempfile('test.jpg', 'image/jpeg'))
       end
@@ -369,7 +359,7 @@ end
       it_should_behave_like "#{fog_credentials[:provider]} storage"
     end
 
-    describe "with a valid StringIO" do
+    describe 'with a valid StringIO' do
       let(:file) do
         CarrierWave::SanitizedFile.new(stub_stringio('test.jpg', 'image/jpeg'))
       end
@@ -377,16 +367,15 @@ end
       it_should_behave_like "#{fog_credentials[:provider]} storage"
     end
 
-    describe "with a valid File object" do
+    describe 'with a valid File object' do
       let(:file) do
         CarrierWave::SanitizedFile.new(stub_file('test.jpg', 'image/jpeg'))
       end
 
       it_should_behave_like "#{fog_credentials[:provider]} storage"
-
     end
 
-    describe "with a valid path" do
+    describe 'with a valid path' do
       let(:file) do
         CarrierWave::SanitizedFile.new(file_path('test.jpg'))
       end
@@ -394,7 +383,7 @@ end
       it_should_behave_like "#{fog_credentials[:provider]} storage"
     end
 
-    describe "with a valid Pathname" do
+    describe 'with a valid Pathname' do
       let(:file) do
         CarrierWave::SanitizedFile.new(Pathname.new(file_path('test.jpg')))
       end
@@ -402,15 +391,16 @@ end
       it_should_behave_like "#{fog_credentials[:provider]} storage"
     end
 
-    describe "with a CarrierWave::Storage::Fog::File" do
+    describe 'with a CarrierWave::Storage::Fog::File' do
       let(:file) do
-        CarrierWave::Storage::Fog::File.new(@uploader, @storage, 'test.jpg').
-          tap{|file| file.store(CarrierWave::SanitizedFile.new(
-            :tempfile => StringIO.new('this is stuff'), :content_type => 'image/jpeg')) }
+        CarrierWave::Storage::Fog::File.new(@uploader, @storage, 'test.jpg')
+          .tap do|file|
+            file.store(CarrierWave::SanitizedFile.new(
+              tempfile: StringIO.new('this is stuff'), content_type: 'image/jpeg'))
+          end
       end
 
       it_should_behave_like "#{fog_credentials[:provider]} storage"
     end
-
   end
 end

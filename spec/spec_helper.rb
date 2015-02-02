@@ -28,20 +28,20 @@ CARRIERWAVE_DIRECTORY = "carrierwave#{Time.now.to_i}" unless defined?(CARRIERWAV
 
 alias :running :lambda
 
-def file_path( *paths )
+def file_path(*paths)
   File.expand_path(File.join(File.dirname(__FILE__), 'fixtures', *paths))
 end
 
-def public_path( *paths )
+def public_path(*paths)
   File.expand_path(File.join(File.dirname(__FILE__), 'public', *paths))
 end
 
-def tmp_path( *paths )
+def tmp_path(*paths)
   File.expand_path(File.join(File.dirname(__FILE__), 'tmp', *paths))
 end
 
 CarrierWave.root = public_path
-I18n.load_path << File.expand_path(File.join(File.dirname(__FILE__), "..", "lib", "carrierwave", "locale", 'en.yml'))
+I18n.load_path << File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib', 'carrierwave', 'locale', 'en.yml'))
 
 module CarrierWave
   module Test
@@ -54,34 +54,34 @@ module CarrierWave
     end
 
     module MockFiles
-      def stub_tempfile(filename, mime_type=nil, fake_name=nil)
-        raise "#{path} file does not exist" unless File.exist?(file_path(filename))
+      def stub_tempfile(filename, mime_type = nil, fake_name = nil)
+        fail "#{path} file does not exist" unless File.exist?(file_path(filename))
 
         tempfile = Tempfile.new(filename)
         FileUtils.copy_file(file_path(filename), tempfile.path)
-        tempfile.stub(:original_filename => fake_name || filename,
-                      :content_type => mime_type)
+        tempfile.stub(original_filename: fake_name || filename,
+                      content_type: mime_type)
         tempfile
       end
 
       alias_method :stub_merb_tempfile, :stub_tempfile
 
-      def stub_stringio(filename, mime_type=nil, fake_name=nil)
-        file = IO.read( file_path( filename ) ) if filename
+      def stub_stringio(filename, mime_type = nil, fake_name = nil)
+        file = IO.read(file_path(filename)) if filename
         stringio = StringIO.new(file)
-        stringio.stub(:local_path => "",
-                      :original_filename => filename || fake_name,
-                      :content_type => mime_type)
+        stringio.stub(local_path: '',
+                      original_filename: filename || fake_name,
+                      content_type: mime_type)
         stringio
       end
 
-      def stub_file(filename, mime_type=nil, fake_name=nil)
+      def stub_file(filename, _mime_type = nil, _fake_name = nil)
         File.open(file_path(filename))
       end
     end
 
     module I18nHelpers
-      def change_locale_and_store_translations(locale, translations, &block)
+      def change_locale_and_store_translations(locale, translations, &_block)
         current_locale = I18n.locale
         begin
           I18n.backend.store_translations locale, translations
@@ -97,7 +97,7 @@ module CarrierWave
     module ManipulationHelpers
       def color_of_pixel(path, x, y)
         image = ::MiniMagick::Image.open(path)
-        color = image.run_command("convert", "#{image.path}[1x1+#{x}+#{y}]", "-depth", "8", "txt:").split("\n")[1]
+        color = image.run_command('convert', "#{image.path}[1x1+#{x}+#{y}]", '-depth', '8', 'txt:').split("\n")[1]
       end
     end
   end
@@ -110,6 +110,6 @@ RSpec.configure do |config|
   config.include CarrierWave::Test::I18nHelpers
   config.include CarrierWave::Test::ManipulationHelpers
   if RUBY_ENGINE == 'jruby'
-    config.filter_run_excluding :rmagick => true
+    config.filter_run_excluding rmagick: true
   end
 end

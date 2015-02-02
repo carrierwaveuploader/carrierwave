@@ -8,14 +8,13 @@ module CarrierWave
       include CarrierWave::Uploader::Callbacks
 
       included do
-        class_attribute :processors, :instance_writer => false
+        class_attribute :processors, instance_writer: false
         self.processors = []
 
         before :cache, :process!
       end
 
       module ClassMethods
-
         ##
         # Adds a processor callback which applies operations as a file is uploaded.
         # The argument may be the name of any method of the uploader, expressed as a symbol,
@@ -64,27 +63,25 @@ module CarrierWave
             self.processors += [[processor, processor_args, condition]]
           end
         end
-
       end # ClassMethods
 
       ##
       # Apply all process callbacks added through CarrierWave.process
       #
-      def process!(new_file=nil)
+      def process!(new_file = nil)
         return unless enable_processing
 
         self.class.processors.each do |method, args, condition|
-          if(condition)
+          if condition
             if condition.respond_to?(:call)
-              next unless condition.call(self, :args => args, :method => method, :file => new_file)
+              next unless condition.call(self, args: args, method: method, file: new_file)
             else
-              next unless self.send(condition, new_file)
+              next unless send(condition, new_file)
             end
           end
-          self.send(method, *args)
+          send(method, *args)
         end
       end
-
     end # Processing
   end # Uploader
 end # CarrierWave
