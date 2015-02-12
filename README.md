@@ -101,7 +101,12 @@ automatically be stored when the record is saved.
 ```ruby
 u = User.new
 u.avatar = params[:file] # Assign a file like this, or
-u.avatar = File.open('somewhere') # like this
+
+# like this
+File.open('somewhere')
+  u.avatar = f
+end
+
 u.save!
 u.avatar.url # => '/url/to/file.png'
 u.avatar.current_path # => 'path/to/file.png'
@@ -554,7 +559,10 @@ describe MyUploader do
   before do
     MyUploader.enable_processing = true
     @uploader = MyUploader.new(@user, :avatar)
-    @uploader.store!(File.open(path_to_file))
+
+    File.open(path_to_file) do |f|
+      @uploader.store!(f)
+    end
   end
 
   after do
