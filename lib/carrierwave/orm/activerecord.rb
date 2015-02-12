@@ -31,6 +31,7 @@ module CarrierWave
       after_commit :"mark_remove_#{column}_false", :on => :update
       before_update :"store_previous_model_for_#{column}"
       after_save :"remove_previously_stored_#{column}"
+      after_save :"invalidate_memoized_filename_for_#{column}"
 
       class_eval <<-RUBY, __FILE__, __LINE__+1
         def #{column}=(new_file)
@@ -49,6 +50,10 @@ module CarrierWave
           super
           _mounter(:#{column}).remove = true
           _mounter(:#{column}).write_identifier
+        end
+
+        def invalidate_memoized_filename_for_#{column}
+          send(:instance_variable_set, :"@#{column}_regularized_filename", nil)
         end
 
         def serializable_hash(options=nil)
