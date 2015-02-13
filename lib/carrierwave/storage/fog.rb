@@ -288,7 +288,7 @@ module CarrierWave
         # [Integer] size of file body
         #
         def size
-          file.content_length
+          file.nil? ? 0 : file.content_length
         end
 
         ##
