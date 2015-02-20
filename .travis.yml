@@ -22,6 +22,11 @@ before_script:
   - psql -c 'create database carrierwave_test;' -U postgres
 
 matrix:
+  exclude:
+    - rvm: 1.9.3
+      gemfile: gemfiles/rails-master.gemfile
+    - rvm: 2.0.0
+      gemfile: gemfiles/rails-master.gemfile
   allow_failures:
     - rvm: ruby-head
     - rvm: jruby-head # Until JRuby https://github.com/jruby/jruby/issues/1290 is fixed
