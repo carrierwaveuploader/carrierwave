@@ -301,7 +301,7 @@ class MyUploader < CarrierWave::Uploader::Base
   version :monkey, :if => :is_monkey?
   version :banner, :if => :is_landscape?
 
-protected
+private
 
   def is_human? picture
     model.can_program?(:ruby)
