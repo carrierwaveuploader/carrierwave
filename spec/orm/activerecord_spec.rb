@@ -1462,7 +1462,7 @@ describe CarrierWave::ActiveRecord do
     end
   end
 
-  describe '#mount_uploaders removing old files with with mount_on' do
+  describe '#mount_uploaders removing old files with mount_on' do
     before do
       @class = Class.new(Event)
       @class.table_name = "events"
