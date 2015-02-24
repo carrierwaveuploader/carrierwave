@@ -1490,5 +1490,9 @@ describe CarrierWave::ActiveRecord do
       expect(@event.save).to be_true
       expect(File.exist?(public_path('uploads/old.jpeg'))).to be_true
     end
+
+    it "should not raise ArgumentError when with_lock method is called" do
+      expect { @event.with_lock {} }.to_not raise_error
+    end
   end
 end
