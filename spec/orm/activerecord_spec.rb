@@ -1495,4 +1495,12 @@ describe CarrierWave::ActiveRecord do
       expect { @event.with_lock {} }.to_not raise_error
     end
   end
+
+  describe "#dup" do
+    it "appropriately removes the model reference from the new models uploader" do
+      @event.save
+      new_event = @event.dup
+      expect(new_event.image.model).not_to eq @event
+    end
+  end
 end
