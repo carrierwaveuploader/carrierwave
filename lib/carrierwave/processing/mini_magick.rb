@@ -266,6 +266,7 @@ module CarrierWave
         image.run_command("identify", current_path)
       ensure
         image.destroy!
+        File.unlink(image.path)
       end
     rescue ::MiniMagick::Error, ::MiniMagick::Invalid => e
       default = I18n.translate(:"errors.messages.mini_magick_processing_error", :e => e, :locale => :en)
