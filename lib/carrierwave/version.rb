@@ -1,3 +1,3 @@
 module CarrierWave
-  VERSION = "0.10.0.1.skroutz"
+  VERSION = "0.10.0.2.skroutz"
 end
