@@ -437,7 +437,7 @@ this easily by overriding the `default_url` method in your uploader:
 ```ruby
 class MyUploader < CarrierWave::Uploader::Base
   def default_url
-    "/images/fallback/" + [version_name, "default.png"].compact.join('_')
+    '/images/fallback/' + [version_name, 'default.png'].compact.join('_')
   end
 end
 ```
@@ -447,7 +447,7 @@ Or if you are using the Rails asset pipeline:
 ```ruby
 class MyUploader < CarrierWave::Uploader::Base
   def default_url
-    ActionController::Base.helpers.asset_path("fallback/" + [version_name, "default.png"].compact.join('_'))
+    ActionController::Base.helpers.asset_path('fallback/' + [version_name, 'default.png'].compact.join('_'))
   end
 end
 ```
@@ -592,7 +592,7 @@ Processing can be enabled for a single version by setting the processing flag on
 [Fog AWS](http://github.com/fog/fog-aws) is used to support Amazon S3. Ensure you have it in your Gemfile:
 
 ```ruby
-gem "fog-aws"
+gem 'fog-aws'
 ```
 
 You'll need to provide your fog_credentials and a fog_directory (also known as a bucket) in an initializer.
@@ -630,7 +630,7 @@ That's it! You can still use the `CarrierWave::Uploader#url` method to return th
 [Fog](http://github.com/fog/fog) is used to support Rackspace Cloud Files. Ensure you have it in your Gemfile:
 
 ```ruby
-gem "fog"
+gem 'fog'
 ```
 
 You'll need to configure a directory (also known as a container), username and API key in the initializer.
@@ -670,7 +670,7 @@ This is *highly* recommended, as without it every request requires a lookup
 of this information.
 
 ```ruby
-config.asset_host = "http://c000000.cdn.rackspacecloud.com"
+config.asset_host = 'http://c000000.cdn.rackspacecloud.com'
 ```
 
 In your uploader, set the storage to :fog
@@ -689,7 +689,7 @@ the url to the file on Rackspace Cloud Files.
 [Fog](http://github.com/fog/fog) is used to support Google Storage for Developers. Ensure you have it in your Gemfile:
 
 ```ruby
-gem "fog"
+gem 'fog'
 ```
 
 You'll need to configure a directory (also known as a bucket), access key id and secret access key in the initializer.
@@ -726,19 +726,19 @@ the url to the file on Google.
 Since Carrierwave doesn't know which parts of Fog you intend to use, it will just load the entire library (unless you use e.g. fog-aws instead of fog proper). If you prefer to load fewer classes into your application, you need to load those parts of Fog yourself *before* loading CarrierWave in your Gemfile.  Ex:
 
 ```ruby
-gem "fog", "~> 1.27", require: "fog/google/storage"
-gem "carrierwave"
+gem 'fog', '~> 1.27', require: 'fog/google/storage'
+gem 'carrierwave'
 ```
 
 A couple of notes about versions:
 * This functionality was introduced in Fog v1.20.
 * This functionality is slated for CarrierWave v0.11.
 
-If you're not relying on Gemfile entries alone and are requiring "carrierwave" anywhere, ensure you require "fog/google/storage" before it.  Ex:
+If you're not relying on Gemfile entries alone and are requiring "carrierwave" anywhere, ensure you require 'fog/google/storage' before it.  Ex:
 
 ```ruby
-require "fog/google/storage"
-require "carrierwave"
+require 'fog/google/storage'
+require 'carrierwave'
 ```
 
 When in doubt, inspect `Fog.constants` to see what has been loaded.
