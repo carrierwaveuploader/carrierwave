@@ -103,7 +103,7 @@ u = User.new
 u.avatar = params[:file] # Assign a file like this, or
 
 # like this
-File.open('somewhere')
+File.open('somewhere') do |f|
   u.avatar = f
 end
 
