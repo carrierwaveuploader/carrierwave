@@ -22,7 +22,7 @@ before_script:
 
 matrix:
   exclude:
-    - rvm: 2.0.0
+    - rvm: 2.0
       gemfile: gemfiles/rails-master.gemfile
   allow_failures:
     - rvm: ruby-head
