@@ -57,7 +57,7 @@ elsif defined?(Rails)
         end
       end
 
-      protected
+      private
 
       def self.locales_pattern_from(args)
         array = Array(args || [])

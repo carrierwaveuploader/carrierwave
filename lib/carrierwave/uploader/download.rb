@@ -42,7 +42,7 @@ module CarrierWave
           end
           @file
 
-        rescue Exception => e
+        rescue StandardError => e
           raise CarrierWave::DownloadError, "could not download file: #{e.message}"
         end
 

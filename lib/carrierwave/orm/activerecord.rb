@@ -81,7 +81,13 @@ module CarrierWave
         end
 
         # Reset cached mounter on record reload
-        def reload
+        def reload(*)
+          @_mounters = nil
+          super
+        end
+
+        # Reset cached mounter on record dup
+        def initialize_dup(other)
           @_mounters = nil
           super
         end

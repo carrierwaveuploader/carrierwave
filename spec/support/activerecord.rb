@@ -10,7 +10,8 @@ require 'carrierwave/orm/activerecord'
 dbconfig = {
   :adapter  => 'postgresql',
   :database => 'carrierwave_test',
-  :encoding => 'utf8'
+  :encoding => 'utf8',
+  :username => 'postgres'
 }
 
 database = dbconfig.delete(:database)

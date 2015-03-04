@@ -14,3 +14,4 @@ spec/tmp
 .rvmrc
 .bundle
 Gemfile.lock
+gemfiles/*.lock

@@ -1,16 +1,15 @@
 language: ruby
 
 rvm:
- - 1.9.3
- - 2.0.0
- - 2.1.5
+ - 2.0
+ - 2.1
+ - 2.2
  - ruby-head
  - jruby
  - jruby-head
 
 gemfile:
   - Gemfile
-  - gemfiles/rails-3-2-stable.gemfile
   - gemfiles/rails-4-0-stable.gemfile
   - gemfiles/rails-4-1-stable.gemfile
   - gemfiles/rails-4-2-stable.gemfile
@@ -22,10 +21,16 @@ before_script:
   - psql -c 'create database carrierwave_test;' -U postgres
 
 matrix:
+  exclude:
+    - rvm: 2.0
+      gemfile: gemfiles/rails-master.gemfile
+    - rvm: jruby
+      gemfile: gemfiles/rails-master.gemfile
+    - rvm: jruby-head
+      gemfile: gemfiles/rails-master.gemfile
   allow_failures:
     - rvm: ruby-head
-    - rvm: jruby-head # Until JRuby https://github.com/jruby/jruby/issues/1290 is fixed
-    - rvm: jruby # Until JRuby https://github.com/jruby/jruby/issues/1290 is fixed
+    - rvm: jruby-head
 
 notifications:
   email: false

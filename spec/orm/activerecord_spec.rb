@@ -26,6 +26,12 @@ describe CarrierWave::ActiveRecord do
   before(:all) { TestMigration.up }
   after(:all) { TestMigration.down }
 
+  if [ActiveRecord::VERSION::MAJOR, ActiveRecord::VERSION::MINOR] == [4, 2]
+    before :all do
+      ActiveRecord::Base.raise_in_transactional_callbacks = true
+    end
+  end
+
   before do
     sham_rack_app = ShamRack.at('www.example.com').stub
     sham_rack_app.register_resource('/test.jpg', File.read(file_path('test.jpg')), 'images/jpg')
@@ -1456,7 +1462,7 @@ describe CarrierWave::ActiveRecord do
     end
   end
 
-  describe '#mount_uploaders removing old files with with mount_on' do
+  describe '#mount_uploaders removing old files with mount_on' do
     before do
       @class = Class.new(Event)
       @class.table_name = "events"
@@ -1483,6 +1489,18 @@ describe CarrierWave::ActiveRecord do
       @event.avatar = [stub_file('old.jpeg')]
       expect(@event.save).to be_true
       expect(File.exist?(public_path('uploads/old.jpeg'))).to be_true
+    end
+
+    it "should not raise ArgumentError when with_lock method is called" do
+      expect { @event.with_lock {} }.to_not raise_error
+    end
+  end
+
+  describe "#dup" do
+    it "appropriately removes the model reference from the new models uploader" do
+      @event.save
+      new_event = @event.dup
+      expect(new_event.image.model).not_to eq @event
     end
   end
 end
