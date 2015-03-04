@@ -24,6 +24,10 @@ matrix:
   exclude:
     - rvm: 2.0
       gemfile: gemfiles/rails-master.gemfile
+    - rvm: jruby
+      gemfile: gemfiles/rails-master.gemfile
+    - rvm: jruby-head
+      gemfile: gemfiles/rails-master.gemfile
   allow_failures:
     - rvm: ruby-head
     - rvm: jruby-head
