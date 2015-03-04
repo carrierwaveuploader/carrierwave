@@ -9,3 +9,5 @@ de:
       rmagick_processing_error: "Verarbeitung mit rmagick fehlgeschlagen, vielleicht ist es kein Bild? Original Fehler: %{e}"
       mime_types_processing_error: "Verarbeitung mit MIME::Types fehlgeschlagen, vielleicht kein gültiger content-type? Original Fehler: %{e}"
       mini_magick_processing_error: "Verarbeitung mit MiniMagick fehlgeschlagen, vielleicht ist es kein Bild? Original Fehler: %{e}"
+      min_size_error: "Die dateigröße sollte größer sein als %{min_size}"
+      max_size_error: "Die dateigröße sollte weniger als sein %{max_size}"

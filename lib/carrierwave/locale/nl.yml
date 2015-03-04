@@ -9,3 +9,5 @@ nl:
       rmagick_processing_error: "Bewerking met rmagick is mislukt, misschien is het geen afbeelding? Originele foutmelding: %{e}"
       mime_types_processing_error: "Verwerking van bestand met MIME::Types is mislukt, misschien is het geen geldig content-type? Originele foutmelding: %{e}"
       mini_magick_processing_error: "Bewerking met MiniMagick is mislukt, misschien is het geen afbeelding? Originele foutmelding: %{e}"
+      min_size_error: "De bestandsgrootte moet groter zijn dan %{min_size}"
+      max_size_error: "De bestandsgrootte moet minder zijn dan %{max_size}"

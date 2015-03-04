@@ -9,3 +9,5 @@ ru:
       rmagick_processing_error: "Ошибка взаимодействия с RMagick, может быть это не изображение? Исходная ошибка: %{e}"
       mime_types_processing_error: "Не получилось обработать файл с MIME::Types, возможно неправильный content-type? Исходная ошибка: %{e}"
       mini_magick_processing_error: "Ошибка взаимодействия с MiniMagick, может быть это не изображение? Исходная ошибка: %{e}"
+      min_size_error: "Размер файла должен быть больше, чем %{min_size}"
+      max_size_error: "Размер файла должен быть меньше, чем %{max_size}"

@@ -9,3 +9,5 @@ tr:
       rmagick_processing_error: "Resim rmagick ile düzenlenemedi, belkide resim değildir? Orjinal Hata: %{e}"
       mime_types_processing_error: "Dosya, MIME::Types kullanılarak işlenemedi, belkide geçerli bir içerik türü değildir? Orjinal Hata: %{e}"
       mini_magick_processing_error: "Resim MiniMagick ile düzenlenemedi, belkide resim değildir? Orjinal Hata: %{e}"
+      min_size_error: "Dosya boyutu daha büyük olmalıdır %{min_size}"
+      max_size_error: "Dosya boyutu daha az olmalıdır %{max_size}"

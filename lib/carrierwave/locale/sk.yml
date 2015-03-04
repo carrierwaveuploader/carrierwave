@@ -9,3 +9,5 @@ sk:
       rmagick_processing_error: "Nepodarilo sa upraviť pomocou rmagick, možno nejde o obrázok? Hlásená chyba: %{e}"
       mime_types_processing_error: "Súbor sa nepodarilo spracovať pomocou MIME::Types, možno nejde o valídny content-type? Hlásená chyba: %{e}"
       mini_magick_processing_error: "Nepodarilo sa upraviť pomocou MiniMagick, možno nejde o obrázok? Hlásená chyba: %{e}"
+      min_size_error: "Filstorleken ska vara större än %{min_size}"
+      max_size_error: "Filstorleken bör vara mindre än %{max_size}"
