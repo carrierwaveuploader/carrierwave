@@ -14,14 +14,16 @@ It works well with Rack based web applications, such as Ruby on Rails.
 
 ## Getting Help
 
-* Please ask the [Google Group](http://groups.google.com/group/carrierwave) for help if you have any questions.
+* Please ask the community on [Stack Overflow](http://stackoverflow.com/) for help if you have any questions. Please do not post usage questions on the issue tracker.
 * Please report bugs on the [issue tracker](http://github.com/carrierwaveuploader/carrierwave/issues) but read the "getting help" section in the wiki first.
 
 ## Installation
 
 Install the latest stable release:
 
-	[sudo] gem install carrierwave
+```
+$ gem install carrierwave
+```
 
 In Rails, add it to your Gemfile:
 
@@ -31,8 +33,8 @@ gem 'carrierwave'
 
 Finally, restart the server to apply the changes.
 
-Note that CarrierWave is not compatible with Rails 2 as of version 0.5. If you want to use
-Rails 2, please use the 0.4-stable branch on GitHub.
+As of version 1.0.0, CarrierWave requires Rails 4.0 or higher and Ruby 2.0
+or higher. If you're on Rails 3, you should use v0.10.0.
 
 ## Getting Started
 
@@ -212,23 +214,13 @@ end
 
 Another security issue you should care for is the file names (see
 [Ruby On Rails Security Guide](http://guides.rubyonrails.org/security.html#file-uploads)).
-By default, CarrierWave provides only English letters, arabic numerals and '-+_.' symbols as
+By default, CarrierWave provides only English letters, arabic numerals and some symbols as
 white-listed characters in the file name. If you want to support local scripts (Cyrillic letters, letters with diacritics and so on), you
 have to override `sanitize_regexp` method. It should return regular expression which would match
 all *non*-allowed symbols.
 
-With Ruby 2.0 and higher you can simply write (as it has [Onigmo](https://github.com/k-takata/Onigmo)
-built-in):
-
 ```ruby
 CarrierWave::SanitizedFile.sanitize_regexp = /[^[:word:]\.\-\+]/
-```
-
-With Ruby 1.8 you have to manually specify all character ranges. For example, for files which may
-contain Russian letters:
-
-```ruby
-CarrierWave::SanitizedFile.sanitize_regexp = /[^a-zA-Zа-яА-ЯёЁ0-9\.\-\+_]/u
 ```
 
 Also make sure that allowing non-latin characters won't cause a compatibility issue with a third-party
@@ -243,7 +235,7 @@ You no longer need to do this manually.
 
 Often you'll want to add different versions of the same file. The classic example is image thumbnails. There is built in support for this*:
 
-*Note: You must have Imagemagick and MiniMagick installed to do image resizing. MiniMagick is a Ruby interface for Imagemagick which is a C program. This is why MiniMagick fails on 'bundle install' without Imagemagick installed.
+*Note:* You must have Imagemagick and MiniMagick installed to do image resizing. MiniMagick is a Ruby interface for Imagemagick which is a C program. This is why MiniMagick fails on 'bundle install' without Imagemagick installed.
 
 Some documentation refers to RMagick instead of MiniMagick but MiniMagick is recommended.
 
@@ -257,10 +249,10 @@ $ brew install imagemagick
 class MyUploader < CarrierWave::Uploader::Base
   include CarrierWave::MiniMagick
 
-  process :resize_to_fit => [800, 800]
+  process resize_to_fit: [800, 800]
 
   version :thumb do
-    process :resize_to_fill => [200,200]
+    process resize_to_fill: [200,200]
   end
 
 end
@@ -302,9 +294,9 @@ properties within the model or based on the picture itself.
 ```ruby
 class MyUploader < CarrierWave::Uploader::Base
 
-  version :human, :if => :is_human?
-  version :monkey, :if => :is_monkey?
-  version :banner, :if => :is_landscape?
+  version :human, if: :is_human?
+  version :monkey, if: :is_monkey?
+  version :banner, if: :is_landscape?
 
 private
 
@@ -340,7 +332,7 @@ class MyUploader < CarrierWave::Uploader::Base
     process resize_to_fill: [280, 280]
   end
 
-  version :small_thumb, :from_version => :thumb do
+  version :small_thumb, from_version: :thumb do
     process resize_to_fill: [20, 20]
   end
 
@@ -359,7 +351,7 @@ file, just add a hidden field called `avatar_cache` (don't forget to add it to
 the attr_accessible list as necessary). In Rails, this would look like this:
 
 ```erb
-<%= form_for @user, :html => {:multipart => true} do |f| %>
+<%= form_for @user, html: { multipart: true } do |f| %>
   <p>
     <label>My Avatar</label>
     <%= f.file_field :avatar %>
@@ -372,7 +364,7 @@ It might be a good idea to show the user that a file has been uploaded, in the
 case of images, a small thumbnail would be a good indicator:
 
 ```erb
-<%= form_for @user, :html => {:multipart => true} do |f| %>
+<%= form_for @user, html: { multipart: true } do |f| %>
   <p>
     <label>My Avatar</label>
     <%= image_tag(@user.avatar_url) if @user.avatar? %>
@@ -388,7 +380,7 @@ If you want to remove a previously uploaded file on a mounted uploader, you can
 easily add a checkbox to the form which will remove the file when checked.
 
 ```erb
-<%= form_for @user, :html => {:multipart => true} do |f| %>
+<%= form_for @user, html: { multipart: true } do |f| %>
   <p>
     <label>My Avatar</label>
     <%= image_tag(@user.avatar_url) if @user.avatar? %>
@@ -419,7 +411,7 @@ via a URL. CarrierWave makes this simple, just add the appropriate attribute to 
 form and you're good to go:
 
 ```erb
-<%= form_for @user, :html => {:multipart => true} do |f| %>
+<%= form_for @user, html: { multipart: true } do |f| %>
   <p>
     <label>My Avatar URL:</label>
     <%= image_tag(@user.avatar_url) if @user.avatar? %>
@@ -610,16 +602,16 @@ You can also pass in additional options, as documented fully in lib/carrierwave/
 ```ruby
 CarrierWave.configure do |config|
   config.fog_credentials = {
-    :provider               => 'AWS',                        # required
-    :aws_access_key_id      => 'xxx',                        # required
-    :aws_secret_access_key  => 'yyy',                        # required
-    :region                 => 'eu-west-1',                  # optional, defaults to 'us-east-1'
-    :host                   => 's3.example.com',             # optional, defaults to nil
-    :endpoint               => 'https://s3.example.com:8080' # optional, defaults to nil
+    provider:              'AWS',                        # required
+    aws_access_key_id:     'xxx',                        # required
+    aws_secret_access_key: 'yyy',                        # required
+    region:                'eu-west-1',                  # optional, defaults to 'us-east-1'
+    host:                  's3.example.com',             # optional, defaults to nil
+    endpoint:              'https://s3.example.com:8080' # optional, defaults to nil
   }
   config.fog_directory  = 'name_of_directory'                          # required
   config.fog_public     = false                                        # optional, defaults to true
-  config.fog_attributes = {'Cache-Control'=>"max-age=#{365.day.to_i}"} # optional, defaults to {}
+  config.fog_attributes = { 'Cache-Control' => "max-age=#{365.day.to_i}" } # optional, defaults to {}
 end
 ```
 
@@ -649,10 +641,10 @@ Using a US-based account:
 ```ruby
 CarrierWave.configure do |config|
   config.fog_credentials = {
-    :provider           => 'Rackspace',
-    :rackspace_username => 'xxxxxx',
-    :rackspace_api_key  => 'yyyyyy',
-    :rackspace_region   => :ord                # optional, defaults to :dfw
+    provider:           'Rackspace',
+    rackspace_username: 'xxxxxx',
+    rackspace_api_key:  'yyyyyy',
+    rackspace_region:   :ord                # optional, defaults to :dfw
   }
   config.fog_directory = 'name_of_directory'
 end
@@ -663,11 +655,11 @@ Using a UK-based account:
 ```ruby
 CarrierWave.configure do |config|
   config.fog_credentials = {
-    :provider           => 'Rackspace',
-    :rackspace_username => 'xxxxxx',
-    :rackspace_api_key  => 'yyyyyy',
-    :rackspace_auth_url  => Fog::Rackspace::UK_AUTH_ENDPOINT,
-    :rackspace_region   => :lon
+    provider:           'Rackspace',
+    rackspace_username: 'xxxxxx',
+    rackspace_api_key:  'yyyyyy',
+    rackspace_auth_url: Fog::Rackspace::UK_AUTH_ENDPOINT,
+    rackspace_region:   :lon
   }
   config.fog_directory = 'name_of_directory'
 end
@@ -710,9 +702,9 @@ under the section “Interoperable Access”.
 ```ruby
 CarrierWave.configure do |config|
   config.fog_credentials = {
-    :provider                         => 'Google',
-    :google_storage_access_key_id     => 'xxxxxx',
-    :google_storage_secret_access_key => 'yyyyyy'
+    provider:                         'Google',
+    google_storage_access_key_id:     'xxxxxx',
+    google_storage_secret_access_key: 'yyyyyy'
   }
   config.fog_directory = 'name_of_directory'
 end
@@ -740,7 +732,7 @@ gem "carrierwave"
 
 A couple of notes about versions:
 * This functionality was introduced in Fog v1.20.
-* This functionality is slated for CarrierWave v0.11.
+* This functionality is slated for CarrierWave v1.0.0.
 
 If you're not relying on Gemfile entries alone and are requiring "carrierwave" anywhere, ensure you require "fog/google/storage" before it.  Ex:
 
@@ -788,8 +780,8 @@ Convert will only work if the file has the same file extension, thus the use of 
 class AvatarUploader < CarrierWave::Uploader::Base
   include CarrierWave::RMagick
 
-  process :resize_to_fill => [200, 200]
-  process :convert => 'png'
+  process resize_to_fill: [200, 200]
+  process convert: 'png'
 
   def filename
     super.chomp(File.extname(super)) + '.png' if original_filename.present?
@@ -821,7 +813,7 @@ for the RMagick processor.
 class AvatarUploader < CarrierWave::Uploader::Base
   include CarrierWave::MiniMagick
 
-  process :resize_to_fill => [200, 200]
+  process resize_to_fill: [200, 200]
 end
 ```
 
@@ -841,14 +833,10 @@ details.
 Be sure to use mount_on to specify the correct column:
 
 ```ruby
-mount_uploader :avatar, AvatarUploader, :mount_on => :avatar_file_name
+mount_uploader :avatar, AvatarUploader, mount_on: :avatar_file_name
 ```
 
-Unfortunately attachment_fu differs too much in philosophy for there to be a
-sensible compatibility mode. Patches for migrating from other solutions will be
-happily accepted.
-
-## i18n
+## I18n
 
 The Active Record validations use the Rails i18n framework. Add these keys to
 your translations file:
@@ -876,6 +864,7 @@ class MyUploader < CarrierWave::Uploader::Base
   def move_to_cache
     true
   end
+
   def move_to_store
     true
   end
@@ -902,10 +891,10 @@ Will add these callbacks:
 ```ruby
 after_save :store_avatar!
 before_save :write_avatar_identifier
-after_commit :remove_avatar!, :on => :destroy
-after_commit :"mark_remove_avatar_false", :on => :update
+after_commit :remove_avatar!, on: :destroy
+after_commit :"mark_remove_avatar_false", on: :update
 after_save :"store_previous_changes_for_avatar"
-after_commit :remove_previously_stored_avatar, :on => :update
+after_commit :remove_previously_stored_avatar, on: :update
 ```
 
 If you want to skip any of these callbacks (eg. you want to keep the existing
@@ -925,7 +914,7 @@ See [CONTRIBUTING.md](https://github.com/carrierwaveuploader/carrierwave/blob/ma
 
 ## License
 
-Copyright (c) 2008-2014 Jonas Nicklas
+Copyright (c) 2008-2015 Jonas Nicklas
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
