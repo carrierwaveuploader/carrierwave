@@ -28,7 +28,6 @@ Gem::Specification.new do |s|
   s.add_dependency "activemodel", ">= 3.2.0"
   s.add_dependency "json", ">= 1.7"
   s.add_dependency "mime-types", ">= 1.16"
-  s.add_dependency "ruby-filemagic", ">= 0.6.3"
   if RUBY_ENGINE == 'jruby'
     s.add_development_dependency 'activerecord-jdbcpostgresql-adapter'
   else
@@ -41,6 +40,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "fog-aws", ">= 0.1.0"
   s.add_development_dependency "fog", ">= 1.28.0"
   s.add_development_dependency "mini_magick", ">= 3.6.0"
+  s.add_development_dependency "ruby-filemagic", ">= 0.6.3"
   if RUBY_ENGINE != 'jruby'
     s.add_development_dependency "rmagick"
   end
