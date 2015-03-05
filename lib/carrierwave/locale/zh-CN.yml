@@ -9,3 +9,5 @@ zh-CN:
       rmagick_processing_error: "rmagick 错误, 也许上传的文件不是图片? 原错误: %{e}"
       mime_types_processing_error: "MIME::Types 错误, 也许上传的文件不是正确的content-type? 原错误: %{e}"
       mini_magick_processing_error: "MiniMagick 错误, 也许上传的文件不是图片? 原错误: %{e}"
+      min_size_error: "文件大小应大于 %{min_size}"
+      max_size_error: "文件的大小应小于 %{max_size}"

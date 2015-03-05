@@ -9,3 +9,5 @@ nb:
       rmagick_processing_error: "Kunne ikke manipulere med rmagick. Er du sikker på at det er et bilde? Feilmelding: %{e}"
       mime_types_processing_error: "Kunne ikke behandle fil med MIME::Types. Er du sikker på at content-type er korrekt? Feilmelding: %{e}"
       mini_magick_processing_error: "Kunne ikke manipulere med MiniMagick. Er du sikker på at det er et bilde? Feilmelding: %{e}"
+      min_size_error: "Filen størrelse bør være større enn %{min_size}"
+      max_size_error: "Filen størrelse bør være mindre enn %{max_size}"

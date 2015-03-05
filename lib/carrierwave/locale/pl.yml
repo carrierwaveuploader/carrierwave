@@ -9,3 +9,5 @@ pl:
       rmagick_processing_error: "Nie udało się przetworzyć pliku przy pomocy rmagick, może to nie jest obrazek? Oryginalna treść błędu: %{e}"
       mime_types_processing_error: "Nie udało się przetworzyć pliku przy pomocy MIME::Types, może content-type jest niepoprawny? Oryginalna treść błędu: %{e}"
       mini_magick_processing_error: "Nie udało się przetworzyć pliku przy pomocy MiniMagick, może to nie jest obrazek? Oryginalna treść błędu: %{e}"
+      min_size_error: "Rozmiar pliku powinna być większa niż %{min_size}"
+      max_size_error: "Rozmiar pliku powinna być mniejsza niż %{max_size}"

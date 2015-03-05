@@ -9,3 +9,5 @@ cs:
       rmagick_processing_error: "Nepodařilo se upravit pomocí rmagick, možná se nejedná o obrázek? Hlášená Chyba: %{e}"
       mime_types_processing_error: "Nepodařilo se upravit s MIME::Types, možná se nejedná o content-type? Hlášená Chyba: %{e}"
       mini_magick_processing_error: "Nepodařilo se upravit pomocí MiniMagick, možná se nejedná o obrázek? Hlášená Chyba: %{e}"
+      min_size_error: "Velikost souboru by měla být větší než %{min_size}"
+      max_size_error: "Velikost souboru by měla být nižší než %{max_size}"
