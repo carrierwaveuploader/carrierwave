@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe CarrierWave::MagicMimeTypes do
+describe CarrierWave::MagicMimeTypes, :filemagic => true do
 
   before do
     @klass = Class.new(CarrierWave::Uploader::Base) do

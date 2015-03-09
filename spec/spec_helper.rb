@@ -112,5 +112,6 @@ RSpec.configure do |config|
   config.include CarrierWave::Test::ManipulationHelpers
   if RUBY_ENGINE == 'jruby'
     config.filter_run_excluding :rmagick => true
+    config.filter_run_excluding :filemagic => true
   end
 end
