@@ -40,9 +40,9 @@ Gem::Specification.new do |s|
   s.add_development_dependency "fog-aws", ">= 0.1.0"
   s.add_development_dependency "fog", ">= 1.28.0"
   s.add_development_dependency "mini_magick", ">= 3.6.0"
-  s.add_development_dependency "ruby-filemagic", ">= 0.6.3"
   if RUBY_ENGINE != 'jruby'
     s.add_development_dependency "rmagick"
+    s.add_development_dependency "ruby-filemagic", ">= 0.6.3"
   end
   s.add_development_dependency "nokogiri", "~> 1.6.3"
   s.add_development_dependency "timecop", "0.7.1"
