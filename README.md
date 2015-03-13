@@ -817,6 +817,74 @@ class AvatarUploader < CarrierWave::Uploader::Base
 end
 ```
 
+## Using Filemagic
+
+[Filemagic](https://github.com/blackwinter/ruby-filemagic) is a gem that
+provides Ruby bindings to the magic library.
+
+Since magic is writtern in C, modules using Filemagic are optional and
+don't work with JRuby.
+
+### Extract the actual content-type
+
+You can use the `MagicMimeTypes` processor to extract the actual
+content-type of the uploaded file.
+
+For example, a user can upload a file named `file.png` but its actual
+content type may be JPEG.
+
+Below you can see an example usage of `MagicMimeTypes` processor.
+
+```ruby
+class AvatarUploader < CarrierWave::Uploader::Base
+  include CarrierWave::MagicMimeTypes
+
+  process :set_content_type
+end
+```
+
+### Validate with the actual content-type
+
+You can use the `MagicMimeWhitelist` mixin to validate uploaded files
+given a regexp to match the allowed content types.
+
+Let's say we need an uploader that accepts only images.
+
+This can be done like this
+
+```ruby
+class AvatarUploader < CarrierWave::Uploader::Base
+  include CarrierWave::Uploader::MagicMimeWhitelist
+
+  # Override it to your needs.
+  # By default it returns nil and the validator allows every
+  # content-type.
+  def whitelist_mime_type_pattern
+    /image\//
+  end
+end
+```
+
+There is also a `MagicMimeBlacklist` mixin to validate uploaded files
+given a rexp to match prohibited content types.
+
+Let's say we need an uploader that reject json files.
+
+This can be done like this
+
+```ruby
+class NoJsonUploader < CarrierWave::Uploader::Base
+  include CarrierWave::Uploader::MagicMimeBlacklist
+
+  # Override it to your needs.
+  # By default it returns nil and the validator allows every
+  # content-type.
+  def blacklist_mime_type_pattern
+    /(application|text)/json/
+  end
+end
+```
+
 ## Migrating from Paperclip
 
 If you are using Paperclip, you can use the provided compatibility module:
