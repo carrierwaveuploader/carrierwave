@@ -904,7 +904,7 @@ avatar, even after uploading a new one), you can use ActiveRecord’s
 ```ruby
 class User
   mount_uploader :avatar, AvatarUploader
-  skip_callback :commit, :after, :remove_previously_stored_avatar
+  skip_callback :save, :after, :remove_previously_stored_avatar
 end
 ```
 
