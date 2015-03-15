@@ -390,6 +390,39 @@ describe CarrierWave::ActiveRecord do
       end
     end
 
+    describe "image?" do
+      it "returns true when the file is cached" do
+        @event.image = stub_file('test.jpg')
+
+        expect(@event.image?).to be_true
+      end
+
+      it "returns false when the file is removed" do
+        @event.remove_image!
+        @event.save!
+
+        expect(@event.image?).to be_false
+      end
+
+      it "returns true when the file is stored" do
+        @event.image = stub_file('test.jpg')
+        @event.save!
+
+        expect(@event.image?).to be_true
+      end
+
+      it "returns true when a file is removed and stored again" do
+        @event.image = stub_file('test.jpeg')
+        @event.save!
+        @event.remove_image!
+        @event.save!
+        @event.image = stub_file('test.jpeg')
+        @event.save!
+
+        expect(@event.image?).to be_true
+      end
+    end
+
     describe "remove_image!" do
       before do
         @event.image = stub_file('test.jpeg')
