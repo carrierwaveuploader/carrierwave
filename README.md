@@ -6,6 +6,12 @@ It works well with Rack based web applications, such as Ruby on Rails.
 [![Build Status](https://travis-ci.org/carrierwaveuploader/carrierwave.svg?branch=master)](http://travis-ci.org/carrierwaveuploader/carrierwave)
 [![Code Climate](http://img.shields.io/codeclimate/github/carrierwaveuploader/carrierwave.svg)](https://codeclimate.com/github/carrierwaveuploader/carrierwave)
 
+
+> ## carrierwave version disclaimer
+> ***This README is for a branch which is still in development. 
+> Please switch to latest `0.x` branch for stable version.***
+
+
 ## Information
 
 * RDoc documentation [available on RubyDoc.info](http://rubydoc.info/gems/carrierwave/frames)
