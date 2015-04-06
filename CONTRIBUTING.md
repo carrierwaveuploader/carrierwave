@@ -3,7 +3,7 @@
 CarrierWave thrives on a large number of [contributors](https://github.com/carrierwaveuploader/carrierwave/contributors),
 and pull requests are very welcome. Before submitting a pull request, please make sure that your changes are well tested.
 
-First, make sure you have `imagemagick` and `ghostscript` installed.
+First, make sure you have `imagemagick` and `ghostscript` installed. You may need `libmagic` as well.
 
 Then, you'll need to install bundler and the gem dependencies:
 
