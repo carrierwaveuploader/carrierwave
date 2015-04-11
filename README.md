@@ -607,7 +607,7 @@ You can also pass in additional options, as documented fully in lib/carrierwave/
 
 ```ruby
 CarrierWave.configure do |config|
-  config.fog_provider = 'fog-aws'
+  config.fog_provider = 'fog-aws'                        # required
   config.fog_credentials = {
     provider:              'AWS',                        # required
     aws_access_key_id:     'xxx',                        # required
@@ -647,11 +647,12 @@ Using a US-based account:
 
 ```ruby
 CarrierWave.configure do |config|
+  config.fog_provider = "fog/rackspace/storage"   # optional, defaults to "fog"
   config.fog_credentials = {
     provider:           'Rackspace',
     rackspace_username: 'xxxxxx',
     rackspace_api_key:  'yyyyyy',
-    rackspace_region:   :ord                # optional, defaults to :dfw
+    rackspace_region:   :ord                      # optional, defaults to :dfw
   }
   config.fog_directory = 'name_of_directory'
 end
@@ -661,6 +662,7 @@ Using a UK-based account:
 
 ```ruby
 CarrierWave.configure do |config|
+  config.fog_provider = "fog/rackspace/storage"   # optional, defaults to "fog"
   config.fog_credentials = {
     provider:           'Rackspace',
     rackspace_username: 'xxxxxx',
@@ -708,7 +710,7 @@ under the section “Interoperable Access”.
 
 ```ruby
 CarrierWave.configure do |config|
-  config.fog_provider = 'fog-google'
+  config.fog_provider = 'fog-google'                        # required
   config.fog_credentials = {
     provider:                         'Google',
     google_storage_access_key_id:     'xxxxxx',
