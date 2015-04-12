@@ -1,11 +1,5 @@
 # encoding: utf-8
 
-begin
-  require "fog/core"
-rescue LoadError
-  require "fog" unless defined?(::Fog)
-end
-
 module CarrierWave
   module Storage
 

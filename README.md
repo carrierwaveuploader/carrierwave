@@ -607,6 +607,7 @@ You can also pass in additional options, as documented fully in lib/carrierwave/
 
 ```ruby
 CarrierWave.configure do |config|
+  config.fog_provider = 'fog-aws'                        # required
   config.fog_credentials = {
     provider:              'AWS',                        # required
     aws_access_key_id:     'xxx',                        # required
@@ -646,11 +647,12 @@ Using a US-based account:
 
 ```ruby
 CarrierWave.configure do |config|
+  config.fog_provider = "fog/rackspace/storage"   # optional, defaults to "fog"
   config.fog_credentials = {
     provider:           'Rackspace',
     rackspace_username: 'xxxxxx',
     rackspace_api_key:  'yyyyyy',
-    rackspace_region:   :ord                # optional, defaults to :dfw
+    rackspace_region:   :ord                      # optional, defaults to :dfw
   }
   config.fog_directory = 'name_of_directory'
 end
@@ -660,6 +662,7 @@ Using a UK-based account:
 
 ```ruby
 CarrierWave.configure do |config|
+  config.fog_provider = "fog/rackspace/storage"   # optional, defaults to "fog"
   config.fog_credentials = {
     provider:           'Rackspace',
     rackspace_username: 'xxxxxx',
@@ -692,10 +695,10 @@ the url to the file on Rackspace Cloud Files.
 
 ## Using Google Storage for Developers
 
-[Fog](http://github.com/fog/fog) is used to support Google Storage for Developers. Ensure you have it in your Gemfile:
+[Fog](http://github.com/fog/fog-google) is used to support Google Storage for Developers. Ensure you have it in your Gemfile:
 
 ```ruby
-gem "fog"
+gem "fog-google"
 ```
 
 You'll need to configure a directory (also known as a bucket), access key id and secret access key in the initializer.
@@ -707,6 +710,7 @@ under the section “Interoperable Access”.
 
 ```ruby
 CarrierWave.configure do |config|
+  config.fog_provider = 'fog-google'                        # required
   config.fog_credentials = {
     provider:                         'Google',
     google_storage_access_key_id:     'xxxxxx',
@@ -729,10 +733,10 @@ the url to the file on Google.
 
 ## Optimized Loading of Fog
 
-Since Carrierwave doesn't know which parts of Fog you intend to use, it will just load the entire library (unless you use e.g. fog-aws instead of fog proper). If you prefer to load fewer classes into your application, you need to load those parts of Fog yourself *before* loading CarrierWave in your Gemfile.  Ex:
+Since Carrierwave doesn't know which parts of Fog you intend to use, it will just load the entire library (unless you use e.g. [`fog-aws`, `fog-google`] instead of fog proper). If you prefer to load fewer classes into your application, you need to load those parts of Fog yourself *before* loading CarrierWave in your Gemfile.  Ex:
 
 ```ruby
-gem "fog", "~> 1.27", require: "fog/google/storage"
+gem "fog", "~> 1.27", require: "fog/rackspace/storage"
 gem "carrierwave"
 ```
 
@@ -740,12 +744,15 @@ A couple of notes about versions:
 * This functionality was introduced in Fog v1.20.
 * This functionality is slated for CarrierWave v1.0.0.
 
-If you're not relying on Gemfile entries alone and are requiring "carrierwave" anywhere, ensure you require "fog/google/storage" before it.  Ex:
+If you're not relying on Gemfile entries alone and are requiring "carrierwave" anywhere, ensure you require "fog/rackspace/storage" before it.  Ex:
 
 ```ruby
-require "fog/google/storage"
+require "fog/rackspace/storage"
 require "carrierwave"
 ```
+
+Beware that this specific require is only needed when working with a fog provider that was not extracted to its own gem yet.
+A list of the extracted providers can be found in the page of the `fog` organizations [here](https://github.com/fog).
 
 When in doubt, inspect `Fog.constants` to see what has been loaded.
 
