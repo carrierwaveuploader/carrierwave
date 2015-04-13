@@ -140,9 +140,7 @@ module CarrierWave
         ).files.all(:prefix => uploader.cache_dir).each do |file|
           time = file.key.scan(/(\d+)-\d+-\d+/).first.map { |t| t.to_i }
           time = Time.at(*time)
-          if time < (Time.now.utc - seconds)
-            file.destroy
-          end
+          file.destroy if time < (Time.now.utc - seconds)
         end
       end
 
@@ -198,8 +196,6 @@ module CarrierWave
             else
               local_file.url(::Fog::Time.now + @uploader.fog_authenticated_url_expiration)
             end
-          else
-            nil
           end
         end
 
@@ -392,9 +388,8 @@ module CarrierWave
         # [NilClass] no file name available
         #
         def filename(options = {})
-          if file_url = url(options)
-            URI.decode(file_url.split('?').first).gsub(/.*\/(.*?$)/, '\1')
-          end
+          return unless file_url = url(options)
+          URI.decode(file_url.split('?').first).gsub(/.*\/(.*?$)/, '\1')
         end
 
         ##
