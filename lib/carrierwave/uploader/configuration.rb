@@ -109,7 +109,7 @@ module CarrierWave
           class_eval <<-RUBY, __FILE__, __LINE__ + 1
             def self.eager_load_fog(fog_credentials)
               # see #1198. This will hopefully no longer be necessary after fog 2.0
-              require self.fog_provider || 'fog'
+              require self.fog_provider if self.fog_provider.present?
               require 'carrierwave/storage/fog'
               Fog::Storage.new(fog_credentials) if fog_credentials.present?
             end
@@ -124,12 +124,12 @@ module CarrierWave
             end
 
             def self.#{name}=(value)
-              eager_load_fog(value) if '#{name}' == 'fog_credentials'
+              eager_load_fog(value) if '#{name}' == 'fog_credentials' && value.present?
               @#{name} = value
             end
 
             def #{name}=(value)
-              self.class.eager_load_fog(value) if '#{name}' == 'fog_credentials'
+              self.class.eager_load_fog(value) if '#{name}' == 'fog_credentials' && value.present?
               @#{name} = value
             end
 
