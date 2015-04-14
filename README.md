@@ -593,6 +593,15 @@ Processing can be enabled for a single version by setting the processing flag on
 @uploader.thumb.enable_processing = true
 ```
 
+## Fog
+
+If you want to use fog you must add in your CarrierWave initializer the
+following line
+
+```ruby
+config.fog_provider = 'fog'
+```
+
 ## Using Amazon S3
 
 [Fog AWS](http://github.com/fog/fog-aws) is used to support Amazon S3. Ensure you have it in your Gemfile:
@@ -647,7 +656,7 @@ Using a US-based account:
 
 ```ruby
 CarrierWave.configure do |config|
-  config.fog_provider = "fog/rackspace/storage"   # optional, defaults to "fog"
+  config.fog_provider = "fog/rackspace/storage"   # optional, defaults to nil
   config.fog_credentials = {
     provider:           'Rackspace',
     rackspace_username: 'xxxxxx',
@@ -662,7 +671,7 @@ Using a UK-based account:
 
 ```ruby
 CarrierWave.configure do |config|
-  config.fog_provider = "fog/rackspace/storage"   # optional, defaults to "fog"
+  config.fog_provider = "fog/rackspace/storage"   # optional, defaults to nil
   config.fog_credentials = {
     provider:           'Rackspace',
     rackspace_username: 'xxxxxx',
