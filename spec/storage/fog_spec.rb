@@ -1,8 +1,17 @@
 # encoding: utf-8
 
 require 'spec_helper'
+require 'fog'
+require 'carrierwave/storage/fog'
 
-for credential in FOG_CREDENTIALS
+unless ENV['REMOTE'] == 'true'
+  Fog.mock!
+end
+
+require_relative './fog_credentials' # after Fog.mock!
+require_relative './fog_helper'
+
+FOG_CREDENTIALS.each do |credential|
   fog_tests(credential)
 end
 
