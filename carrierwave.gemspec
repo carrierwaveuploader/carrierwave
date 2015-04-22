@@ -35,7 +35,7 @@ Gem::Specification.new do |s|
   end
   s.add_development_dependency "rails", ">= 3.2.0"
   s.add_development_dependency "cucumber", "~> 1.3.2"
-  s.add_development_dependency "rspec", "~> 2.14.1"
+  s.add_development_dependency "rspec", "~> 3.2.0"
   s.add_development_dependency "sham_rack"
   s.add_development_dependency "fog", ">= 1.28.0"
   s.add_development_dependency "mini_magick", ">= 3.6.0"
