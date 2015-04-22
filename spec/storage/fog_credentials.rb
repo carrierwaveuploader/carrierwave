@@ -11,9 +11,9 @@ unless defined?(FOG_CREDENTIALS)
       # 'Rackspace' => [:rackspace_api_key, :rackspace_username]
     }
 
-    for provider, keys in mappings
+    mappings.each do |provider, keys|
       data = {:provider => provider}
-      for key in keys
+      keys.each do |key|
         data[key] = key.to_s
       end
       credentials << data
@@ -30,10 +30,10 @@ unless defined?(FOG_CREDENTIALS)
       'Rackspace' => [:rackspace_api_key, :rackspace_username]
     }
 
-    for provider, keys in mappings
+    mappings.each do |provider, keys|
       unless (creds = Fog.credentials.reject {|key, value| ![*keys].include?(key)}).empty?
         data = {:provider => provider}
-        for key in keys
+        keys.each do |key|
           data[key] = creds[key]
         end
         credentials << data

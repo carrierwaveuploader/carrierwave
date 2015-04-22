@@ -8,7 +8,7 @@ It works well with Rack based web applications, such as Ruby on Rails.
 
 
 > ## carrierwave version disclaimer
-> ***This README is for a branch which is still in development. 
+> ***This README is for a branch which is still in development.
 > Please switch to latest `0.x` branch for stable version.***
 
 
@@ -591,6 +591,16 @@ Processing can be enabled for a single version by setting the processing flag on
 
 ```ruby
 @uploader.thumb.enable_processing = true
+```
+
+## Fog
+
+If you want to use fog you must add in your CarrierWave initializer the
+following lines
+
+```ruby
+config.fog_provider = 'fog' # 'fog-aws' etc. Defaults to 'fog'
+config.fog_credentials = { ... } # Provider specific credentials
 ```
 
 ## Using Amazon S3
