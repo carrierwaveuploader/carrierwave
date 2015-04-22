@@ -40,7 +40,7 @@ module CarrierWave
     module MockStorage
       def mock_storage(kind)
         storage = double("storage for #{kind} uploader")
-        storage.stub(:setup!)
+        allow(storage).to receive(:setup!)
         storage
       end
     end
@@ -51,7 +51,7 @@ module CarrierWave
 
         tempfile = Tempfile.new(filename)
         FileUtils.copy_file(file_path(filename), tempfile.path)
-        tempfile.stub(:original_filename => fake_name || filename,
+        allow(tempfile).to receive_messages(:original_filename => fake_name || filename,
                       :content_type => mime_type)
         tempfile
       end
@@ -61,7 +61,7 @@ module CarrierWave
       def stub_stringio(filename, mime_type=nil, fake_name=nil)
         file = IO.read( file_path( filename ) ) if filename
         stringio = StringIO.new(file)
-        stringio.stub(:local_path => "",
+        allow(stringio).to receive_messages(:local_path => "",
                       :original_filename => filename || fake_name,
                       :content_type => mime_type)
         stringio
