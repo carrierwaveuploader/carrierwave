@@ -16,70 +16,70 @@ describe CarrierWave::Uploader do
   describe '.process' do
     it "should add a single processor when a symbol is given" do
       @uploader_class.process :sepiatone
-      @uploader.should_receive(:sepiatone)
+      expect(@uploader).to receive(:sepiatone)
       @uploader.process!
     end
 
     it "should add multiple processors when an array of symbols is given" do
       @uploader_class.process :sepiatone, :desaturate, :invert
-      @uploader.should_receive(:sepiatone)
-      @uploader.should_receive(:desaturate)
-      @uploader.should_receive(:invert)
+      expect(@uploader).to receive(:sepiatone)
+      expect(@uploader).to receive(:desaturate)
+      expect(@uploader).to receive(:invert)
       @uploader.process!
     end
 
     it "should add a single processor with an argument when a hash is given" do
       @uploader_class.process :format => 'png'
-      @uploader.should_receive(:format).with('png')
+      expect(@uploader).to receive(:format).with('png')
       @uploader.process!
     end
 
     it "should add a single processor with several argument when a hash is given" do
       @uploader_class.process :resize => [200, 300]
-      @uploader.should_receive(:resize).with(200, 300)
+      expect(@uploader).to receive(:resize).with(200, 300)
       @uploader.process!
     end
 
     it "should add multiple processors when an hash with multiple keys is given" do
       @uploader_class.process :resize => [200, 300], :format => 'png'
-      @uploader.should_receive(:resize).with(200, 300)
-      @uploader.should_receive(:format).with('png')
+      expect(@uploader).to receive(:resize).with(200, 300)
+      expect(@uploader).to receive(:format).with('png')
       @uploader.process!
     end
 
     it "should call the processor if the condition method returns true" do
       @uploader_class.process :resize => [200, 300], :if => :true?
       @uploader_class.process :fancy, :if => :true?
-      @uploader.should_receive(:true?).with("test.jpg").twice.and_return(true)
-      @uploader.should_receive(:resize).with(200, 300)
-      @uploader.should_receive(:fancy).with()
+      expect(@uploader).to receive(:true?).with("test.jpg").twice.and_return(true)
+      expect(@uploader).to receive(:resize).with(200, 300)
+      expect(@uploader).to receive(:fancy)
       @uploader.process!("test.jpg")
     end
 
     it "should not call the processor if the condition method returns false" do
       @uploader_class.process :resize => [200, 300], :if => :false?
       @uploader_class.process :fancy, :if => :false?
-      @uploader.should_receive(:false?).with("test.jpg").twice.and_return(false)
-      @uploader.should_not_receive(:resize)
-      @uploader.should_not_receive(:fancy)
+      expect(@uploader).to receive(:false?).with("test.jpg").twice.and_return(false)
+      expect(@uploader).not_to receive(:resize)
+      expect(@uploader).not_to receive(:fancy)
       @uploader.process!("test.jpg")
     end
 
     it "should call the processor if the condition block returns true" do
       @uploader_class.process :resize => [200, 300], :if => lambda{|record, args| record.true?(args[:file])}
       @uploader_class.process :fancy, :if => :true?
-      @uploader.should_receive(:true?).with("test.jpg").twice.and_return(true)
-      @uploader.should_receive(:resize).with(200, 300)
-      @uploader.should_receive(:fancy).with()
+      expect(@uploader).to receive(:true?).with("test.jpg").twice.and_return(true)
+      expect(@uploader).to receive(:resize).with(200, 300)
+      expect(@uploader).to receive(:fancy)
       @uploader.process!("test.jpg")
     end
 
     it "should not call the processor if the condition block returns false" do
       @uploader_class.process :resize => [200, 300], :if => lambda{|record, args| record.false?(args[:file])}
       @uploader_class.process :fancy, :if => :false?
-      @uploader.should_receive(:false?).with("test.jpg").twice.and_return(false)
-      @uploader.should_not_receive(:resize)
-      @uploader.should_not_receive(:fancy)
+      expect(@uploader).to receive(:false?).with("test.jpg").twice.and_return(false)
+      expect(@uploader).not_to receive(:resize)
+      expect(@uploader).not_to receive(:fancy)
       @uploader.process!("test.jpg")
     end
 
@@ -128,9 +128,9 @@ describe CarrierWave::Uploader do
       it "should not do any processing" do
         @uploader_class.enable_processing = false
         @uploader_class.process :sepiatone, :desaturate, :invert
-        @uploader.should_not_receive(:sepiatone)
-        @uploader.should_not_receive(:desaturate)
-        @uploader.should_not_receive(:invert)
+        expect(@uploader).not_to receive(:sepiatone)
+        expect(@uploader).not_to receive(:desaturate)
+        expect(@uploader).not_to receive(:invert)
         @uploader.process!
       end
     end
@@ -138,23 +138,23 @@ describe CarrierWave::Uploader do
 
   describe '#cache!' do
     before do
-      CarrierWave.stub(:generate_cache_id).and_return('1369894322-345-2255')
+      allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-2255')
     end
 
     it "should trigger a process!" do
-      @uploader.should_receive(:process!)
+      expect(@uploader).to receive(:process!)
       @uploader.cache!(File.open(file_path('test.jpg')))
     end
   end
 
   describe '#recreate_versions!' do
     before do
-      CarrierWave.stub(:generate_cache_id).and_return('1369894322-345-2255')
+      allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-2255')
     end
 
     it "should trigger a process!" do
       @uploader.store!(File.open(file_path('test.jpg')))
-      @uploader.should_receive(:process!)
+      expect(@uploader).to receive(:process!)
       @uploader.recreate_versions!
     end
   end

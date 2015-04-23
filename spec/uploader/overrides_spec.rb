@@ -31,39 +31,39 @@ describe CarrierWave::Uploader do
 
   describe 'fog_credentials' do
     it 'should reflect the standard value if no override done' do
-      @uploader.fog_credentials.should be_a(Hash)
-      @uploader.fog_credentials[:provider].should be_eql('AWS')
-      @uploader.fog_credentials[:aws_access_key_id].should be_eql('XXXX')
-      @uploader.fog_credentials[:aws_secret_access_key].should be_eql('YYYY')
-      @uploader.fog_credentials[:region].should be_eql('us-east-1')
+      expect(@uploader.fog_credentials).to be_a(Hash)
+      expect(@uploader.fog_credentials[:provider]).to be_eql('AWS')
+      expect(@uploader.fog_credentials[:aws_access_key_id]).to be_eql('XXXX')
+      expect(@uploader.fog_credentials[:aws_secret_access_key]).to be_eql('YYYY')
+      expect(@uploader.fog_credentials[:region]).to be_eql('us-east-1')
     end
 
     it 'should reflect the new values in uploader class with override' do
-      @uploader_overridden.fog_credentials.should be_a(Hash)
-      @uploader_overridden.fog_credentials[:provider].should be_eql('AWS')
-      @uploader_overridden.fog_credentials[:aws_access_key_id].should be_eql('ZZZZ')
-      @uploader_overridden.fog_credentials[:aws_secret_access_key].should be_eql('AAAA')
-      @uploader_overridden.fog_credentials[:region].should be_eql('us-east-2')
+      expect(@uploader_overridden.fog_credentials).to be_a(Hash)
+      expect(@uploader_overridden.fog_credentials[:provider]).to be_eql('AWS')
+      expect(@uploader_overridden.fog_credentials[:aws_access_key_id]).to be_eql('ZZZZ')
+      expect(@uploader_overridden.fog_credentials[:aws_secret_access_key]).to be_eql('AAAA')
+      expect(@uploader_overridden.fog_credentials[:region]).to be_eql('us-east-2')
     end
   end
 
   describe 'fog_directory' do
     it 'should reflect the standard value if no override done' do
-      @uploader.fog_directory.should be_eql('defaultbucket')
+      expect(@uploader.fog_directory).to be_eql('defaultbucket')
     end
 
     it 'should reflect the standard value in overridden object because property is not overridden' do
-      @uploader_overridden.fog_directory.should be_eql('defaultbucket')
+      expect(@uploader_overridden.fog_directory).to be_eql('defaultbucket')
     end
   end
 
   describe 'fog_public' do
     it 'should reflect the standard value if no override done' do
-      @uploader.fog_public.should be_eql(true)
+      expect(@uploader.fog_public).to be_eql(true)
     end
 
     it 'should reflect the standard value in overridden object because property is not overridden' do
-      @uploader_overridden.fog_public.should be_eql(false)
+      expect(@uploader_overridden.fog_public).to be_eql(false)
     end
   end
 end

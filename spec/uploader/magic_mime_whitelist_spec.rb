@@ -24,12 +24,12 @@ describe CarrierWave::Uploader, filemagic: true do
   describe '#cache!' do
 
     before do
-      CarrierWave.stub(:generate_cache_id).and_return('1369894322-345-2255')
+      allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-2255')
     end
 
     context "when the is no whitelist pattern" do
       before do
-        @uploader.stub(:whitelist_mime_type_pattern).and_return(nil)
+        allow(@uploader).to receive(:whitelist_mime_type_pattern).and_return(nil)
       end
 
       it "does not raise an integrity error" do
