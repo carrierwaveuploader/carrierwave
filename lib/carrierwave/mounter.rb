@@ -77,7 +77,8 @@ module CarrierWave
 
       @uploaders = urls.map do |url|
         uploader = blank_uploader
-        uploader.download!(url)
+        puts uploader.downloader
+        uploader.download!(url, uploader.downloader)
         uploader
       end
 

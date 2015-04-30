@@ -21,6 +21,7 @@ module CarrierWave
         add_config :move_to_cache
         add_config :move_to_store
         add_config :remove_previously_stored_files_after_update
+        add_config :downloader
 
         # fog
         add_config :fog_provider
@@ -165,6 +166,7 @@ module CarrierWave
             config.fog_provider = 'fog'
             config.fog_attributes = {}
             config.fog_credentials = {}
+            config.downloader = CarrierWave::Uploader::StandardDownloader
             config.fog_public = true
             config.fog_authenticated_url_expiration = 600
             config.fog_use_ssl_for_aws = true
