@@ -39,7 +39,7 @@ gem 'carrierwave'
 
 Finally, restart the server to apply the changes.
 
-As of version 1.0.0, CarrierWave requires Rails 4.0 or higher and Ruby 2.0
+As of version 1.0.0 (forthcoming), CarrierWave requires Rails 4.0 or higher and Ruby 2.0
 or higher. If you're on Rails 3, you should use v0.10.0.
 
 ## Getting Started
@@ -132,6 +132,9 @@ Other ORM support has been extracted into separate gems:
 There are more extensions listed in [the wiki](https://github.com/carrierwaveuploader/carrierwave/wiki)
 
 ## Multiple file uploads
+**Note:** You must specify using the master branch to enable this feature: 
+
+`gem carrierwave, github:'carrierwaveuploader/carrierwave'`.
 
 CarrierWave also has convenient support for multiple file upload fields.
 
