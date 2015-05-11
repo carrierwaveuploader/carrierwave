@@ -134,7 +134,7 @@ There are more extensions listed in [the wiki](https://github.com/carrierwaveupl
 ## Multiple file uploads
 **Note:** You must specify using the master branch to enable this feature: 
 
-`gem carrierwave, github:'carrierwaveuploader/carrierwave'`.
+`gem 'carrierwave', github:'carrierwaveuploader/carrierwave'`.
 
 CarrierWave also has convenient support for multiple file upload fields.
 
