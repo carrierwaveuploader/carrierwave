@@ -1,0 +1,13 @@
+zh-TW:
+  errors:
+    messages:
+      carrierwave_processing_error: 處理錯誤
+      carrierwave_integrity_error: 文件類型錯誤
+      carrierwave_download_error: 下載錯誤
+      extension_white_list_error: "不可上傳 %{extension} 文件, 可上傳文件類型為: %{allowed_types}"
+      extension_black_list_error: "不可上傳 %{extension} 文件, 不可上傳文件類型為: %{prohibited_types}"
+      rmagick_processing_error: "rmagick 錯誤, 也許上傳的的文件不是圖片? 原錯誤: %{e}"
+      mime_types_processing_error: "MIME::Types 錯誤, 也許上傳的文件不是正確的content-type? 原錯誤: %{e}"
+      mini_magick_processing_error: "MiniMagick 錯誤, 也許上傳的文件不是圖片? 原錯誤: %{e}"
+      min_size_error: "文件大小應大於 %{min_size}"
+      max_size_error: "文件大小應小於 %{max_size}"
