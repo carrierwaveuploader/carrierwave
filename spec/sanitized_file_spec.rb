@@ -1,7 +1,13 @@
 # encoding: utf-8
 
 require 'spec_helper'
-require 'mime/types'
+
+begin
+  # Use mime/types/columnar if available, for reduced memory usage
+  require 'mime/types/columnar'
+rescue LoadError
+  require 'mime/types'
+end
 
 describe CarrierWave::SanitizedFile do
 
