@@ -2,7 +2,13 @@
 
 require 'pathname'
 require 'active_support/core_ext/string/multibyte'
-require 'mime/types'
+
+begin
+  # Use mime/types/columnar if available, for reduced memory usage
+  require 'mime/types/columnar'
+rescue LoadError
+  require 'mime/types'
+end
 
 module CarrierWave
 
