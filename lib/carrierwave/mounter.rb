@@ -132,7 +132,7 @@ module CarrierWave
             value
           end
         end
-        after_paths = after.reject(&:blank?).map { |value| value.respond_to?(:path) ? value.path : value }
+        after_paths = after.to_a.reject(&:blank?).map { |value| value.respond_to?(:path) ? value.path : value }
         before.each do |uploader|
           if uploader.remove_previously_stored_files_after_update and not after_paths.include?(uploader.path)
             uploader.remove!
