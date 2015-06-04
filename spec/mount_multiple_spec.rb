@@ -557,6 +557,16 @@ describe CarrierWave::Mount do
         expect(@instance).to receive(:write_uploader).with(:images, nil)
         @instance.write_images_identifier
       end
+
+      it "should remove from the column when files are empty" do
+        expect(@instance).to receive(:write_uploader).with(:images, ["test.jpg"])
+        @instance.images = [stub_file('test.jpg')]
+        @instance.write_images_identifier
+
+        expect(@instance).to receive(:write_uploader).with(:images, [])
+        @instance.images = []
+        @instance.write_images_identifier
+      end
     end
 
     describe '#images_identifiers' do
