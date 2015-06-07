@@ -34,6 +34,8 @@ matrix:
 
 notifications:
   email: false
+  slack:
+    secure: Npzanyv/LXLIRlrNs8iTUbZNRhXlP+K2ZpjZoS2UKkr09jYyP1qdf5a//R3Lu7Yat7g2b4qTJGbaZBEMUQSVaJ6UX6quiBJjVWxjxjQ4Ugk8k/yOIAcGEGYPfS6YzRXemRwo9j4uy76cmwlv8cwEuYTSTBRK4XrdYHslX6pKSXM=
 
 addons:
   postgresql: "9.3"
