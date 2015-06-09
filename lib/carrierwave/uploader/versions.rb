@@ -50,7 +50,7 @@ module CarrierWave
         #
         def version(name, options = {}, &block)
           name = name.to_sym
-          build_version(name, options) unless versions[name]
+          build_version(name, options)
 
           versions[name].class_eval(&block) if block
           versions[name]
@@ -66,48 +66,55 @@ module CarrierWave
       private
 
         def build_version(name, options)
-          uploader = Class.new(self)
-          const_set("Uploader#{uploader.object_id}".tr('-', '_'), uploader)
-          uploader.version_names += [name]
-          uploader.versions = {}
-          uploader.processors = []
-          uploader.version_options = options
+          if !versions.has_key?(name)
+            uploader = Class.new(self)
+            const_set("Uploader#{uploader.object_id}".tr('-', '_'), uploader)
+            uploader.version_names += [name]
+            uploader.versions = {}
+            uploader.processors = []
+            uploader.version_options = options
 
-          uploader.class_eval <<-RUBY, __FILE__, __LINE__ + 1
-            # Define the enable_processing method for versions so they get the
-            # value from the parent class unless explicitly overwritten
-            def self.enable_processing(value=nil)
-              self.enable_processing = value if value
-              if !@enable_processing.nil?
-                @enable_processing
-              else
-                superclass.enable_processing
+            uploader.class_eval <<-RUBY, __FILE__, __LINE__ + 1
+              # Define the enable_processing method for versions so they get the
+              # value from the parent class unless explicitly overwritten
+              def self.enable_processing(value=nil)
+                self.enable_processing = value if value
+                if !@enable_processing.nil?
+                  @enable_processing
+                else
+                  superclass.enable_processing
+                end
               end
-            end
 
-            # Regardless of what is set in the parent uploader, do not enforce the
-            # move_to_cache config option on versions because it moves the original
-            # file to the version's target file.
-            #
-            # If you want to enforce this setting on versions, override this method
-            # in each version:
-            #
-            # version :thumb do
-            #   def move_to_cache
-            #     true
-            #   end
-            # end
-            #
-            def move_to_cache
-              false
-            end
-          RUBY
+              # Regardless of what is set in the parent uploader, do not enforce the
+              # move_to_cache config option on versions because it moves the original
+              # file to the version's target file.
+              #
+              # If you want to enforce this setting on versions, override this method
+              # in each version:
+              #
+              # version :thumb do
+              #   def move_to_cache
+              #     true
+              #   end
+              # end
+              #
+              def move_to_cache
+                false
+              end
+            RUBY
 
-          class_eval <<-RUBY
-            def #{name}
-              versions[:#{name}]
-            end
-          RUBY
+            class_eval <<-RUBY, __FILE__, __LINE__ + 1
+              def #{name}
+                versions[:#{name}]
+              end
+            RUBY
+          else
+            uploader = Class.new(versions[name])
+            const_set("Uploader#{uploader.object_id}".tr('-', '_'), uploader)
+            uploader.processors = []
+            uploader.version_options = uploader.version_options.merge(options)
+          end
 
           # Add the current version hash to class attribute :versions
           self.versions = versions.merge(name => uploader)

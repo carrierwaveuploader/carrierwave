@@ -164,6 +164,24 @@ describe CarrierWave::Uploader do
       end
     end
 
+    it "shouldn't affect parent class' version" do
+      @uploader_class.version :thumb do
+        def store_dir
+          public_path('monkey/apache')
+        end
+      end
+
+      @child_uploader_class = Class.new(@uploader_class)
+      @child_uploader = @child_uploader_class.new
+      @child_uploader_class.version :thumb do
+        def store_dir
+          public_path('monkey/apache/child')
+        end
+      end
+
+      expect(@uploader.thumb.store_dir).to eq(public_path('monkey/apache'))
+    end
+
   end
 
   describe 'with a version' do
