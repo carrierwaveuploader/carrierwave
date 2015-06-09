@@ -164,6 +164,56 @@ describe CarrierWave::Uploader do
       end
     end
 
+    it "should override previous version" do
+      @uploader_class.version :thumb do
+        def store_dir
+          public_path('monkey/apache')
+        end
+      end
+      @uploader_class.version :thumb do
+        def store_dir
+          public_path('monkey/apache/new')
+        end
+      end
+
+      expect(@uploader.thumb.store_dir).to eq(public_path('monkey/apache/new'))
+    end
+
+    describe 'inheritance' do
+
+      before do
+        @uploader_class.version :thumb do
+          def store_dir
+            public_path('monkey/apache')
+          end
+        end
+
+        @child_uploader_class = Class.new(@uploader_class)
+        @child_uploader = @child_uploader_class.new
+      end
+
+      it "should override parent version" do
+        @child_uploader_class.version :thumb do
+          def store_dir
+            public_path('monkey/apache/child')
+          end
+        end
+
+        expect(@child_uploader.thumb.store_dir).to eq(public_path('monkey/apache/child'))
+      end
+
+      it "shouldn't affect parent class' version" do
+        @child_uploader_class.version :thumb do
+          def store_dir
+            public_path('monkey/apache/child')
+          end
+        end
+
+        expect(@uploader.thumb.store_dir).to eq(public_path('monkey/apache'))
+      end
+
+    end
+
   end
 
   describe 'with a version' do
