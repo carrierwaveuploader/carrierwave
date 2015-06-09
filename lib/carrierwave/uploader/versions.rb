@@ -50,7 +50,7 @@ module CarrierWave
         #
         def version(name, options = {}, &block)
           name = name.to_sym
-          build_version(name, options) unless versions[name]
+          build_version(name, options)
 
           versions[name].class_eval(&block) if block
           versions[name]
