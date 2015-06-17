@@ -86,7 +86,13 @@ module CarrierWave
       # [String] a cache name, in the format YYYYMMDD-HHMM-PID-RND/filename.txt
       #
       def cache_name
-        File.join(cache_id, full_original_filename) if cache_id and original_filename
+        if cache_id
+          if full_original_filename.present?
+            File.join(cache_id, full_original_filename)
+          else
+            File.join(cache_id, cache_id)
+          end
+        end
       end
 
       ##
