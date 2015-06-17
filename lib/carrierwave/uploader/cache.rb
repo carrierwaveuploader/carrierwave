@@ -128,7 +128,6 @@ module CarrierWave
           with_callbacks(:cache, new_file) do
             self.cache_id = CarrierWave.generate_cache_id unless cache_id
 
-            @filename = new_file.filename
             self.original_filename = new_file.filename
 
             if move_to_cache
@@ -136,6 +135,8 @@ module CarrierWave
             else
               @file = new_file.copy_to(cache_path, permissions, directory_permissions)
             end
+
+            @filename = @file.filename
           end
         end
       end
