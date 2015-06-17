@@ -161,7 +161,7 @@ module CarrierWave
       else
         @file.rewind if @file.respond_to?(:rewind)
         @content = @file.read
-        @file.close if @file.respond_to?(:close) && @file.respond_to?(:closed?) && !@file.closed?
+        @file.close if @file.respond_to?(:close) && @file.respond_to?(:closed?) && !@file.closed? && !@file.is_a?(StringIO)
         @content
       end
     end
