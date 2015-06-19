@@ -61,11 +61,16 @@ module CarrierWave
     extend ActiveSupport::Concern
 
     included do
+      next if defined?(::Magick)
       begin
-        require "RMagick" unless defined?(::Magick)
-      rescue LoadError => e
-        e.message << " (You may need to install the rmagick gem)"
-        raise e
+        require "rmagick"
+      rescue
+        begin
+          require "RMagick"
+        rescue LoadError => e
+          e.message << " (You may need to install the rmagick gem)"
+          raise e
+        end
       end
     end
 
