@@ -160,16 +160,20 @@ Make sure your file input fields are set up as multiple file fields. For
 example in Rails you'll want to do something like this:
 
 ```erb
-<%= form.file_field :files, multiple: true %>
+<%= form.file_field :avatars, multiple: true %>
 ```
 
-Now you can cache files by assigning them to the attribute, they will
+Also, make sure your upload controller permits the multiple file upload attribute, *pointing to an empty array in a hash*. For example:
+
+```ruby
+params.require(:user).permit(:email, :first_name, :last_name, {avatars: []})
+```
+
+Now you can select multiple files in the upload dialog (e.g. SHIFT+SELECT), and they will
 automatically be stored when the record is saved.
 
 ```ruby
-u = User.new
-u.avatars = params[:files] # Assign an array of files like this
-u.avatars = [File.open('somewhere')] # or like this
+u = User.new(params[:user])
 u.save!
 u.avatars[0].url # => '/url/to/file.png'
 u.avatars[0].current_path # => 'path/to/file.png'
