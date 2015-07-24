@@ -3,14 +3,13 @@
 module CarrierWave
   module Utilities
     module Uri
+    # based on Ruby < 2.0's URI.encode
+    SAFE_STRING = URI::REGEXP::PATTERN::UNRESERVED + '\/'
+    UNSAFE = Regexp.new("[^#{SAFE_STRING}]", false)
 
     private
       def encode_path(path)
-        # based on Ruby < 2.0's URI.encode
-        safe_string = URI::REGEXP::PATTERN::UNRESERVED + '\/'
-        unsafe = Regexp.new("[^#{safe_string}]", false)
-
-        path.to_s.gsub(unsafe) do
+        path.to_s.gsub(UNSAFE) do
           us = $&
           tmp = ''
           us.each_byte do |uc|
