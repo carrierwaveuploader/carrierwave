@@ -62,7 +62,7 @@ module CarrierWave
       #       %w(json)
       #     end
       #
-      def blacklist_mime_type_extensions; end
+      def blacklist_mime_type_extensions; [] end
 
     private
 
@@ -75,7 +75,7 @@ module CarrierWave
           raise CarrierWave::IntegrityError,
             I18n.translate(:"errors.messages.mime_type_pattern_black_list_error",
                            content_type: content_type,
-                           prohibited_types: blacklist_mime_type_extensions)
+                           prohibited_types: blacklist_mime_type_extensions.join(', '))
         end
       end
 
