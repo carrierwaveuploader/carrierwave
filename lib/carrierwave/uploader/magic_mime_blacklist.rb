@@ -51,19 +51,31 @@ module CarrierWave
       #
       def blacklist_mime_type_pattern; end
 
+      # === Returns
+      #
+      # [Array] a black list array of extensions to match blacklist regexp, 
+      #         is passed as a local to error message  
+      #
+      # === Examples
+      #
+      #     def blacklist_mime_type_extensions
+      #       %w(json)
+      #     end
+      #
+      def blacklist_mime_type_extensions; end
+
     private
 
       def check_blacklist_pattern!(new_file)
-        prohibited_types = blacklist_mime_type_pattern
-        return if prohibited_types.nil?
+        return if blacklist_mime_type_pattern.nil?
 
         content_type = extract_content_type(new_file)
 
-        if content_type.match(prohibited_types)
+        if content_type.match(blacklist_mime_type_pattern)
           raise CarrierWave::IntegrityError,
             I18n.translate(:"errors.messages.mime_type_pattern_black_list_error",
                            content_type: content_type,
-                           prohibited_types: prohibited_types)
+                           prohibited_types: blacklist_mime_type_extensions)
         end
       end
 
