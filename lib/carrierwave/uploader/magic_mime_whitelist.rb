@@ -75,7 +75,7 @@ module CarrierWave
           raise CarrierWave::IntegrityError,
             I18n.translate(:"errors.messages.mime_type_pattern_white_list_error",
                            content_type: content_type,
-                           allowed_types: whitelist_mime_type_extension)
+                           allowed_types: whitelist_mime_type_extensions)
         end
       end
 
