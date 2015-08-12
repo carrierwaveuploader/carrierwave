@@ -54,14 +54,16 @@ module CarrierWave
     private
 
       def check_whitelist_pattern!(new_file)
-        return if whitelist_mime_type_pattern.nil?
+        allowed_types = whitelist_mime_type_pattern
+        return if allowed_types.nil?
 
         content_type = extract_content_type(new_file)
 
-        if !content_type.match(whitelist_mime_type_pattern)
+        if !content_type.match(allowed_types)
           raise CarrierWave::IntegrityError,
             I18n.translate(:"errors.messages.mime_type_pattern_white_list_error",
-                           :content_type => content_type)
+                           content_type: content_type,
+                           allowed_types: allowed_types)
         end
       end
 
