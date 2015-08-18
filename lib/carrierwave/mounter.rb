@@ -122,21 +122,21 @@ module CarrierWave
     end
 
     def remove_previous(before=nil, after=nil)
-      if before
-        before = before.reject(&:blank?).map do |value|
-          if value.is_a?(String)
-            uploader = blank_uploader
-            uploader.retrieve_from_store!(before)
-            uploader
-          else
-            value
-          end
+      return unless before
+
+      before = before.reject(&:blank?).map do |value|
+        if value.is_a?(String)
+          uploader = blank_uploader
+          uploader.retrieve_from_store!(before)
+          uploader
+        else
+          value
         end
-        after_paths = after.reject(&:blank?).map { |value| value.respond_to?(:path) ? value.path : value }
-        before.each do |uploader|
-          if uploader.remove_previously_stored_files_after_update and not after_paths.include?(uploader.path)
-            uploader.remove!
-          end
+      end
+      after_paths = after.reject(&:blank?).map { |value| value.respond_to?(:path) ? value.path : value }
+      before.each do |uploader|
+        if uploader.remove_previously_stored_files_after_update and not after_paths.include?(uploader.path)
+          uploader.remove!
         end
       end
     end
