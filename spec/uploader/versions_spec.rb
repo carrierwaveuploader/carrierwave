@@ -110,6 +110,21 @@ describe CarrierWave::Uploader do
       expect(@uploader_class.version(:thumb).llama).to eq("llama")
     end
 
+    it "should reopen the same instance when called multiple times" do
+      @uploader_class.version :thumb do
+        def store_dir
+          public_path('monkey/apache')
+        end
+      end
+      @uploader_class.version :thumb do
+        def store_dir
+          public_path('monkey/apache/new')
+        end
+      end
+
+      expect(@uploader.thumb.store_dir).to eq(public_path('monkey/apache/new'))
+    end
+
     it "should accept option :from_version" do
       @uploader_class.version :small_thumb, :from_version => :thumb
       expect(@uploader_class.version(:small_thumb).version_options[:from_version]).to eq(:thumb)
@@ -164,6 +179,39 @@ describe CarrierWave::Uploader do
       end
     end
 
+    describe 'with inheritance' do
+
+      before do
+        @uploader_class.version :thumb do
+          def store_dir
+            public_path('monkey/apache')
+          end
+        end
+
+        @child_uploader_class = Class.new(@uploader_class)
+        @child_uploader = @child_uploader_class.new
+      end
+
+      it "should override parent version" do
+        @child_uploader_class.version :thumb do
+          def store_dir
+            public_path('monkey/apache/child')
+          end
+        end
+
+        expect(@child_uploader.thumb.store_dir).to eq(public_path('monkey/apache/child'))
+      end
+
+      it "shouldn't affect parent class' version" do
+        @child_uploader_class.version :thumb do
+          def store_dir
+            public_path('monkey/apache/child')
+          end
+        end
+
+        expect(@uploader.thumb.store_dir).to eq(public_path('monkey/apache'))
+      end
+    end
   end
 
   describe 'with a version' do
