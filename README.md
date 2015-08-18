@@ -127,14 +127,14 @@ Other ORM support has been extracted into separate gems:
 
 * [carrierwave-datamapper](https://github.com/carrierwaveuploader/carrierwave-datamapper)
 * [carrierwave-mongoid](https://github.com/carrierwaveuploader/carrierwave-mongoid)
-* [carrierwave-sequel](https://github.com/jnicklas/carrierwave-sequel)
+* [carrierwave-sequel](https://github.com/carrierwaveuploader/carrierwave-sequel)
 
 There are more extensions listed in [the wiki](https://github.com/carrierwaveuploader/carrierwave/wiki)
 
 ## Multiple file uploads
 **Note:** You must specify using the master branch to enable this feature: 
 
-`gem 'carrierwave', github:'carrierwaveuploader/carrierwave'`.
+`gem 'carrierwave', github: 'carrierwaveuploader/carrierwave'`.
 
 CarrierWave also has convenient support for multiple file upload fields.
 
