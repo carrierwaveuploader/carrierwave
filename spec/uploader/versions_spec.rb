@@ -152,6 +152,13 @@ describe CarrierWave::Uploader do
         expect(@uploader.thumb.micro.version_name).to eq(:thumb_micro)
       end
 
+      it "should set the version name for the #versions" do
+        expect(@uploader.version_name).to be_nil
+        expect(@uploader.versions[:thumb].version_name).to eq(:thumb)
+        expect(@uploader.versions[:thumb].versions[:mini].version_name).to eq(:thumb_mini)
+        expect(@uploader.versions[:thumb].versions[:micro].version_name).to eq(:thumb_micro)
+      end
+
       it "should process nested versions" do
         @uploader_class.class_eval {
           include CarrierWave::MiniMagick
