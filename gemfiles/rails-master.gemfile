@@ -5,6 +5,6 @@ gem "rack", github: "rack/rack", branch: "master"
 gem "arel", github: "rails/arel", branch: "master"
 gem "sprockets", github: "rails/sprockets", branch: "master"
 gem "sprockets-rails", github: "rails/sprockets-rails", branch: "master"
-gem "activemodel-serializers-xml", github: "rails/activemodel-serializers-xml", branch: "master"
+gem "activemodel-serializers-xml", github: "rails/activemodel-serializers-xml", branch: "master", require: "active_model-serializers"
 
 gemspec :path => "../"
