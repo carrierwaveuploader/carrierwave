@@ -1,7 +1,10 @@
 source "https://rubygems.org"
 
 gem "rails", github: "rails/rails", branch: "master"
+gem "rack", github: "rack/rack", branch: "master"
 gem "arel", github: "rails/arel", branch: "master"
+gem "sprockets", github: "rails/sprockets", branch: "master"
+gem "sprockets-rails", github: "rails/sprockets-rails", branch: "master"
 gem "activemodel-serializers-xml", github: "rails/activemodel-serializers-xml", branch: "master"
 
 gemspec :path => "../"
