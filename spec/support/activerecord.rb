@@ -5,6 +5,7 @@ else
 end
 require 'active_record'
 require 'carrierwave/orm/activerecord'
+Bundler.require
 
 # Change this if PG is unavailable
 dbconfig = {
