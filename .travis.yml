@@ -3,7 +3,7 @@ language: ruby
 rvm:
  - 2.0
  - 2.1
- - 2.2
+ - 2.2.3
  - ruby-head
  - jruby
  - jruby-head
@@ -23,6 +23,8 @@ before_script:
 matrix:
   exclude:
     - rvm: 2.0
+      gemfile: gemfiles/rails-master.gemfile
+    - rvm: 2.1
       gemfile: gemfiles/rails-master.gemfile
     - rvm: jruby
       gemfile: gemfiles/rails-master.gemfile
