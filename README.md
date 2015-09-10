@@ -1006,6 +1006,18 @@ class User
 end
 ```
 
+## Using with PaperTrail
+
+[paper\_trail](https://github.com/airblade/paper_trail) uses yaml as
+the default object serializer which causes some issues with carrierwave
+objects if you are using multiple file uploads.
+In order to make it work you either need to use mount_on option
+with your image gallery or change the default serializer to be json.
+
+```ruby
+PaperTrail.serializer = PaperTrail::Serializers::JSON
+```
+
 ## Contributing to CarrierWave
 
 See [CONTRIBUTING.md](https://github.com/carrierwaveuploader/carrierwave/blob/master/CONTRIBUTING.md)
