@@ -156,6 +156,12 @@ class User < ActiveRecord::Base
 end
 ```
 
+If you use a array column also add: 
+
+```ruby
+serialize :avatars
+```
+
 Make sure your file input fields are set up as multiple file fields. For
 example in Rails you'll want to do something like this:
 
