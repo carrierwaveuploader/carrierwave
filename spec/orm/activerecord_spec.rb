@@ -457,17 +457,22 @@ describe CarrierWave::ActiveRecord do
       before do
         @event.image = stub_file('test.jpeg')
         @event.save!
-        @event.remove_image!
       end
 
       it "should clear the serialization column" do
+        @event.remove_image!
+
         expect(@event.attributes['image']).to be_blank
       end
 
-      it "should return to false after being saved" do
-        @event.save!
-        expect(@event.remove_image).to eq(false)
-        expect(@event.remove_image?).to eq(false)
+      it "resets remove_image? to false" do
+        @event.remove_image = true
+
+        expect {
+          @event.remove_image!
+        }.to change {
+          @event.remove_image?
+        }.from(true).to(false)
       end
     end
 
