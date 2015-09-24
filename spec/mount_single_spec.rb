@@ -177,12 +177,12 @@ describe CarrierWave::Mount do
     describe '#image?' do
 
       it "should be false when nothing has been assigned" do
-        expect(@instance).to receive(:read_uploader).with(:image).and_return(nil)
+        @instance.image = nil
         expect(@instance.image?).to be_falsey
       end
 
       it "should be false when an empty string has been assigned" do
-        expect(@instance).to receive(:read_uploader).with(:image).and_return('')
+        @instance.image = ''
         expect(@instance.image?).to be_falsey
       end
 

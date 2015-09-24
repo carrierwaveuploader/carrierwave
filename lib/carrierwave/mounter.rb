@@ -105,7 +105,7 @@ module CarrierWave
     end
 
     def blank?
-      uploaders.empty?
+      uploaders.none?(&:present?)
     end
 
     def remove?
