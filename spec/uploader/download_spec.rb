@@ -120,6 +120,12 @@ describe CarrierWave::Uploader::Download do
       }.to raise_error(CarrierWave::DownloadError, /could not download file: 404/)
     end
 
+    it 'should hide infrastructural reasons for exception messages' do
+      expect {
+        @uploader.download!('http://scanme.nmap.org:22')
+      }.to raise_error(CarrierWave::DownloadError, 'could not download file')
+    end
+
     describe '#download! with an extension_white_list' do
       before do
         @uploader_class.class_eval do

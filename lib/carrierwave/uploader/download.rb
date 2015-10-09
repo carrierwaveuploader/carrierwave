@@ -43,7 +43,8 @@ module CarrierWave
           @file
 
         rescue StandardError => e
-          raise CarrierWave::DownloadError, "could not download file: #{e.message}"
+          reason = e.is_a?(Net::HTTPBadResponse) || e.is_a?(Errno::EHOSTUNREACH) ? '' : ": #{e.message}"
+          raise CarrierWave::DownloadError, "could not download file#{reason}"
         end
 
         def filename_from_header
