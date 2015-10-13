@@ -22,6 +22,8 @@ module CarrierWave
   #
   class SanitizedFile
 
+    DEFAULT_STREAM_SIZE = 2000000
+
     attr_accessor :file
 
     class << self
@@ -171,6 +173,7 @@ module CarrierWave
       end
     end
 
+
     ##
     # Moves the file to the given path
     #
@@ -188,7 +191,7 @@ module CarrierWave
       if exists?
         FileUtils.mv(path, new_path) unless new_path == path
       else
-        File.open(new_path, "wb") { |f| f.write(read) }
+        move_stream(new_path)
       end
       chmod!(new_path, permissions)
       if keep_filename
@@ -220,7 +223,7 @@ module CarrierWave
       if exists?
         FileUtils.cp(path, new_path) unless new_path == path
       else
-        File.open(new_path, "wb") { |f| f.write(read) }
+        move_stream(new_path)
       end
       chmod!(new_path, permissions)
       self.class.new({:tempfile => new_path, :content_type => content_type})
@@ -283,6 +286,10 @@ module CarrierWave
       CarrierWave::SanitizedFile.sanitize_regexp
     end
 
+    def underlying_sanitized_file_reader(&blk)
+      with_reader(&blk)
+    end
+
   private
 
     def file=(file)
@@ -333,5 +340,45 @@ module CarrierWave
       return filename, "" # In case we weren't able to split the extension
     end
 
+
+    def move_stream(new_path)
+      File.open(new_path, "wb") do |f| 
+        with_reader do |data|
+          f.write(data)
+        end
+      end
+    end
+
+    # HACK: This exists only until all clients implement proper
+    #       IO-like behaviour where the standard read(args)
+    #       method is respected.
+    #       This will allow us to move over slowly to a new streaming
+    #       api without requiring a re-write of exising plugins. 
+    def allows_buffered_read?(io_like)
+      !(io_like.method(:read).arity == 0)
+    end
+
+    def with_reader(&blk)
+      if @content
+        yield @content
+      elsif is_path?
+        File.open(@file, "rb") do |file|
+          while current_data = file.read(DEFAULT_STREAM_SIZE)
+            yield current_data
+          end
+        end
+      elsif @file.respond_to?(:underlying_sanitized_file_reader)
+        @file.underlying_sanitized_file_reader(&blk)
+      else
+        @file.rewind if @file.respond_to?(:rewind)
+        if allows_buffered_read?(@file)
+          while current_data = @file.read(DEFAULT_STREAM_SIZE)
+            yield current_data
+          end
+        else
+          yield @file.read
+        end
+      end
+    end
   end # SanitizedFile
 end # CarrierWave

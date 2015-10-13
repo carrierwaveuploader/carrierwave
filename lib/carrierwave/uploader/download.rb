@@ -53,6 +53,10 @@ module CarrierWave
           end
         end
 
+        def read(*args, &block)
+          file.read(*args, &block)
+        end
+
         def method_missing(*args, &block)
           file.send(*args, &block)
         end
