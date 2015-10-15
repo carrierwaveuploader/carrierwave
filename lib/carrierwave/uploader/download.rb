@@ -43,8 +43,8 @@ module CarrierWave
           @file
 
         rescue StandardError => e
-          reason = e.is_a?(Net::HTTPBadResponse) || e.is_a?(Errno::EHOSTUNREACH) ? '' : ": #{e.message}"
-          raise CarrierWave::DownloadError, "could not download file#{reason}"
+          should_censor = [Net::HTTPBadResponse, Errno::ENETUNREACH, Errno::EHOSTUNREACH].include?(e.class)
+          raise CarrierWave::DownloadError, "could not download file#{should_censor ? '' : ': ' + e.message}"
         end
 
         def filename_from_header
