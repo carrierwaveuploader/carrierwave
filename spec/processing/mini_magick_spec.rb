@@ -23,9 +23,8 @@ describe CarrierWave::MiniMagick do
   describe "#convert" do
     it "should convert from one format to another" do
       @instance.convert('png')
-      img = ::MiniMagick::Image.open(@instance.current_path)
-      expect(img['format']).to match(/PNG/)
       expect(@instance.file.extension).to eq('png')
+      expect(@instance).to be_format('png')
     end
 
     it "should convert all pages when no page number is specified" do
