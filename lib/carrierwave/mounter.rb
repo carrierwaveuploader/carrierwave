@@ -127,7 +127,7 @@ module CarrierWave
       before = before.reject(&:blank?).map do |value|
         if value.is_a?(String)
           uploader = blank_uploader
-          uploader.retrieve_from_store!(before)
+          uploader.retrieve_from_store!(value)
           uploader
         else
           value
