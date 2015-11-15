@@ -138,6 +138,21 @@ describe CarrierWave::SanitizedFile do
       expect(@sanitized_file.filename).to eq("DSC4056.JPG")
     end
 
+    it "should remove illegal characters from a non-ASCII filename" do
+      expect(@sanitized_file).to receive(:original_filename).at_least(:once).and_return("⟲«Du côté des chars lourds»_123.doc")
+      expect(@sanitized_file.filename).to eq("__Du_côté_des_chars_lourds__123.doc")
+    end
+
+    it "should default to the original non-ASCII filename if it is valid" do
+      expect(@sanitized_file).to receive(:original_filename).at_least(:once).and_return("тестовый.jpg")
+      expect(@sanitized_file.filename).to eq("тестовый.jpg")
+    end
+
+    it "should downcase non-ASCII characters properly" do
+      expect(@sanitized_file).to receive(:original_filename).at_least(:once).and_return("ТестоВый Ёжик.jpg")
+      expect(@sanitized_file.filename).to eq("ТестоВый_Ёжик.jpg")
+    end
+
   end
 
   describe '#filename with an overridden sanitize_regexp' do
@@ -155,31 +170,6 @@ describe CarrierWave::SanitizedFile do
     it "should remove illegal characters from a filename" do
       expect(@sanitized_file).to receive(:original_filename).at_least(:once).and_return("123.jpg")
       expect(@sanitized_file.filename).to eq("___.jpg")
-    end
-
-  end
-
-  describe '#some unicode filenames with an overridden sanitize_regexp' do
-
-    before do
-      @sanitized_file = CarrierWave::SanitizedFile.new(nil)
-      regexp = RUBY_VERSION >= '1.9' ? Regexp.new('[^[:word:]\.\-\+]') : /[^éôёЁа-яА-Яa-zA-Zà-üÀ-Ü0-9\.\-\+_]/u
-      allow(@sanitized_file).to receive(:sanitize_regexp).and_return(regexp)
-    end
-
-    it "should default to the original filename if it is valid" do
-      expect(@sanitized_file).to receive(:original_filename).at_least(:once).and_return("тестовый.jpg")
-      expect(@sanitized_file.filename).to eq("тестовый.jpg")
-    end
-
-    it "should downcase characters properly" do
-      expect(@sanitized_file).to receive(:original_filename).at_least(:once).and_return("ТестоВый Ёжик.jpg")
-      expect(@sanitized_file.filename).to eq("ТестоВый_Ёжик.jpg")
-    end
-
-    it "should remove illegal characters from a filename" do
-      expect(@sanitized_file).to receive(:original_filename).at_least(:once).and_return("⟲«Du côté des chars lourds»_123.doc")
-      expect(@sanitized_file.filename).to eq("__Du_côté_des_chars_lourds__123.doc")
     end
 
   end
