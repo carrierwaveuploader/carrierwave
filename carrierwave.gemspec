@@ -47,4 +47,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "timecop", "0.7.1"
   s.add_development_dependency "generator_spec"
   s.add_development_dependency "pry"
+  s.add_development_dependency "net-ssh"
 end
