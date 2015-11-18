@@ -39,7 +39,7 @@ module CarrierWave
       #
       # [String] the store path
       #
-      def store_path(for_file=filename)
+      def store_path(for_file=original_filename)
         File.join([store_dir, full_filename(for_file)].compact)
       end
 
