@@ -73,7 +73,8 @@ module CarrierWave
         end
 
         def remove_#{column}=(value)
-          send(:"#{column}_will_change!")
+          column = _mounter(:#{column}).serialization_column
+          send(:"\#{column}_will_change!")
           super
         end
 
