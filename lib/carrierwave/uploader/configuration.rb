@@ -71,16 +71,17 @@ module CarrierWave
         #     storage MyCustomStorageEngine
         #
         def storage(storage = nil)
-          if storage
-            if storage.is_a?(Symbol)
-              if storage_engine = storage_engines[storage]
-                self._storage = eval storage_engine
-              else
-                raise CarrierWave::UnknownStorageError, "Unknown storage: #{storage}"
-              end
+          case storage
+          when Symbol
+            if storage_engine = storage_engines[storage]
+              self._storage = eval storage_engine
             else
-              self._storage = storage
+              raise CarrierWave::UnknownStorageError, "Unknown storage: #{storage}"
             end
+          when nil
+            storage
+          else
+            self._storage = storage
           end
           _storage
         end
