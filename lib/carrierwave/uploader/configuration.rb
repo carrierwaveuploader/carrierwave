@@ -72,7 +72,15 @@ module CarrierWave
         #
         def storage(storage = nil)
           if storage
-            self._storage = storage.is_a?(Symbol) ? eval(storage_engines[storage]) : storage
+            if storage.is_a?(Symbol)
+              if storage_engine = storage_engines[storage]
+                self._storage = eval storage_engine
+              else
+                raise CarrierWave::UnknownStorageError, "Unknown storage: #{storage}"
+              end
+            else
+              self._storage = storage
+            end
           end
           _storage
         end

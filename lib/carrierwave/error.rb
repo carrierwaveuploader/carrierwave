@@ -4,4 +4,5 @@ module CarrierWave
   class InvalidParameter < UploadError; end
   class ProcessingError < UploadError; end
   class DownloadError < UploadError; end
+  class UnknownStorageError < StandardError; end
 end
