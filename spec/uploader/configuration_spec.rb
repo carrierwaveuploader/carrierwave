@@ -63,6 +63,10 @@ describe CarrierWave::Uploader::Base do
       subclass.storage :file
       expect(subclass.storage).to eq(CarrierWave::Storage::File)
     end
+
+    it "should raise UnknownStorageError when set unknown storage" do
+      expect{ @uploader_class.storage :unknown }.to raise_error(CarrierWave::UnknownStorageError, "Unknown storage: unknown")
+    end
   end
 
 
