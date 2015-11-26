@@ -1,0 +1,15 @@
+id:
+  errors:
+    messages:
+      carrierwave_processing_error: gagal diproses
+      carrierwave_integrity_error: bukan salah satu tipe file yang diperbolehkan
+      carrierwave_download_error: gagal download 
+      extension_white_list_error: "Dilarang mengupload tipe file %{extension}, tipe file yang dibolehkan: %{allowed_types}"
+      extension_black_list_error: "Dilarang mengupload tipe file %{extension}, tipe file yang dilarang: %{prohibited_types}"
+      mime_type_pattern_white_list_error: "Anda dilarang mengupload file %{content_type}"
+      mime_type_pattern_black_list_error: "Anda dilarang mengupload file %{content_type}"
+      rmagick_processing_error: "Gagal memanipulasi dengan rmagick, mungkin file ini bukan gambar?"
+      mime_types_processing_error: "Gagal memproses file menggunakan MIME::Types, mungkin content-type salah? Error semula: %{e}"
+      mini_magick_processing_error: "Gagal memanipulasi citra menggunakan MiniMagick, mungkin bukan file gambar? Error semula: %{e}"
+      min_size_error: "Ukuran file harus lebih besar daripada %{min_size}"
+      max_size_error: "Ukuran file harus kurang dari %{max_size}"
