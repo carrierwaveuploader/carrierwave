@@ -1,8 +1,16 @@
 # encoding: utf-8
 
 require 'spec_helper'
+require 'support/file_utils_helper'
+require 'tempfile'
 
 describe CarrierWave::Storage::File do
+  include FileUtilsHelper
+
+  subject(:storage) { described_class.new(@uploader) }
+
+  let(:tempfile) { Tempfile.new("foo") }
+  let(:sanitized_temp_file) { CarrierWave::SanitizedFile.new(tempfile) }
 
   before do
     @uploader_class = Class.new(CarrierWave::Uploader::Base)
@@ -36,6 +44,15 @@ describe CarrierWave::Storage::File do
         @uploader.store!
         expect(File).to exist @existing_file
       end
+    end
+  end
+
+  describe '#cache!' do
+    context "when FileUtils.mkdir_p raises Errno::EMLINK" do
+      before { fake_failed_mkdir_p }
+      after { storage.cache!(sanitized_temp_file) }
+
+      it { is_expected.to receive(:clean_cache!).with(600) }
     end
   end
 

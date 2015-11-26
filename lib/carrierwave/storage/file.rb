@@ -64,6 +64,14 @@ module CarrierWave
       #
       def cache!(new_file)
         new_file.move_to(::File.expand_path(uploader.cache_path, uploader.root), uploader.permissions, uploader.directory_permissions, true)
+      rescue Errno::EMLINK => e
+        raise(e) if @cache_called
+        @cache_called = true
+
+        # NOTE: Remove cached files older than 10 minutes
+        clean_cache!(600)
+
+        cache!(new_file)
       end
 
       ##
