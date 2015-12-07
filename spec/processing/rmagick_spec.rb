@@ -22,8 +22,8 @@ describe CarrierWave::RMagick, :rmagick => true do
   describe '#convert' do
     it "should convert the image to the given format" do
       @instance.convert(:png)
-      expect(::Magick::Image.read(@instance.current_path).first.format).to eq('PNG')
       expect(@instance.file.extension).to eq('png')
+      expect(@instance).to be_format('png')
     end
   end
 

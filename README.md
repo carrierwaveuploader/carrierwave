@@ -590,6 +590,10 @@ describe MyUploader do
   it "should make the image readable only to the owner and not executable" do
     @uploader.should have_permissions(0600)
   end
+
+  it "should be the correct format" do
+    @uploader.should be_format('png')
+  end
 end
 ```
 
