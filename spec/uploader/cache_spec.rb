@@ -322,7 +322,7 @@ describe CarrierWave::Uploader do
   describe '.generate_cache_id' do
     it 'should generate dir name bsed on UTC time' do
       Timecop.travel(Time.at(1369896000)) do
-        CarrierWave.generate_cache_id.should match(/\A1369896000-\d+-\d+\Z/)
+        CarrierWave.generate_cache_id.should match(/\A1369896000-\d+-\d+-\d+\Z/)
       end
     end
   end

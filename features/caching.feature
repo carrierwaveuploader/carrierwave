@@ -23,6 +23,6 @@ Feature: uploader with file storage
   Scenario: retrieving a file from cache
     Given an uploader class that uses the 'file' storage
     And an instance of that class
-    And the file 'fixtures/bork.txt' is cached file at 'public/uploads/tmp/1369894322-345-2255/bork.txt'
-    When I retrieve the cache name '1369894322-345-2255/bork.txt' from the cache
-    Then the uploader should have 'public/uploads/tmp/1369894322-345-2255/bork.txt' as its current path
+    And the file 'fixtures/bork.txt' is cached file at 'public/uploads/tmp/1369894322-345-1234-2255/bork.txt'
+    When I retrieve the cache name '1369894322-345-1234-2255/bork.txt' from the cache
+    Then the uploader should have 'public/uploads/tmp/1369894322-345-1234-2255/bork.txt' as its current path
