@@ -17,7 +17,7 @@ describe CarrierWave::Uploader do
 
   describe '#url' do
     before do
-      allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-2255')
+      allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-1234-2255')
     end
 
     it "should default to nil" do
@@ -45,13 +45,13 @@ describe CarrierWave::Uploader do
 
     it "should get the directory relative to public, prepending a slash" do
       @uploader.cache!(File.open(file_path('test.jpg')))
-      expect(@uploader.url).to eq('/uploads/tmp/1369894322-345-2255/test.jpg')
+      expect(@uploader.url).to eq('/uploads/tmp/1369894322-345-1234-2255/test.jpg')
     end
 
     it "should get the directory relative to public for a specific version" do
       MyCoolUploader.version(:thumb)
       @uploader.cache!(File.open(file_path('test.jpg')))
-      expect(@uploader.url(:thumb)).to eq('/uploads/tmp/1369894322-345-2255/thumb_test.jpg')
+      expect(@uploader.url(:thumb)).to eq('/uploads/tmp/1369894322-345-1234-2255/thumb_test.jpg')
     end
 
     it "should get the directory relative to public for a nested version" do
@@ -59,7 +59,7 @@ describe CarrierWave::Uploader do
         version(:mini)
       end
       @uploader.cache!(File.open(file_path('test.jpg')))
-      expect(@uploader.url(:thumb, :mini)).to eq('/uploads/tmp/1369894322-345-2255/thumb_mini_test.jpg')
+      expect(@uploader.url(:thumb, :mini)).to eq('/uploads/tmp/1369894322-345-1234-2255/thumb_mini_test.jpg')
     end
 
     it "should prepend the config option 'asset_host', if set and a string" do
@@ -68,7 +68,7 @@ describe CarrierWave::Uploader do
         config.asset_host = "http://foo.bar"
       end
       @uploader.cache!(File.open(file_path('test.jpg')))
-      expect(@uploader.url(:thumb)).to eq('http://foo.bar/uploads/tmp/1369894322-345-2255/thumb_test.jpg')
+      expect(@uploader.url(:thumb)).to eq('http://foo.bar/uploads/tmp/1369894322-345-1234-2255/thumb_test.jpg')
     end
 
     it "should prepend the result of the config option 'asset_host', if set and a proc" do
@@ -77,7 +77,7 @@ describe CarrierWave::Uploader do
         config.asset_host = proc { "http://foo.bar" }
       end
       @uploader.cache!(File.open(file_path('test.jpg')))
-      expect(@uploader.url(:thumb)).to eq('http://foo.bar/uploads/tmp/1369894322-345-2255/thumb_test.jpg')
+      expect(@uploader.url(:thumb)).to eq('http://foo.bar/uploads/tmp/1369894322-345-1234-2255/thumb_test.jpg')
     end
 
     it "should prepend the config option 'base_path', if set and 'asset_host' is not set" do
@@ -87,7 +87,7 @@ describe CarrierWave::Uploader do
         config.asset_host = nil
       end
       @uploader.cache!(File.open(file_path('test.jpg')))
-      expect(@uploader.url(:thumb)).to eq('/base_path/uploads/tmp/1369894322-345-2255/thumb_test.jpg')
+      expect(@uploader.url(:thumb)).to eq('/base_path/uploads/tmp/1369894322-345-1234-2255/thumb_test.jpg')
     end
 
     it "should return file#url if available" do
@@ -99,12 +99,12 @@ describe CarrierWave::Uploader do
     it "should get the directory relative to public, if file#url is blank" do
       @uploader.cache!(File.open(file_path('test.jpg')))
       allow(@uploader.file).to receive(:url).and_return('')
-      expect(@uploader.url).to eq('/uploads/tmp/1369894322-345-2255/test.jpg')
+      expect(@uploader.url).to eq('/uploads/tmp/1369894322-345-1234-2255/test.jpg')
     end
 
     it "should uri encode the path of a file without an asset host" do
       @uploader.cache!(File.open(file_path('test+.jpg')))
-      expect(@uploader.url).to eq('/uploads/tmp/1369894322-345-2255/test%2B.jpg')
+      expect(@uploader.url).to eq('/uploads/tmp/1369894322-345-1234-2255/test%2B.jpg')
     end
 
     it "should uri encode the path of a file with a string asset host" do
@@ -113,7 +113,7 @@ describe CarrierWave::Uploader do
         config.asset_host = "http://foo.bar"
       end
       @uploader.cache!(File.open(file_path('test+.jpg')))
-      expect(@uploader.url(:thumb)).to eq('http://foo.bar/uploads/tmp/1369894322-345-2255/thumb_test%2B.jpg')
+      expect(@uploader.url(:thumb)).to eq('http://foo.bar/uploads/tmp/1369894322-345-1234-2255/thumb_test%2B.jpg')
     end
 
     it "should uri encode the path of a file with a proc asset host" do
@@ -122,7 +122,7 @@ describe CarrierWave::Uploader do
         config.asset_host = proc { "http://foo.bar" }
       end
       @uploader.cache!(File.open(file_path('test+.jpg')))
-      expect(@uploader.url(:thumb)).to eq('http://foo.bar/uploads/tmp/1369894322-345-2255/thumb_test%2B.jpg')
+      expect(@uploader.url(:thumb)).to eq('http://foo.bar/uploads/tmp/1369894322-345-1234-2255/thumb_test%2B.jpg')
     end
 
     it "shouldn't double-encode the path of an available file#url" do
@@ -135,7 +135,7 @@ describe CarrierWave::Uploader do
 
   describe '#to_json' do
     before do
-      allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-2255')
+      allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-1234-2255')
     end
 
     it "should return a hash with a nil URL" do
@@ -150,7 +150,7 @@ describe CarrierWave::Uploader do
 
     it "should return a hash including a cached URL" do
       @uploader.cache!(File.open(file_path("test.jpg")))
-      expect(JSON.parse(@uploader.to_json)).to eq({"url" => "/uploads/tmp/1369894322-345-2255/test.jpg"})
+      expect(JSON.parse(@uploader.to_json)).to eq({"url" => "/uploads/tmp/1369894322-345-1234-2255/test.jpg"})
     end
 
     it "should return a hash including a cached URL of a version" do
@@ -158,7 +158,7 @@ describe CarrierWave::Uploader do
       @uploader.cache!(File.open(file_path("test.jpg")))
       hash = JSON.parse(@uploader.to_json)
       expect(hash.keys).to include "thumb"
-      expect(hash["thumb"]).to eq({"url" => "/uploads/tmp/1369894322-345-2255/thumb_test.jpg"})
+      expect(hash["thumb"]).to eq({"url" => "/uploads/tmp/1369894322-345-1234-2255/thumb_test.jpg"})
     end
 
     it "should allow an options parameter to be passed in" do
@@ -168,7 +168,7 @@ describe CarrierWave::Uploader do
 
   describe '#to_xml' do
     before do
-      allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-2255')
+      allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-1234-2255')
     end
 
     it "should return a hash with a blank URL" do
@@ -177,25 +177,25 @@ describe CarrierWave::Uploader do
 
     it "should return a hash including a cached URL" do
       @uploader.cache!(File.open(file_path("test.jpg")))
-      expect(Hash.from_xml(@uploader.to_xml)).to eq({"uploader" => {"url" => "/uploads/tmp/1369894322-345-2255/test.jpg"}})
+      expect(Hash.from_xml(@uploader.to_xml)).to eq({"uploader" => {"url" => "/uploads/tmp/1369894322-345-1234-2255/test.jpg"}})
     end
 
     it "should return a hash including a cached URL of a version" do
       MyCoolUploader.version(:thumb)
       @uploader.cache!(File.open(file_path("test.jpg")))
-      expect(Hash.from_xml(@uploader.to_xml)["uploader"]["thumb"]).to eq({"url" => "/uploads/tmp/1369894322-345-2255/thumb_test.jpg"})
+      expect(Hash.from_xml(@uploader.to_xml)["uploader"]["thumb"]).to eq({"url" => "/uploads/tmp/1369894322-345-1234-2255/thumb_test.jpg"})
     end
 
     it "should return a hash including an array with a cached URL" do
       @uploader.cache!(File.open(file_path("test.jpg")))
       hash = Hash.from_xml([@uploader].to_xml)
-      expect(hash).to have_value([{"url"=>"/uploads/tmp/1369894322-345-2255/test.jpg"}])
+      expect(hash).to have_value([{"url"=>"/uploads/tmp/1369894322-345-1234-2255/test.jpg"}])
     end
   end
 
   describe '#to_s' do
     before do
-      allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-2255')
+      allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-1234-2255')
     end
 
     it "should default to empty space" do
@@ -204,7 +204,7 @@ describe CarrierWave::Uploader do
 
     it "should get the directory relative to public, prepending a slash" do
       @uploader.cache!(File.open(file_path('test.jpg')))
-      expect(@uploader.to_s).to eq('/uploads/tmp/1369894322-345-2255/test.jpg')
+      expect(@uploader.to_s).to eq('/uploads/tmp/1369894322-345-1234-2255/test.jpg')
     end
 
     it "should return file#url if available" do

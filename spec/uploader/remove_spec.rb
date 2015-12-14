@@ -17,7 +17,7 @@ describe CarrierWave::Uploader do
     before do
       @file = File.open(file_path('test.jpg'))
 
-      allow(CarrierWave).to receive(:generate_cache_id).and_return('1390890634-26112-2122')
+      allow(CarrierWave).to receive(:generate_cache_id).and_return('1390890634-26112-1234-2122')
 
       @cached_file = double('a cached file')
       allow(@cached_file).to receive(:delete)

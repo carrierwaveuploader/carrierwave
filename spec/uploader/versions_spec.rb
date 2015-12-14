@@ -229,7 +229,7 @@ describe CarrierWave::Uploader do
     describe '#cache!' do
 
       before do
-        allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-2255')
+        allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-1234-2255')
       end
 
       it "should set store_path with versions" do
@@ -243,8 +243,8 @@ describe CarrierWave::Uploader do
       it "should move it to the tmp dir with the filename prefixed" do
         expect(CarrierWave).to receive(:generate_cache_id).once
         @uploader.cache!(File.open(file_path('test.jpg')))
-        expect(@uploader.current_path).to eq(public_path('uploads/tmp/1369894322-345-2255/test.jpg'))
-        expect(@uploader.thumb.current_path).to eq(public_path('uploads/tmp/1369894322-345-2255/thumb_test.jpg'))
+        expect(@uploader.current_path).to eq(public_path('uploads/tmp/1369894322-345-1234-2255/test.jpg'))
+        expect(@uploader.thumb.current_path).to eq(public_path('uploads/tmp/1369894322-345-1234-2255/thumb_test.jpg'))
         expect(@uploader.file.exists?).to be_truthy
         expect(@uploader.thumb.file.exists?).to be_truthy
       end
@@ -260,7 +260,7 @@ describe CarrierWave::Uploader do
     describe "version with move_to_cache set" do
       before do
         FileUtils.cp(file_path('test.jpg'), file_path('test_copy.jpg'))
-        allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-2255')
+        allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-1234-2255')
         @uploader_class.send(:define_method, :move_to_cache) do
           true
         end
@@ -273,8 +273,8 @@ describe CarrierWave::Uploader do
       it "should copy the parent file when creating the version" do
         @uploader_class.version(:thumb)
         @uploader.cache!(File.open(file_path('test.jpg')))
-        expect(@uploader.current_path).to eq(public_path('uploads/tmp/1369894322-345-2255/test.jpg'))
-        expect(@uploader.thumb.current_path).to eq(public_path('uploads/tmp/1369894322-345-2255/thumb_test.jpg'))
+        expect(@uploader.current_path).to eq(public_path('uploads/tmp/1369894322-345-1234-2255/test.jpg'))
+        expect(@uploader.thumb.current_path).to eq(public_path('uploads/tmp/1369894322-345-1234-2255/thumb_test.jpg'))
         expect(@uploader.file.exists?).to be_truthy
         expect(@uploader.thumb.file.exists?).to be_truthy
       end
@@ -286,8 +286,8 @@ describe CarrierWave::Uploader do
           end
         end
         @uploader.cache!(File.open(file_path('test.jpg')))
-        expect(@uploader.current_path).to eq(public_path('uploads/tmp/1369894322-345-2255/test.jpg'))
-        expect(@uploader.thumb.current_path).to eq(public_path('uploads/tmp/1369894322-345-2255/thumb_test.jpg'))
+        expect(@uploader.current_path).to eq(public_path('uploads/tmp/1369894322-345-1234-2255/test.jpg'))
+        expect(@uploader.thumb.current_path).to eq(public_path('uploads/tmp/1369894322-345-1234-2255/thumb_test.jpg'))
         expect(@uploader.file.exists?).to be_falsey
         expect(@uploader.thumb.file.exists?).to be_truthy
       end
@@ -295,13 +295,13 @@ describe CarrierWave::Uploader do
 
     describe '#retrieve_from_cache!' do
       it "should set the path to the tmp dir" do
-        @uploader.retrieve_from_cache!('1369894322-345-2255/test.jpg')
-        expect(@uploader.current_path).to eq(public_path('uploads/tmp/1369894322-345-2255/test.jpg'))
-        expect(@uploader.thumb.current_path).to eq(public_path('uploads/tmp/1369894322-345-2255/thumb_test.jpg'))
+        @uploader.retrieve_from_cache!('1369894322-345-1234-2255/test.jpg')
+        expect(@uploader.current_path).to eq(public_path('uploads/tmp/1369894322-345-1234-2255/test.jpg'))
+        expect(@uploader.thumb.current_path).to eq(public_path('uploads/tmp/1369894322-345-1234-2255/thumb_test.jpg'))
       end
 
       it "should set store_path with versions" do
-        @uploader.retrieve_from_cache!('1369894322-345-2255/test.jpg')
+        @uploader.retrieve_from_cache!('1369894322-345-1234-2255/test.jpg')
         expect(@uploader.store_path).to eq('uploads/test.jpg')
         expect(@uploader.thumb.store_path).to eq('uploads/thumb_test.jpg')
         expect(@uploader.thumb.store_path('kebab.png')).to eq('uploads/thumb_kebab.png')
@@ -621,7 +621,7 @@ describe CarrierWave::Uploader do
 
     describe '#cache!' do
       before do
-        allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-2255')
+        allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-1234-2255')
       end
 
       it "should cache the files based on the version" do

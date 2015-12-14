@@ -7,16 +7,28 @@ module CarrierWave
       "You tried to assign a String or a Pathname to an uploader, for security reasons, this is not allowed.\n\n If this is a file upload, please check that your upload form is multipart encoded."
     end
   end
+  
+  class CacheCounter
+    @@counter = 0
+
+    def self.increment
+      @@counter += 1
+    end  
+  end
 
   ##
   # Generates a unique cache id for use in the caching system
   #
   # === Returns
   #
-  # [String] a cache id in the format TIMEINT-PID-RND
+  # [String] a cache id in the format TIMEINT-PID-COUNTER-RND
   #
   def self.generate_cache_id
-    Time.now.utc.to_i.to_s + '-' + Process.pid.to_s + '-' + ("%04d" % rand(9999))
+    [Time.now.utc.to_i,
+      Process.pid, 
+      '%04d' % (CarrierWave::CacheCounter.increment % 1000), 
+      '%04d' % rand(9999)
+    ].map(&:to_s).join('-')
   end
 
   module Uploader
@@ -83,7 +95,7 @@ module CarrierWave
       #
       # === Returns
       #
-      # [String] a cache name, in the format YYYYMMDD-HHMM-PID-RND/filename.txt
+      # [String] a cache name, in the format TIMEINT-PID-COUNTER-RND/filename.txt
       #
       def cache_name
         File.join(cache_id, full_original_filename) if cache_id and original_filename
@@ -178,7 +190,9 @@ module CarrierWave
       alias_method :full_original_filename, :original_filename
 
       def cache_id=(cache_id)
-        raise CarrierWave::InvalidParameter, "invalid cache id" unless cache_id =~ /\A[\d]+\-[\d]+\-[\d]{4}\z/
+        # Earlier version used 3 part cache_id. Thus we should allow for
+        # the cache_id to have both 3 part and 4 part formats.
+        raise CarrierWave::InvalidParameter, "invalid cache id" unless cache_id =~ /\A[\d]+\-[\d]+(\-[\d]{4})?\-[\d]{4}\z/
         @cache_id = cache_id
       end
 
