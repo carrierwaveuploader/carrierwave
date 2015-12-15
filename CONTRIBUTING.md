@@ -29,7 +29,7 @@ You should now be able to run the remote tests:
 
     REMOTE=true bundle exec rake
 
-Please test with the latest Ruby 1.8.x and 1.9.x versions using RVM if possible.
+Please test with the latest Ruby 2.2.x version using RVM if possible.
 
 ## Running active record tests
 
