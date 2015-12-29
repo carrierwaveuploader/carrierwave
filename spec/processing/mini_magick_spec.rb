@@ -156,6 +156,23 @@ describe CarrierWave::MiniMagick do
     end
   end
 
+  describe '#resize_to_extend' do
+    it 'should resize the image to fit within the given dimensions, maintain file type' do
+      expect(::MiniMagick::Tool::Identify.new.verbose(@instance.current_path).call).to_not include('Quality: 70')
+      @instance.resize_to_extend(200, 200)
+      expect(@instance).to have_dimensions(200, 200)
+      expect(::MiniMagick::Image.open(@instance.current_path)['format']).to match(/JPEG/)
+    end
+
+    it "should resize the image to fit within the given dimensions and maintain updated file type" do
+      @instance.convert('png')
+      @instance.resize_to_extend(200, 200)
+      expect(@instance).to have_dimensions(200, 200)
+      expect(::MiniMagick::Image.open(@instance.current_path)['format']).to match(/PNG/)
+      expect(@instance.file.extension).to eq('png')
+    end
+  end
+
   describe "test errors" do
     context "invalid image file" do
       before do
