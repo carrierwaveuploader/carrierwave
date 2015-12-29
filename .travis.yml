@@ -8,6 +8,9 @@ rvm:
  - jruby
  - jruby-head
 
+env:
+  - JRUBY_OPTS="--2.0"
+
 gemfile:
   - Gemfile
   - gemfiles/rails-4-0-stable.gemfile
