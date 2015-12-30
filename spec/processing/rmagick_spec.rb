@@ -196,6 +196,14 @@ describe CarrierWave::RMagick, :rmagick => true do
     end
   end
 
+  describe "#width and #height" do
+    it "should return the width and height of the image" do
+      @instance.resize_to_fill(200, 300)
+      expect(@instance.width).to eq(200)
+      expect(@instance.height).to eq(300)
+    end
+  end
+
   describe "test errors" do
     context "invalid image file" do
       before do
