@@ -318,8 +318,6 @@ module CarrierWave
         end
       end
 
-    private
-
       def mini_magick_image
         if url
           ::MiniMagick::Image.open(url)
