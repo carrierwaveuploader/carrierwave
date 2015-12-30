@@ -310,18 +310,13 @@ module CarrierWave
       raise CarrierWave::ProcessingError, message
     end
 
-    ##
-    # Takes a hash of options for a combine_options cmd and appends to command on each option
-    #
-    # === Parameters
-    #
-    # [cmd (MiniMagick::Tool)] command tool
-    # [combine_options (Hash)] a hash of command options and values
-    def append_combine_options(cmd, combine_options)
-      combine_options.each do |method, options|
-        cmd.send(method, options)
+    private
+
+      def append_combine_options(cmd, combine_options)
+        combine_options.each do |method, options|
+          cmd.send(method, options)
+        end
       end
-    end
 
     private
 
