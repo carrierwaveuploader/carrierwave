@@ -85,6 +85,10 @@ module CarrierWave
       def resize_and_pad(width, height, background=:transparent, gravity='Center')
         process :resize_and_pad => [width, height, background, gravity]
       end
+
+      def resize_to_extend(width,height, gravity = 'Center')
+        process :resize_to_extend =>[width,height, gravity]
+      end
     end
 
     ##
@@ -243,6 +247,31 @@ module CarrierWave
         img
       end
     end
+    
+    ##
+    # Resize the image to given size and chop the image in the given dimension.
+    # 
+    # === Parameters
+    #
+    # [width (Integer)] the width to scale the image to
+    # [height (Integer)] the height to scale the image to
+    # [gravity (String)] the current gravity suggestion 
+    # (default: 'Center'; options: 'NorthWest', 'North', 'NorthEast', 'West', 'Center', 'East', 'SouthWest', 'South', 'SouthEast')
+    #
+    # === Yields
+    #
+    # [MiniMagick::Image] additional manipulations to perform
+    #
+    def resize_to_extend(width, height, gravity = 'Center')
+      manipulate! do |img|
+        img.gravity gravity
+        img.resize "#{width}^x#{height}^"
+        img.extent "#{width}x#{height}" 
+        img = yield(img) if block_given?
+        img
+      end
+    end
+
 
     ##
     # Return the mini magic instance of the image
