@@ -180,6 +180,9 @@ u.avatars[0].current_path # => 'path/to/file.png'
 u.avatars[0].identifier # => 'file.png'
 ```
 
+### Sample Project
+[Sample project](https://github.com/bobintornado/sample-gallery-app-with-carrierwave) with corresponding [blog post](http://bobintornado.github.io/rails/2015/12/29/Multiple-Images-Uploading-With-CarrierWave-and-PostgreSQL-Array.html).
+
 ## Changing the storage directory
 
 In order to change where uploaded files are put, just override the `store_dir`
