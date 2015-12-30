@@ -245,40 +245,25 @@ module CarrierWave
     end
 
     ##
-    # Return the mini magic instance of the image
-    #
-    # === Returns
-    #
-    # #<MiniMagick::Image>
-    #
-    def mini_magic_image
-      if url
-        ::MiniMagick::Image.open(url)
-      else
-        ::MiniMagick::Image.open(current_path)
-      end
-    end
-
-    ##
-    # Gives the width of the image, useful for model validation
+    # Returns the width of the image in pixels.
     #
     # === Returns
     #
     # [Integer] the image's width in pixels
     #
     def width
-      mini_magic_image[:width]
+      mini_magick_image[:width]
     end
 
     ##
-    # Gives the height of the image, useful for model validation
+    # Returns the height of the image in pixels.
     #
     # === Returns
     #
     # [Integer] the image's height in pixels
     #
     def height
-      mini_magic_image[:height]
+      mini_magick_image[:height]
     end
 
     ##
@@ -337,6 +322,16 @@ module CarrierWave
         cmd.send(method, options)
       end
     end
+
+    private
+
+      def mini_magick_image
+        if url
+          ::MiniMagick::Image.open(url)
+        else
+          ::MiniMagick::Image.open(current_path)
+        end
+      end
 
   end # MiniMagick
 end # CarrierWave
