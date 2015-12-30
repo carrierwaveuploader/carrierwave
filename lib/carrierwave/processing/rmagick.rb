@@ -370,7 +370,7 @@ module CarrierWave
     end
 
     def destroy_image(image)
-      image.destroy! if image.respond_to?(:destroy!)
+      image.try(:destroy!)
     end
 
     def rmagick_image
