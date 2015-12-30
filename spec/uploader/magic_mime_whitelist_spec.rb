@@ -24,7 +24,7 @@ describe CarrierWave::Uploader, filemagic: true do
   describe '#cache!' do
 
     before do
-      allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-2255')
+      allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-1234-2255')
     end
 
     context "when the is no whitelist pattern" do

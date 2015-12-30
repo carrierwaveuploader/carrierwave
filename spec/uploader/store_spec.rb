@@ -29,7 +29,7 @@ describe CarrierWave::Uploader do
     before do
       @file = File.open(file_path('test.jpg'))
 
-      allow(CarrierWave).to receive(:generate_cache_id).and_return('1390890634-26112-2122')
+      allow(CarrierWave).to receive(:generate_cache_id).and_return('1390890634-26112-1234-2122')
 
       @cached_file = double('a cached file')
       allow(@cached_file).to receive(:delete)
@@ -215,7 +215,7 @@ describe CarrierWave::Uploader do
     end
 
     it "should overwrite a file that has already been cached" do
-      @uploader.retrieve_from_cache!('1369894322-345-2255/test.jpeg')
+      @uploader.retrieve_from_cache!('1369894322-345-1234-2255/test.jpeg')
       @uploader.retrieve_from_store!('bork.txt')
       expect(@uploader.file).to eq(@stored_file)
     end
@@ -271,7 +271,7 @@ describe CarrierWave::Uploader do
       before do
         @file = File.open(file_path('test.jpg'))
 
-        allow(CarrierWave).to receive(:generate_cache_id).and_return('1390890634-26112-2122')
+        allow(CarrierWave).to receive(:generate_cache_id).and_return('1390890634-26112-1234-2122')
 
         @cached_file = double('a cached file')
         allow(@cached_file).to receive(:delete)
@@ -347,7 +347,7 @@ describe CarrierWave::Uploader do
       @file = File.open(file_path('test.jpg'))
       @uploader_class.permissions = 0777
       @uploader_class.directory_permissions = 0777
-      allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-2255')
+      allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-1234-2255')
     end
 
     context "set to true" do
@@ -361,7 +361,7 @@ describe CarrierWave::Uploader do
         @cached_path = @uploader.file.path
         @stored_path = ::File.expand_path(@uploader.store_path, @uploader.root)
 
-        expect(@cached_path).to eq(public_path('uploads/tmp/1369894322-345-2255/test.jpg'))
+        expect(@cached_path).to eq(public_path('uploads/tmp/1369894322-345-1234-2255/test.jpg'))
         expect(File.exist?(@cached_path)).to be_truthy
         expect(File.exist?(@stored_path)).to be_falsey
 

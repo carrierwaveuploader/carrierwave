@@ -16,7 +16,7 @@ describe CarrierWave::Uploader do
   describe '#cache!' do
 
     before do
-      allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-2255')
+      allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-1234-2255')
     end
 
     it "should not raise an integrity error if there is no white list" do

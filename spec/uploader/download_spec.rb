@@ -16,7 +16,7 @@ describe CarrierWave::Uploader::Download do
   describe '#download!' do
 
     before do
-      allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-2255')
+      allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-1234-2255')
 
       sham_rack_app = ShamRack.at('www.example.com').stub
       sham_rack_app.register_resource('/test.jpg', File.read(file_path('test.jpg')), 'image/jpg')
@@ -49,7 +49,7 @@ describe CarrierWave::Uploader::Download do
 
     it "should store the cache name" do
       @uploader.download!('http://www.example.com/test.jpg')
-      expect(@uploader.cache_name).to eq('1369894322-345-2255/test.jpg')
+      expect(@uploader.cache_name).to eq('1369894322-345-1234-2255/test.jpg')
     end
 
     it "should set the filename to the file's sanitized filename" do
@@ -59,13 +59,13 @@ describe CarrierWave::Uploader::Download do
 
     it "should move it to the tmp dir" do
       @uploader.download!('http://www.example.com/test.jpg')
-      expect(@uploader.file.path).to eq(public_path('uploads/tmp/1369894322-345-2255/test.jpg'))
+      expect(@uploader.file.path).to eq(public_path('uploads/tmp/1369894322-345-1234-2255/test.jpg'))
       expect(@uploader.file.exists?).to be_truthy
     end
 
     it "should set the url" do
       @uploader.download!('http://www.example.com/test.jpg')
-      expect(@uploader.url).to eq('/uploads/tmp/1369894322-345-2255/test.jpg')
+      expect(@uploader.url).to eq('/uploads/tmp/1369894322-345-1234-2255/test.jpg')
     end
 
     it "should set permissions if options are given" do
@@ -96,22 +96,22 @@ describe CarrierWave::Uploader::Download do
 
     it "should accept spaces in the url" do
       @uploader.download!('http://www.example.com/test with spaces/test.jpg')
-      expect(@uploader.url).to eq('/uploads/tmp/1369894322-345-2255/test.jpg')
+      expect(@uploader.url).to eq('/uploads/tmp/1369894322-345-1234-2255/test.jpg')
     end
 
     it "should follow redirects" do
       @uploader.download!('http://www.redirect.com/')
-      expect(@uploader.url).to eq('/uploads/tmp/1369894322-345-2255/test.jpg')
+      expect(@uploader.url).to eq('/uploads/tmp/1369894322-345-1234-2255/test.jpg')
     end
 
     it "should read content-disposition headers" do
       @uploader.download!('http://www.example.com/content-disposition')
-      expect(@uploader.url).to eq('/uploads/tmp/1369894322-345-2255/another_test.jpg')
+      expect(@uploader.url).to eq('/uploads/tmp/1369894322-345-1234-2255/another_test.jpg')
     end
 
     it 'should set file extension based on content-type if missing' do
       @uploader.download!('http://www.example.com/test-with-no-extension/test')
-      expect(@uploader.url).to match %r{/uploads/tmp/1369894322-345-2255/test\.jp(e|e?g)$}
+      expect(@uploader.url).to match %r{/uploads/tmp/1369894322-345-1234-2255/test\.jp(e|e?g)$}
     end
 
     it 'should not obscure original exception message' do

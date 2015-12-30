@@ -49,7 +49,7 @@ describe CarrierWave::Uploader do
     describe '#cache!' do
 
       before do
-        allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-2255')
+        allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-1234-2255')
       end
 
       it "should cache a file" do
@@ -69,13 +69,13 @@ describe CarrierWave::Uploader do
 
       it "should set the current_path" do
         @uploader.cache!(File.open(file_path('test.jpg')))
-        expect(@uploader.current_path).to eq(public_path('uploads/tmp/1369894322-345-2255/test.jpg'))
+        expect(@uploader.current_path).to eq(public_path('uploads/tmp/1369894322-345-1234-2255/test.jpg'))
       end
 
       it "should set the url" do
         @uploader.cache!(File.open(file_path('test.jpg')))
         expect(@uploader.url).not_to eq('http://someurl.example.com')
-        expect(@uploader.url).to eq('/uploads/tmp/1369894322-345-2255/test.jpg')
+        expect(@uploader.url).to eq('/uploads/tmp/1369894322-345-1234-2255/test.jpg')
       end
 
     end

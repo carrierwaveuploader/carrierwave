@@ -19,7 +19,7 @@ describe CarrierWave::Uploader do
     end
 
     it "should not be true when the file is empty" do
-      @uploader.retrieve_from_cache!('1369894322-345-2255/test.jpeg')
+      @uploader.retrieve_from_cache!('1369894322-345-1234-2255/test.jpeg')
       expect(@uploader).to be_blank
     end
 
@@ -62,7 +62,7 @@ describe CarrierWave::Uploader do
     end
 
     it "should get the content type when the file is empty" do
-      @uploader.retrieve_from_cache!('1369894322-345-2255/test.jpeg')
+      @uploader.retrieve_from_cache!('1369894322-345-1234-2255/test.jpeg')
       expect(@uploader.content_type).to eq('image/jpeg')
     end
   end

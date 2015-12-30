@@ -15,7 +15,7 @@ describe CarrierWave::Uploader do
   describe '#cache!' do
 
     before do
-      allow(CarrierWave).to receive(:generate_cache_id).and_return('20071201-1234-2255')
+      allow(CarrierWave).to receive(:generate_cache_id).and_return('20071201-1234-1234-2255')
     end
 
     it "should not raise an integrity error if there is no range specified" do

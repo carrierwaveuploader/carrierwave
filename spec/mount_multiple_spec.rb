@@ -249,8 +249,8 @@ describe CarrierWave::Mount do
       it "should be the cache name when a file has been cached" do
         @instance.images = [stub_file('test.jpg'), stub_file('old.jpeg')]
         res = JSON.parse(@instance.images_cache)
-        expect(res[0]).to match(%r(^[\d]+\-[\d]+\-[\d]{4}/test\.jpg$))
-        expect(res[1]).to match(%r(^[\d]+\-[\d]+\-[\d]{4}/old\.jpeg$))
+        expect(res[0]).to match(%r(^[\d]+\-[\d]+\-[\d]{4}\-[\d]{4}/test\.jpg$))
+        expect(res[1]).to match(%r(^[\d]+\-[\d]+\-[\d]{4}\-[\d]{4}/old\.jpeg$))
       end
     end
 
@@ -259,7 +259,7 @@ describe CarrierWave::Mount do
       before do
         allow(@instance).to receive(:write_uploader)
         allow(@instance).to receive(:read_uploader).and_return(nil)
-        CarrierWave::SanitizedFile.new(file_path('test.jpg')).copy_to(public_path('uploads/tmp/1369894322-123-1234/test.jpg'))
+        CarrierWave::SanitizedFile.new(file_path('test.jpg')).copy_to(public_path('uploads/tmp/1369894322-123-0123-1234/test.jpg'))
       end
 
       it "should do nothing when nil is assigned" do
@@ -273,13 +273,13 @@ describe CarrierWave::Mount do
       end
 
       it "retrieve from cache when a cache name is assigned" do
-        @instance.images_cache = ['1369894322-123-1234/test.jpg'].to_json
-        expect(@instance.images[0].current_path).to eq(public_path('uploads/tmp/1369894322-123-1234/test.jpg'))
+        @instance.images_cache = ['1369894322-123-0123-1234/test.jpg'].to_json
+        expect(@instance.images[0].current_path).to eq(public_path('uploads/tmp/1369894322-123-0123-1234/test.jpg'))
       end
 
       it "should not write over a previously assigned file" do
         @instance.images = [stub_file('test.jpg')]
-        @instance.images_cache = ['1369894322-123-1234/monkey.jpg'].to_json
+        @instance.images_cache = ['1369894322-123-0123-1234/monkey.jpg'].to_json
         expect(@instance.images[0].current_path).to match(/test.jpg$/)
       end
     end
