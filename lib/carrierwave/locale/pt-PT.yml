@@ -7,7 +7,6 @@ pt-PT:
       extension_white_list_error: "Não é permitido o envio de ficheiros com a extensão %{extension}, tipos de ficheiro permitidos: %{allowed_types}"
       extension_black_list_error: "Não é permitido o envio de ficheiros com a extensão %{extension}, tipos de ficheiro proibidos: %{prohibited_types}"
       rmagick_processing_error: "Ocorreu uma falha ao processar com rmagick, talvez o ficheiro não seja uma imagem? Erro original: %{e}"
-      mime_types_processing_error: "Ocorreu uma falha ao processar com MIME::Types, talvez o parâmetro content-type não seja válido? Erro original: %{e}"
       mini_magick_processing_error: "Ocorreu uma falha ao processar com MiniMagick, talvez o ficheiro não seja uma imagem? Erro original: %{e}"
       min_size_error: "O tamanho do arquivo deve ser maior do que %{min_size}"
       max_size_error: "O tamanho do arquivo deve ser inferior a %{max_size}"

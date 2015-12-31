@@ -9,7 +9,6 @@ el:
       mime_type_pattern_white_list_error: "Δεν επιτρέπεται το ανέβασμα αρχείων τύπου %{content_type}"
       mime_type_pattern_black_list_error: "Δεν επιτρέπεται το ανέβασμα αρχείων τύπου %{content_type}"
       rmagick_processing_error: "Απέτυχε ο χειρισμός με rmagick, ίσως δεν είναι εικόνα; Αρχικό Σφάλμα: %{e}"
-      mime_types_processing_error: "Απέτυχε η επεξεργασία του αρχείου με MIME::Types, ίσως δεν έχει έγκυρο content-type; Αρχικό Σφάλμα: %{e}"
       mini_magick_processing_error: "Απέτυχε ο χειρισμός με MiniMagick, ίσως δεν είναι εικόνα; Αρχικό Σφάλμα: %{e}"
       min_size_error: "το μέγεθος του αρχείου θα πρέπει να είναι μεγαλύτερο από %{min_size}"
       max_size_error: "το μέγεθος του αρχείου θα πρέπει να είναι μικρότερο από %{max_size}"
