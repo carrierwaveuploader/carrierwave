@@ -132,7 +132,7 @@ Other ORM support has been extracted into separate gems:
 There are more extensions listed in [the wiki](https://github.com/carrierwaveuploader/carrierwave/wiki)
 
 ## Multiple file uploads
-**Note:** You must specify using the master branch to enable this feature: 
+**Note:** You must specify using the master branch to enable this feature:
 
 `gem 'carrierwave', github: 'carrierwaveuploader/carrierwave'`.
 
@@ -858,24 +858,6 @@ provides Ruby bindings to the magic library.
 
 Since magic is writtern in C, modules using Filemagic are optional and
 don't work with JRuby.
-
-### Extract the actual content-type
-
-You can use the `MagicMimeTypes` processor to extract the actual
-content-type of the uploaded file.
-
-For example, a user can upload a file named `file.png` but its actual
-content type may be JPEG.
-
-Below you can see an example usage of `MagicMimeTypes` processor.
-
-```ruby
-class AvatarUploader < CarrierWave::Uploader::Base
-  include CarrierWave::MagicMimeTypes
-
-  process :set_content_type
-end
-```
 
 ### Validate with the actual content-type
 
