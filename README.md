@@ -210,7 +210,7 @@ end
 
 Certain files might be dangerous if uploaded to the wrong location, such as php
 files or other script files. CarrierWave allows you to specify a white-list of
-allowed extensions.
+allowed extensions or content types.
 
 If you're mounting the uploader, uploading a file with the wrong extension will
 make the record invalid instead. Otherwise, an error is raised.
@@ -219,6 +219,28 @@ make the record invalid instead. Otherwise, an error is raised.
 class MyUploader < CarrierWave::Uploader::Base
   def extension_white_list
     %w(jpg jpeg gif png)
+  end
+end
+```
+
+The same thing could be done using content types.
+Let's say we need an uploader that accepts only images. This can be done like this
+
+```ruby
+class MyUploader < CarrierWave::Uploader::Base
+  def content_type_whitelist_pattern
+    /image\//
+  end
+end
+```
+
+You can use a blacklist to reject content types.
+Let's say we need an uploader that reject JSON files. This can be done like this
+
+```ruby
+class NoJsonUploader < CarrierWave::Uploader::Base
+  def content_type_blacklist_pattern
+    /(application|text)/json/
   end
 end
 ```
@@ -848,56 +870,6 @@ class AvatarUploader < CarrierWave::Uploader::Base
   include CarrierWave::MiniMagick
 
   process resize_to_fill: [200, 200]
-end
-```
-
-## Using Filemagic
-
-[Filemagic](https://github.com/blackwinter/ruby-filemagic) is a gem that
-provides Ruby bindings to the magic library.
-
-Since magic is writtern in C, modules using Filemagic are optional and
-don't work with JRuby.
-
-### Validate with the actual content-type
-
-You can use the `MagicMimeWhitelist` mixin to validate uploaded files
-given a regexp to match the allowed content types.
-
-Let's say we need an uploader that accepts only images.
-
-This can be done like this
-
-```ruby
-class AvatarUploader < CarrierWave::Uploader::Base
-  include CarrierWave::Uploader::MagicMimeWhitelist
-
-  # Override it to your needs.
-  # By default it returns nil and the validator allows every
-  # content-type.
-  def whitelist_mime_type_pattern
-    /image\//
-  end
-end
-```
-
-There is also a `MagicMimeBlacklist` mixin to validate uploaded files
-given a rexp to match prohibited content types.
-
-Let's say we need an uploader that reject json files.
-
-This can be done like this
-
-```ruby
-class NoJsonUploader < CarrierWave::Uploader::Base
-  include CarrierWave::Uploader::MagicMimeBlacklist
-
-  # Override it to your needs.
-  # By default it returns nil and the validator allows every
-  # content-type.
-  def blacklist_mime_type_pattern
-    /(application|text)/json/
-  end
 end
 ```
 

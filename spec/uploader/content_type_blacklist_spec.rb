@@ -1,13 +1,12 @@
 require 'spec_helper'
 
-describe CarrierWave::Uploader, filemagic: true do
+describe CarrierWave::Uploader do
 
   before do
     @uploader_class = Class.new(CarrierWave::Uploader::Base) do
-      include CarrierWave::Uploader::MagicMimeBlacklist
 
       # Accepts only images
-      def blacklist_mime_type_pattern
+      def content_type_blacklist_pattern
         /image\//
       end
     end
@@ -25,9 +24,9 @@ describe CarrierWave::Uploader, filemagic: true do
       allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-1234-2255')
     end
 
-    context "when the is no blacklist pattern" do
+    context "when there is no blacklist pattern" do
       before do
-        allow(@uploader).to receive(:blacklist_mime_type_pattern).and_return(nil)
+        allow(@uploader).to receive(:content_type_blacklist_pattern).and_return(nil)
       end
 
       it "does not raise an integrity error" do
@@ -38,7 +37,7 @@ describe CarrierWave::Uploader, filemagic: true do
     end
 
     context "when there is a blacklist pattern" do
-      context "and the file has compliant content-type" do
+      context "and the file has a compliant content type" do
         it "does not raise an integrity error" do
           expect {
             @uploader.cache!(File.open(file_path('bork.txt')))
@@ -46,7 +45,7 @@ describe CarrierWave::Uploader, filemagic: true do
         end
       end
 
-      context "and the file has not compliant content-type" do
+      context "and the file has not a compliant content type" do
         it "raises an integrity error" do
           expect {
             @uploader.cache!(File.open(file_path('ruby.gif')))

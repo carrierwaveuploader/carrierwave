@@ -45,5 +45,3 @@ notifications:
 
 addons:
   postgresql: "9.3"
-  apt_packages:
-    - libmagic-dev
