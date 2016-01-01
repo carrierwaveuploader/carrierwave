@@ -1,4 +1,5 @@
 # encoding: utf-8
+require 'active_support/deprecation'
 
 module CarrierWave
 
@@ -27,7 +28,7 @@ module CarrierWave
     extend ActiveSupport::Concern
 
     included do
-      CarrierWave::Utilities::Deprecation.new "0.11.0", "CarrierWave::MimeTypes is deprecated and will be removed in the future, get the content_type from the SanitizedFile object directly."
+      ActiveSupport::Deprecation.new "0.11.0", "CarrierWave::MimeTypes is deprecated and will be removed in the future, get the content_type from the SanitizedFile object directly."
       begin
         # Use mime/types/columnar if available, for reduced memory usage
         require 'mime/types/columnar'
