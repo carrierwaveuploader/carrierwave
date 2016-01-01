@@ -19,7 +19,7 @@ module CarrierWave
       # [String] the path where the file is currently located.
       #
       def current_path
-        file.path if file.respond_to?(:path)
+        file.try(:path)
       end
 
       alias_method :path, :current_path
@@ -32,7 +32,7 @@ module CarrierWave
       # [String] uniquely identifies a file
       #
       def identifier
-        storage.identifier if storage.respond_to?(:identifier)
+        storage.try(:identifier)
       end
 
       ##
@@ -43,7 +43,7 @@ module CarrierWave
       # [String] contents of the file
       #
       def read
-        file.read if file.respond_to?(:read)
+        file.try(:read)
       end
 
       ##
@@ -54,7 +54,7 @@ module CarrierWave
       # [Integer] size of the file
       #
       def size
-        file.respond_to?(:size) ? file.size : 0
+        file.try(:size) || 0
       end
 
       ##
@@ -80,7 +80,7 @@ module CarrierWave
       # [String] content type of the file
       #
       def content_type
-        file.respond_to?(:content_type) ? file.content_type : nil
+        file.try(:content_type)
       end
 
     end # Proxy
