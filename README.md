@@ -217,7 +217,7 @@ make the record invalid instead. Otherwise, an error is raised.
 
 ```ruby
 class MyUploader < CarrierWave::Uploader::Base
-  def extension_white_list
+  def extension_whitelist
     %w(jpg jpeg gif png)
   end
 end
@@ -903,8 +903,8 @@ errors:
     carrierwave_processing_error: "Cannot resize image."
     carrierwave_integrity_error: "Not an image."
     carrierwave_download_error: "Couldn't download image."
-    extension_white_list_error: "You are not allowed to upload %{extension} files, allowed types: %{allowed_types}"
-    extension_black_list_error: "You are not allowed to upload %{extension} files, prohibited types: %{prohibited_types}"
+    extension_whitelist_error: "You are not allowed to upload %{extension} files, allowed types: %{allowed_types}"
+    extension_blacklist_error: "You are not allowed to upload %{extension} files, prohibited types: %{prohibited_types}"
 ```
 
 ## Large files

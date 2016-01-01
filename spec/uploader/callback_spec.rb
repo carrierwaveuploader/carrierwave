@@ -4,8 +4,8 @@ describe CarrierWave::Uploader do
 
   it "should keep callbacks on different classes isolated" do
     default_before_callbacks = [
-      :check_whitelist!,
-      :check_blacklist!,
+      :check_extension_whitelist!,
+      :check_extension_blacklist!,
       :check_content_type_whitelist!,
       :check_content_type_blacklist!,
       :check_size!,

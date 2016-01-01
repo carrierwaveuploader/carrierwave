@@ -4,8 +4,8 @@ id:
       carrierwave_processing_error: gagal diproses
       carrierwave_integrity_error: bukan salah satu tipe file yang diperbolehkan
       carrierwave_download_error: gagal download
-      extension_white_list_error: "Dilarang mengupload tipe file %{extension}, tipe file yang dibolehkan: %{allowed_types}"
-      extension_black_list_error: "Dilarang mengupload tipe file %{extension}, tipe file yang dilarang: %{prohibited_types}"
+      extension_whitelist_error: "Dilarang mengupload tipe file %{extension}, tipe file yang dibolehkan: %{allowed_types}"
+      extension_blacklist_error: "Dilarang mengupload tipe file %{extension}, tipe file yang dilarang: %{prohibited_types}"
       content_type_whitelist_error: "Anda dilarang mengupload file %{content_type}"
       content_type_blacklist_error: "Anda dilarang mengupload file %{content_type}"
       rmagick_processing_error: "Gagal memanipulasi dengan rmagick, mungkin file ini bukan gambar?"

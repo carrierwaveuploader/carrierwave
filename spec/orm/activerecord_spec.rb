@@ -235,7 +235,7 @@ describe CarrierWave::ActiveRecord do
       context 'when validating white list integrity' do
         before do
           @uploader.class_eval do
-            def extension_white_list
+            def extension_whitelist
               %w(txt)
             end
           end
@@ -245,7 +245,7 @@ describe CarrierWave::ActiveRecord do
           # Localize the error message to Dutch
           change_locale_and_store_translations(:nl, :errors => {
             :messages => {
-              :extension_white_list_error => "Het opladen van %{extension} bestanden is niet toe gestaan. Geaccepteerde types: %{allowed_types}"
+              :extension_whitelist_error => "Het opladen van %{extension} bestanden is niet toe gestaan. Geaccepteerde types: %{allowed_types}"
             }
           }) do
             # Assigning image triggers check_whitelist! and thus should be inside change_locale_and_store_translations
@@ -260,7 +260,7 @@ describe CarrierWave::ActiveRecord do
       context 'when validating black list integrity' do
         before do
           @uploader.class_eval do
-            def extension_black_list
+            def extension_blacklist
               %w(jpg)
             end
           end
@@ -270,7 +270,7 @@ describe CarrierWave::ActiveRecord do
           # Localize the error message to Dutch
           change_locale_and_store_translations(:nl, :errors => {
             :messages => {
-              :extension_black_list_error => "You are not allowed to upload %{extension} files, prohibited types: %{prohibited_types}"
+              :extension_blacklist_error => "You are not allowed to upload %{extension} files, prohibited types: %{prohibited_types}"
             }
           }) do
             # Assigning image triggers check_blacklist! and thus should be inside change_locale_and_store_translations
@@ -990,7 +990,7 @@ describe CarrierWave::ActiveRecord do
       context 'when validating white list integrity' do
         before do
           @uploader.class_eval do
-            def extension_white_list
+            def extension_whitelist
               %w(txt)
             end
           end
@@ -1000,7 +1000,7 @@ describe CarrierWave::ActiveRecord do
           # Localize the error message to Dutch
           change_locale_and_store_translations(:nl, :errors => {
             :messages => {
-              :extension_white_list_error => "Het opladen van %{extension} bestanden is niet toe gestaan. Geaccepteerde types: %{allowed_types}"
+              :extension_whitelist_error => "Het opladen van %{extension} bestanden is niet toe gestaan. Geaccepteerde types: %{allowed_types}"
             }
           }) do
             # Assigning images triggers check_whitelist! and thus should be inside change_locale_and_store_translations
@@ -1015,7 +1015,7 @@ describe CarrierWave::ActiveRecord do
       context 'when validating black list integrity' do
         before do
           @uploader.class_eval do
-            def extension_black_list
+            def extension_blacklist
               %w(jpg)
             end
           end
@@ -1025,7 +1025,7 @@ describe CarrierWave::ActiveRecord do
           # Localize the error message to Dutch
           change_locale_and_store_translations(:nl, :errors => {
             :messages => {
-              :extension_black_list_error => "You are not allowed to upload %{extension} files, prohibited types: %{prohibited_types}"
+              :extension_blacklist_error => "You are not allowed to upload %{extension} files, prohibited types: %{prohibited_types}"
             }
           }) do
             # Assigning images triggers check_blacklist! and thus should be inside change_locale_and_store_translations

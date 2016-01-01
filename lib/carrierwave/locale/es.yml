@@ -4,8 +4,8 @@ es:
       carrierwave_processing_error: no pudo ser procesado
       carrierwave_integrity_error: no es de un tipo de archivo permitido
       carrierwave_download_error: no pudo ser descargado
-      extension_white_list_error: "No se pueden subir archivos de la extensión %{extension}. Las extensiones permitidas son: %{allowed_types}"
-      extension_black_list_error: "No se pueden subir archivos de la extensión %{extension}. Las extensiones prohibidas son: %{prohibited_types}"
+      extension_whitelist_error: "No se pueden subir archivos de la extensión %{extension}. Las extensiones permitidas son: %{allowed_types}"
+      extension_blacklist_error: "No se pueden subir archivos de la extensión %{extension}. Las extensiones prohibidas son: %{prohibited_types}"
       rmagick_processing_error: "No se pudo manipular con rmagick, quizá porque no es una imágen? Error original: %{e}"
       mini_magick_processing_error: "No se pudo manipular con MiniMagick, quizá porque no es una imágen? Error original: %{e}"
       min_size_error: "El tamaño del archivo debe ser mayor que %{min_size}"
