@@ -25,8 +25,6 @@ describe CarrierWave::ActiveRecord do
   after(:all) { TestMigration.down }
 
   before do
-    # Rails 4 defaults to no root in JSON, join the party
-    ActiveRecord::Base.include_root_in_json = false
     # My god, what a horrible, horrible solution, but AR validations don't work
     # unless the class has a name. This is the best I could come up with :S
     $arclass += 1
