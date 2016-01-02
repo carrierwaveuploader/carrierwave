@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 Given /^the file '(.*?)' is stored at '(.*?)'$/ do |file, stored|
   FileUtils.mkdir_p(File.dirname(file_path(stored)))
   FileUtils.cp(file_path(file), file_path(stored))

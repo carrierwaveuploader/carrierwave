@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module CarrierWave
   module Test
 
@@ -394,4 +392,3 @@ module CarrierWave
     end # Matchers
   end # Test
 end # CarrierWave
-

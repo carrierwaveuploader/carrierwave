@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module CarrierWave
 
   class FormNotMultipart < UploadError
@@ -7,13 +5,13 @@ module CarrierWave
       "You tried to assign a String or a Pathname to an uploader, for security reasons, this is not allowed.\n\n If this is a file upload, please check that your upload form is multipart encoded."
     end
   end
-  
+
   class CacheCounter
     @@counter = 0
 
     def self.increment
       @@counter += 1
-    end  
+    end
   end
 
   ##
@@ -25,8 +23,8 @@ module CarrierWave
   #
   def self.generate_cache_id
     [Time.now.utc.to_i,
-      Process.pid, 
-      '%04d' % (CarrierWave::CacheCounter.increment % 1000), 
+      Process.pid,
+      '%04d' % (CarrierWave::CacheCounter.increment % 1000),
       '%04d' % rand(9999)
     ].map(&:to_s).join('-')
   end

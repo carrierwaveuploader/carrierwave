@@ -1,4 +1,3 @@
-# encoding: UTF-8
 require 'rubygems'
 begin
   require 'bundler/setup'

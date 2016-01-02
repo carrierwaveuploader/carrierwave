@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require "json"
 require "active_support/core_ext/hash"
 

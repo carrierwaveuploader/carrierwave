@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 Given /^a datamapper class that has a '([^\']*)' column$/ do |column|
   @mountee_klass = Class.new do
     include DataMapper::Resource
