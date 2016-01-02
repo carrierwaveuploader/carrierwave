@@ -1,20 +1,18 @@
 require 'spec_helper'
 require 'support/activerecord'
 
-class TestMigration < ActiveRecord::Migration
-  def self.up
-    create_table :events, :force => true do |t|
-      t.column :image, :string
-      t.column :images, :json
-      t.column :textfile, :string
-      t.column :textfiles, :json
-      t.column :foo, :string
-    end
+def create_table(name)
+  ActiveRecord::Base.connection.create_table(name, force: true) do |t|
+    t.column :image, :string
+    t.column :images, :json
+    t.column :textfile, :string
+    t.column :textfiles, :json
+    t.column :foo, :string
   end
+end
 
-  def self.down
-    drop_table :events
-  end
+def drop_table(name)
+  ActiveRecord::Base.connection.drop_table(name)
 end
 
 def reset_class(class_name)
@@ -23,8 +21,8 @@ def reset_class(class_name)
 end
 
 describe CarrierWave::ActiveRecord do
-  before(:all) { TestMigration.up }
-  after(:all) { TestMigration.down }
+  before(:all) { create_table("events") }
+  after(:all) { drop_table("events") }
 
   before do
     @uploader = Class.new(CarrierWave::Uploader::Base)
