@@ -26,12 +26,6 @@ describe CarrierWave::ActiveRecord do
   before(:all) { TestMigration.up }
   after(:all) { TestMigration.down }
 
-  if [ActiveRecord::VERSION::MAJOR, ActiveRecord::VERSION::MINOR] == [4, 2]
-    before :all do
-      ActiveRecord::Base.raise_in_transactional_callbacks = true
-    end
-  end
-
   before do
     sham_rack_app = ShamRack.at('www.example.com').stub
     sham_rack_app.register_resource('/test.jpg', File.read(file_path('test.jpg')), 'images/jpg')
