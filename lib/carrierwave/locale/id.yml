@@ -6,8 +6,8 @@ id:
       carrierwave_download_error: gagal download
       extension_white_list_error: "Dilarang mengupload tipe file %{extension}, tipe file yang dibolehkan: %{allowed_types}"
       extension_black_list_error: "Dilarang mengupload tipe file %{extension}, tipe file yang dilarang: %{prohibited_types}"
-      mime_type_pattern_white_list_error: "Anda dilarang mengupload file %{content_type}"
-      mime_type_pattern_black_list_error: "Anda dilarang mengupload file %{content_type}"
+      content_type_whitelist_error: "Anda dilarang mengupload file %{content_type}"
+      content_type_blacklist_error: "Anda dilarang mengupload file %{content_type}"
       rmagick_processing_error: "Gagal memanipulasi dengan rmagick, mungkin file ini bukan gambar?"
       mini_magick_processing_error: "Gagal memanipulasi citra menggunakan MiniMagick, mungkin bukan file gambar? Error semula: %{e}"
       min_size_error: "Ukuran file harus lebih besar daripada %{min_size}"
