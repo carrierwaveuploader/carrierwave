@@ -1,9 +1,7 @@
-# encoding: utf-8
-
 module CarrierWave
   ##
   # This module simplifies the use of ruby-filemagic gem to intelligently
-  # and correctly guess and set the content-type of a file. If you want 
+  # and correctly guess and set the content-type of a file. If you want
   # to use this, you'll need to require this file:
   #
   #    require 'carrierwave/processing/magic_mime_types'

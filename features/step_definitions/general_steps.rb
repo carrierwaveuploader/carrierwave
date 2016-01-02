@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 Given /^an uploader class that uses the '(.*?)' storage$/ do |kind|
   @klass = Class.new(CarrierWave::Uploader::Base)
   @klass.storage = kind.to_sym

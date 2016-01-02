@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'active_model/validator'
 require 'active_support/concern'
 

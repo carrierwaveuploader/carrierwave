@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module CarrierWave
 
   ##
@@ -182,7 +180,7 @@ module CarrierWave
         def #{column}_identifier
           _mounter(:#{column}).read_identifiers[0]
         end
-        
+
         def store_previous_changes_for_#{column}
           @_previous_changes_for_#{column} = changes[_mounter(:#{column}).serialization_column]
         end
@@ -332,7 +330,7 @@ module CarrierWave
         def #{column}_identifiers
           _mounter(:#{column}).read_identifiers
         end
-        
+
         def store_previous_changes_for_#{column}
           @_previous_changes_for_#{column} = changes[_mounter(:#{column}).serialization_column]
         end

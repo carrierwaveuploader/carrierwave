@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'carrierwave/mount'
 require File.join(File.dirname(__FILE__), '..', '..', 'spec', 'support', 'activerecord')
 

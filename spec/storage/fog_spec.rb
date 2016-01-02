@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'spec_helper'
 require 'fog'
 require 'carrierwave/storage/fog'

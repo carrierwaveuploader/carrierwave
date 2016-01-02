@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 require 'spec_helper'
 
 describe CarrierWave::Uploader do
@@ -268,7 +266,7 @@ describe CarrierWave::Uploader do
       expect(@uploader.filename).to be_nil
       expect(@uploader.cache_name).to be_nil
     end
-    
+
     it "should support old format of cache_id (without counter) for backwards compartibility" do
       @uploader.retrieve_from_cache!('1369894322-345-2255/test.jpeg')
       expect(@uploader.url).to eq('/uploads/tmp/1369894322-345-2255/test.jpeg')
@@ -314,19 +312,19 @@ describe CarrierWave::Uploader do
       end
     end
   end
-  
+
   describe '.generate_cache_id' do
     it 'should generate dir name based on UTC time' do
       Timecop.freeze(Time.at(1369896000)) do
         expect(CarrierWave.generate_cache_id).to match(/\A1369896000-\d+-\d+-\d+\Z/)
       end
     end
-    
+
     it 'should generate dir name with a counter substring' do
       @counter = CarrierWave.generate_cache_id.split('-')[2].to_i
       expect(CarrierWave.generate_cache_id.split('-')[2].to_i).to eq(@counter + 1)
     end
-    
+
     it 'should generate dir name with constant length even when counter has big value' do
       @length = CarrierWave.generate_cache_id.length
       allow(CarrierWave::CacheCounter).to receive(:increment).and_return(1234567890)

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 Given /^an activerecord class that uses the '([^\']*)' table$/ do |name|
   @mountee_klass = Class.new(ActiveRecord::Base)
   @mountee_klass.table_name = name
