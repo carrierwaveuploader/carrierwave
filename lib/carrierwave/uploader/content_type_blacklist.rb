@@ -4,37 +4,43 @@ module CarrierWave
       extend ActiveSupport::Concern
 
       included do
-        before :cache, :check_content_type_blacklist_pattern!
+        before :cache, :check_content_type_blacklist!
       end
 
       ##
-      # Override this method in your uploader to provide a black list pattern (regexp)
-      # of content-types which are prohibited to be uploaded.
-      # Compares the file's content-type.
+      # Override this method in your uploader to provide a blacklist of files content types
+      # which are not allowed to be uploaded.
+      # Not only strings but Regexp are allowed as well.
       #
       # === Returns
       #
-      # [Regexp] a black list regexp to match the content_type
+      # [NilClass, Array[String,Regexp]] a blacklist of content types which are not allowed to be uploaded
       #
       # === Examples
       #
-      #     def content_type_blacklist_pattern
-      #       /(text|application)\/json/
+      #     def content_type_blacklist
+      #       %w(text/json application/json)
       #     end
       #
-      def content_type_blacklist_pattern; end
+      # Basically the same, but using a Regexp:
+      #
+      #     def content_type_blacklist
+      #       [/(text|application)\/json/]
+      #     end
+      #
+      def content_type_blacklist; end
 
     private
 
-      def check_content_type_blacklist_pattern!(new_file)
+      def check_content_type_blacklist!(new_file)
         content_type = new_file.content_type
-        if content_type_blacklist_pattern && content_type.match(content_type_blacklist_pattern)
+        if content_type_blacklist && blacklisted_content_type?(content_type)
           raise CarrierWave::IntegrityError, I18n.translate(:"errors.messages.content_type_blacklist_error", content_type: content_type)
         end
       end
 
       def blacklisted_content_type?(content_type)
-        content_type.match(content_type_blacklist_pattern)
+        content_type_blacklist.any? { |item| content_type =~ /#{item}/ }
       end
 
     end # ContentTypeBlacklist

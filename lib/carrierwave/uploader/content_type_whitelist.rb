@@ -4,37 +4,43 @@ module CarrierWave
       extend ActiveSupport::Concern
 
       included do
-        before :cache, :check_content_type_whitelist_pattern!
+        before :cache, :check_content_type_whitelist!
       end
 
       ##
-      # Override this method in your uploader to provide a white list pattern (regexp)
-      # of content-types which are allowed to be uploaded.
-      # Compares the file's content-type.
+      # Override this method in your uploader to provide a whitelist of files content types
+      # which are allowed to be uploaded.
+      # Not only strings but Regexp are allowed as well.
       #
       # === Returns
       #
-      # [Regexp] a white list regexp to match the content_type
+      # [NilClass, Array[String,Regexp]] a whitelist of content types which are allowed to be uploaded
       #
       # === Examples
       #
-      #     def content_type_whitelist_pattern
-      #       /(text|application)\/json/
+      #     def content_type_whitelist
+      #       %w(text/json application/json)
       #     end
       #
-      def content_type_whitelist_pattern; end
+      # Basically the same, but using a Regexp:
+      #
+      #     def content_type_whitelist
+      #       [/(text|application)\/json/]
+      #     end
+      #
+      def content_type_whitelist; end
 
     private
 
-      def check_content_type_whitelist_pattern!(new_file)
+      def check_content_type_whitelist!(new_file)
         content_type = new_file.content_type
-        if content_type_whitelist_pattern && !whitelisted_content_type?(content_type)
+        if content_type_whitelist && !whitelisted_content_type?(content_type)
           raise CarrierWave::IntegrityError, I18n.translate(:"errors.messages.content_type_whitelist_error", content_type: content_type)
         end
       end
 
       def whitelisted_content_type?(content_type)
-        content_type.match(content_type_whitelist_pattern)
+        content_type_whitelist.any? { |item| content_type =~ /#{item}/ }
       end
 
     end # ContentTypeWhitelist

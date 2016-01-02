@@ -228,8 +228,8 @@ Let's say we need an uploader that accepts only images. This can be done like th
 
 ```ruby
 class MyUploader < CarrierWave::Uploader::Base
-  def content_type_whitelist_pattern
-    /image\//
+  def content_type_whitelist
+    [/image\//]
   end
 end
 ```
@@ -239,8 +239,8 @@ Let's say we need an uploader that reject JSON files. This can be done like this
 
 ```ruby
 class NoJsonUploader < CarrierWave::Uploader::Base
-  def content_type_blacklist_pattern
-    /(application|text)/json/
+  def content_type_blacklist
+    ['application/text', 'application/json']
   end
 end
 ```

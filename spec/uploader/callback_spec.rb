@@ -6,8 +6,8 @@ describe CarrierWave::Uploader do
     default_before_callbacks = [
       :check_whitelist!,
       :check_blacklist!,
-      :check_content_type_whitelist_pattern!,
-      :check_content_type_blacklist_pattern!,
+      :check_content_type_whitelist!,
+      :check_content_type_blacklist!,
       :check_size!,
       :process!
     ]
