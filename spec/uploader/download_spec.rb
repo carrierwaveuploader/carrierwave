@@ -118,44 +118,44 @@ describe CarrierWave::Uploader::Download do
       }.to raise_error(CarrierWave::DownloadError, /could not download file: 404/)
     end
 
-    describe '#download! with an extension_white_list' do
+    describe '#download! with an extension_whitelist' do
       before do
         @uploader_class.class_eval do
-          def extension_white_list
+          def extension_whitelist
             %w(txt)
           end
         end
       end
 
-      it "should follow redirects but still respect the extension_white_list" do
+      it "should follow redirects but still respect the extension_whitelist" do
         expect(running {
           @uploader.download!('http://www.redirect.com/')
         }).to raise_error(CarrierWave::IntegrityError)
       end
 
-      it "should read content-disposition header but still respect the extension_white_list" do
+      it "should read content-disposition header but still respect the extension_whitelist" do
         expect(running {
           @uploader.download!('http://www.example.com/content-disposition')
         }).to raise_error(CarrierWave::IntegrityError)
       end
     end
 
-    describe '#download! with an extension_black_list' do
+    describe '#download! with an extension_blacklist' do
       before do
         @uploader_class.class_eval do
-          def extension_black_list
+          def extension_blacklist
             %w(jpg)
           end
         end
       end
 
-      it "should follow redirects but still respect the extension_black_list" do
+      it "should follow redirects but still respect the extension_blacklist" do
         expect(running {
           @uploader.download!('http://www.redirect.com/')
         }).to raise_error(CarrierWave::IntegrityError)
       end
 
-      it "should read content-disposition header but still respect the extension_black_list" do
+      it "should read content-disposition header but still respect the extension_blacklist" do
         expect(running {
           @uploader.download!('http://www.example.com/content-disposition')
         }).to raise_error(CarrierWave::IntegrityError)
