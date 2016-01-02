@@ -1,5 +1,7 @@
 language: ruby
 
+cache: bundler
+
 rvm:
  - 2.0
  - 2.1
