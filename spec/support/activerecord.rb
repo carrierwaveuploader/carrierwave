@@ -25,3 +25,7 @@ end
 ActiveRecord::Base.establish_connection(dbconfig.merge(:database => database))
 
 ActiveRecord::Migration.verbose = false
+
+if ActiveRecord::VERSION::STRING >= '4.2'
+  ActiveRecord::Base.raise_in_transactional_callbacks = true
+end
