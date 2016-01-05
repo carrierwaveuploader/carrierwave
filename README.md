@@ -208,8 +208,8 @@ end
 
 ## Securing uploads
 
-Certain files might be dangerous if uploaded to the wrong location, such as php
-files or other script files. CarrierWave allows you to specify a white-list of
+Certain files might be dangerous if uploaded to the wrong location, such as PHP
+files or other script files. CarrierWave allows you to specify a whitelist of
 allowed extensions or content types.
 
 If you're mounting the uploader, uploading a file with the wrong extension will
@@ -229,7 +229,7 @@ Let's say we need an uploader that accepts only images. This can be done like th
 ```ruby
 class MyUploader < CarrierWave::Uploader::Base
   def content_type_whitelist
-    [/image\//]
+    /image\//
   end
 end
 ```

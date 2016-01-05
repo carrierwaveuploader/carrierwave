@@ -17,7 +17,7 @@ module CarrierWave
       #
       # === Returns
       #
-      # [NilClass, Array[String,Regexp]] a white list of extensions which are allowed to be uploaded
+      # [NilClass, String, Regexp, Array[String, Regexp]] a white list of extensions which are allowed to be uploaded
       #
       # === Examples
       #
@@ -43,7 +43,7 @@ module CarrierWave
       end
 
       def whitelisted_extension?(extension)
-        extension_whitelist.any? { |item| extension =~ /\A#{item}\z/i }
+        Array(extension_whitelist).any? { |item| extension =~ /\A#{item}\z/i }
       end
 
     end # ExtensionWhitelist

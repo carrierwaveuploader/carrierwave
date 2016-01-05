@@ -17,7 +17,7 @@ module CarrierWave
       #
       # === Returns
 
-      # [NilClass, Array[String,Regexp]] a black list of extensions which are prohibited to be uploaded
+      # [NilClass, String, Regexp, Array[String, Regexp]] a black list of extensions which are prohibited to be uploaded
       #
       # === Examples
       #
@@ -44,7 +44,7 @@ module CarrierWave
       end
 
       def blacklisted_extension?(extension)
-        extension_blacklist.any? { |item| extension =~ /\A#{item}\z/i }
+        Array(extension_blacklist).any? { |item| extension =~ /\A#{item}\z/i }
       end
     end
   end

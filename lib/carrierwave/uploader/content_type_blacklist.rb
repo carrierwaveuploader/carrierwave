@@ -14,7 +14,7 @@ module CarrierWave
       #
       # === Returns
       #
-      # [NilClass, Array[String,Regexp]] a blacklist of content types which are not allowed to be uploaded
+      # [NilClass, String, Regexp, Array[String, Regexp]] a blacklist of content types which are not allowed to be uploaded
       #
       # === Examples
       #
@@ -40,7 +40,7 @@ module CarrierWave
       end
 
       def blacklisted_content_type?(content_type)
-        content_type_blacklist.any? { |item| content_type =~ /#{item}/ }
+        Array(content_type_blacklist).any? { |item| content_type =~ /#{item}/ }
       end
 
     end # ContentTypeBlacklist
