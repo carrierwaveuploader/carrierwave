@@ -36,5 +36,15 @@ describe CarrierWave::Storage::Fog::File do
         expect(subject.filename).to eq('foo.txt')
       end
     end
+
+    context "when url contains multi-byte characters" do
+      before do
+        allow(subject).to receive(:url){ 'http://example.com/path/to/%E6%97%A5%E6%9C%AC%E8%AA%9E.txt' }
+      end
+
+      it "should decode multi-byte characters" do
+        expect(subject.filename).to eq('日本語.txt')
+      end
+    end
   end
 end
