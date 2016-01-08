@@ -19,7 +19,6 @@ Gem::Specification.new do |s|
   s.homepage = %q{https://github.com/carrierwaveuploader/carrierwave}
   s.rdoc_options = ["--main"]
   s.require_paths = ["lib"]
-  s.rubyforge_project = %q{carrierwave}
   s.rubygems_version = %q{1.3.5}
   s.specification_version = 3
   s.licenses = ["MIT"]
