@@ -12,27 +12,26 @@ describe CarrierWave::Uploader::Download do
   end
 
   describe '#download!' do
-
     before do
       allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-1234-2255')
 
-      sham_rack_app = ShamRack.at('www.example.com').stub
-      sham_rack_app.register_resource('/test.jpg', File.read(file_path('test.jpg')), 'image/jpg')
-      sham_rack_app.register_resource('/test-with-no-extension/test', File.read(file_path('test.jpg')), 'image/jpeg')
-      sham_rack_app.register_resource('/test%20with%20spaces/test.jpg', File.read(file_path('test.jpg')), 'image/jpg')
-      sham_rack_app.handle do |request|
-        if request.path_info == '/content-disposition'
-          ["200 OK", {'Content-Type'=>'image/jpg', 'Content-Disposition'=>'filename="another_test.jpg"'}, [File.read(file_path('test.jpg'))]]
-        end
-      end
+      stub_request(:get, "www.example.com/test.jpg")
+        .to_return(body: File.read(file_path("test.jpg")))
 
-      ShamRack.at("www.redirect.com") do |env|
-        [301, {'Content-Type'=>'text/html', 'Location'=>"http://www.example.com/test.jpg"}, ['Redirecting']]
-      end
-    end
+      stub_request(:get, "www.example.com/test-with-no-extension/test").
+        to_return(body: File.read(file_path("test.jpg")), headers: { "Content-Type" => "image/jpeg" })
 
-    after do
-      ShamRack.unmount_all
+      stub_request(:get, "www.example.com/test%20with%20spaces/test.jpg").
+        to_return(body: File.read(file_path("test.jpg")))
+
+      stub_request(:get, "www.example.com/content-disposition").
+        to_return(body: File.read(file_path("test.jpg")), headers: { "Content-Disposition" => 'filename="another_test.jpg"' })
+
+      stub_request(:get, "www.redirect.com").
+        to_return(status: 301, body: "Redirecting", headers: { "Location" => "http://www.example.com/test.jpg" })
+
+      stub_request(:get, "www.example.com/missing.jpg").
+        to_return(status: 404)
     end
 
     it "should cache a file" do

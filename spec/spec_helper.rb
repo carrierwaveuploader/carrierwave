@@ -9,7 +9,7 @@ require 'logger'
 require 'carrierwave'
 require 'timecop'
 require 'open-uri'
-require 'sham_rack'
+require "webmock/rspec"
 require 'mini_magick'
 
 I18n.enforce_available_locales = false
