@@ -35,6 +35,13 @@ describe CarrierWave::Uploader::Download do
       ShamRack.unmount_all
     end
 
+    it 'should get url with baerer authorization on header' do
+      stub_request(:get, "https://www.secure-exemple.com/test.png?access_token=VALID_TOKEN").
+        with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Authorization'=>'Bearer VALID_TOKEN', 'User-Agent'=>'CarrierWave/0.10.0'}).
+        to_return(:status => 200, :body => "", :headers => {})
+      expect(@uploader.download!('https://www.secure-exemple.com/test.png?access_token=VALID_TOKEN')).to be nil
+    end
+
     it "should cache a file" do
       @uploader.download!('http://www.example.com/test.jpg')
       expect(@uploader.file).to be_an_instance_of(CarrierWave::SanitizedFile)

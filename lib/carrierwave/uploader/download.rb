@@ -12,6 +12,7 @@ module CarrierWave
       class RemoteFile
         def initialize(uri)
           @uri = uri
+          @uri_params = to_hash(URI::decode_www_form(uri.query || ''))
         end
 
         def original_filename
@@ -35,13 +36,26 @@ module CarrierWave
 
         def file
           if @file.blank?
-            @file = Kernel.open(@uri.to_s, "User-Agent" => "CarrierWave/#{CarrierWave::VERSION}")
+            @file = Kernel.open(@uri.to_s, user_agent_header)
             @file = @file.is_a?(String) ? StringIO.new(@file) : @file
           end
           @file
 
         rescue StandardError => e
           raise CarrierWave::DownloadError, "could not download file: #{e.message}"
+        end
+
+        def user_agent_header
+          {"User-Agent" => "CarrierWave/#{CarrierWave::VERSION}"}.
+          merge(bearer_authorization_header)
+        end
+
+        def bearer_authorization_header
+          if @uri_params['access_token']
+            {'Authorization' => "Bearer #{@uri_params['access_token']}"}
+          else
+            {}
+          end
         end
 
         def filename_from_header
@@ -53,6 +67,10 @@ module CarrierWave
 
         def method_missing(*args, &block)
           file.send(*args, &block)
+        end
+
+        def to_hash(array)
+          Hash[*array.flatten(1)]
         end
       end
 
