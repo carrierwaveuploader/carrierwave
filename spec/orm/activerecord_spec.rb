@@ -25,9 +25,6 @@ describe CarrierWave::ActiveRecord do
   after(:all) { TestMigration.down }
 
   before do
-    sham_rack_app = ShamRack.at('www.example.com').stub
-    sham_rack_app.register_resource('/test.jpg', File.read(file_path('test.jpg')), 'images/jpg')
-
     # Rails 4 defaults to no root in JSON, join the party
     ActiveRecord::Base.include_root_in_json = false
     # My god, what a horrible, horrible solution, but AR validations don't work
@@ -46,7 +43,6 @@ describe CarrierWave::ActiveRecord do
   end
 
   after do
-    ShamRack.unmount_all
     Event.delete_all
   end
 
@@ -478,6 +474,9 @@ describe CarrierWave::ActiveRecord do
     end
 
     describe "#remote_image_url=" do
+      before do
+        stub_request(:get, "www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
+      end
 
       # FIXME ideally image_changed? and remote_image_url_changed? would return true
       it "should mark image as changed when setting remote_image_url" do
@@ -1195,6 +1194,9 @@ describe CarrierWave::ActiveRecord do
     end
 
     describe "#remote_images_urls=" do
+      before do
+        stub_request(:get, "www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
+      end
 
       # FIXME ideally images_changed? and remote_images_urls_changed? would return true
       it "should mark images as changed when setting remote_images_urls" do

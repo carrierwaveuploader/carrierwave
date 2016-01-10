@@ -4,7 +4,7 @@ require File.join(File.dirname(__FILE__), 'activerecord')
 
 require 'rspec'
 require 'carrierwave'
-require 'sham_rack'
+require "webmock/cucumber"
 
 alias :running :lambda
 

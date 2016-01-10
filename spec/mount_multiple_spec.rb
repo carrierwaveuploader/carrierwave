@@ -282,50 +282,50 @@ describe CarrierWave::Mount do
       end
     end
 
-    describe 'with ShamRack' do
-
+    describe "#remote_images_urls" do
       before do
-        sham_rack_app = ShamRack.at('www.example.com').stub
-        sham_rack_app.register_resource('/test.jpg', File.read(file_path('test.jpg')), 'images/jpg')
+        stub_request(:get, "www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
       end
 
-      after do
-        ShamRack.unmount_all
+      it "returns nil" do
+        expect(@instance.remote_images_urls).to be_nil
       end
 
-      describe '#remote_images_urls' do
-        it "should return nil" do
-          expect(@instance.remote_images_urls).to be_nil
-        end
+      it "returns previously cached URL" do
+        @instance.remote_images_urls = ["http://www.example.com/test.jpg"]
 
-        it "should return previously cached URL" do
-          @instance.remote_images_urls = ['http://www.example.com/test.jpg']
-          expect(@instance.remote_images_urls).to eq(['http://www.example.com/test.jpg'])
-        end
+        expect(@instance.remote_images_urls).to eq(["http://www.example.com/test.jpg"])
+      end
+    end
+
+    describe "#remote_images_urls=" do
+      before do
+        stub_request(:get, "www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
       end
 
-      describe '#remote_images_urls=' do
+      it "does nothing when nil is assigned" do
+        @instance.remote_images_urls = nil
 
-        it "should do nothing when nil is assigned" do
-          @instance.remote_images_urls = nil
-          expect(@instance.images).to be_empty
-        end
+        expect(@instance.images).to be_empty
+      end
 
-        it "should do nothing when an empty string is assigned" do
-          @instance.remote_images_urls = ''
-          expect(@instance.images).to be_empty
-        end
+      it "does nothing when an empty string is assigned" do
+        @instance.remote_images_urls = ""
 
-        it "retrieve from cache when a cache name is assigned" do
-          @instance.remote_images_urls = ['http://www.example.com/test.jpg']
-          expect(@instance.images[0].current_path).to match(/test.jpg$/)
-        end
+        expect(@instance.images).to be_empty
+      end
 
-        it "should write over a previously assigned file" do
-          @instance.images = [stub_file('portrait.jpg')]
-          @instance.remote_images_urls = ['http://www.example.com/test.jpg']
-          expect(@instance.images[0].current_path).to match(/test.jpg$/)
-        end
+      it "retrieves from cache when a cache name is assigned" do
+        @instance.remote_images_urls = ["http://www.example.com/test.jpg"]
+
+        expect(@instance.images[0].current_path).to match(/test.jpg$/)
+      end
+
+      it "writes over a previously assigned file" do
+        @instance.images = [stub_file("portrait.jpg")]
+        @instance.remote_images_urls = ["http://www.example.com/test.jpg"]
+
+        expect(@instance.images[0].current_path).to match(/test.jpg$/)
       end
     end
 
@@ -444,11 +444,11 @@ describe CarrierWave::Mount do
         end
 
         it "should be an error instance if file was downloaded" do
-          sham_rack_app = ShamRack.at('www.example.com').stub
-          sham_rack_app.register_resource('/test.jpg', File.read(file_path('test.jpg')), 'images/jpg')
-
+          stub_request(:get, "www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
           @instance.remote_images_urls = ["http://www.example.com/test.jpg"]
+
           e = @instance.images_integrity_error
+
           expect(e).to be_an_instance_of(CarrierWave::IntegrityError)
           expect(e.message.lines.grep(/^You are not allowed to upload/)).to be_truthy
         end
@@ -490,10 +490,9 @@ describe CarrierWave::Mount do
         end
 
         it "should be an error instance if file was downloaded" do
-          sham_rack_app = ShamRack.at('www.example.com').stub
-          sham_rack_app.register_resource('/test.jpg', File.read(file_path('test.jpg')), 'images/jpg')
-
+          stub_request(:get, "www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
           @instance.remote_images_urls = ["http://www.example.com/test.jpg"]
+
           expect(@instance.images_processing_error).to be_an_instance_of(CarrierWave::ProcessingError)
         end
       end
@@ -501,8 +500,8 @@ describe CarrierWave::Mount do
 
     describe '#images_download_error' do
       before do
-        sham_rack_app = ShamRack.at('www.example.com').stub
-        sham_rack_app.register_resource('/test.jpg', File.read(file_path('test.jpg')), 'images/jpg')
+        stub_request(:get, "www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
+        stub_request(:get, "www.example.com/missing.jpg").to_return(status: 404)
       end
 
       it "should be nil by default" do
@@ -522,8 +521,8 @@ describe CarrierWave::Mount do
 
     describe '#images_download_error' do
       before do
-        sham_rack_app = ShamRack.at('www.example.com').stub
-        sham_rack_app.register_resource('/test.jpg', File.read(file_path('test.jpg')), 'images/jpg')
+        stub_request(:get, "www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
+        stub_request(:get, "www.example.com/missing.jpg").to_return(status: 404)
       end
 
       it "should be nil by default" do
@@ -679,8 +678,7 @@ describe CarrierWave::Mount do
     end
 
     it "should raise an error if the images fails an integrity check when downloaded" do
-      sham_rack_app = ShamRack.at('www.example.com').stub
-      sham_rack_app.register_resource('/test.jpg', File.read(file_path('test.jpg')), 'images/jpg')
+      stub_request(:get, "www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
 
       expect(running {
         @instance.remote_images_urls = ["http://www.example.com/test.jpg"]
@@ -714,8 +712,7 @@ describe CarrierWave::Mount do
     end
 
     it "should raise an error if the images fails to be processed when downloaded" do
-      sham_rack_app = ShamRack.at('www.example.com').stub
-      sham_rack_app.register_resource('/test.jpg', File.read(file_path('test.jpg')), 'images/jpg')
+      stub_request(:get, "www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
 
       expect(running {
         @instance.remote_images_urls = ["http://www.example.com/test.jpg"]
