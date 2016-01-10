@@ -3,14 +3,12 @@ lib = File.expand_path('../lib/', __FILE__)
 $:.unshift lib unless $:.include?(lib)
 
 require 'carrierwave/version'
-require 'date'
 
 Gem::Specification.new do |s|
   s.name = "carrierwave"
   s.version = CarrierWave::VERSION
 
   s.authors = ["Jonas Nicklas"]
-  s.date = Date.today
   s.description = "Upload files in your Ruby applications, map them to a range of ORMs, store them on different backends."
   s.summary = "Ruby file upload library"
   s.email = ["jonas.nicklas@gmail.com"]
@@ -19,9 +17,6 @@ Gem::Specification.new do |s|
   s.homepage = %q{https://github.com/carrierwaveuploader/carrierwave}
   s.rdoc_options = ["--main"]
   s.require_paths = ["lib"]
-  s.rubyforge_project = %q{carrierwave}
-  s.rubygems_version = %q{1.3.5}
-  s.specification_version = 3
   s.licenses = ["MIT"]
 
   s.required_ruby_version = ">= 2.0.0"
