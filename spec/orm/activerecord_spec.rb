@@ -1,45 +1,33 @@
 require 'spec_helper'
 require 'support/activerecord'
 
-class TestMigration < ActiveRecord::Migration
-  def self.up
-    create_table :events, :force => true do |t|
-      t.column :image, :string
-      t.column :images, :json
-      t.column :textfile, :string
-      t.column :textfiles, :json
-      t.column :foo, :string
-    end
-  end
-
-  def self.down
-    drop_table :events
+def create_table(name)
+  ActiveRecord::Base.connection.create_table(name, force: true) do |t|
+    t.column :image, :string
+    t.column :images, :json
+    t.column :textfile, :string
+    t.column :textfiles, :json
+    t.column :foo, :string
   end
 end
 
-class Event < ActiveRecord::Base; end # setup a basic AR class for testing
-$arclass = 0
+def drop_table(name)
+  ActiveRecord::Base.connection.drop_table(name)
+end
+
+def reset_class(class_name)
+  Object.send(:remove_const, class_name) rescue nil
+  Object.const_set(class_name, Class.new(ActiveRecord::Base))
+end
 
 describe CarrierWave::ActiveRecord do
-  before(:all) { TestMigration.up }
-  after(:all) { TestMigration.down }
+  before(:all) { create_table("events") }
+  after(:all) { drop_table("events") }
 
   before do
-    # Rails 4 defaults to no root in JSON, join the party
-    ActiveRecord::Base.include_root_in_json = false
-    # My god, what a horrible, horrible solution, but AR validations don't work
-    # unless the class has a name. This is the best I could come up with :S
-    $arclass += 1
-
-    @class = Class.new(Event)
-    # AR validations don't work unless the class has a name, and
-    # anonymous classes can be named by assigning them to a constant
-    Object.const_set("Event#{$arclass}", @class)
-    @class.table_name = "events"
     @uploader = Class.new(CarrierWave::Uploader::Base)
-    @class.mount_uploader(:image, @uploader)
-    @class.mount_uploaders(:images, @uploader)
-    @event = @class.new
+    reset_class("Event")
+    @event = Event.new
   end
 
   after do
@@ -47,6 +35,10 @@ describe CarrierWave::ActiveRecord do
   end
 
   describe '#mount_uploader' do
+    before do
+      Event.mount_uploader(:image, @uploader)
+    end
+
     describe '#image' do
 
       it "should return blank uploader when nothing has been assigned" do
@@ -99,8 +91,9 @@ describe CarrierWave::ActiveRecord do
       end
 
       it "should return valid XML when to_xml is called when image is nil" do
+        hash = Hash.from_xml(@event.to_xml)["event"]
+
         expect(@event[:image]).to be_nil
-        hash = Hash.from_xml(@event.to_xml)["event#{$arclass}"]
         expect(hash.keys).to include("image")
         expect(hash["image"].keys).to include("url")
         expect(hash["image"]["url"]).to be_nil
@@ -111,7 +104,7 @@ describe CarrierWave::ActiveRecord do
         @event.save!
         @event.reload
 
-        expect(Hash.from_xml(@event.to_xml)["event#{$arclass}"]["image"]).to eq({"url" => "/uploads/test.jpeg"})
+        expect(Hash.from_xml(@event.to_xml)["event"]["image"]).to eq({"url" => "/uploads/test.jpeg"})
       end
 
       it "should respect options[:only] when passed to as_json for the serializable hash" do
@@ -142,7 +135,7 @@ describe CarrierWave::ActiveRecord do
         @event.save!
         @event.reload
 
-        expect(Hash.from_xml(@event.to_xml(:only => [:foo]))["event#{$arclass}"]["image"]).to be_nil
+        expect(Hash.from_xml(@event.to_xml(only: [:foo]))["event"]["image"]).to be_nil
       end
 
       it "should respect options[:except] when passed to to_xml for the serializable hash" do
@@ -150,7 +143,7 @@ describe CarrierWave::ActiveRecord do
         @event.save!
         @event.reload
 
-        expect(Hash.from_xml(@event.to_xml(:except => [:image]))["event#{$arclass}"]["image"]).to be_nil
+        expect(Hash.from_xml(@event.to_xml(except: [:image]))["event"]["image"]).to be_nil
       end
 
       it "should respect both options[:only] and options[:except] when passed to to_xml for the serializable hash" do
@@ -158,7 +151,7 @@ describe CarrierWave::ActiveRecord do
         @event.save!
         @event.reload
 
-        expect(Hash.from_xml(@event.to_xml(:only => [:foo], :except => [:id]))["event#{$arclass}"]["image"]).to be_nil
+        expect(Hash.from_xml(@event.to_xml(only: [:foo], except: [:id]))["event"]["image"]).to be_nil
       end
 
       it "resets cached value on record reload" do
@@ -166,7 +159,8 @@ describe CarrierWave::ActiveRecord do
         @event.save!
 
         expect(@event.reload.image).to be_present
-        @class.find(@event.id).update_column(:image, nil)
+
+        Event.find(@event.id).update_column(:image, nil)
 
         expect(@event.reload.image).to be_blank
       end
@@ -359,8 +353,9 @@ describe CarrierWave::ActiveRecord do
       end
 
       it "should do nothing when a validation fails" do
-        @class.validate { |r| r.errors.add :textfile, "FAIL!" }
+        Event.validate { |r| r.errors.add :textfile, "FAIL!" }
         @event.image = stub_file('test.jpeg')
+
         expect(@event.save).to be_falsey
         expect(@event.image).to be_an_instance_of(@uploader)
         expect(@event.image.current_path).to match(/^#{public_path('uploads/tmp')}/)
@@ -377,8 +372,10 @@ describe CarrierWave::ActiveRecord do
       it "should preserve the image when nothing is assigned" do
         @event.image = stub_file('test.jpeg')
         expect(@event.save).to be_truthy
-        @event = @class.find(@event.id)
+
+        @event = Event.find(@event.id)
         @event.foo = "bar"
+
         expect(@event.save).to be_truthy
         expect(@event[:image]).to eq('test.jpeg')
         expect(@event.image_identifier).to eq('test.jpeg')
@@ -587,7 +584,7 @@ describe CarrierWave::ActiveRecord do
     describe 'with validates_presence_of' do
 
       before do
-        @class.validates_presence_of :image
+        Event.validates_presence_of :image
         allow(@event).to receive(:name).and_return('jonas')
       end
 
@@ -605,7 +602,7 @@ describe CarrierWave::ActiveRecord do
     describe 'with validates_size_of' do
 
       before do
-        @class.validates_size_of :image, :maximum => 40
+        Event.validates_size_of :image, maximum: 40
         allow(@event).to receive(:name).and_return('jonas')
       end
 
@@ -623,20 +620,15 @@ describe CarrierWave::ActiveRecord do
   end
 
   describe '#mount_uploader with mount_on' do
-    before do
-      @class = Class.new(Event)
-      @class.table_name = "events"
-      @uploader = Class.new(CarrierWave::Uploader::Base)
-      @class.mount_uploader(:avatar, @uploader, :mount_on => :image)
-      @event = @class.new
-    end
-
     describe '#avatar=' do
-
       it "should cache a file" do
+        reset_class("Event")
+        Event.mount_uploader(:avatar, @uploader, mount_on: :image)
+        @event = Event.new
         @event.avatar = stub_file('test.jpeg')
         @event.save
         @event.reload
+
         expect(@event.avatar).to be_an_instance_of(@uploader)
         expect(@event.image).to eq('test.jpeg')
       end
@@ -646,12 +638,11 @@ describe CarrierWave::ActiveRecord do
 
   describe '#mount_uploader removing old files' do
     before do
-      @class = Class.new(Event)
-      @class.table_name = "events"
-      @uploader = Class.new(CarrierWave::Uploader::Base)
-      @class.mount_uploader(:image, @uploader)
-      @event = @class.new
+      reset_class("Event")
+      Event.mount_uploader(:image, @uploader)
+      @event = Event.new
       @event.image = stub_file('old.jpeg')
+
       expect(@event.save).to be_truthy
       expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
     end
@@ -683,8 +674,9 @@ describe CarrierWave::ActiveRecord do
       end
 
       it "should not remove file if validations fail on save" do
-        @class.validate { |r| r.errors.add :textfile, "FAIL!" }
+        Event.validate { |r| r.errors.add :textfile, "FAIL!" }
         @event.image = stub_file('new.jpeg')
+
         expect(@event.save).to be_falsey
         expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
       end
@@ -731,13 +723,12 @@ describe CarrierWave::ActiveRecord do
 
   describe '#mount_uploader removing old files with versions' do
     before do
-      @class = Class.new(Event)
-      @class.table_name = "events"
-      @uploader = Class.new(CarrierWave::Uploader::Base)
       @uploader.version :thumb
-      @class.mount_uploader(:image, @uploader)
-      @event = @class.new
+      reset_class("Event")
+      Event.mount_uploader(:image, @uploader)
+      @event = Event.new
       @event.image = stub_file('old.jpeg')
+
       expect(@event.save).to be_truthy
       expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
       expect(File.exist?(public_path('uploads/thumb_old.jpeg'))).to be_truthy
@@ -777,15 +768,15 @@ describe CarrierWave::ActiveRecord do
 
   describe '#mount_uploader removing old files with multiple uploaders' do
     before do
-      @class = Class.new(Event)
-      @class.table_name = "events"
       @uploader = Class.new(CarrierWave::Uploader::Base)
-      @class.mount_uploader(:image, @uploader)
       @uploader1 = Class.new(CarrierWave::Uploader::Base)
-      @class.mount_uploader(:textfile, @uploader1)
-      @event = @class.new
+      reset_class("Event")
+      Event.mount_uploader(:image, @uploader)
+      Event.mount_uploader(:textfile, @uploader1)
+      @event = Event.new
       @event.image = stub_file('old.jpeg')
       @event.textfile = stub_file('old.txt')
+
       expect(@event.save).to be_truthy
       expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
       expect(File.exist?(public_path('uploads/old.txt'))).to be_truthy
@@ -825,12 +816,11 @@ describe CarrierWave::ActiveRecord do
 
   describe '#mount_uploader removing old files with with mount_on' do
     before do
-      @class = Class.new(Event)
-      @class.table_name = "events"
-      @uploader = Class.new(CarrierWave::Uploader::Base)
-      @class.mount_uploader(:avatar, @uploader, :mount_on => :image)
-      @event = @class.new
+      reset_class("Event")
+      Event.mount_uploader(:avatar, @uploader, mount_on: :image)
+      @event = Event.new
       @event.avatar = stub_file('old.jpeg')
+
       expect(@event.save).to be_truthy
       expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
     end
@@ -854,6 +844,10 @@ describe CarrierWave::ActiveRecord do
   end
 
   describe '#mount_uploaders' do
+    before do
+      Event.mount_uploaders(:images, @uploader)
+    end
+
     describe '#images' do
 
       it "should return blank uploader when nothing has been assigned" do
@@ -898,8 +892,9 @@ describe CarrierWave::ActiveRecord do
       end
 
       it "should return valid XML when to_xml is called when images is nil" do
+        hash = Hash.from_xml(@event.to_xml)["event"]
+
         expect(@event[:images]).to be_nil
-        hash = Hash.from_xml(@event.to_xml)["event#{$arclass}"]
         expect(hash.keys).to include("images")
         expect(hash["images"]).to be_empty
       end
@@ -909,7 +904,7 @@ describe CarrierWave::ActiveRecord do
         @event.save!
         @event.reload
 
-        expect(Hash.from_xml(@event.to_xml)["event#{$arclass}"]["images"]).to eq([{"url" => "/uploads/test.jpeg"}])
+        expect(Hash.from_xml(@event.to_xml)["event"]["images"]).to eq([{"url" => "/uploads/test.jpeg"}])
       end
 
       it "should respect options[:only] when passed to as_json for the serializable hash" do
@@ -940,7 +935,7 @@ describe CarrierWave::ActiveRecord do
         @event.save!
         @event.reload
 
-        expect(Hash.from_xml(@event.to_xml(:only => [:foo]))["event#{$arclass}"]["images"]).to be_nil
+        expect(Hash.from_xml(@event.to_xml(only: [:foo]))["event"]["images"]).to be_nil
       end
 
       it "should respect options[:except] when passed to to_xml for the serializable hash" do
@@ -948,7 +943,7 @@ describe CarrierWave::ActiveRecord do
         @event.save!
         @event.reload
 
-        expect(Hash.from_xml(@event.to_xml(:except => [:images]))["event#{$arclass}"]["images"]).to be_nil
+        expect(Hash.from_xml(@event.to_xml(except: [:images]))["event"]["images"]).to be_nil
       end
 
       it "should respect both options[:only] and options[:except] when passed to to_xml for the serializable hash" do
@@ -956,7 +951,7 @@ describe CarrierWave::ActiveRecord do
         @event.save!
         @event.reload
 
-        expect(Hash.from_xml(@event.to_xml(:only => [:foo], :except => [:id]))["event#{$arclass}"]["images"]).to be_nil
+        expect(Hash.from_xml(@event.to_xml(only: [:foo], except: [:id]))["event"]["images"]).to be_nil
       end
     end
 
@@ -1117,8 +1112,9 @@ describe CarrierWave::ActiveRecord do
       end
 
       it "should do nothing when a validation fails" do
-        @class.validate { |r| r.errors.add :textfile, "FAIL!" }
+        Event.validate { |r| r.errors.add :textfile, "FAIL!" }
         @event.images = [stub_file('test.jpeg')]
+
         expect(@event.save).to be_falsey
         expect(@event.images[0]).to be_an_instance_of(@uploader)
         expect(@event.images[0].current_path).to match(/^#{public_path('uploads/tmp')}/)
@@ -1135,8 +1131,10 @@ describe CarrierWave::ActiveRecord do
       it "should preserve the images when nothing is assigned" do
         @event.images = [stub_file('test.jpeg')]
         expect(@event.save).to be_truthy
-        @event = @class.find(@event.id)
+
+        @event = Event.find(@event.id)
         @event.foo = "bar"
+
         expect(@event.save).to be_truthy
         expect(@event[:images]).to eq(['test.jpeg'])
         expect(@event.images_identifiers[0]).to eq('test.jpeg')
@@ -1307,7 +1305,7 @@ describe CarrierWave::ActiveRecord do
     describe 'with validates_presence_of' do
 
       before do
-        @class.validates_presence_of :images
+        Event.validates_presence_of :images
         allow(@event).to receive(:name).and_return('jonas')
       end
 
@@ -1325,7 +1323,7 @@ describe CarrierWave::ActiveRecord do
     describe 'with validates_size_of' do
 
       before do
-        @class.validates_size_of :images, :maximum => 2
+        Event.validates_size_of :images, maximum: 2
         allow(@event).to receive(:name).and_return('jonas')
       end
 
@@ -1343,20 +1341,15 @@ describe CarrierWave::ActiveRecord do
   end
 
   describe '#mount_uploaders with mount_on' do
-    before do
-      @class = Class.new(Event)
-      @class.table_name = "events"
-      @uploader = Class.new(CarrierWave::Uploader::Base)
-      @class.mount_uploaders(:avatar, @uploader, :mount_on => :images)
-      @event = @class.new
-    end
-
     describe '#avatar=' do
-
       it "should cache a file" do
+        reset_class("Event")
+        Event.mount_uploaders(:avatar, @uploader, mount_on: :images)
+        @event = Event.new
         @event.avatar = [stub_file('test.jpeg')]
         @event.save
         @event.reload
+
         expect(@event.avatar[0]).to be_an_instance_of(@uploader)
         expect(@event.images).to eq(['test.jpeg'])
       end
@@ -1366,12 +1359,9 @@ describe CarrierWave::ActiveRecord do
 
   describe '#mount_uploaders removing old files' do
     before do
-      @class = Class.new(Event)
-      @class.table_name = "events"
-      @uploader = Class.new(CarrierWave::Uploader::Base)
-      @class.mount_uploaders(:images, @uploader)
-      @event = @class.new
+      Event.mount_uploaders(:images, @uploader)
       @event.images = [stub_file('old.jpeg')]
+
       expect(@event.save).to be_truthy
       expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
     end
@@ -1403,8 +1393,9 @@ describe CarrierWave::ActiveRecord do
       end
 
       it "should not remove file if validations fail on save" do
-        @class.validate { |r| r.errors.add :textfile, "FAIL!" }
+        Event.validate { |r| r.errors.add :textfile, "FAIL!" }
         @event.images = [stub_file('new.jpeg')]
+
         expect(@event.save).to be_falsey
         expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
       end
@@ -1443,13 +1434,10 @@ describe CarrierWave::ActiveRecord do
 
   describe '#mount_uploaders removing old files with versions' do
     before do
-      @class = Class.new(Event)
-      @class.table_name = "events"
-      @uploader = Class.new(CarrierWave::Uploader::Base)
       @uploader.version :thumb
-      @class.mount_uploaders(:images, @uploader)
-      @event = @class.new
+      Event.mount_uploaders(:images, @uploader)
       @event.images = [stub_file('old.jpeg')]
+
       expect(@event.save).to be_truthy
       expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
       expect(File.exist?(public_path('uploads/thumb_old.jpeg'))).to be_truthy
@@ -1478,15 +1466,15 @@ describe CarrierWave::ActiveRecord do
 
   describe '#mount_uploaders removing old files with multiple uploaders' do
     before do
-      @class = Class.new(Event)
-      @class.table_name = "events"
       @uploader = Class.new(CarrierWave::Uploader::Base)
-      @class.mount_uploaders(:images, @uploader)
       @uploader1 = Class.new(CarrierWave::Uploader::Base)
-      @class.mount_uploaders(:textfiles, @uploader1)
-      @event = @class.new
+      reset_class("Event")
+      Event.mount_uploaders(:images, @uploader)
+      Event.mount_uploaders(:textfiles, @uploader1)
+      @event = Event.new
       @event.images = [stub_file('old.jpeg')]
       @event.textfiles = [stub_file('old.txt')]
+
       expect(@event.save).to be_truthy
       expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
       expect(File.exist?(public_path('uploads/old.txt'))).to be_truthy
@@ -1526,12 +1514,10 @@ describe CarrierWave::ActiveRecord do
 
   describe '#mount_uploaders removing old files with mount_on' do
     before do
-      @class = Class.new(Event)
-      @class.table_name = "events"
-      @uploader = Class.new(CarrierWave::Uploader::Base)
-      @class.mount_uploaders(:avatar, @uploader, :mount_on => :images)
-      @event = @class.new
+      Event.mount_uploaders(:avatar, @uploader, mount_on: :images)
+      @event = Event.new
       @event.avatar = [stub_file('old.jpeg')]
+
       expect(@event.save).to be_truthy
       expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
     end
@@ -1560,8 +1546,10 @@ describe CarrierWave::ActiveRecord do
 
   describe "#dup" do
     it "appropriately removes the model reference from the new models uploader" do
+      Event.mount_uploader(:image, @uploader)
       @event.save
       new_event = @event.dup
+
       expect(new_event.image.model).not_to eq @event
     end
   end
