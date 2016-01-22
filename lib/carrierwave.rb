@@ -41,26 +41,12 @@ elsif defined?(Rails)
       initializer "carrierwave.setup_paths" do |app|
         CarrierWave.root = Rails.root.join(Rails.public_path).to_s
         CarrierWave.base_path = ENV['RAILS_RELATIVE_URL_ROOT']
-
-        pattern = CarrierWave::Railtie.locales_pattern_from app.config.i18n.available_locales
-
-        files = Dir[File.join(File.dirname(__FILE__), 'carrierwave', 'locale', "#{pattern}.yml")]
-        # Loads the Carrierwave locale files before the Rails application locales
-        # letting the Rails application overrite the carrierwave locale defaults
-        I18n.load_path = files.concat I18n.load_path
       end
 
       initializer "carrierwave.active_record" do
         ActiveSupport.on_load :active_record do
           require 'carrierwave/orm/activerecord'
         end
-      end
-
-      private
-
-      def self.locales_pattern_from(args)
-        array = Array(args || [])
-        array.blank? ? '*' : "{#{array.join ','}}"
       end
     end
   end
