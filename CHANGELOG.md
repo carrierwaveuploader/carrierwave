@@ -12,6 +12,7 @@
 * Support for multiple file uploads with `mount_uploaders` method (@jnicklas and @lisarutan)
 * Add a `cache_only` configuration option, useful for testing (@jeffkreeftmeijer)
 * Add `#width` and `#height` methods to MiniMagick processor (@ShivaVS)
+* Add `#width` and `#height` methods to the RMagick processor (@mehlah)
 * Support for jRuby (@lephyrius)
 * Make cache storage configurable (@mshibuya)
 * Errors on file size (@gautampunhani)
@@ -19,6 +20,10 @@
 ### Changed
 * [BREAKING CHANGE] Allow non-ASCII filename by default (@shuhei)
 * [BREAKING CHANGE] `to_json` behavior changed when serializing an uploader (@jnicklas and @lisarutan)
+* [BREAKING CHANGE] Rename `extension_white_list` ~> `extension_whitelist` (@mehlah)
+* [BREAKING CHANGE] Rename `extension_black_list` ~> `extension_blacklist` (@mehlah)
+* [BREAKING CHANGE] Rename i18n keys `extension_black_list_error` ~> `extension_blacklist_error` and `extension_white_list_error` ~> `extension_whitelist_error` (@mehlah)
+* `cache_id` is now less collision-prone thanks to a counter (@stillwaiting)
 * Better error when the configured storage is unknown (@st0012)
 * Allow to pass additionnal options to Rackspace `authenticated_url` (@duhast)
 * Reduced memory footprint (@schneems, @simonprev)
@@ -26,10 +31,13 @@
 * All locales from `config.i18n.available_locales` are added to load_path (@printercu)
 * Do not display rmagick exception in I18n message (manuelpradal)
 * `#default_url` now accepts the same args passed to `#url` (@shekibobo)
-
-### Deprecated
+* Accept an array of strings or regexps to white/blacklist content types (@mehlah)
+* `#content_type_whitelist` and `extension_whitelist` now takes either a string, a regexp, or an array of values (same thing for blacklists) (@mehlah)
 
 ### Removed
+* Remove `CarrierWave::MimeTypes` processor module (@mehlah)
+* Remove `CarrierWave::MagicMimeTypes` processor module (@mehlah)
+* Remove dependency on `ruby-filemagic` in white/blacklist content types (@mehlah)
 
 ### Fixed
 * Fix `Mounter.blank?` method (@Bonias)
