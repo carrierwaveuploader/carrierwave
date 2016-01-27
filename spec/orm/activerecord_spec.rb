@@ -177,7 +177,7 @@ describe CarrierWave::ActiveRecord do
         expect(@event[:image]).to be_nil
       end
 
-      it "should copy a file into into the cache directory" do
+      it "should copy a file into the cache directory" do
         @event.image = stub_file('test.jpeg')
         expect(@event.image.current_path).to match(%r(^#{public_path('uploads/tmp')}))
       end
