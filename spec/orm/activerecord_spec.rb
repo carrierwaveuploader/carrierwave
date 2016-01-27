@@ -385,6 +385,14 @@ describe CarrierWave::ActiveRecord do
     end
 
     describe "#remote_image_url=" do
+      before do
+        sham_rack_app = ShamRack.at('www.example.com').stub
+        sham_rack_app.register_resource('/test.jpg', File.read(file_path('test.jpg')), 'image/jpg')
+      end
+
+      after do
+        ShamRack.unmount_all
+      end
 
       # FIXME ideally image_changed? and remote_image_url_changed? would return true
       it "should mark image as changed when setting remote_image_url" do
