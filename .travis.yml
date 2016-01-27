@@ -29,4 +29,7 @@ matrix:
       gemfile: gemfiles/rails-3-2-stable.gemfile
 
 before_script:
-  - "mysql -e 'create database carrierwave_test;'"
+  - psql -c 'create database carrierwave_test;' -U postgres
+
+addons:
+  postgresql: "9.3"

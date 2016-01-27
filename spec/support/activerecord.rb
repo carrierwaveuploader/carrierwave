@@ -1,22 +1,15 @@
-require 'mysql2'
+require 'pg'
 require 'active_record'
 require 'carrierwave/orm/activerecord'
 
-# Change this if MySQL is unavailable
+# Change this if PG is unavailable
 dbconfig = {
-  :adapter  => 'mysql2',
+  :adapter  => 'postgresql',
   :database => 'carrierwave_test',
-  :username => 'root',
-  :encoding => 'utf8'
+  :encoding => 'utf8',
+  :username => 'postgres'
 }
 
-database = dbconfig.delete(:database)
-
 ActiveRecord::Base.establish_connection(dbconfig)
-begin
-  ActiveRecord::Base.connection.create_database database
-rescue ActiveRecord::StatementInvalid => e # database already exists
-end
-ActiveRecord::Base.establish_connection(dbconfig.merge(:database => database))
 
 ActiveRecord::Migration.verbose = false
