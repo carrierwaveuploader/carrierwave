@@ -23,6 +23,8 @@ end
 
 require 'fog_credentials' # after Fog.mock!
 
+I18n.enforce_available_locales = false
+
 CARRIERWAVE_DIRECTORY = "carrierwave#{Time.now.to_i}" unless defined?(CARRIERWAVE_DIRECTORY)
 
 alias :running :lambda
