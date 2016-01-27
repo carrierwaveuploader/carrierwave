@@ -1,10 +1,8 @@
 # encoding: utf-8
 
 require 'spec_helper'
-
+require 'rails'
 require 'carrierwave/orm/activerecord'
-
-module Rails; end unless defined?(Rails)
 
 describe CarrierWave::Compatibility::Paperclip do
 

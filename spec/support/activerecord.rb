@@ -1,5 +1,5 @@
 require 'pg'
-require 'active_record'
+require 'rails'
 require 'carrierwave/orm/activerecord'
 
 # Change this if PG is unavailable
