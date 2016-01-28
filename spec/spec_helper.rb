@@ -19,6 +19,8 @@ require 'mysql2'
 require 'fog'
 require 'storage/fog_helper'
 
+require 'rails'
+
 unless ENV['REMOTE'] == 'true'
   Fog.mock!
 end
