@@ -180,6 +180,18 @@ u.avatars[0].current_path # => 'path/to/file.png'
 u.avatars[0].identifier # => 'file.png'
 ```
 
+### Workaround for multi file with same name
+
+Some client sends different images with the same file name(confirmed in iPhone6), and the default `store_dir` and `filename` value will not work in this case.
+
+Changing the `filename` to the following is recommended to avoid this case:
+
+```ruby
+  def filename
+    "#{cache_id}#{original_filename}.#{file.extension}" if original_filename
+  end
+```
+
 ## Changing the storage directory
 
 In order to change where uploaded files are put, just override the `store_dir`
