@@ -1,6 +1,8 @@
 before_install:
   - gem install bundler
 
+cache: bundler
+
 notifications:
   email: false
 
