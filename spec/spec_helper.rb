@@ -14,8 +14,6 @@ require 'sham_rack'
 require 'mini_magick'
 require 'generator_spec'
 
-require 'mysql2'
-
 require 'fog'
 require 'storage/fog_helper'
 
@@ -24,6 +22,8 @@ unless ENV['REMOTE'] == 'true'
 end
 
 require 'fog_credentials' # after Fog.mock!
+
+I18n.enforce_available_locales = false
 
 CARRIERWAVE_DIRECTORY = "carrierwave#{Time.now.to_i}" unless defined?(CARRIERWAVE_DIRECTORY)
 

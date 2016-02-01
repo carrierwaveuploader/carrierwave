@@ -1,25 +1,23 @@
 before_install:
   - gem install bundler
 
+cache: bundler
+
 notifications:
   email: false
 
 rvm:
  - 1.9.3
- - 2.0.0
- - 2.1.1
- - ruby-head
+ - 2.0
+ - 2.1
 
 gemfile:
   - Gemfile
   - gemfiles/rails-3-2-stable.gemfile
   - gemfiles/rails-4-0-stable.gemfile
   - gemfiles/rails-4-1-stable.gemfile
-  - gemfiles/rails-master.gemfile
 
 matrix:
-  allow_failures:
-    - rvm: ruby-head
   include:
     - rvm: 1.8.7
       gemfile: gemfiles/rails-3-2-stable.gemfile
@@ -29,4 +27,7 @@ matrix:
       gemfile: gemfiles/rails-3-2-stable.gemfile
 
 before_script:
-  - "mysql -e 'create database carrierwave_test;'"
+  - psql -c 'create database carrierwave_test;' -U postgres
+
+addons:
+  postgresql: "9.3"
