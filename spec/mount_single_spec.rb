@@ -100,6 +100,11 @@ describe CarrierWave::Mount do
         expect(@instance.image).to be_blank
       end
 
+      it "should return the same object every time when nothing has been assigned" do
+        expect(@instance).to receive(:read_uploader).with(:image).and_return(nil)
+        expect(@instance.image.object_id).to eq @instance.image.object_id
+      end
+
       it "should return a blank uploader when an empty string has been assigned" do
         expect(@instance).to receive(:read_uploader).with(:image).and_return('')
         expect(@instance.image).to be_an_instance_of(@uploader)
