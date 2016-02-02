@@ -139,7 +139,7 @@ module CarrierWave
       mod.class_eval <<-RUBY, __FILE__, __LINE__+1
 
         def #{column}
-          _mounter(:#{column}).uploaders[0] or _mounter(:#{column}).blank_uploader
+          _mounter(:#{column}).uploaders[0] ||= _mounter(:#{column}).blank_uploader
         end
 
         def #{column}=(new_file)
