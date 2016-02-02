@@ -38,11 +38,7 @@ module CarrierWave
 
     def cache(new_files)
       return if not new_files or new_files == ""
-      @uploaders = new_files.map do |new_file|
-        uploader = blank_uploader
-        uploader.cache!(new_file)
-        uploader
-      end
+      init_uploaders(new_files, :cache!)
 
       @integrity_error = nil
       @processing_error = nil
@@ -60,11 +56,7 @@ module CarrierWave
 
     def cache_names=(cache_names)
       return if not cache_names or cache_names == "" or uploaders.any?(&:cached?)
-      @uploaders = cache_names.map do |cache_name|
-        uploader = blank_uploader
-        uploader.retrieve_from_cache!(cache_name)
-        uploader
-      end
+      init_uploaders(cache_names, :retrieve_from_cache!)
     rescue CarrierWave::InvalidParameter
     end
 
@@ -75,11 +67,7 @@ module CarrierWave
       @download_error = nil
       @integrity_error = nil
 
-      @uploaders = urls.map do |url|
-        uploader = blank_uploader
-        uploader.download!(url)
-        uploader
-      end
+      init_uploaders(urls, :download!)
 
     rescue CarrierWave::DownloadError => e
       @download_error = e
@@ -144,6 +132,14 @@ module CarrierWave
     attr_accessor :uploader_options
 
   private
+
+    def init_uploaders(arr, operation)
+      @uploaders = arr.map do |item|
+        uploader = blank_uploader
+        uploader.send(operation, item)
+        uploader
+      end
+    end
 
     def option(name)
       self.uploader_options ||= {}
