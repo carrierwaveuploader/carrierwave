@@ -742,13 +742,14 @@ the url to the file on Rackspace Cloud Files.
 
 ```ruby
 gem "fog-google"
+gem "google-api-client", "< 0.9", ">= 0.6.2"
+gem "mime-types"
 ```
 
 You'll need to configure a directory (also known as a bucket), access key id and secret access key in the initializer.
 For the sake of performance it is assumed that the directory already exists, so please create it if need be.
 
-Sign up [here](http://gs-signup-redirect.appspot.com/) and get your credentials [here](https://storage.cloud.google.com/m)
-under the section “Interoperable Access”.
+Please read the [fog-google README](https://github.com/fog/fog-google/blob/master/README.md) on how to get credentials.
 
 
 ```ruby
