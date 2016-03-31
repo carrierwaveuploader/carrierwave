@@ -1,8 +1,12 @@
 # Carrierwave History/Changelog
+
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## 0.11.0 - 2016-03-29
+
+[Compare v0.10.0...v0.11.0](https://github.com/carrierwaveuploader/carrierwave/compare/v0.10.0...v0.11.0)
+
 ### Added
 * Add a test matcher for the format (@yanivpr [#1758](https://github.com/carrierwaveuploader/carrierwave/pull/1758))
 * Support of MiniMagick's Combine options (@bernabas [#1754](https://github.com/carrierwaveuploader/carrierwave/pull/1754))
@@ -61,7 +65,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Make the `#remove_#{column}` accessor set the mounted column as changed (@nikz [#1326](https://github.com/carrierwaveuploader/carrierwave/pull/1326))
 * Tempfile and @content_type assignment (@bensie [#1487](https://github.com/carrierwaveuploader/carrierwave/issues/1487))
 
+## 0.10.0 - 2014-02-26
+
 Please check [0.10-stable] for previous changes.
 
-[Unreleased]: https://github.com/carrierwaveuploader/carrierwave/compare/v0.10.0...HEAD
 [0.10-stable]: https://github.com/carrierwaveuploader/carrierwave/blob/0.10-stable/History.txt
