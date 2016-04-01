@@ -5,9 +5,7 @@ require 'generators/uploader_generator'
 describe UploaderGenerator, :type => :generator do
   destination File.expand_path("../../tmp", __FILE__)
 
-  before :each do
-    prepare_destination
-  end
+  before { prepare_destination }
 
   it "should properly create uploader file" do
     run_generator %w(Avatar)

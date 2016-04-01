@@ -1,482 +1,618 @@
 require 'spec_helper'
 
 describe CarrierWave::Mount do
+  let(:klass) { Class.new.send(:extend, CarrierWave::Mount) }
+  let(:uploader) { Class.new(CarrierWave::Uploader::Base) }
+  let(:instance) { klass.new }
+  let(:test_file_name) { 'test.jpg' }
+  let(:new_file_name) { 'new.jpeg' }
+  let(:test_file_stub) { stub_file(test_file_name) }
+  let(:new_file_stub) { stub_file(new_file_name) }
 
-  after do
-    FileUtils.rm_rf(public_path)
-  end
+  after { FileUtils.rm_rf(public_path) }
 
   describe '.mount_uploaders' do
+    before { klass.mount_uploaders(:images, uploader) }
 
-    before do
-      @class = Class.new
-      @class.send(:extend, CarrierWave::Mount)
-
-      @uploader = Class.new(CarrierWave::Uploader::Base)
-
-      @class.mount_uploaders(:images, @uploader)
-      @instance = @class.new
-    end
-
-    it "should maintain the ability to super" do
-      @class.class_eval do
-        def images_uploader
-          super
-        end
-
-        def images=(val)
-          super
-        end
-      end
-
-      @instance.images = [stub_file('test.jpg')]
-      expect(@instance.images[0]).to be_an_instance_of(@uploader)
-    end
-
-    it "should inherit uploaders to subclasses" do
-      @subclass = Class.new(@class)
-      @subclass_instance = @subclass.new
-      @subclass_instance.images = [stub_file('test.jpg'), stub_file('new.jpeg')]
-      expect(@subclass_instance.images[0]).to be_an_instance_of(@uploader)
-      expect(@subclass_instance.images[1]).to be_an_instance_of(@uploader)
-    end
-
-    it "should allow marshalling uploaders and versions" do
-      Object.const_set("MyClass#{@class.object_id}".gsub('-', '_'), @class)
-      Object.const_set("Uploader#{@uploader.object_id}".gsub('-', '_'), @uploader)
-      @uploader.class_eval do
-        def rotate
-        end
-      end
-      @uploader.version :thumb do
-        process :rotate
-      end
-      @instance.images = [stub_file('test.jpg')]
-      expect { Marshal.dump @instance.images }.not_to raise_error
-    end
-
-    describe "expected behavior with subclassed uploaders" do
+    describe "super behavior" do
       before do
-        @class = Class.new
-        @class.send(:extend, CarrierWave::Mount)
-        @uploader1 = Class.new(CarrierWave::Uploader::Base) do
+        klass.class_eval do
+          def images_uploader
+            super
+          end
+
+          def images=(val)
+            super
+          end
+        end
+
+        instance.images = [stub_file(test_file_name)]
+      end
+
+      it "maintains the ability to super" do
+        expect(instance.images[0]).to be_an_instance_of(uploader)
+      end
+    end
+
+    describe "upload inheritance" do
+      let(:subclass) { Class.new(klass) }
+      let(:subclass_instance) { subclass.new }
+
+      before { subclass_instance.images = [test_file_stub, new_file_stub] }
+
+      it "inherits uploaders to subclasses" do
+        expect(subclass_instance.images[0]).to be_an_instance_of(uploader)
+        expect(subclass_instance.images[1]).to be_an_instance_of(uploader)
+      end
+    end
+
+    describe "upload marshalling" do
+      before do
+        Object.const_set("MyClass#{klass.object_id}".gsub('-', '_'), klass)
+        Object.const_set("Uploader#{uploader.object_id}".gsub('-', '_'), uploader)
+
+        uploader.class_eval do
+          def rotate
+          end
+        end
+
+        uploader.version :thumb do
+          process :rotate
+        end
+
+        instance.images = [test_file_stub]
+      end
+
+      it "allows marshalling uploaders and versions" do
+        expect { Marshal.dump(instance.images) }.not_to raise_error
+      end
+    end
+
+    describe "behavior of subclassed uploaders" do
+      let(:uploader_1) do
+        Class.new(CarrierWave::Uploader::Base) do
           [:rotate, :compress, :encrypt, :shrink].each { |m| define_method(m) {} }
+        end.tap do |uploader|
+          uploader.process :rotate
+          uploader.version :thumb do
+            process :compress
+          end
         end
-        @uploader1.process :rotate
-        @uploader1.version :thumb do
-          process :compress
-        end
-        @uploader2 = Class.new(@uploader1)
-        @uploader2.process :shrink
-        @uploader2.version :secret do
-          process :encrypt
-        end
-        @class.mount_uploaders(:images1, @uploader1)
-        @class.mount_uploaders(:images2, @uploader2)
-        @instance = @class.new
-        @instance.images1 = [stub_file('test.jpg')]
-        @instance.images2 = [stub_file('test.jpg')]
       end
 
-      it "should inherit defined versions" do
-        expect(@instance.images1[0]).to respond_to(:thumb)
-        expect(@instance.images2[0]).to respond_to(:thumb)
+      let(:uploader_2) do
+        Class.new(uploader_1).tap do |uploader|
+          uploader.process :shrink
+          uploader.version :secret do
+            process :encrypt
+          end
+        end
       end
 
-      it "should not inherit versions defined in subclasses" do
-        expect(@instance.images1[0]).not_to respond_to(:secret)
-        expect(@instance.images2[0]).to respond_to(:secret)
+      let(:instance) do
+        klass.new.tap do |instance|
+          instance.images1 = [test_file_stub]
+          instance.images2 = [test_file_stub]
+        end
       end
 
-      it "should inherit defined processors properly" do
-        expect(@uploader1.processors).to eq([[:rotate, [], nil]])
-        expect(@uploader2.processors).to eq([[:rotate, [], nil], [:shrink, [], nil]])
-        expect(@uploader1.versions[:thumb].processors).to eq([[:compress, [], nil]])
-        expect(@uploader2.versions[:thumb].processors).to eq([[:compress, [], nil]])
-        expect(@uploader2.versions[:secret].processors).to eq([[:encrypt, [], nil]])
+      before do
+        klass.mount_uploaders(:images1, uploader_1)
+        klass.mount_uploaders(:images2, uploader_2)
+      end
+
+      context "defined version inheritance works" do
+        it { expect(instance.images1[0]).to respond_to(:thumb) }
+
+        it { expect(instance.images2[0]).to respond_to(:thumb) }
+      end
+
+      context "version inheritance defined in subclasses works" do
+        it { expect(instance.images1[0]).not_to respond_to(:secret) }
+
+        it { expect(instance.images2[0]).to respond_to(:secret) }
+      end
+
+      context "defined processors inheritance works" do
+        it { expect(uploader_1.processors).to eq([[:rotate, [], nil]]) }
+
+        it { expect(uploader_2.processors).to eq([[:rotate, [], nil], [:shrink, [], nil]]) }
+
+        it { expect(uploader_1.versions[:thumb].processors).to eq([[:compress, [], nil]]) }
+
+        it { expect(uploader_2.versions[:thumb].processors).to eq([[:compress, [], nil]]) }
+
+        it { expect(uploader_2.versions[:secret].processors).to eq([[:encrypt, [], nil]]) }
       end
     end
 
     describe '#images' do
+      context "return an empty array when nothing has been assigned" do
+        before do
+          allow(instance).to receive(:read_uploader).with(:images).and_return(nil)
+        end
 
-      it "should return an empty array when nothing has been assigned" do
-        expect(@instance).to receive(:read_uploader).with(:images).and_return(nil)
-        expect(@instance.images).to eq []
+        it { expect(instance.images).to eq [] }
       end
 
-      it "should return an empty array when an empty string has been assigned" do
-        expect(@instance).to receive(:read_uploader).with(:images).and_return('')
-        expect(@instance.images).to eq []
+      context "returns an empty array when an empty string has been assigned" do
+        before do
+          allow(instance).to receive(:read_uploader).with(:images).and_return('')
+        end
+
+        it { expect(instance.images).to eq [] }
       end
 
-      it "should retrieve a file from the storage if a value is stored in the database" do
-        expect(@instance).to receive(:read_uploader).with(:images).at_least(:once).and_return(['test.jpg', 'new.jpeg'])
-        expect(@instance.images[0]).to be_an_instance_of(@uploader)
-        expect(@instance.images[1]).to be_an_instance_of(@uploader)
+      context "retrieves a file from the storage if a value is stored in the database" do
+        subject(:images) { instance.images }
+
+        before do
+          allow(instance).to receive(:read_uploader).with(:images).at_least(:once).and_return([test_file_name, new_file_name])
+        end
+
+        it { expect(images[0]).to be_an_instance_of(uploader) }
+        it { expect(images[1]).to be_an_instance_of(uploader) }
       end
 
-      it "should set the path to the store dir" do
-        expect(@instance).to receive(:read_uploader).with(:images).at_least(:once).and_return('test.jpg')
-        expect(@instance.images[0].current_path).to eq(public_path('uploads/test.jpg'))
-      end
+      context "sets the path to the store dir" do
+        subject(:image) { instance.images.first }
 
+        before do
+          allow(instance).to receive(:read_uploader).with(:images).at_least(:once).and_return(test_file_name)
+        end
+
+        it { expect(image.current_path).to eq(public_path("uploads/#{test_file_name}")) }
+      end
     end
 
     describe '#images=' do
+      let(:old_image_stub) { stub_file('old.jpeg') }
+      let(:text_file_stub) { stub_file('bork.txt') }
 
-      it "should cache files" do
-        @instance.images = [stub_file('test.jpg'), stub_file('old.jpeg')]
-        expect(@instance.images[0]).to be_an_instance_of(@uploader)
-        expect(@instance.images[1]).to be_an_instance_of(@uploader)
-      end
-
-      it "should copy files into the cache directory" do
-        @instance.images = [stub_file('test.jpg')]
-        expect(@instance.images[0].current_path).to match(/^#{public_path('uploads/tmp')}/)
-      end
-
-      it "should do nothing when nil is assigned" do
-        expect(@instance).not_to receive(:write_uploader)
-        @instance.images = nil
-      end
-
-      it "should do nothing when an empty string is assigned" do
-        expect(@instance).not_to receive(:write_uploader)
-        @instance.images = [stub_file('test.jpg')]
-      end
-
-      it "should fail silently if the images fails a white list integrity check" do
-        @uploader.class_eval do
-          def extension_whitelist
-            %w(txt)
-          end
+      context "caching images" do
+        before do
+          instance.images = [test_file_stub, old_image_stub]
         end
-        @instance.images = [stub_file('bork.txt'), stub_file('test.jpg')]
-        expect(@instance.images).to be_empty
-      end
 
-      it "should fail silently if the images fails a black list integrity check" do
-        @uploader.class_eval do
-          def extension_blacklist
-            %w(jpg)
-          end
+        it { expect(instance.images[0]).to be_an_instance_of(uploader) }
+
+        it { expect(instance.images[1]).to be_an_instance_of(uploader) }
+
+        it "copies files into the cache directory" do
+          expect(instance.images[0].current_path).to match(/^#{public_path('uploads/tmp')}/)
         end
-        @instance.images = [stub_file('bork.txt'), stub_file('test.jpg')]
-        expect(@instance.images).to be_empty
       end
 
-      it "should fail silently if the images fails to be processed" do
-        @uploader.class_eval do
-          process :monkey
-          def monkey
-            raise CarrierWave::ProcessingError, "Ohh noez!"
+      it "does nothing when nil is assigned" do
+        expect(instance).not_to receive(:write_uploader)
+        instance.images = nil
+      end
+
+      it "does nothing when an empty string is assigned" do
+        expect(instance).not_to receive(:write_uploader)
+
+        instance.images = [test_file_stub]
+      end
+
+      context "fails silently if the images fails a white list integrity check" do
+        before do
+          uploader.class_eval do
+            def extension_whitelist
+              %w(txt)
+            end
           end
+
+          instance.images = [text_file_stub, test_file_stub]
         end
-        @instance.images = [stub_file('test.jpg')]
-        expect(@instance.images).to be_empty
+
+        it { expect(instance.images).to be_empty }
       end
 
+      describe "fails silently if the images fails a black list integrity check" do
+        before do
+          uploader.class_eval do
+            def extension_blacklist
+              %w(jpg)
+            end
+          end
+
+          instance.images = [text_file_stub, test_file_stub]
+        end
+
+        it { expect(instance.images).to be_empty }
+      end
+
+      describe "fails silently if the images fails to be processed" do
+        before do
+          uploader.class_eval do
+            process :monkey
+            def monkey
+              raise CarrierWave::ProcessingError, "Ohh noez!"
+            end
+          end
+
+          instance.images = [test_file_stub]
+        end
+
+        it { expect(instance.images).to be_empty }
+      end
     end
 
     describe '#images?' do
+      subject { instance.images? }
 
-      it "should be false when nothing has been assigned" do
-        @instance.images = nil
-        expect(@instance.images?).to be_falsey
+      context "false when nothing has been assigned" do
+        before { instance.images = nil }
+
+        it { is_expected.to be_falsey }
       end
 
-      it "should be false when an empty string has been assigned" do
-        @instance.images = ''
-        expect(@instance.images?).to be_falsey
+      context "false when an empty string has been assigned" do
+        before { instance.images = '' }
+
+        it { is_expected.to be_falsey }
       end
 
-      it "should be true when a file has been cached" do
-        @instance.images = [stub_file('test.jpg')]
-        expect(@instance.images?).to be_truthy
-      end
+      context "true when a file has been cached" do
+        before { instance.images = [test_file_stub] }
 
+        it { is_expected.to be_truthy }
+      end
     end
 
     describe '#images_urls' do
+      subject(:images_urls) { instance.images_urls }
 
-      it "should return nil when nothing has been assigned" do
-        expect(@instance).to receive(:read_uploader).with(:images).and_return(nil)
-        expect(@instance.images_urls).to be_empty
+      describe "returns nil when nothing has been assigned" do
+        before do
+          allow(instance).to receive(:read_uploader).with(:images).and_return(nil)
+        end
+
+        it { is_expected.to be_empty }
       end
 
-      it "should return nil when an empty string has been assigned" do
-        expect(@instance).to receive(:read_uploader).with(:images).and_return('')
-        expect(@instance.images_urls).to be_empty
+      describe "should return nil when an empty string has been assigned" do
+        before do
+          allow(instance).to receive(:read_uploader).with(:images).and_return('')
+        end
+
+        it { is_expected.to be_empty }
       end
 
-      it "should get the url from a retrieved file" do
-        expect(@instance).to receive(:read_uploader).at_least(:once).with(:images).and_return('test.jpg')
-        expect(@instance.images_urls[0]).to eq('/uploads/test.jpg')
+      describe "gets the url from a retrieved file" do
+        before do
+          allow(instance).to receive(:read_uploader).at_least(:once).with(:images).and_return(test_file_name)
+        end
+
+        it { expect(images_urls.first).to eq("/uploads/#{test_file_name}") }
       end
 
-      it "should get the url from a cached file" do
-        @instance.images = [stub_file('test.jpg')]
-        expect(@instance.images_urls[0]).to match(%r{uploads/tmp/[\d\-]+/test.jpg})
+      describe "gets the url from a cached file" do
+        before { instance.images = [test_file_stub] }
+
+        it { expect(images_urls[0]).to match(%r{uploads/tmp/[\d\-]+/test.jpg}) }
       end
 
-      it "should get the url from a cached file's version" do
-        @uploader.version(:thumb)
-        @instance.images = [stub_file('test.jpg')]
-        expect(@instance.images_urls(:thumb)[0]).to match(%r{uploads/tmp/[\d\-]+/thumb_test.jpg})
-      end
+      describe "gets the url from a cached file's version" do
+        before do
+          uploader.version(:thumb)
+          instance.images = [test_file_stub]
+        end
 
+        it { expect(instance.images_urls(:thumb)[0]).to match(%r{uploads/tmp/[\d\-]+/thumb_test.jpg}) }
+      end
     end
 
     describe '#images_cache' do
-
       before do
-        allow(@instance).to receive(:write_uploader)
-        allow(@instance).to receive(:read_uploader).and_return(nil)
+        allow(instance).to receive(:write_uploader)
+        allow(instance).to receive(:read_uploader).and_return(nil)
       end
 
-      it "should return nil when nothing has been assigned" do
-        expect(@instance.images_cache).to be_nil
+      context "when nothing has been assigned" do
+        it { expect(instance.images_cache).to be_nil }
       end
 
-      it "should be nil when a file has been stored" do
-        @instance.images = [stub_file('test.jpg')]
-        @instance.store_images!
-        expect(@instance.images_cache).to be_nil
+      context "when a file has been stored" do
+        before do
+          instance.images = [test_file_stub]
+          instance.store_images!
+        end
+
+        it { expect(instance.images_cache).to be_nil }
       end
 
-      it "should be the cache name when a file has been cached" do
-        @instance.images = [stub_file('test.jpg'), stub_file('old.jpeg')]
-        res = JSON.parse(@instance.images_cache)
-        expect(res[0]).to match(%r(^[\d]+\-[\d]+\-[\d]{4}\-[\d]{4}/test\.jpg$))
-        expect(res[1]).to match(%r(^[\d]+\-[\d]+\-[\d]{4}\-[\d]{4}/old\.jpeg$))
+      context "when a file has been cached" do
+        let(:json_response) { JSON.parse(instance.images_cache) }
+
+        before do
+          instance.images = [test_file_stub, stub_file('old.jpeg')]
+        end
+
+        it { expect(json_response[0]).to match(%r(^[\d]+\-[\d]+\-[\d]{4}\-[\d]{4}/test\.jpg$)) }
+
+        it { expect(json_response[1]).to match(%r(^[\d]+\-[\d]+\-[\d]{4}\-[\d]{4}/old\.jpeg$)) }
       end
     end
 
     describe '#images_cache=' do
-
       before do
-        allow(@instance).to receive(:write_uploader)
-        allow(@instance).to receive(:read_uploader).and_return(nil)
-        CarrierWave::SanitizedFile.new(file_path('test.jpg')).copy_to(public_path('uploads/tmp/1369894322-123-0123-1234/test.jpg'))
+        allow(instance).to receive(:write_uploader)
+        allow(instance).to receive(:read_uploader).and_return(nil)
+        CarrierWave::SanitizedFile.new(test_file_stub).copy_to(public_path('uploads/tmp/1369894322-123-0123-1234/test.jpg'))
       end
 
-      it "should do nothing when nil is assigned" do
-        @instance.images_cache = nil
-        expect(@instance.images).to be_empty
+      before { instance.images_cache = images_cache }
+
+      context "does nothing when nil is assigned" do
+        let(:images_cache) { nil }
+
+        it { expect(instance.images).to be_empty }
       end
 
-      it "should do nothing when an empty string is assigned" do
-        @instance.images_cache = ''
-        expect(@instance.images).to be_empty
+      context "does nothing when an empty string is assigned" do
+        let(:images_cache) { '' }
+
+        it { expect(instance.images).to be_empty }
       end
 
-      it "retrieve from cache when a cache name is assigned" do
-        @instance.images_cache = ['1369894322-123-0123-1234/test.jpg'].to_json
-        expect(@instance.images[0].current_path).to eq(public_path('uploads/tmp/1369894322-123-0123-1234/test.jpg'))
+      context "retrieve from cache when a cache name is assigned" do
+        let(:images_cache) { ['1369894322-123-0123-1234/test.jpg'].to_json }
+
+        it { expect(instance.images[0].current_path).to eq(public_path('uploads/tmp/1369894322-123-0123-1234/test.jpg')) }
       end
 
-      it "should not write over a previously assigned file" do
-        @instance.images = [stub_file('test.jpg')]
-        @instance.images_cache = ['1369894322-123-0123-1234/monkey.jpg'].to_json
-        expect(@instance.images[0].current_path).to match(/test.jpg$/)
+      context "doesn't write over a previously assigned file" do
+        let(:images_cache) { ['1369894322-123-0123-1234/monkey.jpg'].to_json }
+
+        before { instance.images = [test_file_stub] }
+
+        it { expect(instance.images[0].current_path).to match(/test.jpg$/) }
       end
     end
 
     describe "#remote_images_urls" do
-      before do
-        stub_request(:get, "www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
+      subject { instance.remote_images_urls }
+
+      before { stub_request(:get, "www.example.com/#{test_file_name}").to_return(body: File.read(test_file_stub)) }
+
+      context "returns nil" do
+        it { is_expected.to be_nil }
       end
 
-      it "returns nil" do
-        expect(@instance.remote_images_urls).to be_nil
-      end
+      context "returns previously cached URL" do
+        before { instance.remote_images_urls = ["http://www.example.com/test.jpg"] }
 
-      it "returns previously cached URL" do
-        @instance.remote_images_urls = ["http://www.example.com/test.jpg"]
-
-        expect(@instance.remote_images_urls).to eq(["http://www.example.com/test.jpg"])
+        it { is_expected.to eq(["http://www.example.com/test.jpg"]) }
       end
     end
 
     describe "#remote_images_urls=" do
+      subject(:images) { instance.images }
+
       before do
-        stub_request(:get, "www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
+        stub_request(:get, "www.example.com/#{test_file_name}").to_return(body: File.read(test_file_stub))
+        instance.remote_images_urls = remote_images_url
       end
 
-      it "does nothing when nil is assigned" do
-        @instance.remote_images_urls = nil
+      context "does nothing when nil is assigned" do
+        let(:remote_images_url) { nil }
 
-        expect(@instance.images).to be_empty
+        it { is_expected.to be_empty }
       end
 
-      it "does nothing when an empty string is assigned" do
-        @instance.remote_images_urls = ""
+      context "does nothing when an empty string is assigned" do
+        let(:remote_images_url) { '' }
 
-        expect(@instance.images).to be_empty
+        it { is_expected.to be_empty }
       end
 
-      it "retrieves from cache when a cache name is assigned" do
-        @instance.remote_images_urls = ["http://www.example.com/test.jpg"]
+      context "retrieves from cache when a cache name is assigned" do
+        subject { images[0].current_path }
 
-        expect(@instance.images[0].current_path).to match(/test.jpg$/)
+        let(:remote_images_url) { ["http://www.example.com/test.jpg"] }
+
+        it { is_expected.to match(/test.jpg$/) }
       end
 
-      it "writes over a previously assigned file" do
-        @instance.images = [stub_file("portrait.jpg")]
-        @instance.remote_images_urls = ["http://www.example.com/test.jpg"]
+      context "writes over a previously assigned file" do
+        subject { images[0].current_path }
 
-        expect(@instance.images[0].current_path).to match(/test.jpg$/)
+        let(:remote_images_url) { ["http://www.example.com/test.jpg"] }
+
+        before do
+          instance.images = [stub_file("portrait.jpg")]
+          instance.remote_images_urls = remote_images_url
+        end
+
+        it { is_expected.to match(/test.jpg$/) }
       end
     end
 
     describe '#store_images!' do
-
       before do
-        allow(@instance).to receive(:write_uploader)
-        allow(@instance).to receive(:read_uploader).and_return(nil)
+        allow(instance).to receive(:write_uploader)
+        allow(instance).to receive(:read_uploader).and_return(nil)
       end
 
-      it "should do nothing when no file has been uploaded" do
-        @instance.store_images!
-        expect(@instance.images).to be_empty
+      context "does nothing when no file has been uploaded" do
+        before { instance.store_images! }
+
+        it { expect(instance.images).to be_empty }
       end
 
-      it "store an assigned file" do
-        @instance.images = [stub_file('test.jpg')]
-        @instance.store_images!
-        expect(@instance.images[0].current_path).to eq(public_path('uploads/test.jpg'))
+      context "stores an assigned file" do
+        let(:images) { [test_file_stub] }
+
+        before do
+          instance.images = images
+          instance.store_images!
+        end
+
+        it { expect(instance.images[0].current_path).to eq(public_path("uploads/#{test_file_name}")) }
       end
 
-      it "should remove an uploaded file when remove_images? returns true" do
-        @instance.images = [stub_file('test.jpg')]
-        path = @instance.images[0].current_path
-        @instance.remove_images = true
-        @instance.store_images!
-        expect(@instance.images).to be_empty
-        expect(File.exist?(path)).to be_falsey
+      context "removes an uploaded file when remove_images is true" do
+        let(:images) { [test_file_stub] }
+
+        before do
+          instance.images = images
+          @image_path = instance.images[0].current_path.dup
+          instance.remove_images = true
+          instance.store_images!
+        end
+
+        it { expect(instance.images).to be_empty }
+
+        it { expect(File.exist?(@image_path)).to be_falsey }
       end
     end
 
     describe '#remove_images!' do
-
       before do
-        allow(@instance).to receive(:write_uploader)
-        allow(@instance).to receive(:read_uploader).and_return(nil)
+        allow(instance).to receive(:write_uploader)
+        allow(instance).to receive(:read_uploader).and_return(nil)
       end
 
-      it "should do nothing when no file has been uploaded" do
-        @instance.remove_images!
-        expect(@instance.images).to be_empty
+      context "does nothing when no file has been uploaded" do
+        before { instance.remove_images! }
+
+        it { expect(instance.images).to be_empty }
       end
 
-      it "should remove an uploaded file" do
-        @instance.images = [stub_file('test.jpg')]
-        path = @instance.images[0].current_path
-        @instance.remove_images!
-        expect(@instance.images).to be_empty
-        expect(File.exist?(path)).to be_falsey
+      context "removes an uploaded file" do
+        before do
+          instance.images = [test_file_stub]
+          @image_path = instance.images[0].current_path
+          instance.remove_images!
+        end
+
+        it { expect(instance.images).to be_empty }
+
+        it { expect(File.exist?(@image_path)).to be_falsey }
       end
     end
 
     describe '#remove_images' do
+      before { instance.remove_images = true }
 
-      it "should store a value" do
-        @instance.remove_images = true
-        expect(@instance.remove_images).to be_truthy
+      it "stores a value" do
+        expect(instance.remove_images).to be_truthy
       end
-
     end
 
     describe '#remove_images?' do
+      subject { instance.remove_images? }
 
-      it "should be true when the value is truthy" do
-        @instance.remove_images = true
-        expect(@instance.remove_images?).to be_truthy
+      let(:remove_images) { true }
+
+      before { instance.remove_images = remove_images }
+
+      it "when value is true" do
+        is_expected.to be_truthy
       end
 
-      it "should be false when the value is falsey" do
-        @instance.remove_images = false
-        expect(@instance.remove_images?).to be_falsey
+      context "when value is false" do
+        let(:remove_images) { false }
+
+        it { is_expected.to be_falsey }
       end
 
-      it "should be false when the value is ''" do
-        @instance.remove_images = ''
-        expect(@instance.remove_images?).to be_falsey
+      context "when value is ''" do
+        let(:remove_images) { '' }
+
+        it { is_expected.to be_falsey }
       end
 
-      it "should be false when the value is '0'" do
-        @instance.remove_images = '0'
-        expect(@instance.remove_images?).to be_falsey
+      context "when value is 0" do
+        let(:remove_images) { "0" }
+
+        it { is_expected.to be_falsey }
       end
 
-      it "should be false when the value is 'false'" do
-        @instance.remove_images = 'false'
-        expect(@instance.remove_images?).to be_falsey
-      end
+      context "when value is false" do
+        let(:remove_images) { 'false' }
 
+        it { is_expected.to be_falsey }
+      end
     end
 
     describe '#images_integrity_error' do
+      subject(:images_integrity_error) { instance.images_integrity_error }
 
-      it "should be nil by default" do
-        expect(@instance.images_integrity_error).to be_nil
+      describe "default behaviour" do
+        it { is_expected.to be_nil }
       end
 
-      it "should be nil after a file is cached" do
-        @instance.images = [stub_file('test.jpg')]
-        expect(@instance.images_integrity_error).to be_nil
+      context "when a file is cached" do
+        before { instance.images = test_file_stub }
+
+        it { is_expected.to be_nil }
       end
 
       describe "when an integrity check fails" do
         before do
-          @uploader.class_eval do
+          uploader.class_eval do
             def extension_whitelist
               %w(txt)
             end
           end
         end
 
-        it "should be an error instance if file was cached" do
-          @instance.images = [stub_file('test.jpg')]
-          e = @instance.images_integrity_error
-          expect(e).to be_an_instance_of(CarrierWave::IntegrityError)
-          expect(e.message.lines.grep(/^You are not allowed to upload/)).to be_truthy
+        context "when file is cached" do
+          before { instance.images = [test_file_stub] }
+
+          it { is_expected.to be_an_instance_of(CarrierWave::IntegrityError) }
+
+          it "has an error message" do
+            expect(images_integrity_error.message.lines.grep(/^You are not allowed to upload/)).to be_truthy
+          end
         end
 
-        it "should be an error instance if file was downloaded" do
-          stub_request(:get, "www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
-          @instance.remote_images_urls = ["http://www.example.com/test.jpg"]
+        context "when file was downloaded" do
+          before do
+            stub_request(:get, "www.example.com/#{test_file_name}").to_return(body: File.read(test_file_stub))
+            instance.remote_images_urls = ["http://www.example.com/#{test_file_name}"]
+          end
 
-          e = @instance.images_integrity_error
+          it { is_expected.to be_an_instance_of(CarrierWave::IntegrityError) }
 
-          expect(e).to be_an_instance_of(CarrierWave::IntegrityError)
-          expect(e.message.lines.grep(/^You are not allowed to upload/)).to be_truthy
+          it "has an error message" do
+            expect(images_integrity_error.message.lines.grep(/^You are not allowed to upload/)).to be_truthy
+          end
         end
 
-        it "should be an error instance when images file is assigned and remote_images_urls is blank" do
-          @instance.images = [stub_file('test.jpg')]
-          @instance.remote_images_urls = ""
-          e = @instance.images_integrity_error
-          expect(e).to be_an_instance_of(CarrierWave::IntegrityError)
-          expect(e.message.lines.grep(/^You are not allowed to upload/)).to be_truthy
+        context "when file is assigned and remote_iamges_url is blank" do
+          before do
+            instance.images = [test_file_stub]
+            instance.remote_images_urls = ""
+          end
+
+          it { is_expected.to be_an_instance_of(CarrierWave::IntegrityError) }
+
+          it "has an error message" do
+            expect(images_integrity_error.message.lines.grep(/^You are not allowed to upload/)).to be_truthy
+          end
         end
       end
     end
 
     describe '#images_processing_error' do
+      subject(:images_processing_error) { instance.images_processing_error }
 
-      it "should be nil by default" do
-        expect(@instance.images_processing_error).to be_nil
+      describe "default behavior" do
+        it { is_expected.to be_nil }
       end
 
-      it "should be nil after a file is cached" do
-        @instance.images = [stub_file('test.jpg')]
-        expect(@instance.images_processing_error).to be_nil
+      context "when file is cached" do
+        before { instance.images = [test_file_stub] }
+
+        it { is_expected.to be_nil }
       end
 
       describe "when an processing error occurs" do
         before do
-          @uploader.class_eval do
+          uploader.class_eval do
             process :monkey
             def monkey
               raise CarrierWave::ProcessingError, "Ohh noez!"
@@ -484,305 +620,294 @@ describe CarrierWave::Mount do
           end
         end
 
-        it "should be an error instance if file was cached" do
-          @instance.images = [stub_file('test.jpg')]
-          expect(@instance.images_processing_error).to be_an_instance_of(CarrierWave::ProcessingError)
+        context "when file is cached" do
+          before { instance.images = [test_file_stub] }
+
+          it { is_expected.to be_an_instance_of(CarrierWave::ProcessingError) }
         end
 
-        it "should be an error instance if file was downloaded" do
-          stub_request(:get, "www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
-          @instance.remote_images_urls = ["http://www.example.com/test.jpg"]
+        context "when file was downloaded" do
+          before do
+            stub_request(:get, "www.example.com/#{test_file_name}").to_return(body: File.read(test_file_stub))
+            instance.remote_images_urls = ["http://www.example.com/#{test_file_name}"]
+          end
 
-          expect(@instance.images_processing_error).to be_an_instance_of(CarrierWave::ProcessingError)
+          it { is_expected.to be_an_instance_of(CarrierWave::ProcessingError) }
         end
       end
     end
 
     describe '#images_download_error' do
+      subject(:images_download_error) { instance.images_download_error }
+
       before do
-        stub_request(:get, "www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
+        stub_request(:get, "www.example.com/#{test_file_name}").to_return(body: File.read(test_file_stub))
         stub_request(:get, "www.example.com/missing.jpg").to_return(status: 404)
       end
 
-      it "should be nil by default" do
-        expect(@instance.images_download_error).to be_nil
+      describe "default behaviour" do
+        it { expect(instance.images_download_error).to be_nil }
       end
 
-      it "should be nil if file download was successful" do
-        @instance.remote_images_urls = ["http://www.example.com/test.jpg"]
-        expect(@instance.images_download_error).to be_nil
+      context "when file download was successful" do
+        before { instance.remote_images_urls = ["http://www.example.com/#{test_file_name}"] }
+
+        it { is_expected.to be_nil }
       end
 
-      it "should be an error instance if file could not be found" do
-        @instance.remote_images_urls = ["http://www.example.com/missing.jpg"]
-        expect(@instance.images_download_error).to be_an_instance_of(CarrierWave::DownloadError)
-      end
-    end
+      context "when file couldn't be found" do
+        before { instance.remote_images_urls = ["http://www.example.com/missing.jpg"] }
 
-    describe '#images_download_error' do
-      before do
-        stub_request(:get, "www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
-        stub_request(:get, "www.example.com/missing.jpg").to_return(status: 404)
-      end
-
-      it "should be nil by default" do
-        expect(@instance.images_download_error).to be_nil
-      end
-
-      it "should be nil if file download was successful" do
-        @instance.remote_images_urls = ["http://www.example.com/test.jpg"]
-        expect(@instance.images_download_error).to be_nil
-      end
-
-      it "should be an error instance if file could not be found" do
-        @instance.remote_images_urls = ["http://www.example.com/missing.jpg"]
-        expect(@instance.images_download_error).to be_an_instance_of(CarrierWave::DownloadError)
+        it { is_expected.to be_an_instance_of(CarrierWave::DownloadError) }
       end
     end
 
     describe '#write_images_identifier' do
-      it "should write to the column" do
-        expect(@instance).to receive(:write_uploader).with(:images, ["test.jpg"])
-        @instance.images = [stub_file('test.jpg')]
-        @instance.write_images_identifier
+      after { instance.write_images_identifier }
+
+      it "writes to the column" do
+        expect(instance).to receive(:write_uploader).with(:images, [test_file_name]).at_least(:once)
+        instance.images = [test_file_stub]
+        instance.write_images_identifier
       end
 
-      it "should remove from the column when remove_images is true" do
-        @instance.images = [stub_file('test.jpg')]
-        @instance.store_images!
-        @instance.remove_images = true
-        expect(@instance).to receive(:write_uploader).with(:images, nil)
-        @instance.write_images_identifier
+      context "when remove_images is true" do
+        before do
+          instance.images = [test_file_name]
+          instance.store_images!
+          instance.remove_images = true
+        end
+
+        it "removes from the column when remove_images is true" do
+          expect(instance).to receive(:write_uploader).with(:images, nil)
+        end
       end
     end
 
     describe '#images_identifiers' do
-      it "should return the identifier from the mounted column" do
-        expect(@instance).to receive(:read_uploader).with(:images).and_return("test.jpg")
-        expect(@instance.images_identifiers).to eq(['test.jpg'])
+      it "returns the identifier from the mounted column" do
+        expect(instance).to receive(:read_uploader).with(:images).and_return(test_file_name)
+        expect(instance.images_identifiers).to eq([test_file_name])
       end
     end
-
   end
 
   describe '#mount_uploaders without an uploader' do
-
-    before do
-      @class = Class.new
-      @class.send(:extend, CarrierWave::Mount)
-      @class.mount_uploaders(:images)
-      @instance = @class.new
+    let(:klass) do
+      Class.new.tap do |k|
+        k.send(:extend, CarrierWave::Mount)
+        k.mount_uploaders(:images)
+      end
     end
+
+    let(:instance) { klass.new }
 
     describe '#images' do
-
       before do
-        allow(@instance).to receive(:read_uploader).and_return('test.jpg')
+        allow(instance).to receive(:read_uploader).and_return(test_file_name)
       end
 
-      it "should return an instance of a subclass of CarrierWave::Uploader::Base" do
-        expect(@instance.images[0]).to be_a(CarrierWave::Uploader::Base)
+      it "returns an instance of a subclass of CarrierWave::Uploader::Base" do
+        expect(instance.images[0]).to be_a(CarrierWave::Uploader::Base)
       end
 
-      it "should set the path to the store dir" do
-        expect(@instance.images[0].current_path).to eq(public_path('uploads/test.jpg'))
+      it "sets the path to the store dir" do
+        expect(instance.images[0].current_path).to eq(public_path("uploads/#{test_file_name}"))
       end
-
     end
-
   end
 
   describe '#mount_uploaders with a block' do
     describe 'and no uploader given' do
-      before do
-        @class = Class.new
-        @class.send(:extend, CarrierWave::Mount)
-        @class.mount_uploaders(:images) do
-          def monkey
-            'blah'
+      subject(:last_image) { instance.images[0] }
+
+      let(:klass) do
+        Class.new do |k|
+          k.send(:extend, CarrierWave::Mount)
+          k.mount_uploaders(:images) do
+            def monkey
+              'blah'
+            end
           end
         end
-        @instance = @class.new
-        @instance.images = [stub_file("test.jpg")]
       end
 
-      it "should return an instance of a subclass of CarrierWave::Uploader::Base" do
-        expect(@instance.images[0]).to be_a(CarrierWave::Uploader::Base)
+      before { instance.images = [test_file_stub] }
+
+      it "returns an instance of a subclass of CarrierWave::Uploader::Base" do
+        is_expected.to be_a(CarrierWave::Uploader::Base)
       end
 
-      it "should apply any custom modifications" do
-        expect(@instance.images[0].monkey).to eq("blah")
+      it "applies any custom modifications" do
+        expect(last_image.monkey).to eq("blah")
       end
     end
 
     describe 'and an uploader given' do
-      before do
-        @class = Class.new
-        @class.send(:extend, CarrierWave::Mount)
-        @uploader = Class.new(CarrierWave::Uploader::Base)
-        @uploader.version :thumb do
-          version :mini
-          version :maxi
-        end
-        @class.mount_uploaders(:images, @uploader) do
-          def fish
-            'blub'
+      let!(:uploader) do
+        Class.new(CarrierWave::Uploader::Base).tap do |u|
+          u.version :thumb do
+            version :mini
+            version :maxi
           end
         end
-        @instance = @class.new
-        @instance.images = [stub_file("test.jpg")]
       end
 
-      it "should return an instance of the uploader specified" do
-        expect(@instance.images[0]).to be_a_kind_of(@uploader)
+      let(:klass) do
+        Class.new.tap do |k|
+          k.send(:extend, CarrierWave::Mount)
+          k.mount_uploaders(:images, uploader) do
+            def fish
+              'blub'
+            end
+          end
+        end
       end
 
-      it "should apply any custom modifications to the instance" do
-        expect(@instance.images[0].fish).to eq("blub")
+      let(:first_image) { instance.images[0] }
+
+      before { instance.images = [test_file_stub] }
+
+      it "returns an instance of the uploader specified" do
+        expect(first_image).to be_a_kind_of(uploader)
       end
 
-      it "should apply any custom modifications to all defined versions" do
-        expect(@instance.images[0].thumb.fish).to eq("blub")
-        expect(@instance.images[0].thumb.mini.fish).to eq("blub")
-        expect(@instance.images[0].thumb.maxi.fish).to eq("blub")
+      it "applies any custom modifications to the instance" do
+        expect(first_image.fish).to eq("blub")
       end
 
-      it "should not apply any custom modifications to the uploader class" do
-        expect(@uploader.new).not_to respond_to(:fish)
+      it "applies any custom modifications to all defined versions" do
+        expect(first_image.thumb.fish).to eq("blub")
+        expect(first_image.thumb.mini.fish).to eq("blub")
+        expect(first_image.thumb.maxi.fish).to eq("blub")
+      end
+
+      it "applies any custom modifications to the uploader class" do
+        expect(uploader.new).not_to respond_to(:fish)
       end
     end
   end
 
   describe '#mount_uploaders with :ignore_integrity_errors => false' do
+    let(:klass) do
+      Class.new.tap do |k|
+        k.send(:extend, CarrierWave::Mount)
+        k.mount_uploaders(:images, uploader, :ignore_integrity_errors => false)
+      end
+    end
 
-    before do
-      @class = Class.new
-      @class.send(:extend, CarrierWave::Mount)
-
-      @uploader = Class.new(CarrierWave::Uploader::Base)
-
-      @class.mount_uploaders(:images, @uploader, :ignore_integrity_errors => false)
-      @instance = @class.new
-
-      @uploader.class_eval do
-        def extension_whitelist
-          %w(txt)
+    let(:uploader) do
+      Class.new(CarrierWave::Uploader::Base).tap do |u|
+        u.class_eval do
+          def extension_whitelist
+            %w(txt)
+          end
         end
       end
     end
 
-    it "should raise an error if the images fails an integrity check when cached" do
-      expect(running {
-        @instance.images = [stub_file('test.jpg')]
-      }).to raise_error(CarrierWave::IntegrityError)
+    context "when a cached image fails an integrity check" do
+      it { expect(running { instance.images = [test_file_stub] }).to raise_error(CarrierWave::IntegrityError) }
     end
 
-    it "should raise an error if the images fails an integrity check when downloaded" do
-      stub_request(:get, "www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
+    context "when a downloaded image fails an integity check" do
+      before do
+        stub_request(:get, "www.example.com/#{test_file_name}").to_return(body: test_file_stub)
+      end
 
-      expect(running {
-        @instance.remote_images_urls = ["http://www.example.com/test.jpg"]
-      }).to raise_error(CarrierWave::IntegrityError)
+      it { expect(running {instance.remote_images_urls = ["http://www.example.com/#{test_file_name}"]}).to raise_error(CarrierWave::IntegrityError) }
     end
   end
 
   describe '#mount_uploaders with :ignore_processing_errors => false' do
+    let(:klass) do
+      Class.new.tap do |k|
+        k.send(:extend, CarrierWave::Mount)
+        k.mount_uploaders(:images, uploader, :ignore_processing_errors => false)
+      end
+    end
 
-    before do
-      @class = Class.new
-      @class.send(:extend, CarrierWave::Mount)
-
-      @uploader = Class.new(CarrierWave::Uploader::Base)
-
-      @class.mount_uploaders(:images, @uploader, :ignore_processing_errors => false)
-      @instance = @class.new
-
-      @uploader.class_eval do
-        process :monkey
-        def monkey
-          raise CarrierWave::ProcessingError, "Ohh noez!"
+    let(:uploader) do
+      Class.new(CarrierWave::Uploader::Base).tap do |u|
+        u.class_eval do
+          process :monkey
+          def monkey
+            raise CarrierWave::ProcessingError, "Ohh noez!"
+          end
         end
       end
     end
 
-    it "should raise an error if the images fails to be processed when cached" do
-      expect(running {
-        @instance.images = [stub_file('test.jpg')]
-      }).to raise_error(CarrierWave::ProcessingError)
+    context "when a cached image fails an integrity check" do
+      it { expect(running { instance.images = [test_file_stub] }).to raise_error(CarrierWave::ProcessingError) }
     end
 
-    it "should raise an error if the images fails to be processed when downloaded" do
-      stub_request(:get, "www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
+    context "when a downloaded image fails an integity check" do
+      before do
+        stub_request(:get, "www.example.com/#{test_file_name}").to_return(body: test_file_stub)
+      end
 
-      expect(running {
-        @instance.remote_images_urls = ["http://www.example.com/test.jpg"]
-      }).to raise_error(CarrierWave::ProcessingError)
+      it { expect(running {instance.remote_images_urls = ["http://www.example.com/#{test_file_name}"]}).to raise_error(CarrierWave::ProcessingError) }
     end
-
   end
 
   describe '#mount_uploaders with :ignore_download_errors => false' do
-
-    before do
-      @class = Class.new
-      @class.send(:extend, CarrierWave::Mount)
-
-      @uploader = Class.new(CarrierWave::Uploader::Base)
-
-      @class.mount_uploaders(:images, @uploader, :ignore_download_errors => false)
-      @instance = @class.new
+    let(:klass) do
+      Class.new.tap do |k|
+        k.send(:extend, CarrierWave::Mount)
+        k.mount_uploaders(:images, uploader, ignore_download_errors: false)
+      end
     end
 
-    it "should raise an error if the images fails to be processed" do
-      @uploader.class_eval do
+    let(:uploader) { Class.new(CarrierWave::Uploader::Base) }
+
+    before do
+      uploader.class_eval do
         def download! uri
           raise CarrierWave::DownloadError
         end
       end
-
-      expect(running {
-        @instance.remote_images_urls = ["http://www.example.com/test.jpg"]
-      }).to raise_error(CarrierWave::DownloadError)
     end
 
+    context "when the image fail to be processed" do
+      it { expect(running {instance.remote_images_urls = ["http://www.example.com/#{test_file_name}"]}).to raise_error(CarrierWave::DownloadError) }
+    end
   end
 
   describe '#mount_uploaders with :mount_on => :monkey' do
-
-    before do
-      @class = Class.new
-      @class.send(:extend, CarrierWave::Mount)
-
-      @uploader = Class.new(CarrierWave::Uploader::Base)
-
-      @class.mount_uploaders(:images, @uploader, :mount_on => :monkey)
-      @instance = @class.new
+    let(:klass) do
+      Class.new.tap do |k|
+        k.send(:extend, CarrierWave::Mount)
+        k.mount_uploaders(:images, uploader, mount_on: :monkey)
+      end
     end
 
+    let(:uploader) { Class.new(CarrierWave::Uploader::Base) }
+
     describe '#images' do
-      it "should retrieve a file from the storage if a value is stored in the database" do
-        expect(@instance).to receive(:read_uploader).at_least(:once).with(:monkey).and_return(['test.jpg'])
-        expect(@instance.images[0]).to be_an_instance_of(@uploader)
-        expect(@instance.images[0].current_path).to eq(public_path('uploads/test.jpg'))
+      context "when a value is store in the database" do
+        it "retrieves a file from the storage" do
+          expect(instance).to receive(:read_uploader).at_least(:once).with(:monkey).and_return([test_file_name])
+          expect(instance.images[0]).to be_an_instance_of(uploader)
+          expect(instance.images[0].current_path).to eq(public_path("uploads/#{test_file_name}"))
+        end
       end
     end
 
     describe '#write_images_identifier' do
-      it "should write to the given column" do
-        expect(@instance).to receive(:write_uploader).with(:monkey, ["test.jpg"])
-        @instance.images = [stub_file('test.jpg')]
-        @instance.write_images_identifier
+      it "writes to the given column" do
+        expect(instance).to receive(:write_uploader).with(:monkey, [test_file_name])
+        instance.images = [test_file_stub]
+        instance.write_images_identifier
       end
 
-      it "should remove from the given column when remove_images is true" do
-        @instance.images = [stub_file('test.jpg')]
-        @instance.store_images!
-        @instance.remove_images = true
-        expect(@instance).to receive(:write_uploader).with(:monkey, nil)
-        @instance.write_images_identifier
+      it "removes from the given column when remove_images is true" do
+        instance.images = [test_file_stub]
+        instance.store_images!
+        instance.remove_images = true
+        expect(instance).to receive(:write_uploader).with(:monkey, nil)
+        instance.write_images_identifier
       end
     end
-
   end
-
 end
