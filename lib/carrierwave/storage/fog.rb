@@ -339,7 +339,7 @@ module CarrierWave
             end
           else
             # AWS/Google optimized for speed over correctness
-            case @uploader.fog_credentials[:provider]
+            case @uploader.fog_credentials[:provider].to_s
             when 'AWS'
               # check if some endpoint is set in fog_credentials
               if @uploader.fog_credentials.has_key?(:endpoint)
