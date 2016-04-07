@@ -183,15 +183,16 @@ end
           @fog_file.delete
           expect(@directory.files.head(store_path)).to eq(nil)
         end
+
         context "when the file has been deleted" do
-          before do
-            @fog_file.delete
-          end
+          before { @fog_file.delete }
 
           it "should not error getting the file size" do
-            expect {
-              @fog_file.size
-            }.not_to raise_error
+            expect { @fog_file.size }.not_to raise_error
+          end
+
+          it "should not error getting the content type" do
+            expect { @fog_file.content_type }.not_to raise_error
           end
         end
       end
