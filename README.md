@@ -40,7 +40,7 @@ gem 'carrierwave'
 Finally, restart the server to apply the changes.
 
 As of version 1.0.0 (forthcoming), CarrierWave requires Rails 4.0 or higher and Ruby 2.0
-or higher. If you're on Rails 3, you should use v0.10.0.
+or higher. If you're on Rails 3, you should use v0.11.0.
 
 ## Getting Started
 
@@ -263,7 +263,7 @@ plugins or client-side software.
 
 ## Setting the content type
 
-As of v0.10.0, the `mime-types` gem is a runtime dependency and the content type is set automatically.
+As of v0.11.0, the `mime-types` gem is a runtime dependency and the content type is set automatically.
 You no longer need to do this manually.
 
 ## Adding versions
