@@ -518,26 +518,6 @@ User.find_each do |user|
 end
 ```
 
-### Recreating versions with `:from_version` dependency
-
-Imagine you have a version with `:from_version`:
-
-```ruby
-class MyUploader < CarrierWave::Uploader::Base
-
-  version :thumb do
-    process resize_to_fill: [280, 280]
-  end
-
-  version :small_thumb, from_version: :thumb do
-    process resize_to_fill: [20, 20]
-  end
-
-end
-```
-
-In this case, when you call `recreate_versions!(:small_thumb)`, both `:small_thumb` and `:thumb` versions will be recreated.
-
 ## Configuring CarrierWave
 
 CarrierWave has a broad range of configuration options, which you can configure,
