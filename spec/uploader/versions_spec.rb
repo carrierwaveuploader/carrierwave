@@ -649,6 +649,7 @@ describe CarrierWave::Uploader do
           @uploader.store!(bork_file)
           FileUtils.rm([@uploader.small_thumb.path, @uploader.thumb.path])
           @uploader.recreate_versions!(:small_thumb)
+          expect(File.exists?(public_path(@uploader.thumb.to_s))).to be true
           expect(small_thumb_contents).to eq(thumb_contents)
           expect(small_thumb_contents).not_to eq(original_contents)
         end
