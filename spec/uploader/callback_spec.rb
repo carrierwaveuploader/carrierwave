@@ -1,30 +1,30 @@
 require 'spec_helper'
 
 describe CarrierWave::Uploader do
+  describe "callback isolation" do
+    let(:default_before_callbacks) do
+      [
+        :check_extension_whitelist!,
+        :check_extension_blacklist!,
+        :check_content_type_whitelist!,
+        :check_content_type_blacklist!,
+        :check_size!,
+        :process!
+      ]
+    end
 
-  it "should keep callbacks on different classes isolated" do
-    default_before_callbacks = [
-      :check_extension_whitelist!,
-      :check_extension_blacklist!,
-      :check_content_type_whitelist!,
-      :check_content_type_blacklist!,
-      :check_size!,
-      :process!
-    ]
-    @uploader_class_1 = Class.new(CarrierWave::Uploader::Base)
+    let(:uploader_class_1) { Class.new(CarrierWave::Uploader::Base) }
+    let(:uploader_class_2) { Class.new(CarrierWave::Uploader::Base) }
 
-    # First Uploader only has default before-callbacks
-    expect(@uploader_class_1._before_callbacks[:cache]).to eq(default_before_callbacks)
+    before { uploader_class_2.before(:cache, :before_cache_callback) }
 
-    @uploader_class_2 = Class.new(CarrierWave::Uploader::Base)
-    @uploader_class_2.before :cache, :before_cache_callback
+    it { expect(uploader_class_1._before_callbacks[:cache]).to eq(default_before_callbacks) }
 
-    # Second Uploader defined with another callback
-    expect(@uploader_class_2._before_callbacks[:cache]).to eq(default_before_callbacks + [:before_cache_callback])
 
-    # Make sure the first Uploader doesn't inherit the same callback
-    expect(@uploader_class_1._before_callbacks[:cache]).to eq(default_before_callbacks)
+    it { expect(uploader_class_2._before_callbacks[:cache]).to eq(default_before_callbacks + [:before_cache_callback]) }
+
+    it "doesn't inherit the uploader 2 callback" do
+      expect(uploader_class_1._before_callbacks[:cache]).to eq(default_before_callbacks)
+    end
   end
-
-
 end
