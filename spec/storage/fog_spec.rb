@@ -14,36 +14,34 @@ FOG_CREDENTIALS.each do |credential|
 end
 
 describe CarrierWave::Storage::Fog::File do
+  subject(:file) { CarrierWave::Storage::Fog::File.new(nil, nil, nil) }
+
   describe "#filename" do
-    subject{ CarrierWave::Storage::Fog::File.new(nil, nil, nil) }
+    subject(:filename) { file.filename }
+
+    before { allow(file).to receive(:url).and_return(url) }
 
     context "with normal url" do
-      before do
-        allow(subject).to receive(:url){ 'http://example.com/path/to/foo.txt' }
-      end
+      let(:url) { 'http://example.com/path/to/foo.txt' }
 
-      it "should extract filename from url" do
-        expect(subject.filename).to eq('foo.txt')
+      it "extracts filename from url" do
+        is_expected.to eq('foo.txt')
       end
     end
 
     context "when url contains '/' in query string" do
-      before do
-        allow(subject).to receive(:url){ 'http://example.com/path/to/foo.txt?bar=baz/fubar' }
-      end
+      let(:url){ 'http://example.com/path/to/foo.txt?bar=baz/fubar' }
 
-      it "should extract correct part" do
-        expect(subject.filename).to eq('foo.txt')
+      it "extracts correct part" do
+        is_expected.to eq('foo.txt')
       end
     end
 
     context "when url contains multi-byte characters" do
-      before do
-        allow(subject).to receive(:url){ 'http://example.com/path/to/%E6%97%A5%E6%9C%AC%E8%AA%9E.txt' }
-      end
+      let(:url) { 'http://example.com/path/to/%E6%97%A5%E6%9C%AC%E8%AA%9E.txt' }
 
-      it "should decode multi-byte characters" do
-        expect(subject.filename).to eq('日本語.txt')
+      it "decodes multi-byte characters" do
+        is_expected.to eq('日本語.txt')
       end
     end
   end
