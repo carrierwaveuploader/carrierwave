@@ -1,14 +1,11 @@
 require 'spec_helper'
 
 describe CarrierWave::Uploader do
-  before do
-    @uploader_class = Class.new(CarrierWave::Uploader::Base)
-    @uploader = @uploader_class.new
-  end
+  let(:uploader_class) { Class.new(CarrierWave::Uploader::Base) }
+  let(:uploader) { uploader_class.new }
+  let(:ruby_file) { File.open(file_path('ruby.gif')) }
 
-  after do
-    FileUtils.rm_rf(public_path)
-  end
+  after { FileUtils.rm_rf(public_path) }
 
   describe '#cache!' do
     before do
@@ -17,56 +14,48 @@ describe CarrierWave::Uploader do
 
     context "when there is no whitelist" do
       it "does not raise an integrity error" do
-        allow(@uploader).to receive(:content_type_whitelist).and_return(nil)
+        allow(uploader).to receive(:content_type_whitelist).and_return(nil)
 
-        expect {
-          @uploader.cache!(File.open(file_path('ruby.gif')))
-        }.not_to raise_error
+        expect { uploader.cache!(ruby_file) }.not_to raise_error
       end
     end
 
     context "when there is a whitelist" do
       context "when the whitelist is an array of values" do
-        it "does not raise an integrity error when the file has a whitelisted content type" do
-          allow(@uploader).to receive(:content_type_whitelist).and_return(['image/gif'])
+        let(:bork_file) { File.open(file_path('bork.txt')) }
 
-          expect {
-            @uploader.cache!(File.open(file_path('ruby.gif')))
-          }.not_to raise_error
+        it "does not raise an integrity error when the file has a whitelisted content type" do
+          allow(uploader).to receive(:content_type_whitelist).and_return(['image/gif'])
+
+          expect { uploader.cache!(ruby_file) }.not_to raise_error
         end
 
         it "raises an integrity error the file has not a whitelisted content type" do
-          allow(@uploader).to receive(:content_type_whitelist).and_return(['image/gif'])
+          allow(uploader).to receive(:content_type_whitelist).and_return(['image/gif'])
 
-          expect {
-            @uploader.cache!(File.open(file_path('bork.txt')))
-          }.to raise_error(CarrierWave::IntegrityError)
+          expect { uploader.cache!(bork_file) }.to raise_error(CarrierWave::IntegrityError)
         end
 
         it "accepts content types as regular expressions" do
-          allow(@uploader).to receive(:content_type_whitelist).and_return([/image\//])
+          allow(uploader).to receive(:content_type_whitelist).and_return([/image\//])
 
-          expect {
-            @uploader.cache!(File.open(file_path('bork.txt')))
-          }.to raise_error(CarrierWave::IntegrityError)
+          expect { uploader.cache!(bork_file) }.to raise_error(CarrierWave::IntegrityError)
         end
       end
 
       context "when the whitelist is a single value" do
-        it "accepts a single extension string value" do
-          allow(@uploader).to receive(:extension_whitelist).and_return('jpeg')
+        let(:test_file) { File.open(file_path('test.jpeg')) }
 
-          expect(running {
-            @uploader.cache!(File.open(file_path('test.jpeg')))
-          }).not_to raise_error
+        it "accepts a single extension string value" do
+          allow(uploader).to receive(:extension_whitelist).and_return('jpeg')
+
+          expect { uploader.cache!(test_file) }.not_to raise_error
         end
 
         it "accepts a single extension regular expression value" do
-          allow(@uploader).to receive(:extension_whitelist).and_return(/jpe?g/)
+          allow(uploader).to receive(:extension_whitelist).and_return(/jpe?g/)
 
-          expect(running {
-            @uploader.cache!(File.open(file_path('test.jpeg')))
-          }).not_to raise_error
+          expect { uploader.cache!(test_file) }.not_to raise_error
         end
       end
     end
