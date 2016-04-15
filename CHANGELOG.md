@@ -3,9 +3,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## 0.11.0 - 2016-03-29
-
-[Compare v0.10.0...v0.11.0](https://github.com/carrierwaveuploader/carrierwave/compare/v0.10.0...v0.11.0)
+## [Unreleased]
 
 ### Added
 * Add a test matcher for the format (@yanivpr [#1758](https://github.com/carrierwaveuploader/carrierwave/pull/1758))
@@ -26,7 +24,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * [BREAKING CHANGE] Rename `extension_white_list` ~> `extension_whitelist` (@mehlah [#1819](https://github.com/carrierwaveuploader/carrierwave/pull/1819))
 * [BREAKING CHANGE] Rename `extension_black_list` ~> `extension_blacklist` (@mehlah [#1819](https://github.com/carrierwaveuploader/carrierwave/pull/1819))
 * [BREAKING CHANGE] Rename i18n keys `extension_black_list_error` ~> `extension_blacklist_error` and `extension_white_list_error` ~> `extension_whitelist_error` (@mehlah)
-* `cache_id` is now less collision-prone thanks to a counter (@stillwaiting [#1797](https://github.com/carrierwaveuploader/carrierwave/pull/1797))
 * Better error when the configured storage is unknown (@st0012 [#1779](https://github.com/carrierwaveuploader/carrierwave/pull/1779))
 * Allow to pass additionnal options to Rackspace `authenticated_url` (@duhast [#1722](https://github.com/carrierwaveuploader/carrierwave/pull/1722))
 * Reduced memory footprint (@schneems [#1652](https://github.com/carrierwaveuploader/carrierwave/pull/1652), @simonprev [#1706](https://github.com/carrierwaveuploader/carrierwave/pull/1706))
@@ -64,6 +61,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Skip loading RMagick if already loaded (@mshibuya [#1346](https://github.com/carrierwaveuploader/carrierwave/pull/1346))
 * Make the `#remove_#{column}` accessor set the mounted column as changed (@nikz [#1326](https://github.com/carrierwaveuploader/carrierwave/pull/1326))
 * Tempfile and @content_type assignment (@bensie [#1487](https://github.com/carrierwaveuploader/carrierwave/issues/1487))
+
+## 0.11.0 - 2016-03-29
+
+### Added
+
+### Changed
+* `cache_id` is now less collision-prone thanks to a counter (@stillwaiting and @mtsmfm [#1866](https://github.com/carrierwaveuploader/carrierwave/pull/1866))
+
+### Removed
+
+### Fixed
+* Fix require RMagick deprecation warning (@thomasfedb and @bensie [#1788](https://github.com/carrierwaveuploader/carrierwave/pull/1788))
 
 ## 0.10.0 - 2014-02-26
 
