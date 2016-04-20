@@ -1,83 +1,77 @@
 require 'spec_helper'
 
 describe CarrierWave::Uploader do
+  let(:uploader_class) { Class.new(CarrierWave::Uploader::Base) }
+  let(:uploader) { uploader_class.new }
 
-  before do
-    @uploader_class = Class.new(CarrierWave::Uploader::Base)
-    @uploader = @uploader_class.new
-  end
-
-  after do
-    FileUtils.rm_rf(public_path)
-  end
+  after { FileUtils.rm_rf(public_path) }
 
   describe 'with a default url' do
     before do
-      @uploader_class.class_eval do
+      uploader_class.class_eval do
         version :thumb
         def default_url
-          ["http://someurl.example.com", version_name].compact.join('/')
+          ['http://someurl.example.com', version_name].compact.join('/')
         end
       end
-      @uploader = @uploader_class.new
     end
 
     describe '#blank?' do
-      it "should be true by default" do
-        expect(@uploader).to be_blank
+      subject { uploader }
+
+      it "is blank by default" do
+        is_expected.to be_blank
       end
     end
 
     describe '#current_path' do
-      it "should return nil" do
-        expect(@uploader.current_path).to be_nil
-      end
+      subject { uploader.current_path }
+
+      it { is_expected.to be_nil }
     end
 
     describe '#url' do
-      it "should return the default url" do
-        expect(@uploader.url).to eq('http://someurl.example.com')
+      let(:url_example) { "http://someurl.example.com" }
+
+      it "returns the default url" do
+        expect(uploader.url).to eq(url_example)
       end
 
-      it "should return the default url with version when given" do
-        expect(@uploader.url(:thumb)).to eq('http://someurl.example.com/thumb')
+      it "returns the default url with version when given" do
+        expect(uploader.url(:thumb)).to eq("#{url_example}/thumb")
       end
     end
 
     describe '#cache!' do
+      let(:cache_id) { '1369894322-345-1234-2255' }
+      let(:file_name) { 'test.jpg' }
+
+      subject { uploader }
 
       before do
-        allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-1234-2255')
+        allow(CarrierWave).to receive(:generate_cache_id).and_return(cache_id)
+        uploader.cache!(File.open(file_path(file_name)))
       end
 
-      it "should cache a file" do
-        @uploader.cache!(File.open(file_path('test.jpg')))
-        expect(@uploader.file).to be_an_instance_of(CarrierWave::SanitizedFile)
+      it "caches a file" do
+        expect(uploader.file).to be_an_instance_of(CarrierWave::SanitizedFile)
       end
 
-      it "should be cached" do
-        @uploader.cache!(File.open(file_path('test.jpg')))
-        expect(@uploader).to be_cached
+      it "is cached" do
+        expect(uploader).to be_cached
       end
 
-      it "should no longer be blank" do
-        @uploader.cache!(File.open(file_path('test.jpg')))
-        expect(@uploader).not_to be_blank
+      it "isn't blank" do
+        expect(uploader).not_to be_blank
       end
 
-      it "should set the current_path" do
-        @uploader.cache!(File.open(file_path('test.jpg')))
-        expect(@uploader.current_path).to eq(public_path('uploads/tmp/1369894322-345-1234-2255/test.jpg'))
+      it "sets the current_path" do
+        expect(uploader.current_path).to eq(public_path("uploads/tmp/#{cache_id}/#{file_name}"))
       end
 
-      it "should set the url" do
-        @uploader.cache!(File.open(file_path('test.jpg')))
-        expect(@uploader.url).not_to eq('http://someurl.example.com')
-        expect(@uploader.url).to eq('/uploads/tmp/1369894322-345-1234-2255/test.jpg')
+      it "sets the url" do
+        expect(uploader.url).to eq ("/uploads/tmp/#{cache_id}/#{file_name}")
       end
-
     end
-
   end
-
 end
