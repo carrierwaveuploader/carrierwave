@@ -1,47 +1,52 @@
 require 'spec_helper'
 
 describe CarrierWave::Uploader do
-  before do
-    @uploader_class = Class.new(CarrierWave::Uploader::Base)
-    @uploader = @uploader_class.new
-  end
+  let(:uploader_class) { Class.new(CarrierWave::Uploader::Base) }
+  let(:uploader) { uploader_class.new }
+  let(:cache_id) { '20071201-1234-1234-2255' }
+  let(:test_file) { File.open(file_path('test.jpg')) }
 
-  after do
-    FileUtils.rm_rf(public_path)
-  end
+  after { FileUtils.rm_rf(public_path) }
 
   describe '#cache!' do
+    subject { lambda { uploader.cache!(test_file) } }
 
-    before do
-      allow(CarrierWave).to receive(:generate_cache_id).and_return('20071201-1234-1234-2255')
-    end
+    before { allow(CarrierWave).to receive(:generate_cache_id).and_return(cache_id) }
 
-    it "should not raise an integrity error if there is no range specified" do
-      allow(@uploader).to receive(:size_range).and_return(nil)
-      expect(running {
-        @uploader.cache!(File.open(file_path('test.jpg')))
-      }).not_to raise_error
-    end
+    describe "file size range" do
+      before { allow(uploader).to receive(:size_range).and_return(range) }
 
-    it "should raise an integrity error if there is a size range and file has size less than minimum" do
-      allow(@uploader).to receive(:size_range).and_return(2097152..4194304)
-      expect(running {
-        @uploader.cache!(File.open(file_path('test.jpg')))
-      }).to raise_error(CarrierWave::IntegrityError)
-    end
+      context "when not specified" do
+        let(:range) { nil }
 
-    it "should raise an integrity error if there is a size range and file has size more than maximum" do
-      allow(@uploader).to receive(:size_range).and_return(0..10)
-      expect(running {
-        @uploader.cache!(File.open(file_path('test.jpg')))
-      }).to raise_error(CarrierWave::IntegrityError)
-    end
+        it "doesn't raise an integrity error" do
+          is_expected.not_to raise_error
+        end
+      end
 
-    it "should not raise an integrity error if there is a size range the file is not on it" do
-      allow(@uploader).to receive(:size_range).and_return(0..50)
-      expect(running {
-        @uploader.cache!(File.open(file_path('test.jpg')))
-      }).not_to raise_error
+      context "when below the minimum" do
+        let(:range) { 2097152..4194304 }
+
+        it "raises an integrity error" do
+          is_expected.to raise_error(CarrierWave::IntegrityError)
+        end
+      end
+
+      context "when above the maximum" do
+        let(:range) { 0..10 }
+
+        it "raises an integrity error" do
+          is_expected.to raise_error(CarrierWave::IntegrityError)
+        end
+      end
+
+      context "when inside the range" do
+        let(:range) { 0..100 }
+
+        it "doesn't raise an integrity error" do
+          is_expected.not_to raise_error
+        end
+      end
     end
   end
 end
