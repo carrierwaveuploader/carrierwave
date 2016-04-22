@@ -39,7 +39,7 @@ module CarrierWave
       def check_extension_blacklist!(new_file)
         extension = new_file.extension.to_s
         if extension_blacklist && blacklisted_extension?(extension)
-          raise CarrierWave::IntegrityError, I18n.translate(:"errors.messages.extension_blacklist_error", extension: new_file.extension.inspect, prohibited_types: extension_blacklist.join(", "))
+          raise CarrierWave::IntegrityError, I18n.translate(:"errors.messages.extension_blacklist_error", extension: new_file.extension.inspect, prohibited_types: Array(extension_blacklist).join(", "))
         end
       end
 
