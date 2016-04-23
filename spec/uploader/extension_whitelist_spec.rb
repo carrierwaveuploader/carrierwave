@@ -88,17 +88,13 @@ describe CarrierWave::Uploader do
         it "accepts a single extension string value" do
           allow(@uploader).to receive(:extension_whitelist).and_return('jpeg')
 
-          expect(running {
-            @uploader.cache!(File.open(file_path('test.jpeg')))
-          }).not_to raise_error
+          expect { @uploader.cache!(File.open(file_path('test.jpg'))) }.to raise_error(CarrierWave::IntegrityError)
         end
 
         it "accepts a single extension regular expression value" do
           allow(@uploader).to receive(:extension_whitelist).and_return(/jpe?g/)
 
-          expect(running {
-            @uploader.cache!(File.open(file_path('test.jpeg')))
-          }).not_to raise_error
+          expect { @uploader.cache!(File.open(file_path('bork.txt')))}.to raise_error
         end
       end
     end
