@@ -60,7 +60,7 @@ module CarrierWave
     # will create an anonymous uploader class.
     #
     # Passing a block makes it possible to customize the uploader. This can be
-    # convenient for brevity, but if there is any significatnt logic in the
+    # convenient for brevity, but if there is any significant logic in the
     # uploader, you should do the right thing and have it in its own file.
     #
     # === Added instance methods
