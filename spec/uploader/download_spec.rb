@@ -1,215 +1,204 @@
 require 'spec_helper'
 
 describe CarrierWave::Uploader::Download do
+  let(:uploader_class) { Class.new(CarrierWave::Uploader::Base) }
+  let(:uploader) { uploader_class.new }
+  let(:cache_id) { '1369894322-345-1234-2255' }
+  let(:base_url) { "http://www.example.com" }
+  let(:url) { base_url + "/test.jpg" }
+  let(:test_file) { File.read(file_path(test_file_name)) }
+  let(:test_file_name) { "test.jpg" }
 
-  before do
-    @uploader_class = Class.new(CarrierWave::Uploader::Base)
-    @uploader = @uploader_class.new
-  end
-
-  after do
-    FileUtils.rm_rf(public_path)
-  end
+  after { FileUtils.rm_rf(public_path) }
 
   describe '#download!' do
     before do
-      allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-1234-2255')
+      allow(CarrierWave).to receive(:generate_cache_id).and_return(cache_id)
 
-      stub_request(:get, "www.example.com/test.jpg")
-        .to_return(body: File.read(file_path("test.jpg")))
+      stub_request(:get, "www.example.com/#{test_file_name}")
+        .to_return(body: test_file)
 
       stub_request(:get, "www.example.com/test-with-no-extension/test").
-        to_return(body: File.read(file_path("test.jpg")), headers: { "Content-Type" => "image/jpeg" })
+        to_return(body: test_file, headers: { "Content-Type" => "image/jpeg" })
 
-      stub_request(:get, "www.example.com/test%20with%20spaces/test.jpg").
-        to_return(body: File.read(file_path("test.jpg")))
+      stub_request(:get, "www.example.com/test%20with%20spaces/#{test_file_name}").
+        to_return(body: test_file)
 
       stub_request(:get, "www.example.com/content-disposition").
-        to_return(body: File.read(file_path("test.jpg")), headers: { "Content-Disposition" => 'filename="another_test.jpg"' })
+        to_return(body: test_file, headers: { "Content-Disposition" => 'filename="another_test.jpg"' })
 
       stub_request(:get, "www.redirect.com").
-        to_return(status: 301, body: "Redirecting", headers: { "Location" => "http://www.example.com/test.jpg" })
+        to_return(status: 301, body: "Redirecting", headers: { "Location" => url })
 
       stub_request(:get, "www.example.com/missing.jpg").
         to_return(status: 404)
     end
 
-    it "should cache a file" do
-      @uploader.download!('http://www.example.com/test.jpg')
-      expect(@uploader.file).to be_an_instance_of(CarrierWave::SanitizedFile)
+    context "when a file was downloaded" do
+      before do
+        uploader.download!(url)
+      end
+
+      it "caches a file" do
+        expect(uploader.file).to be_an_instance_of(CarrierWave::SanitizedFile)
+      end
+
+      it "'s cached" do
+        expect(uploader).to be_cached
+      end
+
+      it "stores the cache name" do
+        expect(uploader.cache_name).to eq("#{cache_id}/#{test_file_name}")
+      end
+
+      it "sets the filename to the file's sanitized filename" do
+        expect(uploader.filename).to eq("#{test_file_name}")
+      end
+
+      it "moves it to the tmp dir" do
+        expect(uploader.file.path).to eq(public_path("uploads/tmp/#{cache_id}/#{test_file_name}"))
+        expect(uploader.file.exists?).to be_truthy
+      end
+
+      it "sets the url" do
+        expect(uploader.url).to eq("/uploads/tmp/#{cache_id}/#{test_file_name}")
+      end
     end
 
-    it "should be cached" do
-      @uploader.download!('http://www.example.com/test.jpg')
-      expect(@uploader).to be_cached
+    context "with directory permissions set" do
+      let(:permissions) { 0777 }
+
+      it "sets permissions" do
+        uploader_class.permissions = permissions
+        uploader.download!(url)
+
+        expect(uploader).to have_permissions(permissions)
+      end
+
+      it "sets directory permissions" do
+        uploader_class.directory_permissions = permissions
+        uploader.download!(url)
+
+        expect(uploader).to have_directory_permissions(permissions)
+      end
     end
 
-    it "should store the cache name" do
-      @uploader.download!('http://www.example.com/test.jpg')
-      expect(@uploader.cache_name).to eq('1369894322-345-1234-2255/test.jpg')
+    it "raises an error when trying to download a local file" do
+      expect { uploader.download!('/etc/passwd') }.to raise_error(CarrierWave::DownloadError)
     end
 
-    it "should set the filename to the file's sanitized filename" do
-      @uploader.download!('http://www.example.com/test.jpg')
-      expect(@uploader.filename).to eq('test.jpg')
+    it "raises an error when trying to download a missing file" do
+      expect{ uploader.download!("#{base_url}/missing.jpg") }.to raise_error(CarrierWave::DownloadError)
     end
 
-    it "should move it to the tmp dir" do
-      @uploader.download!('http://www.example.com/test.jpg')
-      expect(@uploader.file.path).to eq(public_path('uploads/tmp/1369894322-345-1234-2255/test.jpg'))
-      expect(@uploader.file.exists?).to be_truthy
+    it "accepts spaces in the url" do
+      uploader.download!(url)
+      expect(uploader.url).to eq("/uploads/tmp/#{cache_id}/#{test_file_name}")
     end
 
-    it "should set the url" do
-      @uploader.download!('http://www.example.com/test.jpg')
-      expect(@uploader.url).to eq('/uploads/tmp/1369894322-345-1234-2255/test.jpg')
+    it "follows redirects" do
+      uploader.download!('http://www.redirect.com/')
+      expect(uploader.url).to eq("/uploads/tmp/#{cache_id}/#{test_file_name}")
     end
 
-    it "should set permissions if options are given" do
-      @uploader_class.permissions = 0777
-
-      @uploader.download!('http://www.example.com/test.jpg')
-      expect(@uploader).to have_permissions(0777)
+    it "reads content-disposition headers" do
+      uploader.download!("#{base_url}/content-disposition")
+      expect(uploader.url).to eq("/uploads/tmp/#{cache_id}/another_#{test_file_name}")
     end
 
-    it "should set directory permissions if options are given" do
-      @uploader_class.directory_permissions = 0777
+    it 'sets file extension based on content-type if missing' do
+      uploader.download!("#{base_url}/test-with-no-extension/test")
 
-      @uploader.download!('http://www.example.com/test.jpg')
-      expect(@uploader).to have_directory_permissions(0777)
+      expect(uploader.url).to match %r{/uploads/tmp/#{cache_id}/test\.jp(e|e?g)$}
     end
 
-    it "should raise an error when trying to download a local file" do
-      expect(running {
-        @uploader.download!('/etc/passwd')
-      }).to raise_error(CarrierWave::DownloadError)
-    end
-
-    it "should raise an error when trying to download a missing file" do
-      expect(running {
-        @uploader.download!('http://www.example.com/missing.jpg')
-      }).to raise_error(CarrierWave::DownloadError)
-    end
-
-    it "should accept spaces in the url" do
-      @uploader.download!('http://www.example.com/test with spaces/test.jpg')
-      expect(@uploader.url).to eq('/uploads/tmp/1369894322-345-1234-2255/test.jpg')
-    end
-
-    it "should follow redirects" do
-      @uploader.download!('http://www.redirect.com/')
-      expect(@uploader.url).to eq('/uploads/tmp/1369894322-345-1234-2255/test.jpg')
-    end
-
-    it "should read content-disposition headers" do
-      @uploader.download!('http://www.example.com/content-disposition')
-      expect(@uploader.url).to eq('/uploads/tmp/1369894322-345-1234-2255/another_test.jpg')
-    end
-
-    it 'should set file extension based on content-type if missing' do
-      @uploader.download!('http://www.example.com/test-with-no-extension/test')
-      expect(@uploader.url).to match %r{/uploads/tmp/1369894322-345-1234-2255/test\.jp(e|e?g)$}
-    end
-
-    it 'should not obscure original exception message' do
-      expect {
-        @uploader.download!('http://www.example.com/missing.jpg')
-      }.to raise_error(CarrierWave::DownloadError, /could not download file: 404/)
+    it "doesn't obscure original exception message" do
+      expect { uploader.download!("#{base_url}/missing.jpg") }.to raise_error(CarrierWave::DownloadError, /could not download file: 404/)
     end
 
     describe '#download! with an extension_whitelist' do
       before do
-        @uploader_class.class_eval do
+        uploader_class.class_eval do
           def extension_whitelist
             %w(txt)
           end
         end
       end
 
-      it "should follow redirects but still respect the extension_whitelist" do
-        expect(running {
-          @uploader.download!('http://www.redirect.com/')
-        }).to raise_error(CarrierWave::IntegrityError)
+      it "follows redirects but still respect the extension_whitelist" do
+        expect { uploader.download!('http://www.redirect.com/') }.to raise_error(CarrierWave::IntegrityError)
       end
 
-      it "should read content-disposition header but still respect the extension_whitelist" do
-        expect(running {
-          @uploader.download!('http://www.example.com/content-disposition')
-        }).to raise_error(CarrierWave::IntegrityError)
+      it "reads content-disposition header but still respect the extension_whitelist" do
+        expect { uploader.download!("#{base_url}/content-disposition") }.to raise_error(CarrierWave::IntegrityError)
       end
     end
 
     describe '#download! with an extension_blacklist' do
       before do
-        @uploader_class.class_eval do
+        uploader_class.class_eval do
           def extension_blacklist
             %w(jpg)
           end
         end
       end
 
-      it "should follow redirects but still respect the extension_blacklist" do
-        expect(running {
-          @uploader.download!('http://www.redirect.com/')
-        }).to raise_error(CarrierWave::IntegrityError)
+      it "follows redirects but still respect the extension_blacklist" do
+        expect { uploader.download!('http://www.redirect.com/') }.to raise_error(CarrierWave::IntegrityError)
       end
 
-      it "should read content-disposition header but still respect the extension_blacklist" do
-        expect(running {
-          @uploader.download!('http://www.example.com/content-disposition')
-        }).to raise_error(CarrierWave::IntegrityError)
+      it "reads content-disposition header but still respect the extension_blacklist" do
+        expect { uploader.download!("#{base_url}/content-disposition") }.to raise_error(CarrierWave::IntegrityError)
       end
     end
   end
 
   describe '#download! with an overridden process_uri method' do
     before do
-      @uploader_class.class_eval do
+      uploader_class.class_eval do
         def process_uri(uri)
           raise CarrierWave::DownloadError
         end
       end
     end
 
-    it "should allow overriding the process_uri method" do
-      expect(running {
-        @uploader.download!('http://www.example.com/test.jpg')
-      }).to raise_error(CarrierWave::DownloadError)
+    it "allows overriding the process_uri method" do
+      expect { uploader.download!(url) }.to raise_error(CarrierWave::DownloadError)
     end
   end
 
   describe '#process_uri' do
-    it "should parse but not escape already escaped uris" do
+    it "parses but not escape already escaped uris" do
       uri = 'http://example.com/%5B.jpg'
-      processed = @uploader.process_uri(uri)
+      processed = uploader.process_uri(uri)
       expect(processed.class).to eq(URI::HTTP)
       expect(processed.to_s).to eq(uri)
     end
 
-    it "should parse but not escape uris with query-string-only characters not needing escaping" do
+    it "parses but not escape uris with query-string-only characters not needing escaping" do
       uri = 'http://example.com/?foo[]=bar'
-      processed = @uploader.process_uri(uri)
+      processed = uploader.process_uri(uri)
       expect(processed.class).to eq(URI::HTTP)
       expect(processed.to_s).to eq(uri)
     end
 
-    it "should escape and parse unescaped uris" do
+    it "escapes and parse unescaped uris" do
       uri = 'http://example.com/ %[].jpg'
-      processed = @uploader.process_uri(uri)
+      processed = uploader.process_uri(uri)
       expect(processed.class).to eq(URI::HTTP)
       expect(processed.to_s).to eq('http://example.com/%20%25%5B%5D.jpg')
     end
 
-    it "should escape and parse brackets in uri paths without harming the query string" do
+    it "escapes and parse brackets in uri paths without harming the query string" do
       uri = 'http://example.com/].jpg?test[]'
-      processed = @uploader.process_uri(uri)
+      processed = uploader.process_uri(uri)
       expect(processed.class).to eq(URI::HTTP)
       expect(processed.to_s).to eq('http://example.com/%5D.jpg?test[]')
     end
 
-    it "should throw an exception on bad uris" do
+    it "throws an exception on bad uris" do
       uri = '~http:'
-      expect { @uploader.process_uri(uri) }.to raise_error(CarrierWave::DownloadError)
+      expect { uploader.process_uri(uri) }.to raise_error(CarrierWave::DownloadError)
     end
   end
 end
