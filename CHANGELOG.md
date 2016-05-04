@@ -19,6 +19,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Add Indonesian, Taiwanese and Chinese i18n translations for errors (@saveav, @st0012, @msyesyan)
 
 ### Changed
+* Use the MimeMagic gem to inspect file headers for the mime type. This allows for mitigation of CVE-2016-3714, in combination with a `content_type_whitelist`. (@locriani [#1934](https://github.com/carrierwaveuploader/carrierwave/pull/1934))
 * [BREAKING CHANGE] Allow non-ASCII filename by default (@shuhei [#1772](https://github.com/carrierwaveuploader/carrierwave/pull/1772))
 * [BREAKING CHANGE] `to_json` behavior changed when serializing an uploader (@jnicklas and @lisarutan [#1481](https://github.com/carrierwaveuploader/carrierwave/pull/1481))
 * [BREAKING CHANGE] Rename `extension_white_list` ~> `extension_whitelist` (@mehlah [#1819](https://github.com/carrierwaveuploader/carrierwave/pull/1819))

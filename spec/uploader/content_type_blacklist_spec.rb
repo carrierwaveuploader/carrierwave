@@ -31,7 +31,7 @@ describe CarrierWave::Uploader do
         end
 
         it "raises an integrity error if the file has a blacklisted content type" do
-          allow(uploader).to receive(:content_type_blacklist).and_return(['image/gif'])
+          allow(uploader).to receive(:content_type_blacklist).and_return(['image/png'])
 
           expect { uploader.cache!(ruby_file) }.to raise_error(CarrierWave::IntegrityError)
         end
