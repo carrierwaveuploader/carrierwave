@@ -11,6 +11,8 @@ require "carrierwave/uploader/download"
 require "carrierwave/uploader/remove"
 require "carrierwave/uploader/extension_whitelist"
 require "carrierwave/uploader/extension_blacklist"
+require "carrierwave/uploader/content_type_whitelist"
+require "carrierwave/uploader/content_type_blacklist"
 require "carrierwave/uploader/processing"
 require "carrierwave/uploader/versions"
 require "carrierwave/uploader/default_url"
@@ -53,6 +55,8 @@ module CarrierWave
       include CarrierWave::Uploader::Remove
       include CarrierWave::Uploader::ExtensionWhitelist
       include CarrierWave::Uploader::ExtensionBlacklist
+      include CarrierWave::Uploader::ContentTypeWhitelist
+      include CarrierWave::Uploader::ContentTypeBlacklist
       include CarrierWave::Uploader::Processing
       include CarrierWave::Uploader::Versions
       include CarrierWave::Uploader::DefaultUrl
