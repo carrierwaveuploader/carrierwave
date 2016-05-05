@@ -3,6 +3,7 @@
 require 'pathname'
 require 'active_support/core_ext/string/multibyte'
 require 'mime/types'
+require 'mimemagic'
 
 module CarrierWave
 
@@ -244,12 +245,10 @@ module CarrierWave
     # [String] the content type of the file
     #
     def content_type
-      return @content_type if @content_type
-      if @file.respond_to?(:content_type) and @file.content_type
-        @content_type = @file.content_type.to_s.chomp
-      elsif path
-        @content_type = ::MIME::Types.type_for(path).first.to_s
-      end
+      @content_type ||=
+        existing_content_type ||
+        mime_magic_content_type ||
+        mime_types_content_type
     end
 
     ##
@@ -307,6 +306,22 @@ module CarrierWave
       name = "_#{name}" if name =~ /\A\.+\z/
       name = "unnamed" if name.size == 0
       return name.mb_chars.to_s
+    end
+
+    def existing_content_type
+      if @file.respond_to?(:content_type) && @file.content_type
+        @file.content_type.to_s.chomp
+      end
+    end
+
+    def mime_magic_content_type
+      MimeMagic.by_magic(File.open(path)).try(:type) if path
+    rescue Errno::ENOENT
+      nil
+    end
+
+    def mime_types_content_type
+      ::MIME::Types.type_for(path).first.to_s if path
     end
 
     def split_extension(filename)
