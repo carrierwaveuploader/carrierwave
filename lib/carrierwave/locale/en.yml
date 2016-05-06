@@ -8,4 +8,6 @@ en:
       extension_black_list_error: "You are not allowed to upload %{extension} files, prohibited types: %{prohibited_types}"
       rmagick_processing_error: "Failed to manipulate with rmagick, maybe it is not an image? Original Error: %{e}"
       mime_types_processing_error: "Failed to process file with MIME::Types, maybe not valid content-type? Original Error: %{e}"
+      content_type_whitelist_error: "You are not allowed to upload %{content_type} files"
+      content_type_blacklist_error: "You are not allowed to upload %{content_type} files"
       mini_magick_processing_error: "Failed to manipulate with MiniMagick, maybe it is not an image? Original Error: %{e}"
