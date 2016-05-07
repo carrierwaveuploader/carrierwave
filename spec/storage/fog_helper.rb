@@ -309,6 +309,7 @@ end
     describe "with a valid path" do
       before do
         @file = CarrierWave::SanitizedFile.new(file_path('test.jpg'))
+        @file.file.stub(:content_type) { 'image/jpeg' }
         @file.should_not be_empty
       end
 
@@ -318,6 +319,7 @@ end
     describe "with a valid Pathname" do
       before do
         @file = CarrierWave::SanitizedFile.new(Pathname.new(file_path('test.jpg')))
+        @file.file.stub(:content_type) { 'image/jpeg' }
         @file.should_not be_empty
       end
 
