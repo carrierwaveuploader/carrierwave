@@ -65,6 +65,7 @@ describe CarrierWave::Uploader do
     end
 
     context "when the file has been cached" do
+      let(:test_file_name) { 'landscape.jpg' }
       before { uploader.cache!(test_file) }
 
       it { is_expected.to eq('image/jpeg') }
