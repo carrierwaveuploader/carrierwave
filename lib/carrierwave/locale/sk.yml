@@ -6,6 +6,8 @@ sk:
       carrierwave_download_error: nie je možné stiahnuť
       extension_whitelist_error: "Nie je možné nahrávať %{extension} súbory, povolené typy: %{allowed_types}"
       extension_blacklist_error: "Nie je možné nahrávať %{extension} súbory, zakázané typy: %{prohibited_types}"
+      content_type_whitelist_error: "Nie je možné nahrávať %{content_type} súbory"
+      content_type_blacklist_error: "Nie je možné nahrávať %{content_type} súbory"
       rmagick_processing_error: "Nepodarilo sa upraviť pomocou rmagick, možno nejde o obrázok? Hlásená chyba: %{e}"
       mini_magick_processing_error: "Nepodarilo sa upraviť pomocou MiniMagick, možno nejde o obrázok? Hlásená chyba: %{e}"
       min_size_error: "Filstorleken ska vara större än %{min_size}"

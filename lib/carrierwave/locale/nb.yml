@@ -6,6 +6,8 @@ nb:
       carrierwave_download_error: kunne ikke lastes ned
       extension_whitelist_error: "Du kan ikke laste opp %{extension}-filer, tillatte filtyper: %{allowed_types}"
       extension_blacklist_error: "Du kan ikke laste opp %{extension}-filer, forbudte filtyper: %{prohibited_types}"
+      content_type_whitelist_error: "Du kan ikke laste opp %{content_type}-filer"
+      content_type_blacklist_error: "Du kan ikke laste opp %{content_type}-filer"
       rmagick_processing_error: "Kunne ikke manipulere med rmagick. Er du sikker på at det er et bilde? Feilmelding: %{e}"
       mini_magick_processing_error: "Kunne ikke manipulere med MiniMagick. Er du sikker på at det er et bilde? Feilmelding: %{e}"
       min_size_error: "Filen størrelse bør være større enn %{min_size}"

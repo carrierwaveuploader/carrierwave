@@ -6,6 +6,8 @@ ru:
       carrierwave_download_error: Невозможно скачать файл
       extension_whitelist_error: "Вы не можете загружать файлы типа %{extension}, разрешенные типы: %{allowed_types}"
       extension_blacklist_error: "Вы не можете загружать файлы типа %{extension}, запрещенные типы: %{prohibited_types}"
+      content_type_whitelist_error: "Вы не можете загружать файлы типа %{content_type}"
+      content_type_blacklist_error: "Вы не можете загружать файлы типа %{content_type}"
       rmagick_processing_error: "Ошибка взаимодействия с RMagick, может быть это не изображение? Исходная ошибка: %{e}"
       mini_magick_processing_error: "Ошибка взаимодействия с MiniMagick, может быть это не изображение? Исходная ошибка: %{e}"
       min_size_error: "Размер файла должен быть больше, чем %{min_size}"

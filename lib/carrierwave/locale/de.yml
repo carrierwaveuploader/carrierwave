@@ -6,6 +6,8 @@ de:
       carrierwave_download_error: konnte nicht heruntergeladen werden
       extension_whitelist_error: "Sie sind nicht berechtigt %{extension} Dateien hochzuladen, erlaubte Typen: %{allowed_types}"
       extension_blacklist_error: "Sie sind nicht berechtigt %{extension} Dateien hochzuladen, verbotene Typen: %{prohibited_types}"
+      content_type_whitelist_error: "Sie sind nicht berechtigt %{content_type} Dateien hochzuladen"
+      content_type_blacklist_error: "Sie sind nicht berechtigt %{content_type} Dateien hochzuladen"
       rmagick_processing_error: "Verarbeitung mit rmagick fehlgeschlagen, vielleicht ist es kein Bild? Original Fehler: %{e}"
       mini_magick_processing_error: "Verarbeitung mit MiniMagick fehlgeschlagen, vielleicht ist es kein Bild? Original Fehler: %{e}"
       min_size_error: "Die dateigröße sollte größer sein als %{min_size}"
