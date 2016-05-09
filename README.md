@@ -174,7 +174,7 @@ class MyUploader < CarrierWave::Uploader::Base
 end
 ```
 
-**WARNING**: A `content_type_whitelist` is the only form of whitelist or blacklist supported by CarrierWave that can effectively mitigate against CVE-2016-3714. Use of `extension_type_whitelist` will not inspect the file headers, and thus still leaves your application open to the vulnerability.
+**WARNING**: A `content_type_whitelist` is the only form of whitelist or blacklist supported by CarrierWave that can effectively mitigate against CVE-2016-3714. Use of `extension_white_list` will not inspect the file headers, and thus still leaves your application open to the vulnerability.
 
 
 ### Filenames and unicode chars
