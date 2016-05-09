@@ -20,12 +20,8 @@ module CarrierWave
         elsif file.respond_to?(:path)
           path = encode_path(file.path.sub(File.expand_path(root), ''))
 
-          if host = asset_host
-            if host.respond_to? :call
-              "#{host.call(file)}#{path}"
-            else
-              "#{host}#{path}"
-            end
+          if asset_host
+            add_asset_host_to_path(path)
           else
             (base_path || "") + path
           end
@@ -34,6 +30,16 @@ module CarrierWave
 
       def to_s
         url || ''
+      end
+
+      private
+
+      def add_asset_host_to_path(path)
+        if asset_host.respond_to? :call
+          "#{asset_host.call(file)}#{path}"
+        else
+          "#{asset_host}#{path}"
+        end
       end
 
     end # Url
