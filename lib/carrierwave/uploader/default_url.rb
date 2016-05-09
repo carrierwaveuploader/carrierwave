@@ -27,6 +27,6 @@ module CarrierWave
         !url.match(/^https?:\/\//)
       end
 
-    end # DefaultPath
+    end # DefaultUrl
   end # Uploader
 end # CarrierWave
