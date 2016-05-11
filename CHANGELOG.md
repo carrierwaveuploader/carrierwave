@@ -12,6 +12,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 * Fix require RMagick deprecation warning (@thomasfedb and @bensie [#1788](https://github.com/carrierwaveuploader/carrierwave/pull/1788))
+* Fix legacy RSpec matcher protocol deprecations warnings (@kreintjes and @randoum [#1908](https://github.com/carrierwaveuploader/carrierwave/pull/1908))
 
 Please check [0.10-stable] for previous changes.
 
