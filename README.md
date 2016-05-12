@@ -156,6 +156,8 @@ class User < ActiveRecord::Base
 end
 ```
 
+Note that the used method is `mount_uploaders` with a **s**.
+
 Make sure your file input fields are set up as multiple file fields. For
 example in Rails you'll want to do something like this:
 
