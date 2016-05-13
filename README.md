@@ -124,11 +124,13 @@ u.avatar_identifier # => 'file.png'
 ### Checking for presence
 
 
-To check for presence for a file, use `.file` after the column name.
+To check whether or not a file was uploaded to an object, use `.file` after the attribute name.
 `u.avatar` will never return nil: if there is no image, a PhotoUploader object is returned anyway.
 
-```u.avatar.file # => returns 'nil' if there is no file```
-
+```ruby
+u.avatar # => never returns nil or ""
+u.avatar.file # => returns nil if there is no file
+```
 
 
 ### DataMapper, Mongoid, Sequel
