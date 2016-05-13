@@ -121,6 +121,16 @@ u.avatar.current_path # => 'path/to/file.png'
 u.avatar_identifier # => 'file.png'
 ```
 
+### Checking for presence
+
+
+To check for presence for a file, use `.file` after the column name.
+`u.avatar` will never return nil: if there is no image, a PhotoUploader object is returned anyway.
+
+```u.avatar.file # => returns 'nil' if there is no file```
+
+
+
 ### DataMapper, Mongoid, Sequel
 
 Other ORM support has been extracted into separate gems:
