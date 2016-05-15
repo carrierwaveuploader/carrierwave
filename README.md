@@ -121,6 +121,9 @@ u.avatar.current_path # => 'path/to/file.png'
 u.avatar_identifier # => 'file.png'
 ```
 
+**Note**: `u.avatar` will never return nil, even if there is no photo associated to it.
+To check if a photo was saved to the model, use `u.avatar.file.nil?` instead.
+
 ### DataMapper, Mongoid, Sequel
 
 Other ORM support has been extracted into separate gems:
