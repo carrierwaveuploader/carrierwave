@@ -315,9 +315,7 @@ module CarrierWave
     end
 
     def mime_magic_content_type
-      File.open(path) do |file|
-        MimeMagic.by_magic(file).try(:type) if path
-      end
+      File.open(path) { |file| MimeMagic.by_magic(file).try(:type) } if path
     rescue Errno::ENOENT
       nil
     end
