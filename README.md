@@ -756,7 +756,7 @@ Please read the [fog-google README](https://github.com/fog/fog-google/blob/maste
 
 ```ruby
 CarrierWave.configure do |config|
-  config.fog_provider = 'fog-google'                        # required
+  config.fog_provider = 'fog/google'                        # required
   config.fog_credentials = {
     provider:                         'Google',
     google_storage_access_key_id:     'xxxxxx',
