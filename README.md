@@ -220,7 +220,7 @@ make the record invalid instead. Otherwise, an error is raised.
 
 ```ruby
 class MyUploader < CarrierWave::Uploader::Base
-  def extension_whitelist
+  def extension_white_list
     %w(jpg jpeg gif png)
   end
 end
