@@ -1,0 +1,14 @@
+vi:
+  errors:
+    messages:
+      carrierwave_processing_error: không xử lý được
+      carrierwave_integrity_error: không phải là kiểu file hợp lệ
+      carrierwave_download_error: không thể download
+      extension_whitelist_error: "Bạn không thể tải file có định dạng %{extension}, chỉ cho phép tải file có định dạng: %{allowed_types}"
+      extension_blacklist_error: "Bạn không thể tải file có định dạng %{extension}, không cho phép tải file có định dạng: %{prohibited_types}"
+      content_type_whitelist_error: "Bạn không thể file có định dạng %{content_type}"
+      content_type_blacklist_error: "Bạn không thể file có định dạng %{content_type}"
+      rmagick_processing_error: "Không thể xử lý với rmagick, có thể file của bạn không phải hình ảnh?"
+      mini_magick_processing_error: "Không thể xử lý với MiniMagick, có thể file của bạn không phải hình ảnh? Lỗi gốc: %{e}"
+      min_size_error: "Kích thước file phải lớn hơn %{min_size}"
+      max_size_error: "Kích thước file phải nhỏ hơn %{max_size}"
