@@ -5,14 +5,15 @@ cache: bundler
 rvm:
  - 2.0
  - 2.1
- - 2.2.4
+ - 2.2.5
  - 2.3.1
  - ruby-head
  - jruby
  - jruby-head
 
 env:
-  - JRUBY_OPTS="--2.0"
+  global:
+    - JRUBY_OPTS="--2.0"
 
 gemfile:
   - Gemfile
@@ -29,9 +30,15 @@ before_script:
 matrix:
   exclude:
     - rvm: 2.0
+      gemfile: Gemfile
+    - rvm: 2.0
       gemfile: gemfiles/rails-master.gemfile
     - rvm: 2.1
+      gemfile: Gemfile
+    - rvm: 2.1
       gemfile: gemfiles/rails-master.gemfile
+    - rvm: jruby
+      gemfile: Gemfile
     - rvm: jruby
       gemfile: gemfiles/rails-master.gemfile
     - rvm: jruby-head
