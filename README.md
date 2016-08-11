@@ -278,7 +278,9 @@ end
 ### Conditional versions
 
 Occasionally you want to restrict the creation of versions on certain
-properties within the model or based on the picture itself.
+properties within the model or based on the picture itself. Create an
+instance method that accepts a file object as an argument and returns
+a boolean.
 
 ```ruby
 class MyUploader < CarrierWave::Uploader::Base
