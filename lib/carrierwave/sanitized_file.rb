@@ -143,7 +143,7 @@ module CarrierWave
     # [Boolean] Whether the file exists
     #
     def exists?
-      return File.exists?(self.path) if self.path
+      return File.exist?(self.path) if self.path
       return false
     end
 
