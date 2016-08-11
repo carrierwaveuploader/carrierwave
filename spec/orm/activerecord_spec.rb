@@ -855,14 +855,14 @@ describe CarrierWave::ActiveRecord do
       end
 
       it "should retrieve a file from the storage if a value is stored in the database" do
-        @event[:images] = ['test.jpeg'].to_json
+        @event[:images] = ['test.jpeg']
         @event.save!
         @event.reload
         expect(@event.images[0]).to be_an_instance_of(@uploader)
       end
 
       it "should set the path to the store dir" do
-        @event[:images] = ['test.jpeg'].to_json
+        @event[:images] = ['test.jpeg']
         @event.save!
         @event.reload
         expect(@event.images[0].current_path).to eq public_path('uploads/test.jpeg')
@@ -876,7 +876,7 @@ describe CarrierWave::ActiveRecord do
       end
 
       it "should return valid JSON when to_json is called when images is present" do
-        @event[:images] = ['test.jpeg', 'old.jpeg'].to_json
+        @event[:images] = ['test.jpeg', 'old.jpeg']
         @event.save!
         @event.reload
 
@@ -884,7 +884,7 @@ describe CarrierWave::ActiveRecord do
       end
 
       it "should return valid JSON when to_json is called on a collection containing uploader from a model" do
-        @event[:images] = ['test.jpeg'].to_json
+        @event[:images] = ['test.jpeg']
         @event.save!
         @event.reload
 
@@ -900,7 +900,7 @@ describe CarrierWave::ActiveRecord do
       end
 
       it "should return valid XML when to_xml is called when images is present" do
-        @event[:images] = ['test.jpeg'].to_json
+        @event[:images] = ['test.jpeg']
         @event.save!
         @event.reload
 
@@ -908,7 +908,7 @@ describe CarrierWave::ActiveRecord do
       end
 
       it "should respect options[:only] when passed to as_json for the serializable hash" do
-        @event[:images] = ['test.jpeg'].to_json
+        @event[:images] = ['test.jpeg']
         @event.save!
         @event.reload
 
@@ -916,14 +916,14 @@ describe CarrierWave::ActiveRecord do
       end
 
       it "should respect options[:except] when passed to as_json for the serializable hash" do
-        @event[:images] = ['test.jpeg'].to_json
+        @event[:images] = ['test.jpeg']
         @event.save!
         @event.reload
 
         expect(@event.as_json(:except => [:id, :image, :images, :textfile, :foo])).to eq({"textfiles" => nil})
       end
       it "should respect both options[:only] and options[:except] when passed to as_json for the serializable hash" do
-        @event[:images] = ['test.jpeg'].to_json
+        @event[:images] = ['test.jpeg']
         @event.save!
         @event.reload
 
@@ -931,7 +931,7 @@ describe CarrierWave::ActiveRecord do
       end
 
       it "should respect options[:only] when passed to to_xml for the serializable hash" do
-        @event[:images] = ['test.jpeg'].to_json
+        @event[:images] = ['test.jpeg']
         @event.save!
         @event.reload
 
@@ -939,7 +939,7 @@ describe CarrierWave::ActiveRecord do
       end
 
       it "should respect options[:except] when passed to to_xml for the serializable hash" do
-        @event[:images] = ['test.jpeg'].to_json
+        @event[:images] = ['test.jpeg']
         @event.save!
         @event.reload
 
@@ -947,7 +947,7 @@ describe CarrierWave::ActiveRecord do
       end
 
       it "should respect both options[:only] and options[:except] when passed to to_xml for the serializable hash" do
-        @event[:images] = ['test.jpeg'].to_json
+        @event[:images] = ['test.jpeg']
         @event.save!
         @event.reload
 
