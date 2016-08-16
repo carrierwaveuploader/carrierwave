@@ -647,7 +647,7 @@ gem "fog-aws"
 ```
 
 You'll need to provide your fog_credentials and a fog_directory (also known as a bucket) in an initializer.
-For the sake of performance it is assumed that the directory already exists, so please create it if need be.
+For the sake of performance it is assumed that the directory already exists, so please create it if it needs to be.
 You can also pass in additional options, as documented fully in lib/carrierwave/storage/fog.rb. Here's a full example:
 
 ```ruby
