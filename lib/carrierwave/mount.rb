@@ -166,6 +166,10 @@ module CarrierWave
           _mounter(:#{column}).remote_urls = [url]
         end
 
+        def remote_#{column}_request_header=(header)
+          _mounter(:#{column}).remote_request_headers = [header]
+        end
+
         def write_#{column}_identifier
           return if frozen?
           mounter = _mounter(:#{column})
@@ -314,6 +318,10 @@ module CarrierWave
 
         def remote_#{column}_urls=(urls)
           _mounter(:#{column}).remote_urls = urls
+        end
+
+        def remote_#{column}_request_headers=(headers)
+          _mounter(:#{column}).remote_request_headers = headers
         end
 
         def write_#{column}_identifier
