@@ -863,7 +863,7 @@ describe CarrierWave::Mount do
 
     before do
       uploader.class_eval do
-        def download! uri
+        def download! uri, headers = {}
           raise CarrierWave::DownloadError
         end
       end

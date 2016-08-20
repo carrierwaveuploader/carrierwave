@@ -740,7 +740,7 @@ describe CarrierWave::Mount do
 
     it "should raise an error if the image fails to be processed" do
       @uploader.class_eval do
-        def download! uri
+        def download! uri, headers = {}
           raise CarrierWave::DownloadError
         end
       end

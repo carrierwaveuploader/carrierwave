@@ -78,7 +78,7 @@ module CarrierWave
 
       @uploaders = urls.zip(remote_request_headers || []).map do |url, header|
         uploader = blank_uploader
-        uploader.download!(url, header)
+        uploader.download!(url, header || {})
         uploader
       end
 
