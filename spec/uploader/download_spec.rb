@@ -8,6 +8,14 @@ describe CarrierWave::Uploader::Download do
   let(:url) { base_url + "/test.jpg" }
   let(:test_file) { File.read(file_path(test_file_name)) }
   let(:test_file_name) { "test.jpg" }
+  let(:authentication_headers) do
+    {
+      'Accept'=>'*/*',
+      'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+      'User-Agent'=>"CarrierWave/#{CarrierWave::VERSION}",
+      'Authorization'=>'Bearer QWE'
+    }
+  end
 
   after { FileUtils.rm_rf(public_path) }
 
@@ -32,6 +40,10 @@ describe CarrierWave::Uploader::Download do
 
       stub_request(:get, "www.example.com/missing.jpg").
         to_return(status: 404)
+
+      stub_request(:get, "www.example.com/authorization_required.jpg").
+        with(:headers => authentication_headers).
+        to_return(body: test_file)
     end
 
     context "when a file was downloaded" do
@@ -80,6 +92,14 @@ describe CarrierWave::Uploader::Download do
         uploader.download!(url)
 
         expect(uploader).to have_directory_permissions(permissions)
+      end
+    end
+
+    context 'with request headers' do
+      it 'pass custom headers to request' do
+        auth_required_url = 'http://www.example.com/authorization_required.jpg'
+        uploader.download!(auth_required_url, { 'Authorization' => 'Bearer QWE' })
+        expect(uploader.url).to eq("/uploads/tmp/#{cache_id}/authorization_required.jpg")
       end
     end
 
