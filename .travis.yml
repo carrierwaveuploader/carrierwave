@@ -20,7 +20,6 @@ gemfile:
   - gemfiles/rails-4-0-stable.gemfile
   - gemfiles/rails-4-1-stable.gemfile
   - gemfiles/rails-4-2-stable.gemfile
-  - gemfiles/rails-master.gemfile
 
 sudo: false
 
