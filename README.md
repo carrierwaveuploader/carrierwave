@@ -26,16 +26,16 @@ It works well with Rack based web applications, such as Ruby on Rails.
 
 ## Installation
 
-Install the latest stable release:
+Install the latest release:
 
 ```
-$ gem install carrierwave
+$ gem install carrierwave -v "1.0.0.beta"
 ```
 
 In Rails, add it to your Gemfile:
 
 ```ruby
-gem 'carrierwave'
+gem 'carrierwave', '>= 1.0.0.beta', '< 2.0'
 ```
 
 Finally, restart the server to apply the changes.
