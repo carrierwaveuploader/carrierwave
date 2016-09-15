@@ -425,6 +425,15 @@ describe CarrierWave::Uploader do
         expect(File.read(@uploader.thumb.path)).to eq("Contents changed")
       end
 
+      it "should keep the original file" do
+        @uploader.store!(@file)
+
+        expect(File.read(@uploader.path)).not_to eq("Contents changed")
+        File.open(@uploader.path, 'w') { |f| f.write "Contents changed" }
+        @uploader.recreate_versions!
+        expect(File.read(@uploader.path)).to eq("Contents changed")
+      end
+
       it "should recreate all versions if any are missing" do
         @uploader.store!(@file)
 
