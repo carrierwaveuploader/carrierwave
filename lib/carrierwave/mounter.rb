@@ -3,8 +3,9 @@ module CarrierWave
   # this is an internal class, used by CarrierWave::Mount so that
   # we don't pollute the model with a lot of methods.
   class Mounter #:nodoc:
-    attr_reader :column, :record, :remote_urls, :integrity_error, :processing_error, :download_error
-    attr_accessor :remove
+    attr_reader :column, :record, :remote_urls, :integrity_error,
+      :processing_error, :download_error
+    attr_accessor :remove, :remote_request_headers
 
     def initialize(record, column, options={})
       @record = record
@@ -75,9 +76,9 @@ module CarrierWave
       @download_error = nil
       @integrity_error = nil
 
-      @uploaders = urls.map do |url|
+      @uploaders = urls.zip(remote_request_headers || []).map do |url, header|
         uploader = blank_uploader
-        uploader.download!(url)
+        uploader.download!(url, header || {})
         uploader
       end
 
