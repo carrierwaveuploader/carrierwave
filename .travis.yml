@@ -20,6 +20,7 @@ gemfile:
   - gemfiles/rails-4-0-stable.gemfile
   - gemfiles/rails-4-1-stable.gemfile
   - gemfiles/rails-4-2-stable.gemfile
+  - gemfiles/rails-5-0-stable.gemfile
   - gemfiles/rails-master.gemfile
 
 sudo: false
@@ -37,10 +38,16 @@ matrix:
       gemfile: Gemfile
     - rvm: 2.1
       gemfile: gemfiles/rails-master.gemfile
+    - rvm: 2.0
+      gemfile: gemfiles/rails-5-0-stable.gemfile
+    - rvm: 2.1
+      gemfile: gemfiles/rails-5-0-stable.gemfile
     - rvm: jruby
       gemfile: Gemfile
     - rvm: jruby
       gemfile: gemfiles/rails-master.gemfile
+    - rvm: jruby
+      gemfile: gemfiles/rails-5-0-stable.gemfile
     - rvm: jruby-head
       gemfile: gemfiles/rails-master.gemfile
   allow_failures:

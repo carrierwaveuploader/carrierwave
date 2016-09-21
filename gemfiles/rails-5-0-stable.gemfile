@@ -1,0 +1,6 @@
+source "https://rubygems.org"
+
+gem "rails", :github => "rails/rails", :branch => "5-0-stable"
+gem "activemodel-serializers-xml"
+
+gemspec :path => "../"
