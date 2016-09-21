@@ -745,7 +745,7 @@ the url to the file on Rackspace Cloud Files.
 
 ```ruby
 gem "fog-google"
-gem "google-api-client", "< 0.9", ">= 0.6.2"
+gem "google-api-client", ">= 0.6.2", "< 0.9"
 gem "mime-types"
 ```
 
