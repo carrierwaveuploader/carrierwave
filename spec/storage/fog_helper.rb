@@ -268,7 +268,7 @@ end
           yesterday_int      = now - 21600
 
           [five_days_ago_int, three_days_ago_int, yesterday_int].each do |as_of|
-            @directory.files.create(:key => "uploads/tmp/#{as_of}-234-2213/test.jpg", :body => 'A test, 1234', :public => true)
+            @directory.files.create(:key => "uploads/tmp/#{as_of}-234-1234-2213/test.jpg", :body => 'A test, 1234', :public => true)
           end
         end
 
