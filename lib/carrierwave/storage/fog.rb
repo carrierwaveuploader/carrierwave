@@ -355,8 +355,8 @@ module CarrierWave
                 end
               end
             when 'Google'
-              file = directory.files.get(encoded_path)
-              file.nil?? "" : file.public_url
+              # https://cloud.google.com/storage/docs/access-public-data
+              "https://storage.googleapis.com/#{@uploader.fog_directory}/#{encoded_path}"
             else
               # avoid a get by just using local reference
               directory.files.new(:key => path).public_url

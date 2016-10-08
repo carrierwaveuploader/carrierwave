@@ -111,6 +111,13 @@ end
               expect(@fog_file.public_url).to start_with 'http://'
             end
           end
+
+          it "should use the google public url if available" do
+            if @provider == 'Google'
+              allow(@uploader).to receive(:fog_directory).and_return('SiteAssets')
+              expect(@fog_file.public_url).to include('https://storage.googleapis.com/SiteAssets')
+            end
+          end
         end
 
         context "with asset_host" do
