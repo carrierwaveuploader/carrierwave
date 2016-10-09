@@ -265,39 +265,49 @@ end
       end
 
       describe '#clean_cache!' do
-        let(:now){ Time.now.to_i }
+        let(:today) { '2016/10/09 10:00:00'.to_time }
+        let(:five_days_ago) { today.ago(5.days) }
+        let(:three_days_ago) { today.ago(3.days) }
+        let(:yesterday) { today.yesterday }
         before do
           # clean up
           @directory.files.each{|file| file.destroy }
           # We can't use simple time freezing because of AWS request time check
-          five_days_ago_int  = now - 367270
-          three_days_ago_int = now - 194400
-          yesterday_int      = now - 21600
-
-          [five_days_ago_int, three_days_ago_int, yesterday_int].each do |as_of|
-            @directory.files.create(:key => "uploads/tmp/#{as_of}-234-2213/test.jpg", :body => 'A test, 1234', :public => true)
+          [five_days_ago, three_days_ago, yesterday, (today - 1.minute)].each do |created_date|
+            key = nil
+            Timecop.freeze created_date do
+              key = "uploads/tmp/#{CarrierWave.generate_cache_id}/test.jpg"
+            end
+            @directory.files.create(:key => key, :body => 'A test, 1234', :public => true)
           end
+        end
+
+        it "should clear all files older than now in the default cache directory" do
+          Timecop.freeze(today) do
+            @uploader.clean_cached_files!(0)
+          end
+          expect(@directory.files.all(:prefix => 'uploads/tmp').size).to eq(0)
         end
 
         it "should clear all files older than, by defaul, 24 hours in the default cache directory" do
-          Timecop.freeze(Time.at(now)) do
+          Timecop.freeze(today) do
             @uploader.clean_cached_files!
-          end
-          expect(@directory.files.all(:prefix => 'uploads/tmp').size).to eq(1)
-        end
-
-        it "should permit to set since how many seconds delete the cached files" do
-          Timecop.freeze(Time.at(now)) do
-            @uploader.clean_cached_files!(60*60*24*4)
           end
           expect(@directory.files.all(:prefix => 'uploads/tmp').size).to eq(2)
         end
 
+        it "should permit to set since how many seconds delete the cached files" do
+          Timecop.freeze(today) do
+            @uploader.clean_cached_files!(4.days)
+          end
+          expect(@directory.files.all(:prefix => 'uploads/tmp').size).to eq(3)
+        end
+
         it "should be aliased on the CarrierWave module" do
-          Timecop.freeze(Time.at(now)) do
+          Timecop.freeze(today) do
             CarrierWave.clean_cached_files!
           end
-          expect(@directory.files.all(:prefix => 'uploads/tmp').size).to eq(1)
+          expect(@directory.files.all(:prefix => 'uploads/tmp').size).to eq(2)
         end
       end
 
