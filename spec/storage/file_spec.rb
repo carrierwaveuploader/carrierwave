@@ -48,35 +48,44 @@ describe CarrierWave::Storage::File do
   end
 
   describe '#clean_cache!' do
-    let(:five_days_ago_int) { 1369894322 }
-    let(:three_days_ago_int) { 1370067122 }
-    let(:yesterday_int) { 1370239922 }
+    let(:today) { '2016/10/09 10:00:00'.to_time }
+    let(:five_days_ago) { today.ago(5.days) }
+    let(:three_days_ago) { today.ago(3.days) }
+    let(:yesterday) { today.yesterday }
     let(:cache_dir) { File.expand_path(uploader_class.cache_dir, CarrierWave.root) }
 
     before do
-      FileUtils.mkdir_p File.expand_path("#{five_days_ago_int}-234-1234-2213", cache_dir)
-      FileUtils.mkdir_p File.expand_path("#{three_days_ago_int}-234-1234-2213", cache_dir)
-      FileUtils.mkdir_p File.expand_path("#{yesterday_int}-234-1234-2213", cache_dir)
+      [five_days_ago, three_days_ago, yesterday, (today - 1.minute)].each do |created_date|
+        Timecop.freeze (created_date) do
+          FileUtils.mkdir_p File.expand_path(CarrierWave.generate_cache_id, cache_dir)
+        end
+      end
     end
 
     after { FileUtils.rm_rf(cache_dir) }
 
-    it "clears all files older than, by default, 24 hours in the default cache directory" do
-      Timecop.freeze(Time.at(1370261522)) { uploader_class.clean_cached_files! }
+    it "clears all files older than now in the default cache directory" do
+      Timecop.freeze(today) { uploader_class.clean_cached_files!(0) }
 
-      expect(Dir.glob("#{cache_dir}/*").size).to eq(1)
+      expect(Dir.glob("#{cache_dir}/*").size).to eq(0)
     end
 
-    it "allows to set since how many seconds delete the cached files" do
-      Timecop.freeze(Time.at(1370261522)) { uploader_class.clean_cached_files!(60*60*24*4) }
+    it "clears all files older than, by default, 24 hours in the default cache directory" do
+      Timecop.freeze(today) { uploader_class.clean_cached_files! }
 
       expect(Dir.glob("#{cache_dir}/*").size).to eq(2)
     end
 
-    it "'s aliased on the CarrierWave module" do
-      Timecop.freeze(Time.at(1370261522)) { CarrierWave.clean_cached_files! }
+    it "allows to set since how many seconds delete the cached files" do
+      Timecop.freeze(today) { uploader_class.clean_cached_files!(4.days) }
 
-      expect(Dir.glob("#{cache_dir}/*").size).to eq(1)
+      expect(Dir.glob("#{cache_dir}/*").size).to eq(3)
+    end
+
+    it "'s aliased on the CarrierWave module" do
+      Timecop.freeze(today) { CarrierWave.clean_cached_files! }
+
+      expect(Dir.glob("#{cache_dir}/*").size).to eq(2)
     end
   end
 end
