@@ -317,11 +317,7 @@ module CarrierWave
       end
 
       def mini_magick_image
-        if url
-          ::MiniMagick::Image.open(url)
-        else
-          ::MiniMagick::Image.open(current_path)
-        end
+        ::MiniMagick::Image.read(file.read)
       end
 
   end # MiniMagick
