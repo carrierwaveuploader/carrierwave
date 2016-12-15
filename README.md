@@ -570,7 +570,7 @@ Processing can be enabled for a single version by setting the processing flag on
 [Fog](http://github.com/fog/fog) is used to support Amazon S3. Ensure you have it in your Gemfile:
 
 ```ruby
-gem "fog", "~> 1.3.1"
+gem "fog"
 ```
 
 You'll need to provide your fog_credentials and a fog_directory (also known as a bucket) in an initializer.
