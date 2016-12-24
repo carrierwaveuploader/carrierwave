@@ -8,11 +8,6 @@ It works well with Rack based web applications, such as Ruby on Rails.
 [![git.legal](https://git.legal/projects/1363/badge.svg "Number of libraries approved")](https://git.legal/projects/1363)
 
 
-> ## carrierwave version disclaimer
-> ***This README is for a branch which is still in development.
-> Please switch to latest `0.x` branch for stable version.***
-
-
 ## Information
 
 * RDoc documentation [available on RubyDoc.info](http://rubydoc.info/gems/carrierwave/frames)
@@ -29,18 +24,18 @@ It works well with Rack based web applications, such as Ruby on Rails.
 Install the latest release:
 
 ```
-$ gem install carrierwave -v "1.0.0.rc"
+$ gem install carrierwave -v "1.0.0"
 ```
 
 In Rails, add it to your Gemfile:
 
 ```ruby
-gem 'carrierwave', '>= 1.0.0.rc', '< 2.0'
+gem 'carrierwave', '~> 1.0'
 ```
 
 Finally, restart the server to apply the changes.
 
-As of version 1.0.0 (forthcoming), CarrierWave requires Rails 4.0 or higher and Ruby 2.0
+As of version 1.0, CarrierWave requires Rails 4.0 or higher and Ruby 2.0
 or higher. If you're on Rails 3, you should use v0.11.0.
 
 ## Getting Started
