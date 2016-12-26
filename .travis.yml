@@ -7,6 +7,7 @@ rvm:
  - 2.1
  - 2.2.5
  - 2.3.1
+ - 2.4.0
  - ruby-head
  - jruby
  - jruby-head
@@ -42,6 +43,12 @@ matrix:
       gemfile: gemfiles/rails-5-0-stable.gemfile
     - rvm: 2.1
       gemfile: gemfiles/rails-5-0-stable.gemfile
+    - rvm: 2.4.0
+      gemfile: gemfiles/rails-4-0-stable.gemfile
+    - rvm: 2.4.0
+      gemfile: gemfiles/rails-4-1-stable.gemfile
+    - rvm: 2.4.0
+      gemfile: gemfiles/rails-4-2-stable.gemfile
     - rvm: jruby
       gemfile: Gemfile
     - rvm: jruby
