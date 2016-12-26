@@ -49,6 +49,12 @@ matrix:
       gemfile: gemfiles/rails-4-1-stable.gemfile
     - rvm: 2.4.0
       gemfile: gemfiles/rails-4-2-stable.gemfile
+    - rvm: ruby-head
+      gemfile: gemfiles/rails-4-0-stable.gemfile
+    - rvm: ruby-head
+      gemfile: gemfiles/rails-4-1-stable.gemfile
+    - rvm: ruby-head
+      gemfile: gemfiles/rails-4-2-stable.gemfile
     - rvm: jruby
       gemfile: Gemfile
     - rvm: jruby
