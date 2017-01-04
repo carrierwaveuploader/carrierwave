@@ -144,14 +144,25 @@ column for example. Your choice depends on what your database supports. For
 example, create a migration like this:
 
 
+#### For PostgreSQL
+
 	rails g migration add_avatars_to_users avatars:json
 	rake db:migrate
 
+#### For SQLite
+
+	rails g migration add_avatars_to_users avatars:string
+	rake db:migrate
+
+__Note__: JSON datatype doesn't exists in SQLite adapter, that's why you can use a string datatype which will be serialized in model.
+
 Open your model file and mount the uploader:
+
 
 ```ruby
 class User < ActiveRecord::Base
   mount_uploaders :avatars, AvatarUploader
+  serialize :avatars, JSON # If you use SQLite, add this line.
 end
 ```
 
