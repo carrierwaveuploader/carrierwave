@@ -117,6 +117,15 @@ describe CarrierWave::MiniMagick do
       expect(instance).to have_dimensions(1000, 1000)
       expect(::MiniMagick::Tool::Identify.new.verbose(instance.current_path).call).to include('Quality: 70')
     end
+
+    it 'accepts non-argument option as combine_options' do
+      expect(::MiniMagick::Tool::Identify.new.verbose(instance.current_path).call).to include('exif:ColorSpace: 1')
+
+      instance.resize_and_pad(1000, 1000, combine_options: {strip: nil})
+
+      expect(instance).to have_dimensions(1000, 1000)
+      expect(::MiniMagick::Tool::Identify.new.verbose(instance.current_path).call).to_not include('exif:ColorSpace: 1')
+    end
   end
 
   describe '#resize_to_fit' do
