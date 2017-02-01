@@ -42,4 +42,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "timecop", "0.7.1"
   s.add_development_dependency "generator_spec", ">= 0.9.1"
   s.add_development_dependency "pry"
+  s.add_development_dependency "open_uri_redirections"
 end

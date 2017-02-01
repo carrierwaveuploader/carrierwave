@@ -13,6 +13,30 @@ describe CarrierWave do
     it "proxies to Uploader configuration" do
       expect(CarrierWave::Uploader::Base.test_config).to eq('foo')
     end
+
+    context "with allow_download_redirections option set" do
+      def configure_with_allow_download_redirections(value)
+        CarrierWave.configure { |config| config.allow_download_redirections = value }
+      end
+
+      context "for existing redirection option" do
+        it "does not raise error" do
+          expect { configure_with_allow_download_redirections(:all) }
+            .not_to raise_error
+        end
+      end
+
+      context "for non existing redirection option" do
+        it "raises an error" do
+          expect { configure_with_allow_download_redirections(:non_existing) }
+            .to raise_error(ArgumentError, /Unsupported option for allow_download_redirections: non_existing/)
+        end
+      end
+
+      after do
+        CarrierWave.configure { |config| config.allow_download_redirections = false }
+      end
+    end
   end
 end
 

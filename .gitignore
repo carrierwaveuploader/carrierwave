@@ -13,7 +13,9 @@ spec/test.log
 spec/tmp
 *.swp
 .rvmrc
+.ruby-version
 .idea
 .bundle
 Gemfile.lock
 gemfiles/*.lock
+
