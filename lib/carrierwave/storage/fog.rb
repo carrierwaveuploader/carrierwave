@@ -273,7 +273,7 @@ module CarrierWave
         # === Returns
         #
         # [String] contents of file
-        def read
+        def read(bytes = nil)
           file.body
         end
 

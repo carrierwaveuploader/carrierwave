@@ -36,6 +36,13 @@ describe CarrierWave::Uploader do
       it { is_expected.to be nil }
     end
 
+    context "when reading chunks of bytes" do
+      before { uploader.cache!(test_file) }
+      subject { uploader.read(1) }
+
+      it { is_expected.to eq("t") }
+    end
+
     context "when file is cached" do
       before { uploader.cache!(test_file) }
 

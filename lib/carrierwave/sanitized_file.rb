@@ -156,14 +156,14 @@ module CarrierWave
     #
     # [String] contents of the file
     #
-    def read
+    def read(bytes = nil)
       if @content
         @content
       elsif is_path?
-        File.open(@file, "rb") {|file| file.read}
+        File.open(@file, "rb") { |file| file.read(bytes) }
       else
         @file.try(:rewind)
-        @content = @file.read
+        @content = @file.read(bytes)
         @file.try(:close) unless @file.try(:closed?)
         @content
       end
