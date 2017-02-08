@@ -103,7 +103,8 @@ describe CarrierWave::SanitizedFile do
   end
 
   describe "#filename" do
-    subject { described_class.new(args).filename }
+    let(:instance) {described_class.new(args) }
+    subject { instance.filename }
 
     describe 'should default to the original filename if it is valid' do
       let(:args) { 'llama.jpg' }
@@ -153,6 +154,14 @@ describe CarrierWave::SanitizedFile do
     describe 'should downcase non-ASCII characters properly' do
       let(:args) { 'ТестоВый Ёжик.jpg' }
       it { is_expected.to eq 'ТестоВый_Ёжик.jpg' }
+    end
+
+    describe 'should handle ugly S3 URIs with slashes in params' do
+      let(:args) { "https://me.s3.amazonaws.com//var/app/current/tmp/uploads/myapp/uploaded_file/file/31/image.png?X-Amz-Expires=600\u0026X-Amz-Date=20161214T193306Z\u0026X-Amz-Security-Token=FQoDZXdqENT//////////wEaDMj3NLTbn4Z3JgbQtSK3B57LyrdXBHQlP6lM7cT/2N9naRgRSqf4FG/BxCCjMGcEVdt4X5ZsfHdzNiD6L0GODXmrR3quoXNBNZCtUVo3DY5E0P67iz9tYC2Ac%2BILJ%2BBzELNz84XI7C9zg6CCecZ8oeNjCTJXsMZ3xLx2bN099sl%2BY5nduDXAxen2Z63QKw7kiuuEXin/z%2B4ywFSP/Z1Sqbjkq4Qwjs5FUSyyz61wjl1%2Bg8uIJ5u3HTOlb8eZpk7gUCtdmLIE7mK1eZe5azUJC8XBW7Eu7jaRyM2PKMwjVnwepnfgPyEDqJSzKYJt1bGXgnQEN7logEKNOjmOcJqggM5Tc7PD40USAveIQ6E8ny/X0N%2BZ/X1rZTaCiAH1aWwVNqa0M43mlECrBeDv9I9BRMJzp4btvEgHKODrJe2MawDu4L1%2BzVNgOD7TZjrFt9zSEpyQK79dh8oHuyzDL0C%2Bpw3zL2ambsJ5OX6UnMuAmrkBbin1PKh2nHFkL/0xXAb2ZbSV6vKBxzKeQ62HMvv8UqypKbkwOMnstxyGGp00r6m6vL62x%2BTDergiiRfs947NyfJnP5l/rNRNMNesGo6kBmAqpACaBPAo0Z3GwgU%3D\u0026X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Credential=ASIAIB72YBSAAINUZRPQ/20161214/us-east-1/s3/aws4_request\u0026X-Amz-SignedHeaders=host\u0026X-Amz-Signature=f9bfb2a8d6114bccb6f77e4c0526bf19c5658b588ee368d04b42b18771d5359db" }
+      it 'is_path? is still true' do
+        expect(instance).to be_a_path # really *any* non-empty string gets a true from `is_path?`
+      end
+      it { is_expected.to eq 'image.png' }
     end
   end
 
