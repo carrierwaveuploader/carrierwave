@@ -103,56 +103,56 @@ describe CarrierWave::SanitizedFile do
   end
 
   describe "#filename" do
-    let(:sanitized_file) { CarrierWave::SanitizedFile.new(nil) }
+    subject { described_class.new(args).filename }
 
-    it "should default to the original filename if it is valid" do
-      expect(sanitized_file).to receive(:original_filename).at_least(:once).and_return("llama.jpg")
-      expect(sanitized_file.filename).to eq("llama.jpg")
+    describe 'should default to the original filename if it is valid' do
+      let(:args) { 'llama.jpg' }
+      it { is_expected.to eq args }
     end
 
-    it "should remove illegal characters from a filename" do
-      expect(sanitized_file).to receive(:original_filename).at_least(:once).and_return("test-s,%&m#st?.jpg")
-      expect(sanitized_file.filename).to eq("test-s___m_st_.jpg")
+    describe 'should remove illegal characters from a filename' do
+      let(:args) { 'test-s,%&m#st?.jpg' }
+      it { is_expected.to eq 'test-s___m_st_.jpg' }
     end
 
-    it "should remove slashes from the filename" do
-      expect(sanitized_file).to receive(:original_filename).at_least(:once).and_return("../../very_tricky/foo.bar")
-      expect(sanitized_file.filename).not_to match(/[\\\/]/)
+    describe 'should remove slashes from the filename' do
+      let(:args) { '../../very_tricky/foo.bar' }
+      it { is_expected.not_to match(/[\\\/]/) }
     end
 
-    it "should remove illegal characters if there is no extension" do
-      expect(sanitized_file).to receive(:original_filename).at_least(:once).and_return("`*foo")
-      expect(sanitized_file.filename).to eq("__foo")
+    describe 'should remove illegal characters if there is no extension' do
+      let(:args) { '`*foo' }
+      it { is_expected.to eq '__foo' }
     end
 
-    it "should remove the path prefix on Windows" do
-      expect(sanitized_file).to receive(:original_filename).at_least(:once).and_return('c:\temp\foo.txt')
-      expect(sanitized_file.filename).to eq("foo.txt")
+    describe 'should remove the path prefix on Windows' do
+      let(:args) { 'c:\temp\foo.txt' }
+      it { is_expected.to eq 'foo.txt' }
     end
 
-    it "should make sure the *nix directory thingies can't be used as filenames" do
-      expect(sanitized_file).to receive(:original_filename).at_least(:once).and_return(".")
-      expect(sanitized_file.filename).to eq("_.")
+    describe 'should make sure the *nix directory thingies cannot be used as filenames' do
+      let(:args) { '.' }
+      it { is_expected.to eq '_.' }
     end
 
-    it "should maintain uppercase filenames" do
-      expect(sanitized_file).to receive(:original_filename).at_least(:once).and_return("DSC4056.JPG")
-      expect(sanitized_file.filename).to eq("DSC4056.JPG")
+    describe 'should maintain uppercase filenames' do
+      let(:args) { 'DSC4056.JPG' }
+      it { is_expected.to eq args }
     end
 
-    it "should remove illegal characters from a non-ASCII filename" do
-      expect(sanitized_file).to receive(:original_filename).at_least(:once).and_return("⟲«Du côté des chars lourds»_123.doc")
-      expect(sanitized_file.filename).to eq("__Du_côté_des_chars_lourds__123.doc")
+    describe 'should remove illegal characters from a non-ASCII filename' do
+      let(:args) { '⟲«Du côté des chars lourds»_123.doc' }
+      it { is_expected.to eq '__Du_côté_des_chars_lourds__123.doc' }
     end
 
-    it "should default to the original non-ASCII filename if it is valid" do
-      expect(sanitized_file).to receive(:original_filename).at_least(:once).and_return("тестовый.jpg")
-      expect(sanitized_file.filename).to eq("тестовый.jpg")
+    describe 'should default to the original non-ASCII filename if it is valid' do
+      let(:args) { 'тестовый.jpg' }
+      it { is_expected.to eq 'тестовый.jpg' }
     end
 
-    it "should downcase non-ASCII characters properly" do
-      expect(sanitized_file).to receive(:original_filename).at_least(:once).and_return("ТестоВый Ёжик.jpg")
-      expect(sanitized_file.filename).to eq("ТестоВый_Ёжик.jpg")
+    describe 'should downcase non-ASCII characters properly' do
+      let(:args) { 'ТестоВый Ёжик.jpg' }
+      it { is_expected.to eq 'ТестоВый_Ёжик.jpg' }
     end
   end
 
