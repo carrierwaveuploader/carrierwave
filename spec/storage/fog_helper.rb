@@ -64,8 +64,8 @@ end
         end
 
         it "should have a content_type" do
-          expect(@fog_file.content_type).to eq('image/jpeg')
-          expect(@directory.files.get(store_path).content_type).to eq('image/jpeg')
+          expect(@fog_file.content_type).to eq(file.content_type)
+          expect(@directory.files.get(store_path).content_type).to eq(file.content_type)
         end
 
         it "should have an extension" do
@@ -244,6 +244,10 @@ end
         it "should upload the file", focus: true do
           expect(@directory.files.get('uploads/tmp/test+.jpg').body).to eq('this is stuff')
         end
+
+        it 'should preserve content type' do
+          expect(@fog_file.content_type).to eq(file.content_type)
+        end
       end
 
       describe '#retrieve_from_cache!' do
@@ -413,6 +417,16 @@ end
 
       it_should_behave_like "#{fog_credentials[:provider]} storage"
 
+    end
+
+    describe "with a valid File object with an explicit content type" do
+      let(:file) do
+        CarrierWave::SanitizedFile.new(stub_file('test.jpg', 'image/jpeg')).tap do |f|
+          f.content_type = 'image/jpg'
+        end
+      end
+
+      it_should_behave_like "#{fog_credentials[:provider]} storage"
     end
 
     describe "with a valid path" do
