@@ -19,8 +19,7 @@ module CarrierWave
   # It's probably needlessly comprehensive and complex. Help is appreciated.
   #
   class SanitizedFile
-
-    attr_accessor :file
+    attr_reader :file
 
     class << self
       attr_writer :sanitize_regexp
