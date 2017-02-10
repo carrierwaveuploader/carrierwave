@@ -131,9 +131,44 @@ describe CarrierWave::SanitizedFile do
       it { is_expected.to eq 'foo.txt' }
     end
 
-    describe 'should make sure the *nix directory thingies cannot be used as filenames' do
-      let(:args) { '.' }
-      it { is_expected.to eq '_.' }
+    describe '*nix directories cannot be used as filename' do
+      describe 'current directory' do
+        let(:args) { '.' }
+        it 'reality check' do
+          pending 'Feature not fully implemented'
+          expect(instance).to be_a_path # really *any* non-empty string gets a true from `is_path?`
+          expect(instance.original_filename).to eq args
+        end
+        xit { is_expected.to eq '_.' }
+      end
+
+      describe 'redundant directory' do
+        let(:args) { '/path/.' }
+        it 'reality check' do
+          pending 'Feature not fully implemented'
+          expect(instance.path).to eq '/path'
+          expect(instance.original_filename).to eq '.' # or do we mean NOT-the-original filename?
+        end
+        xit { is_expected.to eq '_.' }
+      end
+
+      describe 'parent directory' do
+        let(:args) { '..' }
+        it 'reality check' do
+          pending 'Feature not fully implemented'
+          expect(instance.original_filename).to eq '..'
+        end
+        xit { is_expected.to eq '_..' }
+      end
+
+      describe 'compound directory' do
+        let(:args) { '../../.' }
+        it 'reality check' do
+          pending 'Feature not fully implemented'
+          expect(instance.original_filename).to eq '.'
+        end
+        xit { is_expected.to eq '_.' }
+      end
     end
 
     describe 'should maintain uppercase filenames' do
