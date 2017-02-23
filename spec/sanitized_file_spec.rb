@@ -307,6 +307,13 @@ describe CarrierWave::SanitizedFile do
       it "should return itself" do
         expect(sanitized_file.move_to(file_path("gurr.png"))).to eq(sanitized_file)
       end
+
+      it "should preserve the file's content type" do
+        content_type = sanitized_file.content_type
+        sanitized_file.move_to(file_path("new_dir","gurr.png"))
+
+        expect(sanitized_file.content_type).to eq(content_type)
+      end
     end
 
     describe "#copy_to" do
