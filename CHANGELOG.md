@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 1.0.0 - 2016-12-24
+
+_No changes._
+
+## 1.0.0.rc - 2016-10-30
+
+### Added
+* Ability to set custom request headers on downloading remote URL(@mendab1e [#2006](https://github.com/carrierwaveuploader/carrierwave/pull/2006))
+
+### Changed
+* Re-enable `public_url` optimization for Google Cloud Storage(@nikz [#2039](https://github.com/carrierwaveuploader/carrierwave/pull/2039))
+
+### Fixed
+* Fix `clean_cache!` deleting unexpired files due to RegExp mismatch(@t-oginogin [#2036](https://github.com/carrierwaveuploader/carrierwave/pull/2036))
+
 ## 1.0.0.beta - 2016-09-08
 
 ### Added
