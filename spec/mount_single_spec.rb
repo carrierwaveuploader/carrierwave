@@ -304,6 +304,25 @@ describe CarrierWave::Mount do
 
         expect(@instance.remote_image_url).to eq("http://www.example.com/test.jpg")
       end
+
+      describe "URI with unicode symbols" do
+        before do
+          stub_request(
+            :get,
+            "http://www.example.com/%D1%8E%D0%BD%D0%B8%D0%BA%D0%BE%D0%B4.jpg"
+          ).to_return(body: File.read(file_path("юникод.jpg")))
+        end
+
+        it "works correctly" do
+          @instance.remote_image_url = "http://www.example.com/%D1%8E%D0%BD%D0%B8%D0%BA%D0%BE%D0%B4.jpg"
+          expect(@instance.remote_image_url).to eq("http://www.example.com/%D1%8E%D0%BD%D0%B8%D0%BA%D0%BE%D0%B4.jpg")
+        end
+
+        it "decodes it correctly" do
+          @instance.remote_image_url = "http://www.example.com/%D1%8E%D0%BD%D0%B8%D0%BA%D0%BE%D0%B4.jpg"
+          expect(@instance.image.current_path).to match(/юникод.jpg$/)
+        end
+      end
     end
 
     describe "#remote_image_url=" do
