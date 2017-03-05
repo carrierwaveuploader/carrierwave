@@ -123,6 +123,7 @@ module CarrierWave
     end
 
     def remove_previous(before=nil, after=nil)
+      after ||= []
       return unless before
 
       # both 'before' and 'after' can be string when 'mount_on' option is set
