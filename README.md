@@ -144,12 +144,12 @@ column for example. Your choice depends on what your database supports. For
 example, create a migration like this:
 
 
-#### For PostgreSQL
+#### For databases with ActiveRecord json data type support (e.g. PostgreSQL, MySQL)
 
 	rails g migration add_avatars_to_users avatars:json
 	rake db:migrate
 
-#### For SQLite
+#### For database without ActiveRecord json data type support (e.g. SQLite)
 
 	rails g migration add_avatars_to_users avatars:string
 	rake db:migrate
