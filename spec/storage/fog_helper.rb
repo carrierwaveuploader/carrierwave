@@ -85,10 +85,22 @@ end
             end
           end
 
-          it "should use a subdomain URL for AWS if the directory is a valid subdomain" do
-            if @provider == 'AWS'
+          context "directory is a valid subdomain" do
+            before do
               allow(@uploader).to receive(:fog_directory).and_return('assets.site.com')
-              expect(@fog_file.public_url).to include('https://assets.site.com.s3.amazonaws.com')
+            end
+
+            it "should use a subdomain URL for AWS" do
+              if @provider == 'AWS'
+                expect(@fog_file.public_url).to include('https://assets.site.com.s3.amazonaws.com')
+              end
+            end
+
+            it "should use accelerate domain if fog_aws_accelerate is true" do
+              if @provider == 'AWS'
+                allow(@uploader).to receive(:fog_aws_accelerate).and_return(true)
+                expect(@fog_file.public_url).to include('https://assets.site.com.s3-accelerate.amazonaws.com')
+              end
             end
           end
 
