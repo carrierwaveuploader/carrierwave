@@ -1,3 +1,5 @@
+require 'hana'
+
 module CarrierWave
 
   # this is an internal class, used by CarrierWave::Mount so that
@@ -128,10 +130,13 @@ module CarrierWave
 
     def remove_previous(before=nil, after=nil)
       after ||= []
+      pointer = Hana::Pointer.new(mount_path || '')
       return unless before
 
       # both 'before' and 'after' can be string when 'mount_on' option is set
       before = before.reject(&:blank?).map do |value|
+        value = (pointer.eval(value) or "") if value.is_a?(Hash)
+
         if value.is_a?(String)
           uploader = blank_uploader
           uploader.retrieve_from_store!(value)
@@ -141,6 +146,8 @@ module CarrierWave
         end
       end
       after_paths = after.reject(&:blank?).map do |value|
+        value = (pointer.eval(value) or "") if value.is_a?(Hash)
+
         if value.is_a?(String)
           uploader = blank_uploader
           uploader.retrieve_from_store!(value)
