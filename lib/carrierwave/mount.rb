@@ -354,6 +354,10 @@ module CarrierWave
     private
 
     def mount_base(column, uploader=nil, options={}, &block)
+      if options[:mount_path] && (!options[:mount_on] || options[:mount_on] == column)
+        raise CarrierWave::InvalidParameter.new("When using mount_path, you must also use the mount_on option and the mount_on column must be different from the column parameter.")
+      end
+
       include CarrierWave::Mount::Extension
 
       uploader = build_uploader(uploader, &block)
