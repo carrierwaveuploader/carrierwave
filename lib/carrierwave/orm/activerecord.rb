@@ -1,5 +1,6 @@
 require 'active_record'
 require 'carrierwave/validations/active_model'
+require 'hana'
 
 module CarrierWave
   module ActiveRecord
@@ -40,11 +41,6 @@ module CarrierWave
 
     def mount_base(column, uploader=nil, options={}, &block)
       super
-
-      alias_method :read_uploader, :read_attribute
-      alias_method :write_uploader, :write_attribute
-      public :read_uploader
-      public :write_uploader
 
       include CarrierWave::Validations::ActiveModel
 
@@ -93,6 +89,45 @@ module CarrierWave
         def initialize_dup(other)
           @_mounters = nil
           super
+        end
+
+        def read_uploader(serialization_column)
+          attribute = read_attribute(serialization_column)
+
+          if attribute.is_a? Hash
+            mount_path = _mounter(:#{column}).mount_path.to_s
+            pointer = ::Hana::Pointer.new mount_path
+
+            pointer.eval(attribute)
+          else
+            attribute
+          end
+        end
+
+        def write_uploader(serialization_column, identifier)
+          mount_path = _mounter(:#{column}).mount_path.to_s
+
+          if mount_path.blank?
+            write_attribute(serialization_column, identifier)
+          else
+            attribute = read_attribute(serialization_column) || {}
+
+            parent_path = mount_path.split("/")[0..-2].reject(&:blank?)
+            attribute = create_path_in_hash(attribute, parent_path)
+            attribute = Hana::Patch.new([{ 'op' => 'replace', 'path' => mount_path, 'value' => identifier }]).apply(attribute)
+
+            write_attribute(serialization_column, attribute)
+          end
+        end
+
+        def create_path_in_hash(attribute, path, index=0)
+          if path.count > index
+            segment = path[index]
+            attribute[segment] ||= {}
+            raise CarrierWave::InvalidParameter.new("Attempted to provide a mount_path that has one or more invalid path segments.") unless attribute[segment].is_a?(Hash) || !attribute[segment]
+            attribute[segment] = create_path_in_hash(attribute[segment], path, index + 1)
+          end
+          attribute
         end
       RUBY
     end
