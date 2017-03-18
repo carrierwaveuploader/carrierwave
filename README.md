@@ -431,7 +431,7 @@ easily add a checkbox to the form which will remove the file when checked.
 
   <p>
     <label>
-      <%= f.check_box :remove_avatar %>
+      <%= f.check_box :remove_avatar! %>
       Remove avatar
     </label>
   </p>
