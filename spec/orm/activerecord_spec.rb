@@ -7,6 +7,7 @@ def create_table(name)
     t.column :images, :json
     t.column :textfile, :string
     t.column :textfiles, :json
+    t.column :settings, :json
     t.column :foo, :string
   end
 end
@@ -120,7 +121,7 @@ describe CarrierWave::ActiveRecord do
         @event.save!
         @event.reload
 
-        expect(@event.as_json(:except => [:id, :image, :images, :textfiles, :foo])).to eq({"textfile" => nil})
+        expect(@event.as_json(:except => [:id, :image, :images, :textfiles, :settings, :foo])).to eq({"textfile" => nil})
       end
       it "should respect both options[:only] and options[:except] when passed to as_json for the serializable hash" do
         @event[:image] = 'test.jpeg'
@@ -636,6 +637,38 @@ describe CarrierWave::ActiveRecord do
     end
   end
 
+  describe '#mount_uploader with mount_path', focus: true do
+    describe '#avatar=' do
+      it "should cache a file" do
+        reset_class("Event")
+        Event.mount_uploader(:avatar, @uploader, mount_on: :settings, mount_path: '/images/avatar')
+        @event = Event.new
+        @event.avatar = stub_file('test.jpeg')
+        @event.save
+        @event.reload
+
+        expect(@event.avatar).to be_an_instance_of(@uploader)
+        expect(@event.settings['images']['avatar']).to eq('test.jpeg')
+      end
+
+      it "should have a valid mount_path" do
+        reset_class("Event")
+        Event.mount_uploader(:avatar, @uploader, mount_on: :settings, mount_path: '/images/avatar')
+        @event = Event.new
+        @event.settings = { images: [] }
+        @event.avatar = stub_file('test.jpeg')
+
+        expect { @event.save }.to raise_error(CarrierWave::InvalidParameter)
+      end
+    end
+
+    it "should require that mount_on is also valid" do
+      reset_class("Event")
+      expect { Event.mount_uploader(:settings, @uploader, mount_path: '/images/avatar') }.to raise_error(CarrierWave::InvalidParameter)
+      expect { Event.mount_uploader(:settings, @uploader, mount_on: :settings, mount_path: '/images/avatar') }.to raise_error(CarrierWave::InvalidParameter)
+    end
+  end
+
   describe '#mount_uploader removing old files' do
     before do
       reset_class("Event")
@@ -920,7 +953,7 @@ describe CarrierWave::ActiveRecord do
         @event.save!
         @event.reload
 
-        expect(@event.as_json(:except => [:id, :image, :images, :textfile, :foo])).to eq({"textfiles" => nil})
+        expect(@event.as_json(:except => [:id, :image, :images, :textfile, :settings, :foo])).to eq({"textfiles" => nil})
       end
       it "should respect both options[:only] and options[:except] when passed to as_json for the serializable hash" do
         @event[:images] = ['test.jpeg']
@@ -1354,6 +1387,29 @@ describe CarrierWave::ActiveRecord do
         expect(@event.images).to eq(['test.jpeg'])
       end
 
+    end
+  end
+
+  describe '#mount_uploaders with mount_path' do
+    describe '#avatar=' do
+      it "should cache a file" do
+        reset_class("Event")
+        Event.mount_uploaders(:avatar, @uploader, mount_on: :settings, mount_path: '/images/avatar')
+        @event = Event.new
+        @event.avatar = [stub_file('test.jpeg')]
+        @event.save
+        @event.reload
+
+        expect(@event.avatar[0]).to be_an_instance_of(@uploader)
+        expect(@event.settings['images']['avatar'][0]).to eq('test.jpeg')
+      end
+
+    end
+
+    it "should require that mount_on is also valid" do
+      reset_class("Event")
+      expect { Event.mount_uploader(:settings, @uploader, mount_path: '/images/avatar') }.to raise_error(CarrierWave::InvalidParameter)
+      expect { Event.mount_uploader(:settings, @uploader, mount_on: :settings, mount_path: '/images/avatar') }.to raise_error(CarrierWave::InvalidParameter)
     end
   end
 
