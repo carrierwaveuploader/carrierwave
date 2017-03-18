@@ -122,6 +122,10 @@ module CarrierWave
       option(:mount_on) || column
     end
 
+    def mount_path
+      option(:mount_path)
+    end
+
     def remove_previous(before=nil, after=nil)
       after ||= []
       return unless before

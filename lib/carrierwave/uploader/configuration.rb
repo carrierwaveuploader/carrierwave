@@ -40,6 +40,7 @@ module CarrierWave
         add_config :validate_processing
         add_config :validate_download
         add_config :mount_on
+        add_config :mount_path
         add_config :cache_only
 
         # set default values
