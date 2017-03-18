@@ -468,6 +468,14 @@ describe CarrierWave::ActiveRecord do
         @event.remove_image = "1"
         expect(@event.image_changed?).to be_truthy
       end
+
+      it "should preserve ability to store another image" do
+        @event.save!
+        @event.image = stub_file('new.jpeg')
+        @event.save!
+        @event.reload
+        @event.image.should_not be_blank
+      end
     end
 
     describe "#remote_image_url=" do
