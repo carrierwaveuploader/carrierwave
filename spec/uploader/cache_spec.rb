@@ -279,6 +279,19 @@ describe CarrierWave::Uploader do
       end
     end
   end
+  
+  describe "#cached?" do
+    
+    it "should be false if a cache_id is not set" do
+      @uploader.cached?.should be_an_instance_of(FalseClass)
+    end
+    
+    it "should be true if a cache_id is set" do
+      @uploader.instance_variable_set("@cache_id", "20071201-1234-345-2255")
+      @uploader.cached?.should be_an_instance_of(TrueClass)
+    end
+    
+  end
 
   describe 'with an overridden, reversing, filename' do
     before do
