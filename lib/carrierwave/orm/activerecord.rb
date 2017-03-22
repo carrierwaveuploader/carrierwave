@@ -91,22 +91,18 @@ module CarrierWave
           super
         end
 
-        def read_uploader(serialization_column)
-          attribute = read_attribute(serialization_column)
-
-          if attribute.is_a? Hash
-            mount_path = _mounter(:#{column}).mount_path.to_s
+        def read_uploader(serialization_column, mount_path: nil)
+          if mount_path.nil?
+            attribute
+          else
             pointer = ::Hana::Pointer.new mount_path
+            attribute = read_attribute(serialization_column)
 
             pointer.eval(attribute)
-          else
-            attribute
           end
         end
 
-        def write_uploader(serialization_column, identifier)
-          mount_path = _mounter(:#{column}).mount_path.to_s
-
+        def write_uploader(serialization_column, identifier, mount_path: nil)
           if mount_path.blank?
             write_attribute(serialization_column, identifier)
           else

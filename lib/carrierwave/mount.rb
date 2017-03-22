@@ -175,9 +175,17 @@ module CarrierWave
           mounter = _mounter(:#{column})
 
           if mounter.remove?
-            write_uploader(mounter.serialization_column, nil)
+            if method(:write_uploader).arity == 2
+              write_uploader(mounter.serialization_column, nil)
+            else
+              write_uploader(mounter.serialization_column, nil, mount_path: "#{options[:mount_path].to_s}")
+            end
           elsif mounter.identifiers.first
-            write_uploader(mounter.serialization_column, mounter.identifiers.first)
+            if method(:write_uploader).arity == 2
+              write_uploader(mounter.serialization_column, mounter.identifiers.first)
+            else
+              write_uploader(mounter.serialization_column, mounter.identifiers.first, mount_path: "#{options[:mount_path].to_s}")
+            end
           end
         end
 
@@ -330,9 +338,17 @@ module CarrierWave
           mounter = _mounter(:#{column})
 
           if mounter.remove?
-            write_uploader(mounter.serialization_column, nil)
+            if method(:write_uploader).arity == 2
+              write_uploader(mounter.serialization_column, nil)
+            else
+              write_uploader(mounter.serialization_column, nil, mount_path: "#{options[:mount_path].to_s}")
+            end
           elsif mounter.identifiers.any?
-            write_uploader(mounter.serialization_column, mounter.identifiers)
+            if method(:write_uploader).arity == 2
+              write_uploader(mounter.serialization_column, mounter.identifiers)
+            else
+              write_uploader(mounter.serialization_column, mounter.identifiers, mount_path: "#{options[:mount_path].to_s}")
+            end
           end
         end
 

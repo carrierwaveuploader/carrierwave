@@ -28,7 +28,11 @@ module CarrierWave
     end
 
     def read_identifiers
-      [record.read_uploader(serialization_column)].flatten.reject(&:blank?)
+      if record.method(:read_uploader).arity == 1
+        [record.read_uploader(serialization_column)].flatten.reject(&:blank?)
+      else
+        [record.read_uploader(serialization_column, mount_path: option(:mount_path))].flatten.reject(&:blank?)
+      end
     end
 
     def uploaders
