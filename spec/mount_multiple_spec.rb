@@ -129,7 +129,7 @@ describe CarrierWave::Mount do
     describe '#images' do
       context "return an empty array when nothing has been assigned" do
         before do
-          allow(instance).to receive(:read_uploader).with(:images).and_return(nil)
+          allow(instance).to receive(:read_uploader).with(:images, anything).and_return(nil)
         end
 
         it { expect(instance.images).to eq [] }
@@ -137,7 +137,7 @@ describe CarrierWave::Mount do
 
       context "returns an empty array when an empty string has been assigned" do
         before do
-          allow(instance).to receive(:read_uploader).with(:images).and_return('')
+          allow(instance).to receive(:read_uploader).with(:images, anything).and_return('')
         end
 
         it { expect(instance.images).to eq [] }
@@ -147,7 +147,7 @@ describe CarrierWave::Mount do
         subject(:images) { instance.images }
 
         before do
-          allow(instance).to receive(:read_uploader).with(:images).at_least(:once).and_return([test_file_name, new_file_name])
+          allow(instance).to receive(:read_uploader).with(:images, anything).at_least(:once).and_return([test_file_name, new_file_name])
         end
 
         it { expect(images[0]).to be_an_instance_of(uploader) }
@@ -158,7 +158,7 @@ describe CarrierWave::Mount do
         subject(:image) { instance.images.first }
 
         before do
-          allow(instance).to receive(:read_uploader).with(:images).at_least(:once).and_return(test_file_name)
+          allow(instance).to receive(:read_uploader).with(:images, anything).at_least(:once).and_return(test_file_name)
         end
 
         it { expect(image.current_path).to eq(public_path("uploads/#{test_file_name}")) }
@@ -265,7 +265,7 @@ describe CarrierWave::Mount do
 
       describe "returns nil when nothing has been assigned" do
         before do
-          allow(instance).to receive(:read_uploader).with(:images).and_return(nil)
+          allow(instance).to receive(:read_uploader).with(:images, anything).and_return(nil)
         end
 
         it { is_expected.to be_empty }
@@ -273,7 +273,7 @@ describe CarrierWave::Mount do
 
       describe "should return nil when an empty string has been assigned" do
         before do
-          allow(instance).to receive(:read_uploader).with(:images).and_return('')
+          allow(instance).to receive(:read_uploader).with(:images, anything).and_return('')
         end
 
         it { is_expected.to be_empty }
@@ -281,7 +281,7 @@ describe CarrierWave::Mount do
 
       describe "gets the url from a retrieved file" do
         before do
-          allow(instance).to receive(:read_uploader).at_least(:once).with(:images).and_return(test_file_name)
+          allow(instance).to receive(:read_uploader).at_least(:once).with(:images, anything).and_return(test_file_name)
         end
 
         it { expect(images_urls.first).to eq("/uploads/#{test_file_name}") }
@@ -666,7 +666,7 @@ describe CarrierWave::Mount do
       after { instance.write_images_identifier }
 
       it "writes to the column" do
-        expect(instance).to receive(:write_uploader).with(:images, [test_file_name]).at_least(:once)
+        expect(instance).to receive(:write_uploader).with(:images, [test_file_name], anything).at_least(:once)
         instance.images = [test_file_stub]
         instance.write_images_identifier
       end
@@ -679,14 +679,14 @@ describe CarrierWave::Mount do
         end
 
         it "removes from the column when remove_images is true" do
-          expect(instance).to receive(:write_uploader).with(:images, nil)
+          expect(instance).to receive(:write_uploader).with(:images, nil, anything)
         end
       end
     end
 
     describe '#images_identifiers' do
       it "returns the identifier from the mounted column" do
-        expect(instance).to receive(:read_uploader).with(:images).and_return(test_file_name)
+        expect(instance).to receive(:read_uploader).with(:images, anything).and_return(test_file_name)
         expect(instance.images_identifiers).to eq([test_file_name])
       end
     end
@@ -887,7 +887,7 @@ describe CarrierWave::Mount do
     describe '#images' do
       context "when a value is store in the database" do
         it "retrieves a file from the storage" do
-          expect(instance).to receive(:read_uploader).at_least(:once).with(:monkey).and_return([test_file_name])
+          expect(instance).to receive(:read_uploader).at_least(:once).with(:monkey, anything).and_return([test_file_name])
           expect(instance.images[0]).to be_an_instance_of(uploader)
           expect(instance.images[0].current_path).to eq(public_path("uploads/#{test_file_name}"))
         end
@@ -896,7 +896,7 @@ describe CarrierWave::Mount do
 
     describe '#write_images_identifier' do
       it "writes to the given column" do
-        expect(instance).to receive(:write_uploader).with(:monkey, [test_file_name])
+        expect(instance).to receive(:write_uploader).with(:monkey, [test_file_name], anything)
         instance.images = [test_file_stub]
         instance.write_images_identifier
       end
@@ -905,7 +905,7 @@ describe CarrierWave::Mount do
         instance.images = [test_file_stub]
         instance.store_images!
         instance.remove_images = true
-        expect(instance).to receive(:write_uploader).with(:monkey, nil)
+        expect(instance).to receive(:write_uploader).with(:monkey, nil, anything)
         instance.write_images_identifier
       end
     end

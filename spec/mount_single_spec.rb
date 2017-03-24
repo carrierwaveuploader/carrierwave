@@ -95,29 +95,29 @@ describe CarrierWave::Mount do
     describe '#image' do
 
       it "should return a blank uploader when nothing has been assigned" do
-        expect(@instance).to receive(:read_uploader).with(:image).and_return(nil)
+        expect(@instance).to receive(:read_uploader).with(:image, anything).and_return(nil)
         expect(@instance.image).to be_an_instance_of(@uploader)
         expect(@instance.image).to be_blank
       end
 
       it "should return the same object every time when nothing has been assigned" do
-        expect(@instance).to receive(:read_uploader).with(:image).and_return(nil)
+        expect(@instance).to receive(:read_uploader).with(:image, anything).and_return(nil)
         expect(@instance.image.object_id).to eq @instance.image.object_id
       end
 
       it "should return a blank uploader when an empty string has been assigned" do
-        expect(@instance).to receive(:read_uploader).with(:image).and_return('')
+        expect(@instance).to receive(:read_uploader).with(:image, anything).and_return('')
         expect(@instance.image).to be_an_instance_of(@uploader)
         expect(@instance.image).to be_blank
       end
 
       it "should retrieve a file from the storage if a value is stored in the database" do
-        expect(@instance).to receive(:read_uploader).with(:image).at_least(:once).and_return('test.jpg')
+        expect(@instance).to receive(:read_uploader).with(:image, anything).at_least(:once).and_return('test.jpg')
         expect(@instance.image).to be_an_instance_of(@uploader)
       end
 
       it "should set the path to the store dir" do
-        expect(@instance).to receive(:read_uploader).with(:image).at_least(:once).and_return('test.jpg')
+        expect(@instance).to receive(:read_uploader).with(:image, anything).at_least(:once).and_return('test.jpg')
         expect(@instance.image.current_path).to eq(public_path('uploads/test.jpg'))
       end
 
@@ -199,7 +199,7 @@ describe CarrierWave::Mount do
     describe '#image_url' do
 
       it "should return nil when nothing has been assigned" do
-        expect(@instance).to receive(:read_uploader).with(:image).and_return(nil)
+        expect(@instance).to receive(:read_uploader).with(:image, anything).and_return(nil)
         expect(@instance.image_url).to be_nil
       end
 
@@ -209,17 +209,17 @@ describe CarrierWave::Mount do
             "foo/bar.jpg"
           end
         end
-        expect(@instance).to receive(:read_uploader).with(:image).and_return(nil)
+        expect(@instance).to receive(:read_uploader).with(:image, anything).and_return(nil)
         expect(@instance.image_url).to eq("foo/bar.jpg")
       end
 
       it "should return nil when an empty string has been assigned" do
-        expect(@instance).to receive(:read_uploader).with(:image).and_return('')
+        expect(@instance).to receive(:read_uploader).with(:image, anything).and_return('')
         expect(@instance.image_url).to be_nil
       end
 
       it "should get the url from a retrieved file" do
-        expect(@instance).to receive(:read_uploader).at_least(:once).with(:image).and_return('test.jpg')
+        expect(@instance).to receive(:read_uploader).at_least(:once).with(:image, anything).and_return('test.jpg')
         expect(@instance.image_url).to eq('/uploads/test.jpg')
       end
 
@@ -568,7 +568,7 @@ describe CarrierWave::Mount do
 
     describe '#write_image_identifier' do
       it "should write to the column" do
-        expect(@instance).to receive(:write_uploader).with(:image, "test.jpg")
+        expect(@instance).to receive(:write_uploader).with(:image, "test.jpg", anything)
         @instance.image = stub_file('test.jpg')
         @instance.write_image_identifier
       end
@@ -577,14 +577,14 @@ describe CarrierWave::Mount do
         @instance.image = stub_file('test.jpg')
         @instance.store_image!
         @instance.remove_image = true
-        expect(@instance).to receive(:write_uploader).with(:image, nil)
+        expect(@instance).to receive(:write_uploader).with(:image, nil, anything)
         @instance.write_image_identifier
       end
     end
 
     describe '#image_identifier' do
       it "should return the identifier from the mounted column" do
-        expect(@instance).to receive(:read_uploader).with(:image).and_return("test.jpg")
+        expect(@instance).to receive(:read_uploader).with(:image, anything).and_return("test.jpg")
         expect(@instance.image_identifier).to eq('test.jpg')
       end
     end
@@ -785,7 +785,7 @@ describe CarrierWave::Mount do
 
     describe '#image' do
       it "should retrieve a file from the storage if a value is stored in the database" do
-        expect(@instance).to receive(:read_uploader).at_least(:once).with(:monkey).and_return('test.jpg')
+        expect(@instance).to receive(:read_uploader).at_least(:once).with(:monkey, anything).and_return('test.jpg')
         expect(@instance.image).to be_an_instance_of(@uploader)
         expect(@instance.image.current_path).to eq(public_path('uploads/test.jpg'))
       end
@@ -793,7 +793,7 @@ describe CarrierWave::Mount do
 
     describe '#write_image_identifier' do
       it "should write to the given column" do
-        expect(@instance).to receive(:write_uploader).with(:monkey, "test.jpg")
+        expect(@instance).to receive(:write_uploader).with(:monkey, "test.jpg", anything)
         @instance.image = stub_file('test.jpg')
         @instance.write_image_identifier
       end
@@ -802,7 +802,7 @@ describe CarrierWave::Mount do
         @instance.image = stub_file('test.jpg')
         @instance.store_image!
         @instance.remove_image = true
-        expect(@instance).to receive(:write_uploader).with(:monkey, nil)
+        expect(@instance).to receive(:write_uploader).with(:monkey, nil, anything)
         @instance.write_image_identifier
       end
     end
