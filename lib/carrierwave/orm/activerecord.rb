@@ -93,7 +93,7 @@ module CarrierWave
 
         def read_uploader(serialization_column, mount_path: nil)
           if mount_path.nil?
-            attribute
+            read_attribute(serialization_column)
           else
             pointer = ::Hana::Pointer.new mount_path
             attribute = read_attribute(serialization_column)
@@ -103,7 +103,7 @@ module CarrierWave
         end
 
         def write_uploader(serialization_column, identifier, mount_path: nil)
-          if mount_path.blank?
+          if mount_path.nil?
             write_attribute(serialization_column, identifier)
           else
             attribute = read_attribute(serialization_column) || {}
