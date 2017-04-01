@@ -65,7 +65,7 @@ _No changes._
 * Improve Fog Loading (@plribeiro3000 [#1620](https://github.com/carrierwaveuploader/carrierwave/pull/1620), @eavgerinos)
 * All locales from `config.i18n.available_locales` are added to load_path (@printercu [#1521](https://github.com/carrierwaveuploader/carrierwave/pull/1521))
 * Do not display RMagick exception in I18n message (manuelpradal [#1361](https://github.com/carrierwaveuploader/carrierwave/pull/1361))
-* `#default_url` now accepts the same args passed to `#url` (@shekibobo [#1347](https://github.com/carrierwaveuploader/carrierwave/pull/1347))
+* [BREAKING CHANGE] `#default_url` now accepts the same args passed to `#url` (@shekibobo [#1347](https://github.com/carrierwaveuploader/carrierwave/pull/1347))
 
 ### Removed
 * All locale files other than `en` are now in [carrierwave-i18n](https://github.com/carrierwaveuploader/carrierwave-i18n) (@mehlah [#1848](https://github.com/carrierwaveuploader/carrierwave/pull/1848))
