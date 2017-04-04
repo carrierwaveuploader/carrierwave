@@ -303,8 +303,7 @@ module CarrierWave
         image.destroy!
       end
     rescue ::MiniMagick::Error, ::MiniMagick::Invalid => e
-      default = I18n.translate(:"errors.messages.mini_magick_processing_error", :e => e, :locale => :en)
-      message = I18n.translate(:"errors.messages.mini_magick_processing_error", :e => e, :default => default)
+      message = I18n.translate(:"errors.messages.mini_magick_processing_error", :e => e)
       raise CarrierWave::ProcessingError, message
     end
 
@@ -312,7 +311,11 @@ module CarrierWave
 
       def append_combine_options(cmd, combine_options)
         combine_options.each do |method, options|
-          cmd.send(method, options)
+          if options.nil?
+            cmd.send(method)
+          else
+            cmd.send(method, options)
+          end
         end
       end
 

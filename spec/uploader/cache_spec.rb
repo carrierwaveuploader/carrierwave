@@ -112,6 +112,21 @@ describe CarrierWave::Uploader do
       it "does nothing when trying to cache an empty file" do
         uploader.cache!(nil)
       end
+
+
+      context 'negative cache id' do
+        let(:cache_id) { '-1369894322-345-1234-2255' }
+
+        before do
+          allow(CarrierWave).to receive(:generate_cache_id).and_return(cache_id)
+        end
+
+        it "doesn't raise an error when caching" do
+          expect(running {
+                   uploader.cache!(test_file)
+          }).not_to raise_error
+        end
+      end
     end
 
     describe "with the move_to_cache option" do

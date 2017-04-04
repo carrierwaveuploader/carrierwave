@@ -16,6 +16,8 @@ module CarrierWave
     # [:fog_authenticated_url_expiration] (optional) time (in seconds) that authenticated urls
     #   will be valid, when fog_public is false and provider is AWS or Google, defaults to 600
     # [:fog_use_ssl_for_aws]              (optional) #public_url will use https for the AWS generated URL]
+    # [:fog_aws_accelerate]               (optional) #public_url will use s3-accelerate subdomain
+    #   instead of s3, defaults to false
     #
     #
     # AWS credentials contain the following keys:
@@ -349,7 +351,8 @@ module CarrierWave
                 protocol = @uploader.fog_use_ssl_for_aws ? "https" : "http"
                 # if directory is a valid subdomain, use that style for access
                 if @uploader.fog_directory.to_s =~ /^(?:[a-z]|\d(?!\d{0,2}(?:\d{1,3}){3}$))(?:[a-z0-9\.]|(?![\-])|\-(?![\.])){1,61}[a-z0-9]$/
-                  "#{protocol}://#{@uploader.fog_directory}.s3.amazonaws.com/#{encoded_path}"
+                  s3_subdomain = @uploader.fog_aws_accelerate ? "s3-accelerate" : "s3"
+                  "#{protocol}://#{@uploader.fog_directory}.#{s3_subdomain}.amazonaws.com/#{encoded_path}"
                 else
                   # directory is not a valid subdomain, so use path style for access
                   "#{protocol}://s3.amazonaws.com/#{@uploader.fog_directory}/#{encoded_path}"

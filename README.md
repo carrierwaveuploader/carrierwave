@@ -16,7 +16,7 @@ It works well with Rack based web applications, such as Ruby on Rails.
 
 ## Getting Help
 
-* Please ask the community on [Stack Overflow](http://stackoverflow.com/) for help if you have any questions. Please do not post usage questions on the issue tracker.
+* Please ask the community on [Stack Overflow](https://stackoverflow.com/questions/tagged/carrierwave) for help if you have any questions. Please do not post usage questions on the issue tracker.
 * Please report bugs on the [issue tracker](http://github.com/carrierwaveuploader/carrierwave/issues) but read the "getting help" section in the wiki first.
 
 ## Installation
@@ -131,9 +131,6 @@ Other ORM support has been extracted into separate gems:
 There are more extensions listed in [the wiki](https://github.com/carrierwaveuploader/carrierwave/wiki)
 
 ## Multiple file uploads
-**Note:** You must specify using the master branch to enable this feature:
-
-`gem 'carrierwave', github: 'carrierwaveuploader/carrierwave'`.
 
 CarrierWave also has convenient support for multiple file upload fields.
 
@@ -144,14 +141,25 @@ column for example. Your choice depends on what your database supports. For
 example, create a migration like this:
 
 
+#### For databases with ActiveRecord json data type support (e.g. PostgreSQL, MySQL)
+
 	rails g migration add_avatars_to_users avatars:json
 	rake db:migrate
 
+#### For database without ActiveRecord json data type support (e.g. SQLite)
+
+	rails g migration add_avatars_to_users avatars:string
+	rake db:migrate
+
+__Note__: JSON datatype doesn't exists in SQLite adapter, that's why you can use a string datatype which will be serialized in model.
+
 Open your model file and mount the uploader:
+
 
 ```ruby
 class User < ActiveRecord::Base
   mount_uploaders :avatars, AvatarUploader
+  serialize :avatars, JSON # If you use SQLite, add this line.
 end
 ```
 

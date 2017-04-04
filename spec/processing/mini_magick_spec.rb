@@ -117,6 +117,15 @@ describe CarrierWave::MiniMagick do
       expect(instance).to have_dimensions(1000, 1000)
       expect(::MiniMagick::Tool::Identify.new.verbose(instance.current_path).call).to include('Quality: 70')
     end
+
+    it 'accepts non-argument option as combine_options' do
+      expect(::MiniMagick::Tool::Identify.new.verbose(instance.current_path).call).to include('exif:ColorSpace: 1')
+
+      instance.resize_and_pad(1000, 1000, combine_options: {strip: nil})
+
+      expect(instance).to have_dimensions(1000, 1000)
+      expect(::MiniMagick::Tool::Identify.new.verbose(instance.current_path).call).to_not include('exif:ColorSpace: 1')
+    end
   end
 
   describe '#resize_to_fit' do
@@ -203,6 +212,14 @@ describe CarrierWave::MiniMagick do
       it "doesn't suppress errors when translation is unavailable" do
         change_locale_and_store_translations(:foo, {}) do
           expect { instance.resize_to_limit(200, 200) }.to raise_exception( CarrierWave::ProcessingError )
+        end
+      end
+
+      context ":en locale is not available and enforce_available_locales is true" do
+        it "doesn't suppress errors" do
+          change_and_enforece_available_locales(:nl, [:nl, :foo]) do
+            expect { instance.resize_to_limit(200, 200) }.to raise_exception(CarrierWave::ProcessingError)
+          end
         end
       end
     end

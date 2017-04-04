@@ -5,6 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+* Support for `process` callback(@cfcosta [#2045](https://github.com/carrierwaveuploader/carrierwave/pull/2045))
+* S3 Transfer Acceleration support(@krekoten [#2108](https://github.com/carrierwaveuploader/carrierwave/pull/2108))
+
+### Changed
+* Stop falling back to en locale when I18n is missing(@kryzhovnik [#2083](https://github.com/carrierwaveuploader/carrierwave/pull/2083))
+* Allow non-argument options to be passed in mini magick combine_options(@krismartin [#2097](https://github.com/carrierwaveuploader/carrierwave/pull/2097))
+
+### Fixed
+* Allow nagative timestamp in cache id(@NickOttrando [#2092](https://github.com/carrierwaveuploader/carrierwave/pull/2092))
+* Avoid calling `file.url` twice(@lukeasrodgers [#2078](https://github.com/carrierwaveuploader/carrierwave/pull/2078))
+* Content Type being reset when moving cached file(@dweinand [#2117](https://github.com/carrierwaveuploader/carrierwave/pull/2117))
+
+
 ## 1.0.0 - 2016-12-24
 
 _No changes._
@@ -51,7 +65,7 @@ _No changes._
 * Improve Fog Loading (@plribeiro3000 [#1620](https://github.com/carrierwaveuploader/carrierwave/pull/1620), @eavgerinos)
 * All locales from `config.i18n.available_locales` are added to load_path (@printercu [#1521](https://github.com/carrierwaveuploader/carrierwave/pull/1521))
 * Do not display RMagick exception in I18n message (manuelpradal [#1361](https://github.com/carrierwaveuploader/carrierwave/pull/1361))
-* `#default_url` now accepts the same args passed to `#url` (@shekibobo [#1347](https://github.com/carrierwaveuploader/carrierwave/pull/1347))
+* [BREAKING CHANGE] `#default_url` now accepts the same args passed to `#url` (@shekibobo [#1347](https://github.com/carrierwaveuploader/carrierwave/pull/1347))
 
 ### Removed
 * All locale files other than `en` are now in [carrierwave-i18n](https://github.com/carrierwaveuploader/carrierwave-i18n) (@mehlah [#1848](https://github.com/carrierwaveuploader/carrierwave/pull/1848))

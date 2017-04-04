@@ -82,6 +82,22 @@ module CarrierWave
           I18n.locale = current_locale
         end
       end
+
+      def change_and_enforece_available_locales(locale, available_locales, &block)
+        current_available_locales = I18n.available_locales
+        current_enforce_available_locales_value = I18n.enforce_available_locales
+        current_locale = I18n.locale
+        begin
+          I18n.available_locales = [:nl]
+          I18n.enforce_available_locales = true
+          I18n.locale = :nl
+          yield
+        ensure
+          I18n.available_locales = current_available_locales
+          I18n.enforce_available_locales = current_enforce_available_locales_value
+          I18n.locale = current_locale
+        end
+      end
     end
 
     module ManipulationHelpers
