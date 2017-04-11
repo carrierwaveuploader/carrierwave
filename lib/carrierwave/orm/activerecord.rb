@@ -97,6 +97,7 @@ module CarrierWave
           else
             pointer = ::Hana::Pointer.new mount_path
             attribute = read_attribute(serialization_column)
+            attribute.deep_stringify_keys! if attribute.is_a? Hash
 
             pointer.eval(attribute)
           end
@@ -107,6 +108,7 @@ module CarrierWave
             write_attribute(serialization_column, identifier)
           else
             attribute = read_attribute(serialization_column) || {}
+            attribute.deep_stringify_keys! if attribute.is_a? Hash
 
             parent_path = mount_path.split("/")[0..-2].reject(&:blank?)
             attribute = create_path_in_hash(attribute, parent_path)
