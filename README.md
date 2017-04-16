@@ -99,6 +99,32 @@ class User < ActiveRecord::Base
 end
 ```
 
+For Rails 3
+Open your controller file and add attr_accessible :avatar
+
+```ruby
+class UserController < ApplicationController
+	attr_accessible :avatar
+end
+```
+
+For Rails 4 or above
+Open your controller file and add :avatar to strong params
+
+```ruby
+class UserController < ApplicationController
+	.
+	.
+	.
+	
+	private
+  def user_params
+    params.require(:user).permit(:username, :email, ..., :avatar)
+  end
+end
+```
+
+
 Now you can cache files by assigning them to the attribute, they will
 automatically be stored when the record is saved.
 
