@@ -681,6 +681,18 @@ end
 
 That's it! You can still use the `CarrierWave::Uploader#url` method to return the url to the file on Amazon S3.
 
+[CarrierWave AWS](https://github.com/sorentwo/carrierwave-aws) is "the officially supported AWS-SDK library" and can be used in place of Fog AWS.
+
+The CarrierWave AWS README presents statistics which may be useful when considering which gem to utilize. 
+
+Configuration and usage are similar to Fog AWS.
+
+Ensure you have it in your Gemfile and review the README for configuration details:
+
+```ruby
+gem "carrierwave-aws"
+```
+
 ## Using Rackspace Cloud Files
 
 [Fog](http://github.com/fog/fog) is used to support Rackspace Cloud Files. Ensure you have it in your Gemfile:
