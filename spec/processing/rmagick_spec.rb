@@ -245,6 +245,14 @@ describe CarrierWave::RMagick, :rmagick => true do
           expect { instance.resize_to_limit(200, 200) }.to raise_exception( CarrierWave::ProcessingError )
         end
       end
+
+      context ":en locale is not available and enforce_available_locales is true" do
+        it "doesn't suppress errors" do
+          change_and_enforece_available_locales(:nl, [:nl, :foo]) do
+            expect { instance.resize_to_limit(200, 200) }.to raise_exception(CarrierWave::ProcessingError)
+          end
+        end
+      end
     end
   end
 end

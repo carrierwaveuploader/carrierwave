@@ -64,8 +64,8 @@ end
         end
 
         it "should have a content_type" do
-          expect(@fog_file.content_type).to eq('image/jpeg')
-          expect(@directory.files.get(store_path).content_type).to eq('image/jpeg')
+          expect(@fog_file.content_type).to eq(file.content_type)
+          expect(@directory.files.get(store_path).content_type).to eq(file.content_type)
         end
 
         it "should have an extension" do
@@ -85,10 +85,22 @@ end
             end
           end
 
-          it "should use a subdomain URL for AWS if the directory is a valid subdomain" do
-            if @provider == 'AWS'
+          context "directory is a valid subdomain" do
+            before do
               allow(@uploader).to receive(:fog_directory).and_return('assets.site.com')
-              expect(@fog_file.public_url).to include('https://assets.site.com.s3.amazonaws.com')
+            end
+
+            it "should use a subdomain URL for AWS" do
+              if @provider == 'AWS'
+                expect(@fog_file.public_url).to include('https://assets.site.com.s3.amazonaws.com')
+              end
+            end
+
+            it "should use accelerate domain if fog_aws_accelerate is true" do
+              if @provider == 'AWS'
+                allow(@uploader).to receive(:fog_aws_accelerate).and_return(true)
+                expect(@fog_file.public_url).to include('https://assets.site.com.s3-accelerate.amazonaws.com')
+              end
             end
           end
 
@@ -243,6 +255,10 @@ end
 
         it "should upload the file", focus: true do
           expect(@directory.files.get('uploads/tmp/test+.jpg').body).to eq('this is stuff')
+        end
+
+        it 'should preserve content type' do
+          expect(@fog_file.content_type).to eq(file.content_type)
         end
       end
 
@@ -413,6 +429,16 @@ end
 
       it_should_behave_like "#{fog_credentials[:provider]} storage"
 
+    end
+
+    describe "with a valid File object with an explicit content type" do
+      let(:file) do
+        CarrierWave::SanitizedFile.new(stub_file('test.jpg', 'image/jpeg')).tap do |f|
+          f.content_type = 'image/jpg'
+        end
+      end
+
+      it_should_behave_like "#{fog_credentials[:provider]} storage"
     end
 
     describe "with a valid path" do

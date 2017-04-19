@@ -190,7 +190,7 @@ module CarrierWave
       def cache_id=(cache_id)
         # Earlier version used 3 part cache_id. Thus we should allow for
         # the cache_id to have both 3 part and 4 part formats.
-        raise CarrierWave::InvalidParameter, "invalid cache id" unless cache_id =~ /\A[\d]+\-[\d]+(\-[\d]{4})?\-[\d]{4}\z/
+        raise CarrierWave::InvalidParameter, "invalid cache id" unless cache_id =~ /\A(-)?[\d]+\-[\d]+(\-[\d]{4})?\-[\d]{4}\z/
         @cache_id = cache_id
       end
 

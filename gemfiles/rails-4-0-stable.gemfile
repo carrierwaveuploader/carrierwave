@@ -1,5 +1,6 @@
 source "https://rubygems.org"
 
 gem "rails", :github => "rails/rails", :branch => "4-0-stable"
+gem "railties", "~> 4.0.0"
 
 gemspec :path => "../"

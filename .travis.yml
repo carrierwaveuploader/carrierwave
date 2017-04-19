@@ -66,7 +66,6 @@ matrix:
   allow_failures:
     - rvm: ruby-head
     - rvm: jruby-head
-    - gemfile: gemfiles/rails-master.gemfile
   fast_finish: true
 
 notifications:
