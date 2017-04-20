@@ -379,6 +379,15 @@ end
             end
           end
 
+          it "should have a public_url if fog_serve_public override is present" do
+            allow(@uploader).to receive(:fog_serve_public).and_return(true)
+            if ['AWS', 'Rackspace', 'Google', 'OpenStack'].include?(@provider)
+              unless Fog.mocking? || fog_credentials[:provider] == 'Local'
+                expect(open(@fog_file.public_url).read).to eq('this is stuff')
+              end
+            end
+          end
+
           it 'should generate correct filename' do
             expect(@fog_file.filename).to eq('private.txt')
           end

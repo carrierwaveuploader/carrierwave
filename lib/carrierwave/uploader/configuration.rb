@@ -28,6 +28,7 @@ module CarrierWave
         add_config :fog_credentials
         add_config :fog_directory
         add_config :fog_public
+        add_config :fog_serve_public
         add_config :fog_authenticated_url_expiration
         add_config :fog_use_ssl_for_aws
         add_config :fog_aws_accelerate
