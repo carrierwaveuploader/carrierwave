@@ -1,0 +1,7 @@
+source "https://rubygems.org"
+
+gem "rails", "~> 5.0.0"
+gem "activemodel-serializers-xml"
+gem "activerecord-jdbcpostgresql-adapter", github: "jruby/activerecord-jdbc-adapter", branch: "rails-5", platforms: :jruby
+
+gemspec :path => "../"
