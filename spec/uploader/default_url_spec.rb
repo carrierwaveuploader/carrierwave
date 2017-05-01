@@ -40,6 +40,38 @@ describe CarrierWave::Uploader do
       it "returns the default url with version when given" do
         expect(uploader.url(:thumb)).to eq("#{url_example}/thumb")
       end
+
+      it "adds the asset_host to default_url if configured" do
+        tests = [
+          [
+            nil,
+            "/logo.png",
+            "/logo.png"
+          ],
+          [
+            nil,
+            "http://full.example.com/logo.png",
+            "http://full.example.com/logo.png"
+          ],
+          [
+            "http://assets.example.com",
+            "/logo.png",
+            "http://assets.example.com/logo.png"
+          ],
+          [
+            "http://assets.example.com",
+            "http://full.example.com/logo.png",
+            "http://full.example.com/logo.png"
+          ],
+        ]
+        tests.each do |(asset_host, default_url, result)|
+          uploader_class.configure { |config| config.asset_host = asset_host }
+          uploader_class.class_eval <<-CODE
+            def default_url; #{default_url.inspect}; end
+          CODE
+          expect(uploader.url).to eq(result)
+        end
+      end
     end
 
     describe '#cache!' do
