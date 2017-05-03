@@ -44,5 +44,16 @@ describe CarrierWave::Storage::Fog::File do
         is_expected.to eq('日本語.txt')
       end
     end
+
+    context "when url contains multi-byte characters ('日本語') in query string" do
+      before do
+        # Ruby 2.3.0 is returning a string with ASCII-8BIT encoding.
+        allow(subject).to receive(:url){ 'http://example.com/path/to/%E6%97%A5%E6%9C%AC%E8%AA%9E.txt?bar=baz/fubar'.force_encoding('ASCII-8BIT') }
+      end
+
+      it "should extract correct part" do
+        expect(subject.filename).to eq('日本語.txt')
+      end
+    end
   end
 end
