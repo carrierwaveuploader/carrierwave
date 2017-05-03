@@ -236,6 +236,7 @@ module CarrierWave
         def delete
           # avoid a get by just using local reference
           directory.files.new(:key => path).destroy
+        rescue ::Fog::Service::NotFound
         end
 
         ##
