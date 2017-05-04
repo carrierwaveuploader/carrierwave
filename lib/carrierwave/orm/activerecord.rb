@@ -41,8 +41,14 @@ module CarrierWave
     def mount_base(column, uploader=nil, options={}, &block)
       super
 
-      alias_method :read_uploader, :read_attribute
-      alias_method :write_uploader, :write_attribute
+      def read_uploader(column)
+        read_attribute(column)
+      end
+
+      def write_uploader(column, identifier)
+        write_attribute(column, identifier)
+      end
+
       public :read_uploader
       public :write_uploader
 
