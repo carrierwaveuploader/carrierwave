@@ -133,6 +133,8 @@ module CarrierWave
     # [Magick::Image] additional manipulations to perform
     #
     def resize_to_limit(width, height)
+      width = width.call if width.instance_of?(Proc)
+      height = height.call if height.instance_of?(Proc)
       manipulate! do |img|
         geometry = Magick::Geometry.new(width, height, 0, 0, Magick::GreaterGeometry)
         new_img = img.change_geometry(geometry) do |new_width, new_height|
@@ -162,6 +164,8 @@ module CarrierWave
     # [Magick::Image] additional manipulations to perform
     #
     def resize_to_fit(width, height)
+      width = width.call if width.instance_of?(Proc)
+      height = height.call if height.instance_of?(Proc)
       manipulate! do |img|
         img.resize_to_fit!(width, height)
         img = yield(img) if block_given?
@@ -186,6 +190,8 @@ module CarrierWave
     # [Magick::Image] additional manipulations to perform
     #
     def resize_to_fill(width, height, gravity=::Magick::CenterGravity)
+      width = width.call if width.instance_of?(Proc)
+      height = height.call if height.instance_of?(Proc)
       manipulate! do |img|
         img.crop_resized!(width, height, gravity)
         img = yield(img) if block_given?
@@ -211,6 +217,8 @@ module CarrierWave
     # [Magick::Image] additional manipulations to perform
     #
     def resize_and_pad(width, height, background=:transparent, gravity=::Magick::CenterGravity)
+      width = width.call if width.instance_of?(Proc)
+      height = height.call if height.instance_of?(Proc)
       manipulate! do |img|
         img.resize_to_fit!(width, height)
         new_img = ::Magick::Image.new(width, height) { self.background_color = background == :transparent ? 'rgba(255,255,255,0)' : background.to_s }
