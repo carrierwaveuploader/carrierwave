@@ -49,6 +49,19 @@ module CarrierWave
       #
       def whitelist_mime_type_pattern; end
 
+      # === Returns
+      #
+      # [Array] a white list array of extensions to match whitelist regexp, 
+      #         is passed as a local to error message  
+      #
+      # === Examples
+      #
+      #     def whitelist_mime_type_extensions
+      #       %w(json)
+      #     end
+      #
+      def whitelist_mime_type_extensions; [] end
+
     private
 
       def check_whitelist_pattern!(new_file)
@@ -59,7 +72,8 @@ module CarrierWave
         if !content_type.match(whitelist_mime_type_pattern)
           raise CarrierWave::IntegrityError,
             I18n.translate(:"errors.messages.mime_type_pattern_white_list_error",
-                           :content_type => content_type)
+                           content_type: content_type,
+                           allowed_types: whitelist_mime_type_extensions.join(', '))
         end
       end
 
