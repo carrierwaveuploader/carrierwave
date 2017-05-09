@@ -40,7 +40,11 @@ module CarrierWave
       def store_path(for_file=filename)
         File.join([store_dir, full_filename(for_file)].compact)
       end
-
+      
+      def retrieve_path(for_file=filename)
+        File.join([retrieve_dir, full_filename(for_file)].compact)
+      end
+      
       ##
       # Stores the file by passing it to this Uploader's storage engine.
       #
