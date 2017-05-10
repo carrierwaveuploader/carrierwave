@@ -415,6 +415,20 @@ module CarrierWave
           CarrierWave::Storage::Fog::File.new(@uploader, @base, new_path)
         end
 
+        ##
+        # Downloads file from storage in one request.
+        #
+        # When carrierwave downloads file from storage it normally executes 2 requests - HEAD
+        # and subsequent GET. When downloading files in batch mode it might be a big overhead.
+        #
+        # === Returns
+        #
+        # @return [CarrierWave::Storage::Fog::File] downloaded file.
+        #
+        def get
+          @get_file ||= directory.files.get(path)
+        end
+
       private
 
         ##
