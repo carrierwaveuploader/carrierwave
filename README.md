@@ -114,7 +114,7 @@ end
 u.save!
 u.avatar.url # => '/url/to/file.png'
 u.avatar.current_path # => 'path/to/file.png'
-u.avatar_identifier # => 'file.png'
+u.avatar.identifier # => 'file.png'
 ```
 
 **Note**: `u.avatar` will never return nil, even if there is no photo associated to it.
