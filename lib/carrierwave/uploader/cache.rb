@@ -120,11 +120,18 @@ module CarrierWave
         return if new_file.empty?
 
         raise CarrierWave::FormNotMultipart if new_file.is_path? && ensure_multipart_form
+        
+        if !version_name.nil? && model.send(mounted_as).file.present?
+          # try to guess the original_filename
+          self.original_filename = model.send(mounted_as).file.filename
+        else
+          self.original_filename = new_file.filename
+        end
 
         self.cache_id = CarrierWave.generate_cache_id unless cache_id
 
         @filename = new_file.filename
-        self.original_filename = new_file.filename
+        
 
         begin
           # first, create a workfile on which we perform processings
@@ -132,8 +139,10 @@ module CarrierWave
             @file = new_file.move_to(File.expand_path(workfile_path, root), permissions, directory_permissions)
           else
             @file = new_file.copy_to(File.expand_path(workfile_path, root), permissions, directory_permissions)
-          end
 
+          end
+          
+          # e.g. before :cache, :process!
           with_callbacks(:cache, @file) do
             @file = cache_storage.cache!(@file)
           end

@@ -313,7 +313,7 @@ module CarrierWave
             fog_file = new_file.to_file
             @content_type ||= new_file.content_type
             @file = directory.files.create({
-              :body         => (fog_file ? fog_file : new_file).read,
+              :body         => fog_file ? fog_file : new_file,
               :content_type => @content_type,
               :key          => path,
               :public       => @uploader.fog_public
