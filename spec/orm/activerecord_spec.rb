@@ -15,6 +15,10 @@ def drop_table(name)
   ActiveRecord::Base.connection.drop_table(name)
 end
 
+def add_has_many_relation(parent_table, children_table)
+  ActiveRecord::Base.connection.add_column children_table, parent_table.singularize + "_id", :integer
+end
+
 def reset_class(class_name)
   Object.send(:remove_const, class_name) rescue nil
   Object.const_set(class_name, Class.new(ActiveRecord::Base))
@@ -1551,6 +1555,44 @@ describe CarrierWave::ActiveRecord do
       new_event = @event.dup
 
       expect(new_event.image.model).not_to eq @event
+    end
+  end
+
+  describe 'remove_via_nested_attributes' do
+    before do
+      Event.has_many :attendees
+      Event.accepts_nested_attributes_for :attendees
+      create_table("attendees")
+      add_has_many_relation("events", "attendees")
+      reset_class("Attendee")
+      Attendee.mount_uploader(:image, @uploader)
+      @event.save!
+      @attendee = @event.attendees.build
+      @attendee[:image] = 'test.jpeg'
+      @attendee.save!
+      @attendee.reload
+    end
+
+    it "should contain image" do
+      expect(@attendee.image.current_path).to eq public_path('uploads/test.jpeg')
+    end
+
+    it "should remove image if flag set via nested attributes" do
+      nested_attributes = {
+        "attendees_attributes" => {
+          "0" => {
+            :id => @attendee.id, :remove_image => true
+          }
+        }
+      }
+      @event.update(nested_attributes)
+      @attendee.reload
+      expect(@attendee.image?).to be_falsey
+      expect(@attendee.image.current_path).to eq nil
+    end
+
+    after do
+      drop_table("attendees")
     end
   end
 end
