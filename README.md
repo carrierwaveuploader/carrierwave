@@ -647,7 +647,7 @@ config.fog_credentials = { ... } # Provider specific credentials
 [Fog AWS](http://github.com/fog/fog-aws) is used to support Amazon S3. Ensure you have it in your Gemfile:
 
 ```ruby
-gem "fog-aws"
+gem 'fog', require: 'fog/aws'
 ```
 
 You'll need to provide your fog_credentials and a fog_directory (also known as a bucket) in an initializer.
