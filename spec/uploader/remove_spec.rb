@@ -66,6 +66,16 @@ describe CarrierWave::Uploader do
     it "does nothing when trying to remove an empty file" do
       expect{ uploader.remove! }.not_to raise_error
     end
+
+    context "a file that does not exist in Rackspace" do
+      before do
+        @stored_file.stub!(:delete).and_raise(Fog::Storage::Rackspace::NotFound)
+      end
+
+      it "should do nothing" do
+        running { @uploader.remove! }.should_not raise_error  
+      end
+    end
   end
 
 end
