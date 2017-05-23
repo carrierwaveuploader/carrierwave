@@ -126,7 +126,7 @@ module CarrierWave
     #
     # [MiniMagick::Image] additional manipulations to perform
     #
-    def resize_to_limit(width, height, combine_options: {})
+    def resize_to_limit(width, height, combine_options={})
       manipulate! do |img|
         img.combine_options do |cmd|
           cmd.resize "#{width}x#{height}>"
@@ -151,7 +151,7 @@ module CarrierWave
     #
     # [MiniMagick::Image] additional manipulations to perform
     #
-    def resize_to_fit(width, height, combine_options: {})
+    def resize_to_fit(width, height, combine_options={})
       manipulate! do |img|
         img.combine_options do |cmd|
           cmd.resize "#{width}x#{height}"
@@ -177,7 +177,7 @@ module CarrierWave
     #
     # [MiniMagick::Image] additional manipulations to perform
     #
-    def resize_to_fill(width, height, gravity = 'Center', combine_options: {})
+    def resize_to_fill(width, height, gravity = 'Center', combine_options={})
       manipulate! do |img|
         cols, rows = img[:dimensions]
         img.combine_options do |cmd|
@@ -224,7 +224,7 @@ module CarrierWave
     #
     # [MiniMagick::Image] additional manipulations to perform
     #
-    def resize_and_pad(width, height, background=:transparent, gravity='Center', combine_options: {})
+    def resize_and_pad(width, height, background=:transparent, gravity='Center', combine_options={})
       manipulate! do |img|
         img.combine_options do |cmd|
           cmd.thumbnail "#{width}x#{height}>"
