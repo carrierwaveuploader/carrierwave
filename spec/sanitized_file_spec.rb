@@ -314,6 +314,25 @@ describe CarrierWave::SanitizedFile do
 
         expect(sanitized_file.content_type).to eq(content_type)
       end
+
+      context 'target path only differs by case' do
+        let(:upcased_sanitized_file) { CarrierWave::SanitizedFile.new(stub_file("upcase.JPG", "image/jpeg")) }
+
+        before do
+          FileUtils.cp(file_path("test.jpg"), file_path("upcase.JPG"))
+
+          expect(upcased_sanitized_file).not_to be_empty
+        end
+
+	after(:all) do
+	  FileUtils.rm_f(file_path("upcase.JPG"))
+	  FileUtils.rm_f(file_path("upcase.jpg"))
+        end
+
+        it "should not raise an error when moved" do
+          expect(running { upcased_sanitized_file.move_to(upcased_sanitized_file.path.downcase) }).not_to raise_error
+        end
+      end
     end
 
     describe "#copy_to" do
