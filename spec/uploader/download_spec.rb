@@ -103,6 +103,72 @@ describe CarrierWave::Uploader::Download do
       end
     end
 
+    context "with follow download redirects option" do
+      before do
+        CarrierWave::Uploader::Base.configure { |config| config.allow_download_redirections = redirection_option }
+      end
+
+      after do
+        CarrierWave::Uploader::Base.configure { |config| config.allow_download_redirections = false }
+      end
+
+      context "http to https" do
+        before do
+          stub_request(:get, "https://www.protocol-redirect.com/test.jpg").
+            to_return(body: test_file)
+
+          stub_request(:get, "http://www.protocol-redirect.com/test.jpg").
+            to_return(status: 301, body: "Redirecting", headers: { "Location" => "https://www.protocol-redirect.com/test.jpg" })
+        end
+
+        context "when redirection option is safe" do
+          let(:redirection_option) { "safe" }
+
+          it "follows protocol redirects http to https" do
+            uploader.download!('http://www.protocol-redirect.com/test.jpg')
+            expect(uploader.url).to eq("/uploads/tmp/#{cache_id}/#{test_file_name}")
+          end
+        end
+
+        context "when redirection option is all" do
+          let(:redirection_option) { "all" }
+
+          it "follows protocol redirects http to https" do
+            uploader.download!('http://www.protocol-redirect.com/test.jpg')
+            expect(uploader.url).to eq("/uploads/tmp/#{cache_id}/#{test_file_name}")
+          end
+        end
+      end
+
+      context "https to http" do
+        before do
+          stub_request(:get, "http://www.protocol-redirect.com/test.jpg").
+            to_return(body: test_file)
+
+          stub_request(:get, "https://www.protocol-redirect.com/test.jpg").
+            to_return(status: 301, body: "Redirecting", headers: { "Location" => "http://www.protocol-redirect.com/test.jpg" })
+        end
+
+        context "when redirection option is safe" do
+          let(:redirection_option) { "safe" }
+
+          it "follows protocol redirects https to http" do
+            expect { uploader.download!('https://www.protocol-redirect.com/test.jpg') }.
+              to raise_error(CarrierWave::DownloadError, /could not download file: redirection forbidden/)
+          end
+        end
+
+        context "when redirection option is all" do
+          let(:redirection_option) { "all" }
+
+          it "follows protocol redirects https to http" do
+            uploader.download!('https://www.protocol-redirect.com/test.jpg')
+            expect(uploader.url).to eq("/uploads/tmp/#{cache_id}/#{test_file_name}")
+          end
+        end
+      end
+    end
+
     it "raises an error when trying to download a local file" do
       expect { uploader.download!('/etc/passwd') }.to raise_error(CarrierWave::DownloadError)
     end

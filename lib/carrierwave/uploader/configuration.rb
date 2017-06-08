@@ -38,6 +38,7 @@ module CarrierWave
         add_config :ignore_download_errors
         add_config :validate_integrity
         add_config :validate_processing
+        add_config :allow_download_redirections
         add_config :validate_download
         add_config :mount_on
         add_config :cache_only
@@ -157,6 +158,15 @@ module CarrierWave
 
         def configure
           yield self
+
+          if allow_download_redirections
+            unless %w(all safe).include?(allow_download_redirections.to_s)
+              raise ArgumentError,
+                    "Unsupported option for allow_download_redirections: #{allow_download_redirections}"
+            end
+
+            require "open_uri_redirections"
+          end
         end
 
         ##
@@ -190,6 +200,7 @@ module CarrierWave
             config.ignore_download_errors = true
             config.validate_integrity = true
             config.validate_processing = true
+            config.allow_download_redirections = false
             config.validate_download = true
             config.root = lambda { CarrierWave.root }
             config.base_path = CarrierWave.base_path

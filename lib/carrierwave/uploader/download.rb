@@ -32,14 +32,14 @@ module CarrierWave
           @uri.scheme =~ /^https?$/
         end
 
-      private
+        private
 
         def file
           if @file.blank?
             headers = @remote_headers.
               reverse_merge('User-Agent' => "CarrierWave/#{CarrierWave::VERSION}")
 
-            @file = Kernel.open(@uri.to_s, headers)
+            @file = open_remote_file(@uri.to_s, headers)
             @file = @file.is_a?(String) ? StringIO.new(@file) : @file
           end
           @file
@@ -57,6 +57,13 @@ module CarrierWave
 
         def method_missing(*args, &block)
           file.send(*args, &block)
+        end
+
+        def open_remote_file(uri, headers)
+          allow_download_redirections = CarrierWave::Uploader::Base.allow_download_redirections
+          return Kernel.open(uri, headers) unless allow_download_redirections
+
+          Kernel.open(uri, headers.merge(allow_redirections: allow_download_redirections.to_sym))
         end
       end
 
