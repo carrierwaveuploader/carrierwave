@@ -308,7 +308,7 @@ and cropped to exactly 200 by 200 pixels. The uploader could be used like this:
 uploader = AvatarUploader.new
 uploader.store!(my_file)                              # size: 1024x768
 
-uploader.url # => '/url/to/my_file.png'               # size: 800x600
+uploader.url # => '/url/to/my_file.png'               # size: 800x800
 uploader.thumb.url # => '/url/to/thumb_my_file.png'   # size: 200x200
 ```
 
