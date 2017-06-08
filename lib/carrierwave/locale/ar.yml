@@ -1,0 +1,14 @@
+ar:
+  errors:
+    messages:
+      carrierwave_processing_error: حدث خطأ أثناء محاولة اتمام العملية
+      carrierwave_integrity_error: صيغة الملف غير مدعومة
+      carrierwave_download_error:  حدث خطأ أثناء محاولة تحميل الملف
+      extension_whitelist_error: "لا يمكنك رفع ملف بصيغة %{extension}, الصيغ المدعومة: %{allowed_types}"
+      extension_blacklist_error: "لا يمكنك رفع ملف بصيغة %{extension}, الصيغ الممنوعة: %{prohibited_types}"
+      content_type_whitelist_error: "لا يمكنك رفع ملف بصيغة محتوى %{content_type}"
+      content_type_blacklist_error: "لا يمكنك رفع ملف بصيغة محتوى %{content_type}"
+      rmagick_processing_error: "حدث خطأ أثناء محاولة تعديل الصورة، الرجاء التأكد من الملف المرفوع"
+      mini_magick_processing_error: "حدث خطأ أثناء محاولة تعديل الصورة، الرجاء التأكد من الملف المرفوع، الخطأ: %{e}"
+      min_size_error: "حجم الملف المرفوع يجب أن يكون أكبر من %{min_size}"
+      max_size_error: "حجم الملف المرفوع يجب أن يكون أقل من %{max_size}"
