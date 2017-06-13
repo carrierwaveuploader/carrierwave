@@ -34,13 +34,6 @@ describe CarrierWave::RMagick, :rmagick => true do
       expect(::Magick::Image.read(instance.current_path).first.format).to eq('JPEG')
     end
 
-    it "resizes the image to exactly the evaluated dimensions and maintain file type" do
-      instance.resize_to_fill(Proc.new { 200 }, Proc.new { 200 })
-
-      expect(instance).to have_dimensions(200, 200)
-      expect(::Magick::Image.read(instance.current_path).first.format).to eq('JPEG')
-    end
-
     it "resizes the image to exactly the given dimensions and maintain updated file type" do
       instance.convert('png')
       instance.resize_to_fill(200, 200)
@@ -59,13 +52,6 @@ describe CarrierWave::RMagick, :rmagick => true do
   describe '#resize_and_pad' do
     it "resizes the image to exactly the given dimensions and maintain file type" do
       instance.resize_and_pad(200, 200)
-
-      expect(instance).to have_dimensions(200, 200)
-      expect(::Magick::Image.read(instance.current_path).first.format).to eq('JPEG')
-    end
-
-    it "resizes the image to exactly the evaluated dimensions and maintain file type" do
-      instance.resize_and_pad(Proc.new { 200 }, Proc.new { 200 })
 
       expect(instance).to have_dimensions(200, 200)
       expect(::Magick::Image.read(instance.current_path).first.format).to eq('JPEG')
@@ -127,13 +113,6 @@ describe CarrierWave::RMagick, :rmagick => true do
       expect(::Magick::Image.read(instance.current_path).first.format).to eq('JPEG')
     end
 
-    it "resizes the image to fit within evaluated dimensions and maintain file type" do
-      instance.resize_to_fit(Proc.new { 200 }, Proc.new { 200 })
-
-      expect(instance).to have_dimensions(200, 150)
-      expect(::Magick::Image.read(instance.current_path).first.format).to eq('JPEG')
-    end
-
     it "resize the image to fit within the given dimensions and maintain updated file type" do
       instance.convert('png')
       instance.resize_to_fit(200, 200)
@@ -152,13 +131,6 @@ describe CarrierWave::RMagick, :rmagick => true do
   describe '#resize_to_limit' do
     it "resizes the image to fit within the given dimensions and maintain file type" do
       instance.resize_to_limit(200, 200)
-
-      expect(instance).to have_dimensions(200, 150)
-      expect(::Magick::Image.read(instance.current_path).first.format).to eq('JPEG')
-    end
-
-    it "resizes the image to fit within the evaluated dimensions and maintain file type" do
-      instance.resize_to_limit(Proc.new { 200 }, Proc.new { 200 })
 
       expect(instance).to have_dimensions(200, 150)
       expect(::Magick::Image.read(instance.current_path).first.format).to eq('JPEG')
@@ -245,6 +217,32 @@ describe CarrierWave::RMagick, :rmagick => true do
       instance.resize_to_fill(200, 300)
       expect(instance.width).to eq(200)
       expect(instance.height).to eq(300)
+    end
+  end
+
+  describe '#dimension_from' do
+    it 'evaluates procs' do
+      instance.resize_to_fill(Proc.new { 200 }, Proc.new { 200 })
+
+      expect(instance).to have_dimensions(200, 200)
+    end
+
+    it 'evaluates procs with uploader instance' do
+      width_argument = nil
+      width = Proc.new do |uploader|
+        width_argument = uploader
+        200
+      end
+      height_argument = nil
+      height = Proc.new do |uploader|
+        height_argument = uploader
+        200
+      end
+      instance.resize_to_fill(width, height)
+
+      expect(instance).to have_dimensions(200, 200)
+      expect(instance).to eq(width_argument)
+      expect(instance).to eq(height_argument)
     end
   end
 
