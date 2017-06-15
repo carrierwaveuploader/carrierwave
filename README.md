@@ -671,6 +671,16 @@ CarrierWave.configure do |config|
 end
 ```
 
+You can also use iam_profile credentials:
+
+```ruby
+config.fog_credentials = {
+  ...
+  use_iam_profile: true
+  ...
+}
+```
+
 In your uploader, set the storage to :fog
 
 ```ruby
