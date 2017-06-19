@@ -29,9 +29,9 @@ module CarrierWave
         expected_size_range = size_range
         if expected_size_range.is_a?(::Range)
           if size < expected_size_range.min
-            raise CarrierWave::IntegrityError, I18n.translate(:"errors.messages.min_size_error", :min_size => expected_size_range.min)
+            raise CarrierWave::IntegrityError, I18n.translate(:"errors.messages.min_size_error", :min_size => ActiveSupport::NumberHelper.number_to_human_size(expected_size_range.min))
           elsif size > expected_size_range.max
-            raise CarrierWave::IntegrityError, I18n.translate(:"errors.messages.max_size_error", :max_size => expected_size_range.max)
+            raise CarrierWave::IntegrityError, I18n.translate(:"errors.messages.max_size_error", :max_size => ActiveSupport::NumberHelper.number_to_human_size(expected_size_range.max))
           end
         end
       end
