@@ -82,6 +82,14 @@ describe CarrierWave::Uploader do
             @uploader.cache!(File.open(file_path('test.jpeg')))
           }).not_to raise_error
         end
+
+        it "accepts extensions as regular expressions in a case insensitive manner" do
+
+          allow(@uploader).to receive(:extension_whitelist).and_return([/jpe?g/, 'gif', 'png'])
+          expect(running {
+            @uploader.cache!(File.open(file_path('case.JPG')))
+          }).not_to raise_error
+        end
       end
 
       context "when the whitelist is a single value" do
