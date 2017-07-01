@@ -28,7 +28,7 @@ describe CarrierWave::Uploader do
         let(:range) { 2097152..4194304 }
 
         it "raises an integrity error" do
-          is_expected.to raise_error(CarrierWave::IntegrityError)
+          is_expected.to raise_error(CarrierWave::IntegrityError, 'File size should be greater than 2 MB')
         end
       end
 
@@ -36,7 +36,7 @@ describe CarrierWave::Uploader do
         let(:range) { 0..10 }
 
         it "raises an integrity error" do
-          is_expected.to raise_error(CarrierWave::IntegrityError)
+          is_expected.to raise_error(CarrierWave::IntegrityError, 'File size should be less than 10 Bytes')
         end
       end
 

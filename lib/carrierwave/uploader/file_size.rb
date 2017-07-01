@@ -1,3 +1,5 @@
+require 'active_support'
+
 module CarrierWave
   module Uploader
     module FileSize
