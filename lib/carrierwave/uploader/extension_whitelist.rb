@@ -43,7 +43,8 @@ module CarrierWave
       end
 
       def whitelisted_extension?(extension)
-        Array(extension_whitelist).any? { |item| extension =~ /\A#{item}\z/i }
+        downcase_extension = extension.downcase
+        Array(extension_whitelist).any? { |item| downcase_extension =~ /\A#{item}\z/i }
       end
 
     end # ExtensionWhitelist
