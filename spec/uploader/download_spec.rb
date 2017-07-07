@@ -8,6 +8,9 @@ describe CarrierWave::Uploader::Download do
   let(:url) { base_url + "/test.jpg" }
   let(:test_file) { File.read(file_path(test_file_name)) }
   let(:test_file_name) { "test.jpg" }
+  let(:unicode_named_file) { File.read(file_path(unicode_filename)) }
+  let(:unicode_URL) { URI.encode(base_url + "/#{unicode_filename}") }
+  let(:unicode_filename) { "юникод.jpg" }
   let(:authentication_headers) do
     {
       'Accept'=>'*/*',
@@ -44,6 +47,8 @@ describe CarrierWave::Uploader::Download do
       stub_request(:get, "www.example.com/authorization_required.jpg").
         with(:headers => authentication_headers).
         to_return(body: test_file)
+
+      stub_request(:get, unicode_URL).to_return(body: unicode_named_file)
     end
 
     context "when a file was downloaded" do
@@ -74,6 +79,25 @@ describe CarrierWave::Uploader::Download do
 
       it "sets the url" do
         expect(uploader.url).to eq("/uploads/tmp/#{cache_id}/#{test_file_name}")
+      end
+    end
+
+    context "with unicode sybmols in URL" do
+      before do
+        uploader.download!(unicode_URL)
+      end
+
+      it "caches a file" do
+        expect(uploader.file).to be_an_instance_of(CarrierWave::SanitizedFile)
+      end
+
+      it "sets the filename to the file's decoded sanitized filename" do
+        expect(uploader.filename).to eq("#{unicode_filename}")
+      end
+
+      it "moves it to the tmp dir" do
+        expect(uploader.file.path).to eq(public_path("uploads/tmp/#{cache_id}/#{unicode_filename}"))
+        expect(uploader.file.exists?).to be_truthy
       end
     end
 

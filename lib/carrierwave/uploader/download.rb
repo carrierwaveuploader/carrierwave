@@ -16,7 +16,7 @@ module CarrierWave
         end
 
         def original_filename
-          filename = filename_from_header || File.basename(file.base_uri.path)
+          filename = filename_from_header || filename_from_uri
           mime_type = MIME::Types[file.content_type].first
           unless File.extname(filename).present? || mime_type.blank?
             filename = "#{filename}.#{mime_type.extensions.first}"
@@ -53,6 +53,10 @@ module CarrierWave
             match = file.meta['content-disposition'].match(/filename="?([^"]+)/)
             return match[1] unless match.nil? || match[1].empty?
           end
+        end
+
+        def filename_from_uri
+          URI.decode(File.basename(file.base_uri.path))
         end
 
         def method_missing(*args, &block)
