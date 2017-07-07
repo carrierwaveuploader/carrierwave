@@ -220,6 +220,38 @@ describe CarrierWave::RMagick, :rmagick => true do
     end
   end
 
+  describe "#rmagick_image", focus: true do
+    it "returns a ::Magick::Image" do
+      expect{instance.send(:rmagick_image)}.to_not raise_exception
+      expect(instance.send(:rmagick_image).class).to eq(::Magick::Image)
+    end
+
+    context "with a remotely stored file" do
+      class RemoteFile < CarrierWave::SanitizedFile
+        def initialize local_path
+          @local_path = local_path
+        end
+
+        def current_path
+          "foo/bar.jpg"
+        end
+
+        def read
+          File.read @local_path
+        end
+      end
+
+      before do
+        allow(instance).to receive(:file).and_return(RemoteFile.new(landscape_file_copy_path))
+      end
+
+      it "returns a ::Magick::Image" do
+        expect{instance.send(:rmagick_image)}.to_not raise_exception
+        expect(instance.send(:rmagick_image).class).to eq(::Magick::Image)
+      end
+    end
+  end
+
   describe "test errors" do
     context "invalid image file" do
       before do
