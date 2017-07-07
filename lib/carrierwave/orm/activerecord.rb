@@ -15,7 +15,7 @@ module CarrierWave
       class_eval <<-RUBY, __FILE__, __LINE__+1
         def remote_#{column}_url=(url)
           column = _mounter(:#{column}).serialization_column
-          send(:"\#{column}_will_change!")
+          __send__(:"\#{column}_will_change!")
           super
         end
       RUBY
@@ -30,7 +30,7 @@ module CarrierWave
       class_eval <<-RUBY, __FILE__, __LINE__+1
         def remote_#{column}_urls=(url)
           column = _mounter(:#{column}).serialization_column
-          send(:"\#{column}_will_change!")
+          __send__(:"\#{column}_will_change!")
           super
         end
       RUBY
@@ -63,8 +63,8 @@ module CarrierWave
       class_eval <<-RUBY, __FILE__, __LINE__+1
         def #{column}=(new_file)
           column = _mounter(:#{column}).serialization_column
-          if !(new_file.blank? && send(:#{column}).blank?)
-            send(:"\#{column}_will_change!")
+          if !(new_file.blank? && __send__(:#{column}).blank?)
+            __send__(:"\#{column}_will_change!")
           end
 
           super
@@ -72,7 +72,7 @@ module CarrierWave
 
         def remove_#{column}=(value)
           column = _mounter(:#{column}).serialization_column
-          send(:"\#{column}_will_change!")
+          __send__(:"\#{column}_will_change!")
           super
         end
 
