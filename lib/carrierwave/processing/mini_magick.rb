@@ -127,6 +127,8 @@ module CarrierWave
     # [MiniMagick::Image] additional manipulations to perform
     #
     def resize_to_limit(width, height, combine_options: {})
+      width = dimension_from width
+      height = dimension_from height
       manipulate! do |img|
         img.combine_options do |cmd|
           cmd.resize "#{width}x#{height}>"
@@ -152,6 +154,8 @@ module CarrierWave
     # [MiniMagick::Image] additional manipulations to perform
     #
     def resize_to_fit(width, height, combine_options: {})
+      width = dimension_from width
+      height = dimension_from height
       manipulate! do |img|
         img.combine_options do |cmd|
           cmd.resize "#{width}x#{height}"
@@ -178,6 +182,8 @@ module CarrierWave
     # [MiniMagick::Image] additional manipulations to perform
     #
     def resize_to_fill(width, height, gravity = 'Center', combine_options: {})
+      width = dimension_from width
+      height = dimension_from height
       manipulate! do |img|
         cols, rows = img[:dimensions]
         img.combine_options do |cmd|
@@ -225,6 +231,8 @@ module CarrierWave
     # [MiniMagick::Image] additional manipulations to perform
     #
     def resize_and_pad(width, height, background=:transparent, gravity='Center', combine_options: {})
+      width = dimension_from width
+      height = dimension_from height
       manipulate! do |img|
         img.combine_options do |cmd|
           cmd.thumbnail "#{width}x#{height}>"
@@ -317,6 +325,11 @@ module CarrierWave
             cmd.send(method, options)
           end
         end
+      end
+
+      def dimension_from(value)
+        return value unless value.instance_of?(Proc)
+        value.arity >= 1 ? value.call(self) : value.call
       end
 
       def mini_magick_image
