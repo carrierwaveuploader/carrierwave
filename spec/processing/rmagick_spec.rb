@@ -220,7 +220,7 @@ describe CarrierWave::RMagick, :rmagick => true do
     end
   end
 
-  describe "#rmagick_image", focus: true do
+  describe "#rmagick_image" do
     it "returns a ::Magick::Image" do
       expect{instance.send(:rmagick_image)}.to_not raise_exception
       expect(instance.send(:rmagick_image).class).to eq(::Magick::Image)
