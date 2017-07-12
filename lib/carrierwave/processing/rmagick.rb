@@ -385,7 +385,7 @@ module CarrierWave
     end
 
     def rmagick_image
-      ::Magick::Image.read(current_path).first
+      ::Magick::Image.from_blob(self.read).first
     end
 
   end # RMagick
