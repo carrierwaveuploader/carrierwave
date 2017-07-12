@@ -220,6 +220,32 @@ describe CarrierWave::RMagick, :rmagick => true do
     end
   end
 
+  describe '#dimension_from' do
+    it 'evaluates procs' do
+      instance.resize_to_fill(Proc.new { 200 }, Proc.new { 200 })
+
+      expect(instance).to have_dimensions(200, 200)
+    end
+
+    it 'evaluates procs with uploader instance' do
+      width_argument = nil
+      width = Proc.new do |uploader|
+        width_argument = uploader
+        200
+      end
+      height_argument = nil
+      height = Proc.new do |uploader|
+        height_argument = uploader
+        200
+      end
+      instance.resize_to_fill(width, height)
+
+      expect(instance).to have_dimensions(200, 200)
+      expect(instance).to eq(width_argument)
+      expect(instance).to eq(height_argument)
+    end
+  end
+
   describe "#rmagick_image" do
     it "returns a ::Magick::Image" do
       expect{instance.send(:rmagick_image)}.to_not raise_exception
