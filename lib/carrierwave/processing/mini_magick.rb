@@ -83,6 +83,77 @@ module CarrierWave
       def resize_and_pad(width, height, background=:transparent, gravity='Center')
         process :resize_and_pad => [width, height, background, gravity]
       end
+
+      def resize_to_fit_with_blurred_bg(width, height, gravity='Center', radial_blur=20)
+        process resize_to_fit_with_blurred_bg: [width, height, gravity, radial_blur]
+      end
+    end
+
+    ##
+    # Resize the image to fit within the specified dimensions while retaining
+    # the original aspect ratio. It will fill background with blurred image.
+    #
+    # See http://www.imagemagick.org/script/command-line-options.php#gravity
+    # for gravity options.
+    #
+    # === Parameters
+    #
+    # [width (Integer)] the width to scale the image to
+    # [height (Integer)] the height to scale the image to
+    # [gravity (String)] how to position the image
+    # [blur_radius (Integer)] blur radius for background image
+    #
+    # === Yields
+    #
+    # [MiniMagick::Image] additional manipulations to perform
+    #
+    def resize_to_fit_with_blurred_bg(width, height, gravity='Center', blur_radius=20, &block)
+      blurred_img = generate_blurred_image(width, height, gravity, blur_radius)
+      resize_to_fit width, height
+      merge_blurred blurred_img, gravity, &block
+    end
+
+    def generate_blurred_image(width, height, gravity, blur_radius)
+      blurred_img = nil
+
+      img = ::MiniMagick::Image.open(current_path)
+      blurred = img.radial_blur(blur_radius)
+
+      cols, rows = img[:dimensions]
+
+      blurred_img = blurred.combine_options do |cmd|
+        if width != cols || height != rows
+          scale_x = width/cols.to_f
+          scale_y = height/rows.to_f
+          if scale_x >= scale_y
+            cols = (scale_x * (cols + 0.5)).round
+            rows = (scale_x * (rows + 0.5)).round
+            cmd.resize "#{cols}"
+          else
+            cols = (scale_y * (cols + 0.5)).round
+            rows = (scale_y * (rows + 0.5)).round
+            cmd.resize "x#{rows}"
+          end
+        end
+
+        cmd.gravity gravity
+        cmd.background "rgba(255,255,255,0.0)"
+        cmd.extent "#{width}x#{height}" if cols != width || rows != height
+        append_combine_options cmd, {}
+      end
+      img
+    end
+
+    def merge_blurred(blurred_img, gravity)
+      manipulate! do |img|
+        bl_img = blurred_img.composite(img) do |c|
+          c.compose "Over"
+          c.gravity gravity
+        end
+
+        bl_img = yield(bl_img) if block_given?
+        bl_img
+      end
     end
 
     ##
