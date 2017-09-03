@@ -1,3 +1,5 @@
+require 'uri'
+
 module CarrierWave
   module Utilities
     module Uri
