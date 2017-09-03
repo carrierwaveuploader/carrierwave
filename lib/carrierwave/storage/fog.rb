@@ -12,7 +12,8 @@ module CarrierWave
     # [:fog_directory]    specifies name of directory to store data in, assumed to already exist
     #
     # [:fog_attributes]                   (optional) additional attributes to set on files
-    # [:fog_public]                       (optional) public readability, defaults to true
+    # [:fog_public]                       (optional) set public ACL and public URLs, defaults to true
+    # [:fog_serve_public]                 (optional) override for public URLs, no default
     # [:fog_authenticated_url_expiration] (optional) time (in seconds) that authenticated urls
     #   will be valid, when fog_public is false and provider is AWS or Google, defaults to 600
     # [:fog_use_ssl_for_aws]              (optional) #public_url will use https for the AWS generated URL]
@@ -378,10 +379,10 @@ module CarrierWave
         # [NilClass] no url available
         #
         def url(options = {})
-          if !@uploader.fog_public
-            authenticated_url(options)
-          else
+          if @uploader.fog_public || @uploader.fog_serve_public
             public_url
+          else
+            authenticated_url(options)
           end
         end
 
