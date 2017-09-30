@@ -5,6 +5,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 1.2.0 - 2017-09-30
+
+### Added
+* Added Proc Support for Width and Height(@tomprats [#2169](https://github.com/carrierwaveuploader/carrierwave/pull/2169))
+
+### Changed
+* Decode unicode filenames from URL(@fedorkk [#2131](https://github.com/carrierwaveuploader/carrierwave/pull/2131))
+* Change file size of error message to human size(@aki77 [#2199](https://github.com/carrierwaveuploader/carrierwave/pull/2199))
+
+### Fixed
+* Bundled en translation was not loaded by default, causing translation missing(@mshibuya [95ce39d3](https://github.com/carrierwaveuploader/carrierwave/commit/95ce39d3ec98bee9b2846b32fdcf093c78fa44fb))
+* Remove potentially redundant HEAD request on checking fog file existence(@eritiro [#2140](https://github.com/carrierwaveuploader/carrierwave/pull/2140))
+* Failing with uninitialized constant if uri is not loaded(@jasdeepsingh [#2223](https://github.com/carrierwaveuploader/carrierwave/pull/2223))
+* RMagick cloud not process remotely stored files(@zog [#2185](https://github.com/carrierwaveuploader/carrierwave/pull/2185))
+* Check if files are identical via FS rather than name before move(@riffraff [#2191](https://github.com/carrierwaveuploader/carrierwave/pull/2191))
+* Regexp `extension_whitelist` is also case-insensitive now(@vmdhoke [#2201](https://github.com/carrierwaveuploader/carrierwave/pull/2201))
+* Use `__send__` instead of `send` (@dminuoso [#2178](https://github.com/carrierwaveuploader/carrierwave/pull/2178))
+
 ## 1.1.0 - 2017-04-30
 
 ### Added
