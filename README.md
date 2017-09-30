@@ -901,18 +901,27 @@ mount_uploader :avatar, AvatarUploader, mount_on: :avatar_file_name
 
 ## I18n
 
-The Active Record validations use the Rails i18n framework. Add these keys to
+The Active Record validations use the Rails `i18n` framework. Add these keys to
 your translations file:
 
 ```yaml
 errors:
   messages:
-    carrierwave_processing_error: "Cannot resize image."
-    carrierwave_integrity_error: "Not an image."
-    carrierwave_download_error: "Couldn't download image."
+    carrierwave_processing_error: failed to be processed
+    carrierwave_integrity_error: is not of an allowed file type
+    carrierwave_download_error: could not be downloaded
     extension_whitelist_error: "You are not allowed to upload %{extension} files, allowed types: %{allowed_types}"
     extension_blacklist_error: "You are not allowed to upload %{extension} files, prohibited types: %{prohibited_types}"
+    content_type_whitelist_error: "You are not allowed to upload %{content_type} files"
+    content_type_blacklist_error: "You are not allowed to upload %{content_type} files"
+    rmagick_processing_error: "Failed to manipulate with rmagick, maybe it is not an image?"
+    mini_magick_processing_error: "Failed to manipulate with MiniMagick, maybe it is not an image? Original Error: %{e}"
+    min_size_error: "File size should be greater than %{min_size}"
+    max_size_error: "File size should be less than %{max_size}"
 ```
+
+The [`carrierwave-i18n`](https://github.com/carrierwaveuploader/carrierwave-i18n)
+library adds support for additional locales.
 
 ## Large files
 
