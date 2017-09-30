@@ -41,6 +41,10 @@ elsif defined?(Rails)
       initializer "carrierwave.setup_paths" do |app|
         CarrierWave.root = Rails.root.join(Rails.public_path).to_s
         CarrierWave.base_path = ENV['RAILS_RELATIVE_URL_ROOT']
+        available_locales = app.config.i18n.available_locales
+        if available_locales.blank? || available_locales.include?(:en)
+          I18n.load_path.prepend(File.join(File.dirname(__FILE__), 'carrierwave', 'locale', "en.yml"))
+        end
       end
 
       initializer "carrierwave.active_record" do
