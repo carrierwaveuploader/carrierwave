@@ -297,7 +297,7 @@ module CarrierWave
         #
         # [Boolean] true if file exists or false
         def exists?
-          !!directory.files.head(path)
+          !!file
         end
 
         ##
