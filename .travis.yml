@@ -68,3 +68,6 @@ notifications:
 
 addons:
   postgresql: "9.3"
+  apt:
+    packages:
+      - ghostscript
