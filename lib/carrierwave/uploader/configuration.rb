@@ -129,7 +129,7 @@ module CarrierWave
               eager_load_fog(value) if value && '#{name}' == 'fog_credentials'
               return @#{name} if self.object_id == #{self.object_id} || defined?(@#{name})
               name = superclass.#{name}
-              return nil if name.nil? && !instance_variable_defined?("@#{name}")
+              return nil if name.nil? && !instance_variable_defined?(:@#{name})
               @#{name} = name && !name.is_a?(Module) && !name.is_a?(Symbol) && !name.is_a?(Numeric) && !name.is_a?(TrueClass) && !name.is_a?(FalseClass) ? name.dup : name
             end
 
