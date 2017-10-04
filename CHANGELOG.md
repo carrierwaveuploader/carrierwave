@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 1.2.1 - 2017-10-04
+### Fixed
+* Locale check breaks when a Symbol is given to available_locales(@mshibuya [#2234](https://github.com/carrierwaveuploader/carrierwave/issues/2234))
+
 ## 1.2.0 - 2017-09-30
 
 ### Added
