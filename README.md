@@ -301,8 +301,16 @@ end
 ```
 
 When this uploader is used, an uploaded image would be scaled to be no larger
-than 800 by 800 pixels. A version called thumb is then created, which is scaled
-and cropped to exactly 200 by 200 pixels. The uploader could be used like this:
+than 800 by 800 pixels. The original aspect ratio will be kept.
+A version called thumb is then created, which is scaled
+to exactly 200 by 200 pixels.
+
+If you would like to crop images to a specific height and width you
+can use the alternative option of '''resize_to_fill'''. It will make sure
+that the width and height specified are filled, only copping 
+if the aspect ratio requires it.
+
+The uploader could be used like this:
 
 ```ruby
 uploader = AvatarUploader.new
