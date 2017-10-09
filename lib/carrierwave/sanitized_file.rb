@@ -185,6 +185,7 @@ module CarrierWave
       mkdir!(new_path, directory_permissions)
       move!(new_path)
       chmod!(new_path, permissions)
+      self.content_type = ::MIME::Types.type_for(new_path).first.to_s
       if keep_filename
         self.file = {:tempfile => new_path, :filename => original_filename, :content_type => content_type}
       else

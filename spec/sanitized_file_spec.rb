@@ -309,10 +309,9 @@ describe CarrierWave::SanitizedFile do
       end
 
       it "should preserve the file's content type" do
-        content_type = sanitized_file.content_type
         sanitized_file.move_to(file_path("new_dir","gurr.png"))
 
-        expect(sanitized_file.content_type).to eq(content_type)
+        expect(sanitized_file.content_type).to eq("image/png")
       end
 
       context 'target path only differs by case' do

@@ -21,6 +21,7 @@ describe CarrierWave::MiniMagick do
       instance.convert('png')
       expect(instance.file.extension).to eq('png')
       expect(instance).to be_format('png')
+      expect(instance.file.content_type).to eq('image/png')
     end
 
     it "converts all pages when no page number is specified" do
