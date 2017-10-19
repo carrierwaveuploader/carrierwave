@@ -356,6 +356,7 @@ module CarrierWave
       if options[:format] || @format
         frames.write("#{options[:format] || @format}:#{current_path}", &write_block)
         move_to = current_path.chomp(File.extname(current_path)) + ".#{options[:format] || @format}"
+        file.content_type = ::MIME::Types.type_for(move_to).first.to_s
         file.move_to(move_to, permissions, directory_permissions)
       else
         frames.write(current_path, &write_block)

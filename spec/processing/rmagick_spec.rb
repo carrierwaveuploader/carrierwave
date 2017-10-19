@@ -23,6 +23,7 @@ describe CarrierWave::RMagick, :rmagick => true do
       instance.convert(:png)
       expect(instance.file.extension).to eq('png')
       expect(instance).to be_format('png')
+      expect(instance.file.content_type).to eq('image/png')
     end
   end
 
