@@ -284,7 +284,7 @@ Some documentation refers to RMagick instead of MiniMagick but MiniMagick is rec
 To install Imagemagick on OSX with homebrew type the following:
 
 ```
-$ brew install imagemagick
+$ brew install rmagick
 ```
 
 ```ruby
