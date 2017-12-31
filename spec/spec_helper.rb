@@ -103,7 +103,7 @@ module CarrierWave
     module ManipulationHelpers
       def color_of_pixel(path, x, y)
         image = ::MiniMagick::Image.open(path)
-        color = image.run_command("convert", "#{image.path}[1x1+#{x}+#{y}]", "-depth", "8", "txt:").split("\n")[1]
+        image.run_command("convert", "#{image.path}[1x1+#{x}+#{y}]", "-depth", "8", "txt:").split("\n")[1]
       end
     end
   end
