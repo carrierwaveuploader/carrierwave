@@ -307,7 +307,7 @@ to exactly 200 by 200 pixels.
 
 If you would like to crop images to a specific height and width you
 can use the alternative option of '''resize_to_fill'''. It will make sure
-that the width and height specified are filled, only copping 
+that the width and height specified are filled, only cropping 
 if the aspect ratio requires it.
 
 The uploader could be used like this:
