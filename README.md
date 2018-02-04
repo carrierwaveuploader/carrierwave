@@ -590,7 +590,7 @@ setting from this initializer will be ignored.
 If you need to test your processing, you should test it in isolation, and enable
 processing only for those tests that need it.
 
-CarrierWave comes with some RSpec matchers which you may find useful:
+CarrierWave comes with some RSpec matchers which you may find useful. If you're looking for minitest asserts you checkout carrierwave_asserts [here](https://github.com/hcfairbanks/carrierwave_asserts).
 
 ```ruby
 require 'carrierwave/test/matchers'
