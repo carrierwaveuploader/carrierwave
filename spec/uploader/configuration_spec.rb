@@ -7,6 +7,12 @@ describe CarrierWave do
       CarrierWave::Uploader::Base.add_config :test_config
       CarrierWave.configure { |config| config.test_config = "foo" }
     end
+    after do
+      CarrierWave::Uploader::Base.singleton_class.send :undef_method, :test_config
+      CarrierWave::Uploader::Base.singleton_class.send :undef_method, :test_config=
+      CarrierWave::Uploader::Base.send :undef_method, :test_config
+      CarrierWave::Uploader::Base.send :undef_method, :test_config=
+    end
 
     it "proxies to Uploader configuration" do
       expect(CarrierWave::Uploader::Base.test_config).to eq('foo')
