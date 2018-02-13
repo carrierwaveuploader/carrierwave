@@ -32,6 +32,7 @@ module CarrierWave
 
     def initialize(file)
       self.file = file
+      @content = nil
     end
 
     ##

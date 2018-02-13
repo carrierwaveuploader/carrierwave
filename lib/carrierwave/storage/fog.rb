@@ -266,7 +266,7 @@ module CarrierWave
         end
 
         def initialize(uploader, base, path)
-          @uploader, @base, @path = uploader, base, path
+          @uploader, @base, @path, @content_type = uploader, base, path, nil
         end
 
         ##
