@@ -2,8 +2,6 @@ require 'spec_helper'
 require 'carrierwave/storage/fog'
 
 describe CarrierWave do
-  let(:uploader_class) { Class.new(CarrierWave::Uploader::Base) }
-
   describe '.configure' do
     before do
       CarrierWave::Uploader::Base.add_config :test_config
