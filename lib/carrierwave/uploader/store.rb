@@ -7,6 +7,15 @@ module CarrierWave
       include CarrierWave::Uploader::Configuration
       include CarrierWave::Uploader::Cache
 
+      included do
+        prepend Module.new {
+          def initialize(*)
+            super
+            @file, @filename, @cache_id = nil
+          end
+        }
+      end
+
       ##
       # Override this in your Uploader to change the filename.
       #

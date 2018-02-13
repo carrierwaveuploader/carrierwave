@@ -67,6 +67,13 @@ module CarrierWave
         e.message << " (You may need to install the rmagick gem)"
         raise e
       end
+
+      prepend Module.new {
+        def initialize(*)
+          super
+          @format = nil
+        end
+      }
     end
 
     module ClassMethods
