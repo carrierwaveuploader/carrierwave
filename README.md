@@ -24,7 +24,7 @@ It works well with Rack based web applications, such as Ruby on Rails.
 Install the latest release:
 
 ```
-$ gem install carrierwave -v "1.0.0"
+$ gem install carrierwave
 ```
 
 In Rails, add it to your Gemfile:
