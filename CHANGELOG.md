@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Changed
+* Replace mime-types dependency with mini_mime(@bradleypriest [#2292](https://github.com/carrierwaveuploader/carrierwave/pull/2292))
 
 ## 1.2.2 - 2018-01-02
 ### Fixed

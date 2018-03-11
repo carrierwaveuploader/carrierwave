@@ -310,7 +310,7 @@ module CarrierWave
 
         if @format
           move_to = current_path.chomp(File.extname(current_path)) + ".#{@format}"
-          file.content_type = ::MIME::Types.type_for(move_to).first.to_s
+          file.content_type = ::MiniMime.lookup_by_filename(move_to).content_type
           file.move_to(move_to, permissions, directory_permissions)
         end
 
