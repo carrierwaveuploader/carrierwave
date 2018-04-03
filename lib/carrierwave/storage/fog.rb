@@ -451,8 +451,16 @@ module CarrierWave
         #
         # [Fog::#{provider}::File] file data from remote service
         #
+        # === Raises
+        #
+        # [CarrierWave::IntegrityError] if the file is not found.
+        #
         def file
-          @file ||= directory.files.head(path)
+          @file ||= directory.files.head(path) || begin
+                                                    raise CarrierWave::IntegrityError,
+                                                          I18n.translate(:"errors.messages.fog_file_not_found_error",
+                                                                         :path => path)
+                                                  end
         end
 
         def acl_header

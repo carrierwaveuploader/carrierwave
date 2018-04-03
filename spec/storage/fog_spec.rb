@@ -1,3 +1,4 @@
+# coding: utf-8
 require 'spec_helper'
 require 'fog'
 require 'carrierwave/storage/fog'
@@ -42,6 +43,14 @@ describe CarrierWave::Storage::Fog::File do
 
       it "decodes multi-byte characters" do
         is_expected.to eq('日本語.txt')
+      end
+    end
+
+    context "when the remote file does not exist" do
+      before { allow(file).to receive_message_chain("directory.files.head") { nil } }
+      let(:url) { 'http://example.com/path/to/nothing.txt' }
+      it "raises a CarrierWave::IntegrityError" do
+        expect(file.read).to raise_error(CarrierWave::IntegrityError)
       end
     end
   end
