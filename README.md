@@ -277,7 +277,7 @@ You no longer need to do this manually.
 
 Often you'll want to add different versions of the same file. The classic example is image thumbnails. There is built in support for this*:
 
-*Note:* You must have Imagemagick and MiniMagick installed to do image resizing. MiniMagick is a Ruby interface for Imagemagick which is a C program. This is why MiniMagick fails on 'bundle install' without Imagemagick installed.
+*Note:* You must have Imagemagick installed to do image resizing.
 
 Some documentation refers to RMagick instead of MiniMagick but MiniMagick is recommended.
 
@@ -359,7 +359,7 @@ private
   end
 
   def is_landscape? picture
-    image = MiniMagick::Image.open(picture.path)
+    image = MiniMagick::Image.new(picture.path)
     image[:width] > image[:height]
   end
 
@@ -865,8 +865,8 @@ manipulation methods.
 
 ## Using MiniMagick
 
-MiniMagick is similar to RMagick but performs all the operations using the 'mogrify'
-command which is part of the standard ImageMagick kit. This allows you to have the power
+MiniMagick is similar to RMagick but performs all the operations using the 'convert'
+CLI which is part of the standard ImageMagick kit. This allows you to have the power
 of ImageMagick without having to worry about installing all the RMagick libraries.
 
 See the MiniMagick site for more details:
