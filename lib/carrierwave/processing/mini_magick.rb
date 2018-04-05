@@ -125,8 +125,9 @@ module CarrierWave
     def resize_to_limit(width, height, combine_options: {}, &block)
       width, height = resolve_dimensions(width, height)
 
-      minimagick!(block, combine_options) do |builder|
+      minimagick!(block) do |builder|
         builder.resize_to_limit(width, height)
+          .apply(combine_options)
       end
     end
 
@@ -148,8 +149,9 @@ module CarrierWave
     def resize_to_fit(width, height, combine_options: {}, &block)
       width, height = resolve_dimensions(width, height)
 
-      minimagick!(block, combine_options) do |builder|
+      minimagick!(block) do |builder|
         builder.resize_to_fit(width, height)
+          .apply(combine_options)
       end
     end
 
@@ -172,8 +174,9 @@ module CarrierWave
     def resize_to_fill(width, height, gravity = 'Center', combine_options: {}, &block)
       width, height = resolve_dimensions(width, height)
 
-      minimagick!(block, combine_options) do |builder|
+      minimagick!(block) do |builder|
         builder.resize_to_fill(width, height, gravity: gravity)
+          .apply(combine_options)
       end
     end
 
@@ -201,8 +204,9 @@ module CarrierWave
     def resize_and_pad(width, height, background=:transparent, gravity='Center', combine_options: {}, &block)
       width, height = resolve_dimensions(width, height)
 
-      minimagick!(block, combine_options) do |builder|
+      minimagick!(block) do |builder|
         builder.resize_and_pad(width, height, background: background, gravity: gravity)
+          .apply(combine_options)
       end
     end
 
@@ -284,10 +288,9 @@ module CarrierWave
     # === Raises
     #
     # [CarrierWave::ProcessingError] if processing failed.
-    def minimagick!(block = nil, **combine_options)
+    def minimagick!(block = nil)
       builder = ImageProcessing::MiniMagick.source(current_path)
       builder = yield(builder)
-      builder = append_combine_options(builder, combine_options)
 
       result = builder.call
       result.close
@@ -312,16 +315,6 @@ module CarrierWave
     end
 
     private
-
-      def append_combine_options(builder, combine_options)
-        combine_options.inject(builder) do |builder, (option, value)|
-          if value.nil?
-            builder.send(option)
-          else
-            builder.send(option, *value)
-          end
-        end
-      end
 
       def resolve_dimensions(*dimensions)
         dimensions.map do |value|
