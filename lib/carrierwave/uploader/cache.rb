@@ -176,6 +176,17 @@ module CarrierWave
         File.join(*[cache_dir, @cache_id, for_file].compact)
       end
 
+      ##
+      # Gets the full path where the cached file is stored
+      #
+      # === Returns
+      #
+      # [String] the full cached path
+      #
+      def full_cached_path
+        File.join(root, cache_path)
+      end
+
     private
 
       def workfile_path(for_file=original_filename)

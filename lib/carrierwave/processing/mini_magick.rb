@@ -341,11 +341,8 @@ module CarrierWave
       end
 
       def mini_magick_image
-        if url
-          ::MiniMagick::Image.open(url)
-        else
-          ::MiniMagick::Image.open(current_path)
-        end
+        img = cached? ? full_cached_path : url || current_path
+        ::MiniMagick::Image.open(img)
       end
 
   end # MiniMagick
