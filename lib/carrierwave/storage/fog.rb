@@ -276,7 +276,10 @@ module CarrierWave
         #
         # [String] contents of file
         def read
-          file.body
+          # Use the file body if this is a get request
+          # otherwise recycle the reference to the uploaded file.
+          return file.body unless @source_file
+          @source_file.read
         end
 
         ##
@@ -310,15 +313,31 @@ module CarrierWave
           if new_file.is_a?(self.class)
             new_file.copy_to(path)
           else
-            fog_file = new_file.to_file
             @content_type ||= new_file.content_type
-            @file = directory.files.create({
-              :body         => (fog_file ? fog_file : new_file).read,
-              :content_type => @content_type,
-              :key          => path,
-              :public       => @uploader.fog_public
-            }.merge(@uploader.fog_attributes))
-            fog_file.close if fog_file && !fog_file.closed?
+
+            begin
+              streamable_fog_file = new_file.to_file
+
+              streaming_unsupported = streamable_fog_file.nil?
+              input_source = if streaming_unsupported
+                               new_file.read
+                             else
+                               streamable_fog_file
+                             end
+
+              # Set the file to pull in fog attributes, however, do not keep the body
+              # if this was a streamed file upload the body will be set to a closed
+              # file at the end of this call. Thus, it will be unreadable.
+              @file = store_at_path(input_source, path)
+              @file.body = nil
+
+              # Maintain a link to the file used to perform this call,
+              # this can be used to read the file content without making additional
+              # calls, even in the case of a streamed upload.
+              @source_file = new_file
+            ensure
+              streamable_fog_file.close if streamable_fog_file && !streamable_fog_file.closed?
+            end
           end
           true
         end
@@ -457,6 +476,15 @@ module CarrierWave
 
         def acl_header
           {'x-amz-acl' => @uploader.fog_public ? 'public-read' : 'private'}
+        end
+
+        def store_at_path(input_source, path)
+          directory.files.create({
+            :body         => input_source,
+            :content_type => @content_type,
+            :key          => path,
+            :public       => @uploader.fog_public
+          }.merge(@uploader.fog_attributes))
         end
       end
 
