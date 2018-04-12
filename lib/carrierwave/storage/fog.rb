@@ -276,10 +276,12 @@ module CarrierWave
         #
         # [String] contents of file
         def read
-          # Use the file body if this is a get request
-          # otherwise recycle the reference to the uploaded file.
-          return file.body unless @source_file
-          @source_file.read
+          if @read_requires_fetch
+            @file = directory.files.get(path)
+            @read_requires_fetch = false
+          end
+
+          file.body
         end
 
         ##
@@ -319,22 +321,18 @@ module CarrierWave
               streamable_fog_file = new_file.to_file
 
               streaming_unsupported = streamable_fog_file.nil?
-              input_source = if streaming_unsupported
-                               new_file.read
-                             else
-                               streamable_fog_file
-                             end
+              if streaming_unsupported
+                input_source = new_file.read
 
-              # Set the file to pull in fog attributes, however, do not keep the body
-              # if this was a streamed file upload the body will be set to a closed
-              # file at the end of this call. Thus, it will be unreadable.
-              @file = store_at_path(input_source, path)
-              @file.body = nil
+                @file = store_at_path(input_source, path)
+              else
+                input_source = streamable_fog_file
 
-              # Maintain a link to the file used to perform this call,
-              # this can be used to read the file content without making additional
-              # calls, even in the case of a streamed upload.
-              @source_file = new_file
+                @file = store_at_path(input_source, path)
+                @file.body = nil
+
+                @read_requires_fetch = true
+              end
             ensure
               streamable_fog_file.close if streamable_fog_file && !streamable_fog_file.closed?
             end
