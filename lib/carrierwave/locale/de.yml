@@ -1,0 +1,14 @@
+de:
+  errors:
+    messages:
+      carrierwave_processing_error: konnte nicht bearbeitet werden
+      carrierwave_integrity_error: unerlaubter Dateityp
+      carrierwave_download_error: konnte nicht heruntergeladen werden
+      extension_whitelist_error: "Sie dürfen %{extension} Dateien nicht hochladen, erlaubte Dateitypen: %{allowed_types}"
+      extension_blacklist_error: "Sie dürfen %{extension} Dateien nicht hochladen, unerlaubte Dateitypen: %{prohibited_types}"
+      content_type_whitelist_error: "Sie dürfen %{content_type} Dateien nicht hochladen"
+      content_type_blacklist_error: "Sie dürfen %{content_type} Dateien nicht hochladen"
+      rmagick_processing_error: "Bearbeitung mit rmagick ist gescheitert, vieleicht kein Bild?"
+      mini_magick_processing_error: "Bearbeitung mit MiniMagick ist gescheitert, vielleicht kein Bild? Ursprünglicher Fehler: %{e}"
+      min_size_error: "Dateigröße muss größer sein als %{min_size}"
+      max_size_error: "Dateigröße muss kleiner sein als %{max_size}"
