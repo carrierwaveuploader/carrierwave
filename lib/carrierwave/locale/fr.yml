@@ -1,0 +1,14 @@
+fr:
+  errors:
+    messages:
+      carrierwave_processing_error: impossible à traiter
+      carrierwave_integrity_error: n'est pas un type de fichier autorisé
+      carrierwave_download_error: ne peut pas être téléchargé
+      extension_whitelist_error: "Vous ne pouvez pas télécharger des fichiers %{extension}, types permis: %{allowed_types}"
+      extension_blacklist_error: "Vous ne pouvez pas télécharger des fichiers %{extension}, types interdits: %{prohibited_types}"
+      content_type_whitelist_error: "Vous ne pouvez pas télécharger des fichiers %{content_type}"
+      content_type_blacklist_error: "Vous ne pouvez pas télécharger des fichiers %{content_type}"
+      rmagick_processing_error: "Echec de traitement avec rmagick, peut-être ce n'est pas une image ?"
+      mini_magick_processing_error: "Echec de traitement avec MiniMagick, peut-être ce n'est pas une image ? Erreur originale: %{e}"
+      min_size_error: "La taille du fichier doit être plus grande que %{min_size}"
+      max_size_error: "La taille du fichier doit être moins grande que %{max_size}" 
