@@ -276,6 +276,11 @@ module CarrierWave
         #
         # [String] contents of file
         def read
+          if @read_requires_fetch
+            @file = directory.files.get(path)
+            @read_requires_fetch = false
+          end
+
           file.body
         end
 
@@ -310,15 +315,27 @@ module CarrierWave
           if new_file.is_a?(self.class)
             new_file.copy_to(path)
           else
-            fog_file = new_file.to_file
             @content_type ||= new_file.content_type
-            @file = directory.files.create({
-              :body         => (fog_file ? fog_file : new_file).read,
-              :content_type => @content_type,
-              :key          => path,
-              :public       => @uploader.fog_public
-            }.merge(@uploader.fog_attributes))
-            fog_file.close if fog_file && !fog_file.closed?
+
+            begin
+              streamable_fog_file = new_file.to_file
+
+              streaming_unsupported = streamable_fog_file.nil?
+              if streaming_unsupported
+                input_source = new_file.read
+
+                @file = store_at_path(input_source, path)
+              else
+                input_source = streamable_fog_file
+
+                @file = store_at_path(input_source, path)
+                @file.body = nil
+
+                @read_requires_fetch = true
+              end
+            ensure
+              streamable_fog_file.close if streamable_fog_file && !streamable_fog_file.closed?
+            end
           end
           true
         end
@@ -457,6 +474,15 @@ module CarrierWave
 
         def acl_header
           {'x-amz-acl' => @uploader.fog_public ? 'public-read' : 'private'}
+        end
+
+        def store_at_path(input_source, path)
+          directory.files.create({
+            :body         => input_source,
+            :content_type => @content_type,
+            :key          => path,
+            :public       => @uploader.fog_public
+          }.merge(@uploader.fog_attributes))
         end
       end
 
