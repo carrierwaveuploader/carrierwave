@@ -3,10 +3,11 @@ language: ruby
 cache: bundler
 
 rvm:
- - 2.2.9
- - 2.3.6
- - 2.4.3
- - jruby-9.1.15.0
+  - 2.2.10
+  - 2.3.7
+  - 2.4.4
+  - 2.5.1
+  - jruby-9.1.15.0
 
 gemfile:
   - gemfiles/rails-4-0.gemfile
@@ -14,12 +15,12 @@ gemfile:
   - gemfiles/rails-4-2.gemfile
   - gemfiles/rails-5-0.gemfile
   - gemfiles/rails-5-1.gemfile
-  - gemfiles/rails-master.gemfile
+  - gemfiles/rails-5-2.gemfile
 
 sudo: false
 
 before_install:
-  #- gem update bundler
+  - gem install bundler
 
 before_script:
   - psql -c 'create database carrierwave_test;' -U postgres
@@ -32,28 +33,35 @@ matrix:
       gemfile: gemfiles/rails-4-1.gemfile
     - rvm: 2.1.10
       gemfile: gemfiles/rails-4-2.gemfile
+    - rvm: 2.5.1
+      gemfile: gemfiles/rails-master.gemfile
     - rvm: ruby-head
-      gemfile: gemfiles/rails-5-1.gemfile
+      gemfile: gemfiles/rails-5-2.gemfile
     - rvm: ruby-head
       gemfile: gemfiles/rails-master.gemfile
     - rvm: jruby-head
-      gemfile: gemfiles/rails-5-1.gemfile
+      gemfile: gemfiles/rails-5-0.gemfile
     - rvm: jruby-head
-      gemfile: gemfiles/rails-master.gemfile
+      gemfile: gemfiles/rails-5-1.gemfile
   exclude:
-    - rvm: 2.4.3
+    - rvm: 2.4.4
       gemfile: gemfiles/rails-4-0.gemfile
-    - rvm: 2.4.3
+    - rvm: 2.4.4
       gemfile: gemfiles/rails-4-1.gemfile
-    - rvm: 2.4.3
-      gemfile: gemfiles/rails-4-2.gemfile
+    - rvm: 2.5.1
+      gemfile: gemfiles/rails-4-0.gemfile
+    - rvm: 2.5.1
+      gemfile: gemfiles/rails-4-1.gemfile
+    - rvm: jruby-9.1.15.0
+      gemfile: gemfiles/rails-5-2.gemfile
   allow_failures:
     - rvm: ruby-head
     - rvm: jruby-head
     - rvm: jruby-9.1.15.0
-      gemfile: gemfiles/rails-5-1.gemfile
+      gemfile: gemfiles/rails-5-0.gemfile
     - rvm: jruby-9.1.15.0
-      gemfile: gemfiles/rails-master.gemfile
+      gemfile: gemfiles/rails-5-1.gemfile
+    - gemfile: gemfiles/rails-master.gemfile
   fast_finish: true
 
 notifications:
