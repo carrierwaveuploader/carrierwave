@@ -1,5 +1,8 @@
 require 'spec_helper'
-require 'fog'
+require 'fog/aws'
+require 'fog/google'
+require 'fog/local'
+require 'fog/rackspace'
 require 'carrierwave/storage/fog'
 
 unless ENV['REMOTE'] == 'true'
