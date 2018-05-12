@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'mini_mime'
 
 describe CarrierWave::SanitizedFile do
   before do
@@ -183,7 +182,7 @@ describe CarrierWave::SanitizedFile do
 
     it "handles Mime::Type object" do
       file = File.open(file_path('sponsored.doc'))
-      allow(file).to receive(:content_type).and_return(MiniMime.lookup_by_content_type("application/msword"))
+
       sanitized_file = CarrierWave::SanitizedFile.new(file)
       allow(sanitized_file).to receive(:file).and_return(file)
 
