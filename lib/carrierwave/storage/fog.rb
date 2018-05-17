@@ -276,7 +276,16 @@ module CarrierWave
         #
         # [String] contents of file
         def read
-          file.body
+          file_body = file.body
+
+          if file_body&.is_a?(::File)
+            file_body = ::File.open(file_body.path, 'rb') if file_body.closed? # Reopen if it's closed
+            file_body.read.tap do
+              file_body.close
+            end
+          elsif file_body&.is_a?(::String)
+            file_body
+          end
         end
 
         ##
@@ -313,7 +322,7 @@ module CarrierWave
             fog_file = new_file.to_file
             @content_type ||= new_file.content_type
             @file = directory.files.create({
-              :body         => (fog_file ? fog_file : new_file).read,
+              :body         => fog_file ? fog_file : new_file.read,
               :content_type => @content_type,
               :key          => path,
               :public       => @uploader.fog_public
