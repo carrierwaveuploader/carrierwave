@@ -278,13 +278,14 @@ module CarrierWave
         def read
           file_body = file.body
 
-          if file_body&.is_a?(::File)
-            file_body = ::File.open(file_body.path, 'rb') if file_body.closed? # Reopen if it's closed
-            file_body.read.tap do
-              file_body.close
-            end
-          elsif file_body&.is_a?(::String)
-            file_body
+          return if file_body.nil?
+          return file_body unless file_body.is_a?(::File)
+
+          begin
+            file_body = ::File.open(file_body.path) if file_body.closed? # Reopen if it's closed
+            file_body.read
+          ensure
+            file_body.close
           end
         end
 
