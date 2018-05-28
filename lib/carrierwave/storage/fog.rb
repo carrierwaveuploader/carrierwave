@@ -276,6 +276,16 @@ module CarrierWave
         #
         # [String] contents of file
         def read
+          file_body = file.body
+
+          return if file_body.nil?
+          return file_body unless file_body.is_a?(::File)
+
+          # Fog::Storage::XXX::File#body could return the source file which was upoloaded to the remote server.
+          read_source_file(file_body) if ::File.exist?(file_body.path)
+
+          # If the source file doesn't exist, the remote content is read
+          @file = nil # rubocop:disable Gitlab/ModuleWithInstanceVariables
           file.body
         end
 
@@ -313,7 +323,7 @@ module CarrierWave
             fog_file = new_file.to_file
             @content_type ||= new_file.content_type
             @file = directory.files.create({
-              :body         => (fog_file ? fog_file : new_file).read,
+              :body         => fog_file ? fog_file : new_file.read,
               :content_type => @content_type,
               :key          => path,
               :public       => @uploader.fog_public
@@ -457,6 +467,17 @@ module CarrierWave
 
         def acl_header
           {'x-amz-acl' => @uploader.fog_public ? 'public-read' : 'private'}
+        end
+
+        def read_source_file(file_body)
+          return unless ::File.exist?(file_body.path)
+
+          begin
+            file_body = ::File.open(file_body.path) if file_body.closed? # Reopen if it's already closed
+            file_body.read
+          ensure
+            file_body.close
+          end
         end
       end
 
