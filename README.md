@@ -4,8 +4,9 @@ This gem provides a simple and extremely flexible way to upload files from Ruby 
 It works well with Rack based web applications, such as Ruby on Rails.
 
 [![Build Status](https://travis-ci.org/carrierwaveuploader/carrierwave.svg?branch=master)](http://travis-ci.org/carrierwaveuploader/carrierwave)
-[![Code Climate](http://img.shields.io/codeclimate/github/carrierwaveuploader/carrierwave.svg)](https://codeclimate.com/github/carrierwaveuploader/carrierwave)
+[![Code Climate](https://codeclimate.com/github/carrierwaveuploader/carrierwave.svg)](https://codeclimate.com/github/carrierwaveuploader/carrierwave)
 [![git.legal](https://git.legal/projects/1363/badge.svg "Number of libraries approved")](https://git.legal/projects/1363)
+[![SemVer](https://api.dependabot.com/badges/compatibility_score?dependency-name=carrierwave&package-manager=bundler&version-scheme=semver)](https://dependabot.com/compatibility-score.html?dependency-name=carrierwave&package-manager=bundler&version-scheme=semver)
 
 
 ## Information
@@ -307,7 +308,7 @@ to exactly 200 by 200 pixels.
 
 If you would like to crop images to a specific height and width you
 can use the alternative option of '''resize_to_fill'''. It will make sure
-that the width and height specified are filled, only cropping 
+that the width and height specified are filled, only cropping
 if the aspect ratio requires it.
 
 The uploader could be used like this:
