@@ -27,6 +27,12 @@ before_script:
 
 matrix:
   include:
+    - rvm: 2.0
+      gemfile: gemfiles/rails-4-0.gemfile
+    - rvm: 2.0
+      gemfile: gemfiles/rails-4-1.gemfile
+    - rvm: 2.0
+      gemfile: gemfiles/rails-4-2.gemfile
     - rvm: 2.1.10
       gemfile: gemfiles/rails-4-0.gemfile
     - rvm: 2.1.10
