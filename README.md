@@ -633,6 +633,8 @@ describe MyUploader do
 end
 ```
 
+If you're looking for minitest asserts, checkout [carrierwave_asserts](https://github.com/hcfairbanks/carrierwave_asserts).
+
 Setting the enable_processing flag on an uploader will prevent any of the versions from processing as well.
 Processing can be enabled for a single version by setting the processing flag on the version like so:
 
