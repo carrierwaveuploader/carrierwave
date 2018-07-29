@@ -124,10 +124,11 @@ module CarrierWave
 
     def remove_previous(before=nil, after=nil)
       after ||= []
-      return unless before
+      before.reject!(&:blank?) if before
+      return if before.blank?
 
       # both 'before' and 'after' can be string when 'mount_on' option is set
-      before = before.reject(&:blank?).map do |value|
+      before = before.map do |value|
         if value.is_a?(String)
           uploader = blank_uploader
           uploader.retrieve_from_store!(value)
