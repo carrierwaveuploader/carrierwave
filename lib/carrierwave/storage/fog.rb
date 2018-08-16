@@ -192,7 +192,7 @@ module CarrierWave
             local_file = local_directory.files.new(:key => path)
             expire_at = ::Fog::Time.now + @uploader.fog_authenticated_url_expiration
             case @uploader.fog_credentials[:provider]
-              when 'AWS'
+              when 'AWS', 'Google'
                 local_file.url(expire_at, options)
               when 'Rackspace'
                 connection.get_object_https_url(@uploader.fog_directory, path, expire_at, options)
