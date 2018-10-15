@@ -43,6 +43,15 @@ module CarrierWave
     class Base
       attr_reader :file
 
+      ##
+      # Workaround for class_attribute malfunction when used with Module#prepend
+      #
+      if RUBY_VERSION < '2.1.0'
+        def self.singleton_class?
+          !ancestors.include? self
+        end
+      end
+
       include CarrierWave::Uploader::Configuration
       include CarrierWave::Uploader::Callbacks
       include CarrierWave::Uploader::Proxy

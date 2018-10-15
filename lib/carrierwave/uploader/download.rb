@@ -13,6 +13,7 @@ module CarrierWave
         def initialize(uri, remote_headers = {})
           @uri = uri
           @remote_headers = remote_headers
+          @file = nil
         end
 
         def original_filename

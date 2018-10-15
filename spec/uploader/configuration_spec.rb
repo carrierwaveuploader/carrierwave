@@ -2,12 +2,16 @@ require 'spec_helper'
 require 'carrierwave/storage/fog'
 
 describe CarrierWave do
-  let(:uploader_class) { Class.new(CarrierWave::Uploader::Base) }
-
   describe '.configure' do
     before do
       CarrierWave::Uploader::Base.add_config :test_config
       CarrierWave.configure { |config| config.test_config = "foo" }
+    end
+    after do
+      CarrierWave::Uploader::Base.singleton_class.send :undef_method, :test_config
+      CarrierWave::Uploader::Base.singleton_class.send :undef_method, :test_config=
+      CarrierWave::Uploader::Base.send :undef_method, :test_config
+      CarrierWave::Uploader::Base.send :undef_method, :test_config=
     end
 
     it "proxies to Uploader configuration" do
@@ -25,6 +29,12 @@ describe CarrierWave::Uploader::Base do
         uc.add_config :foo_bar
         uc.configure { |config| config.foo_bar = "monkey" }
       end
+    end
+    after do
+      uploader_class.singleton_class.send :undef_method, :foo_bar
+      uploader_class.singleton_class.send :undef_method, :foo_bar=
+      uploader_class.send :undef_method, :foo_bar
+      uploader_class.send :undef_method, :foo_bar=
     end
 
     it "sets a configuration parameter" do
@@ -76,6 +86,12 @@ describe CarrierWave::Uploader::Base do
       uploader_class.add_config :foo_bar
       uploader_class.foo_bar = 'foo'
     end
+    after do
+      uploader_class.singleton_class.send :undef_method, :foo_bar
+      uploader_class.singleton_class.send :undef_method, :foo_bar=
+      uploader_class.send :undef_method, :foo_bar
+      uploader_class.send :undef_method, :foo_bar=
+    end
 
     it "adds a class level accessor" do
       expect(uploader_class.foo_bar).to eq('foo')
@@ -91,6 +107,11 @@ describe CarrierWave::Uploader::Base do
 
     ['foo', :foo, 45, ['foo', :bar]].each do |val|
       it "'s inheritable for a #{val.class}" do
+        uploader_class.singleton_class.send :undef_method, :foo_bar
+        uploader_class.singleton_class.send :undef_method, :foo_bar=
+        uploader_class.send :undef_method, :foo_bar
+        uploader_class.send :undef_method, :foo_bar=
+
         uploader_class.add_config :foo_bar
         child_class = Class.new(uploader_class)
 
@@ -112,6 +133,12 @@ describe CarrierWave::Uploader::Base do
           uc.hoobatz = this_proc
         end
       end
+    after do
+      uploader_class.singleton_class.send :undef_method, :hoobatz
+      uploader_class.singleton_class.send :undef_method, :hoobatz=
+      uploader_class.send :undef_method, :hoobatz
+      uploader_class.send :undef_method, :hoobatz=
+    end
 
       context "when the proc accepts no arguments" do
         let(:this_proc) { proc { "a return value" } }

@@ -7,6 +7,10 @@ module CarrierWave
     # pretty much it.
     #
     class File < Abstract
+      def initialize(*)
+        super
+        @cache_called = nil
+      end
 
       ##
       # Move the file to the uploader's store path.

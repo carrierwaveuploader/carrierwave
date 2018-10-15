@@ -19,6 +19,13 @@ module CarrierWave
         after :remove, :remove_versions!
         after :retrieve_from_cache, :retrieve_versions_from_cache!
         after :retrieve_from_store, :retrieve_versions_from_store!
+
+        prepend Module.new {
+          def initialize(*)
+            super
+            @versions = nil
+          end
+        }
       end
 
       module ClassMethods
@@ -77,7 +84,7 @@ module CarrierWave
               # value from the parent class unless explicitly overwritten
               def self.enable_processing(value=nil)
                 self.enable_processing = value if value
-                if !@enable_processing.nil?
+                if defined?(@enable_processing) && !@enable_processing.nil?
                   @enable_processing
                 else
                   superclass.enable_processing

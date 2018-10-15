@@ -67,6 +67,13 @@ module CarrierWave
         e.message << " (You may need to install the rmagick gem)"
         raise e
       end
+
+      prepend Module.new {
+        def initialize(*)
+          super
+          @format = nil
+        end
+      }
     end
 
     module ClassMethods
@@ -346,7 +353,7 @@ module CarrierWave
       frames = ::Magick::ImageList.new
 
       image.each_with_index do |frame, index|
-        frame = yield *[frame, index, options].take(block.arity) if block_given?
+        frame = yield(*[frame, index, options].take(block.arity)) if block_given?
         frames << frame if frame
       end
       frames.append(true) if block_given?

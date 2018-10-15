@@ -20,7 +20,7 @@ module CarrierWave
   #
   class SanitizedFile
 
-    attr_accessor :file
+    attr_reader :file
 
     class << self
       attr_writer :sanitize_regexp
@@ -32,6 +32,7 @@ module CarrierWave
 
     def initialize(file)
       self.file = file
+      @content = nil
     end
 
     ##
