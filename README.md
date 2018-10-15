@@ -923,7 +923,7 @@ errors:
     carrierwave_download_error: could not be downloaded
     extension_whitelist_error: "You are not allowed to upload %{extension} files, allowed types: %{allowed_types}"
     extension_blacklist_error: "You are not allowed to upload %{extension} files, prohibited types: %{prohibited_types}"
-    content_type_whitelist_error: "You are not allowed to upload %{content_type} files"
+    content_type_whitelist_error: "You are not allowed to upload %{content_type} files, allowed types: %{allowed_types}"
     content_type_blacklist_error: "You are not allowed to upload %{content_type} files"
     rmagick_processing_error: "Failed to manipulate with rmagick, maybe it is not an image?"
     mini_magick_processing_error: "Failed to manipulate with MiniMagick, maybe it is not an image? Original Error: %{e}"
