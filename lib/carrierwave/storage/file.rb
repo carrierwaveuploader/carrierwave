@@ -66,7 +66,7 @@ module CarrierWave
       #
       def cache!(new_file)
         new_file.move_to(::File.expand_path(uploader.cache_path, uploader.root), uploader.permissions, uploader.directory_permissions, true)
-      rescue Errno::EMLINK => e
+      rescue Errno::EMLINK, Errno::ENOSPC => e
         raise(e) if @cache_called
         @cache_called = true
 
