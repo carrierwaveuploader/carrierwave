@@ -70,7 +70,7 @@ module CarrierWave
     end
 
     def remote_urls=(urls)
-      return if not urls or urls == "" or urls.all?(&:blank?)
+      return @remote_urls = nil if not urls or urls == "" or urls.all?(&:blank?)
 
       @remote_urls = urls
       @download_error = nil
