@@ -40,7 +40,14 @@ describe CarrierWave::Storage::File do
 
   describe '#cache!' do
     context "when FileUtils.mkdir_p raises Errno::EMLINK" do
-      before { fake_failed_mkdir_p }
+      before { fake_failed_mkdir_p(Errno::EMLINK) }
+      after { storage.cache!(sanitized_temp_file) }
+
+      it { is_expected.to receive(:clean_cache!).with(600) }
+    end
+
+    context "when FileUtils.mkdir_p raises Errno::ENOSPC" do
+      before { fake_failed_mkdir_p(Errno::ENOSPC) }
       after { storage.cache!(sanitized_temp_file) }
 
       it { is_expected.to receive(:clean_cache!).with(600) }
