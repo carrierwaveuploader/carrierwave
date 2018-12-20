@@ -88,19 +88,19 @@ end
 
             context "directory is a valid subdomain" do
               before do
-                allow(@uploader).to receive(:fog_directory).and_return('assets.site.com')
+                allow(@uploader).to receive(:fog_directory).and_return('assets-site-com')
               end
 
               it "should use a subdomain URL for AWS" do
                 if @provider == 'AWS'
-                  expect(@fog_file.public_url).to include('https://assets.site.com.s3.amazonaws.com')
+                  expect(@fog_file.public_url).to include('https://assets-site-com.s3.amazonaws.com')
                 end
               end
 
               it "should use accelerate domain if fog_aws_accelerate is true" do
                 if @provider == 'AWS'
                   allow(@uploader).to receive(:fog_aws_accelerate).and_return(true)
-                  expect(@fog_file.public_url).to include('https://assets.site.com.s3-accelerate.amazonaws.com')
+                  expect(@fog_file.public_url).to include('https://assets-site-com.s3-accelerate.amazonaws.com')
                 end
               end
             end
@@ -109,6 +109,22 @@ end
               if @provider == 'AWS'
                 allow(@uploader).to receive(:fog_directory).and_return('SiteAssets')
                 expect(@fog_file.public_url).to include('https://s3.amazonaws.com/SiteAssets')
+              end
+            end
+
+            it "should not use a subdomain URL for AWS if https && the directory is not accessible over https as a virtual hosted bucket" do
+              if @provider == 'AWS'
+                allow(@uploader).to receive(:fog_use_ssl_for_aws).and_return(true)
+                allow(@uploader).to receive(:fog_directory).and_return('foo.bar')
+                expect(@fog_file.public_url).to include('https://s3.amazonaws.com/foo.bar')
+              end
+            end
+
+            it "should use a subdomain URL for AWS if http && the directory is not accessible over https as a virtual hosted bucket" do
+              if @provider == 'AWS'
+                allow(@uploader).to receive(:fog_use_ssl_for_aws).and_return(false)
+                allow(@uploader).to receive(:fog_directory).and_return('foo.bar')
+                expect(@fog_file.public_url).to include('http://foo.bar.s3.amazonaws.com/')
               end
             end
 
