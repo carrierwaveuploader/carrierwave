@@ -352,7 +352,7 @@ module CarrierWave
             end
           else
             # AWS/Google optimized for speed over correctness
-            case @uploader.fog_credentials[:provider].to_s
+            case fog_provider
             when 'AWS'
               # check if some endpoint is set in fog_credentials
               if @uploader.fog_credentials.has_key?(:endpoint)
@@ -466,7 +466,15 @@ module CarrierWave
         end
 
         def acl_header
-          {'x-amz-acl' => @uploader.fog_public ? 'public-read' : 'private'}
+          if fog_provider == 'AWS'
+            { 'x-amz-acl' => @uploader.fog_public ? 'public-read' : 'private' }
+          else
+            {}
+          end
+        end
+
+        def fog_provider
+          @uploader.fog_credentials[:provider].to_s
         end
 
         def read_source_file(file_body)
