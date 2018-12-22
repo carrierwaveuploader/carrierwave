@@ -9,8 +9,11 @@ end
 
 describe CarrierWave::SanitizedFile do
   before do
-    FileUtils.rm_rf(file_path("new_dir"))
     FileUtils.cp(file_path('test.jpg'), file_path('llama.jpg'))
+  end
+
+  after do
+    FileUtils.rm_rf(file_path("new_dir"))
   end
 
   after(:all) do
