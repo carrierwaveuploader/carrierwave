@@ -89,7 +89,7 @@ a migration:
 
 
 	rails g migration add_avatar_to_users avatar:string
-	rake db:migrate
+	rails db:migrate
 
 Open your model file and mount the uploader:
 
@@ -144,12 +144,12 @@ example, create a migration like this:
 #### For databases with ActiveRecord json data type support (e.g. PostgreSQL, MySQL)
 
 	rails g migration add_avatars_to_users avatars:json
-	rake db:migrate
+	rails db:migrate
 
 #### For database without ActiveRecord json data type support (e.g. SQLite)
 
 	rails g migration add_avatars_to_users avatars:string
-	rake db:migrate
+	rails db:migrate
 
 __Note__: JSON datatype doesn't exists in SQLite adapter, that's why you can use a string datatype which will be serialized in model.
 
