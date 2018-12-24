@@ -164,6 +164,30 @@ describe CarrierWave::ActiveRecord do
 
         expect(@event.reload.image).to be_blank
       end
+
+      context "with CarrierWave::MiniMagick" do
+        before(:each) do
+          @uploader.send(:include, CarrierWave::MiniMagick)
+        end
+
+        it "has width and height" do
+          @event.image = stub_file('landscape.jpg')
+          expect(@event.image.width).to eq 640
+          expect(@event.image.height).to eq 480
+        end
+      end
+
+      context "with CarrierWave::MiniMagick", :rmagick => true do
+        before(:each) do
+          @uploader.send(:include, CarrierWave::RMagick)
+        end
+
+        it "has width and height" do
+          @event.image = stub_file('landscape.jpg')
+          expect(@event.image.width).to eq 640
+          expect(@event.image.height).to eq 480
+        end
+      end
     end
 
     describe '#image=' do
