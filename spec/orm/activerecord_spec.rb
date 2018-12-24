@@ -177,7 +177,7 @@ describe CarrierWave::ActiveRecord do
         end
       end
 
-      context "with CarrierWave::MiniMagick", :rmagick => true do
+      context "with CarrierWave::RMagick", :rmagick => true do
         before(:each) do
           @uploader.send(:include, CarrierWave::RMagick)
         end

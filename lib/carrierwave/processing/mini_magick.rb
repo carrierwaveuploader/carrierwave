@@ -341,7 +341,7 @@ module CarrierWave
       end
 
       def mini_magick_image
-        ::MiniMagick::Image.read(self.read)
+        ::MiniMagick::Image.read(read)
       end
 
   end # MiniMagick
