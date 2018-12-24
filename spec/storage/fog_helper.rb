@@ -430,7 +430,7 @@ end
           end
 
           it "should handle query params" do
-            if @provider == 'AWS' && !Fog.mocking?
+            if ['AWS', 'Google'].include?(@provider) && !Fog.mocking?
               headers = Excon.get(@fog_file.url(:query => {"response-content-disposition" => "attachment"})).headers
               expect(headers["Content-Disposition"]).to eq("attachment")
             end
