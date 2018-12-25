@@ -3,6 +3,7 @@ def fog_tests(fog_credentials)
     shared_examples_for "#{fog_credentials[:provider]} storage" do
 
       before do
+        WebMock.disable! unless Fog.mocking?
         CarrierWave.configure do |config|
           config.reset_config
           config.fog_provider = "fog/#{fog_credentials[:provider].downcase}"
@@ -34,6 +35,7 @@ end
         CarrierWave.configure do |config|
           config.reset_config
         end
+        WebMock.enable! unless Fog.mocking?
       end
 
       describe '#cache_stored_file!' do
@@ -343,7 +345,7 @@ end
       end
 
       describe '#clean_cache!' do
-        let(:today) { '2016/10/09 10:00:00'.to_time }
+        let(:today) { Time.now.round }
         let(:five_days_ago) { today.ago(5.days) }
         let(:three_days_ago) { today.ago(3.days) }
         let(:yesterday) { today.yesterday }
@@ -431,7 +433,7 @@ end
 
           it "should not be available at public URL" do
             unless Fog.mocking? || fog_credentials[:provider] == 'Local'
-              expect(running{ open(@fog_file.public_url) }).to raise_error
+              expect(running{ open(@fog_file.public_url) }).to raise_error OpenURI::HTTPError
             end
           end
 
@@ -446,9 +448,24 @@ end
           end
 
           it "should handle query params" do
-            if ['AWS', 'Google'].include?(@provider) && !Fog.mocking?
-              headers = Excon.get(@fog_file.url(:query => {"response-content-disposition" => "attachment"})).headers
-              expect(headers["Content-Disposition"]).to eq("attachment")
+            if ['AWS', 'Google'].include?(@provider)
+              url = @fog_file.url(:query => {"response-content-disposition" => "attachment"})
+              expect(url).to match(/response-content-disposition=attachment/)
+              unless Fog.mocking?
+                # Workaround for S3 SignatureDoesNotMatch issue
+                #   https://github.com/excon/excon/issues/475
+                Excon.defaults[:omit_default_port] = true
+                response = Excon.get(url)
+                expect(response.status).to be 200
+                expect(response.headers["Content-Disposition"]).to eq("attachment")
+              end
+            end
+          end
+
+          it "should not use #file to get signed url" do
+            if ['AWS', 'Google'].include?(@provider)
+              allow(@fog_file).to receive(:file).and_return(nil)
+              expect { @fog_file.url }.not_to raise_error
             end
           end
         end

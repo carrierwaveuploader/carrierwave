@@ -499,7 +499,7 @@ module CarrierWave
         end
 
         def url_options_supported?(local_file)
-          parameters = file.method(:url).parameters
+          parameters = local_file.method(:url).parameters
           parameters.count == 2 && parameters[1].include?(:options)
         end
       end
