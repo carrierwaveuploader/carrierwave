@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 1.3.1 - 2018-12-29
+### Fixed
+* Fix `#url_options_supported?` causing nil error(@mshibuya [0b9a64a1](https://github.com/carrierwaveuploader/carrierwave/commit/0b9a64a1bb9f20d1de154dc3bf2e2dd988210220), [#2361](https://github.com/carrierwaveuploader/carrierwave/issues/2361))
+
 ## 1.3.0 - 2018-12-24
 ### Added
 * Query parameter support for fog-google(@stanhu [#2332](https://github.com/carrierwaveuploader/carrierwave/pull/2332))
