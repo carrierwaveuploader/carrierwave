@@ -5,8 +5,9 @@ cache: bundler
 rvm:
   - 2.2.10
   - 2.3.7
-  - 2.4.4
-  - 2.5.1
+  - 2.4.5
+  - 2.5.3
+  - 2.6.0
   - jruby-9.1.15.0
 
 gemfile:
@@ -20,7 +21,7 @@ gemfile:
 sudo: false
 
 before_install:
-  - gem install bundler
+  - gem install -N bundler -v '< 2'
 
 before_script:
   - psql -c 'create database carrierwave_test;' -U postgres
