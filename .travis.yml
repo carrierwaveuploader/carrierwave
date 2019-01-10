@@ -4,9 +4,9 @@ cache: bundler
 
 rvm:
   - 2.2.10
-  - 2.3.7
-  - 2.4.4
-  - 2.5.1
+  - 2.3.8
+  - 2.4.5
+  - 2.5.3
   - jruby-9.1.15.0
 
 gemfile:
@@ -39,7 +39,7 @@ matrix:
       gemfile: gemfiles/rails-4-1.gemfile
     - rvm: 2.1.10
       gemfile: gemfiles/rails-4-2.gemfile
-    - rvm: 2.5.1
+    - rvm: 2.5.3
       gemfile: gemfiles/rails-master.gemfile
     - rvm: ruby-head
       gemfile: gemfiles/rails-5-2.gemfile
@@ -50,13 +50,13 @@ matrix:
     - rvm: jruby-head
       gemfile: gemfiles/rails-5-1.gemfile
   exclude:
-    - rvm: 2.4.4
+    - rvm: 2.4.5
       gemfile: gemfiles/rails-4-0.gemfile
-    - rvm: 2.4.4
+    - rvm: 2.4.5
       gemfile: gemfiles/rails-4-1.gemfile
-    - rvm: 2.5.1
+    - rvm: 2.5.3
       gemfile: gemfiles/rails-4-0.gemfile
-    - rvm: 2.5.1
+    - rvm: 2.5.3
       gemfile: gemfiles/rails-4-1.gemfile
     - rvm: jruby-9.1.15.0
       gemfile: gemfiles/rails-5-2.gemfile
