@@ -20,7 +20,7 @@ gemfile:
 sudo: false
 
 before_install:
-  - gem install bundler
+  - gem install bundler -v '<2'
 
 before_script:
   - psql -c 'create database carrierwave_test;' -U postgres
