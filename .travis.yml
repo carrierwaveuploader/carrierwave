@@ -7,7 +7,7 @@ rvm:
   - 2.3.8
   - 2.4.5
   - 2.5.3
-  - jruby-9.1.15.0
+  - jruby-9.1.17.0
 
 gemfile:
   - gemfiles/rails-4-0.gemfile
@@ -58,14 +58,14 @@ matrix:
       gemfile: gemfiles/rails-4-0.gemfile
     - rvm: 2.5.3
       gemfile: gemfiles/rails-4-1.gemfile
-    - rvm: jruby-9.1.15.0
+    - rvm: jruby-9.1.17.0
       gemfile: gemfiles/rails-5-2.gemfile
   allow_failures:
     - rvm: ruby-head
     - rvm: jruby-head
-    - rvm: jruby-9.1.15.0
+    - rvm: jruby-9.1.17.0
       gemfile: gemfiles/rails-5-0.gemfile
-    - rvm: jruby-9.1.15.0
+    - rvm: jruby-9.1.17.0
       gemfile: gemfiles/rails-5-1.gemfile
     - gemfile: gemfiles/rails-master.gemfile
   fast_finish: true
