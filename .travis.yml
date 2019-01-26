@@ -21,6 +21,8 @@ gemfile:
 sudo: false
 
 before_install:
+  # https://github.com/danmayer/coverband/issues/162#issuecomment-452173268
+  - rm /home/travis/.rvm/gems/*/specifications/bundler-2.*.gemspec || true
   - gem install bundler -v '<2'
 
 before_script:
