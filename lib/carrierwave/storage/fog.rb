@@ -200,10 +200,8 @@ module CarrierWave
                   warn "Options hash not supported in #{local_file.class}. You may need to upgrade your Fog provider."
                   local_file.url(expire_at)
                 end
-              when 'Rackspace'
+              when 'Rackspace', 'OpenStack'
                 connection.get_object_https_url(@uploader.fog_directory, path, expire_at, options)
-              when 'OpenStack'
-                connection.get_object_https_url(@uploader.fog_directory, path, expire_at)
               else
                 local_file.url(expire_at)
             end
