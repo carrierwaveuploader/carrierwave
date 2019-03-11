@@ -438,7 +438,7 @@ end
           end
 
           it "should have an authenticated_url" do
-            if ['AWS', 'Rackspace', 'Google', 'OpenStack', 'AzureRM'].include?(@provider)
+            if ['AWS', 'Rackspace', 'Google', 'OpenStack', 'AzureRM', 'Aliyun'].include?(@provider)
               expect(@fog_file.authenticated_url).not_to be_nil
             end
           end
