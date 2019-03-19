@@ -204,6 +204,9 @@ module CarrierWave
                 connection.get_object_https_url(@uploader.fog_directory, path, expire_at, options)
               when 'OpenStack'
                 connection.get_object_https_url(@uploader.fog_directory, path, expire_at)
+              when 'Aliyun'
+                expire_at = expire_at - Time.now
+                local_file.url(expire_at)
               else
                 local_file.url(expire_at)
             end
