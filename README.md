@@ -163,6 +163,9 @@ class User < ActiveRecord::Base
 end
 ```
 
+Make sure that you mount the uploader with write (mount_uploaders) with `s` not (mount_uploader)
+in order to avoid errors when uploading multiple files
+
 Make sure your file input fields are set up as multiple file fields. For
 example in Rails you'll want to do something like this:
 
