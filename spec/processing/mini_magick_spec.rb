@@ -23,14 +23,20 @@ describe CarrierWave::MiniMagick do
       expect(instance.file.content_type).to eq('image/png')
     end
 
-    it "converts all pages when no page number is specified" do
-      expect_any_instance_of(::MiniMagick::Image).to receive(:format).with('png', nil).once
-      instance.convert('png')
-    end
+    it "respects the page parameter" do
+      # create a multi-layer image
+      tiff = Tempfile.new(["file", ".tiff"])
+      MiniMagick::Tool::Convert.new do |convert|
+        convert.merge! [landscape_file_path, landscape_file_path, landscape_file_path]
+        convert << tiff.path
+      end
 
-    it "converts specific page" do
-      expect_any_instance_of(::MiniMagick::Image).to receive(:format).with('png', 1).once
-      instance.convert('png', 1)
+      allow(instance).to receive(:file).and_return(CarrierWave::SanitizedFile.new(tiff.path))
+
+      instance.convert('png', 0)
+      expect(instance.file.extension).to eq('png')
+      expect(instance).to be_format('png')
+      expect(instance.file.size).not_to eq(0)
     end
   end
 
