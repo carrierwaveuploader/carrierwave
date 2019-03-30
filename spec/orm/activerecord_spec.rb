@@ -672,7 +672,7 @@ describe CarrierWave::ActiveRecord do
     end
 
     after do
-      FileUtils.rm_rf(file_path("uploads"))
+      FileUtils.rm_rf(public_path("uploads"))
     end
 
     describe 'normally' do
@@ -757,7 +757,7 @@ describe CarrierWave::ActiveRecord do
     end
 
     after do
-      FileUtils.rm_rf(file_path("uploads"))
+      FileUtils.rm_rf(public_path("uploads"))
     end
 
     it "should remove old file if old file had a different path" do
@@ -780,10 +780,48 @@ describe CarrierWave::ActiveRecord do
       Event.transaction do
         @event.image = stub_file('new.jpeg')
         @event.save
-        expect(File.exist?(public_path('uploads/new.jpeg'))).to be_truthy
         expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
         raise ActiveRecord::Rollback
       end
+      expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
+    end
+  end
+
+  describe "#mount_uploader into transaction" do
+    before do
+      @uploader.version :thumb
+      reset_class("Event")
+      Event.mount_uploader(:image, @uploader)
+      @event = Event.new
+    end
+
+    after do
+      FileUtils.rm_rf(public_path("uploads"))
+    end
+
+    it "should not store file during rollback" do
+      Event.transaction do
+        @event.image = stub_file('new.jpeg')
+        @event.save
+
+        raise ActiveRecord::Rollback
+      end
+
+      expect(File.exist?(public_path('uploads/new.jpeg'))).to be_falsey
+    end
+
+    it "should not change file during rollback" do
+      @event.image = stub_file('old.jpeg')
+      @event.save
+
+      Event.transaction do
+        @event.image = stub_file('new.jpeg')
+        @event.save
+
+        raise ActiveRecord::Rollback
+      end
+
+      expect(File.exist?(public_path('uploads/new.jpeg'))).to be_falsey
       expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
     end
   end
@@ -805,7 +843,7 @@ describe CarrierWave::ActiveRecord do
     end
 
     after do
-      FileUtils.rm_rf(file_path("uploads"))
+      FileUtils.rm_rf(public_path("uploads"))
     end
 
     it "should remove old file1 and file2 if old file1 and file2 had a different paths" do
@@ -848,7 +886,7 @@ describe CarrierWave::ActiveRecord do
     end
 
     after do
-      FileUtils.rm_rf(file_path("uploads"))
+      FileUtils.rm_rf(public_path("uploads"))
     end
 
     it "should remove old file if old file had a different path" do
@@ -1389,7 +1427,7 @@ describe CarrierWave::ActiveRecord do
     end
 
     after do
-      FileUtils.rm_rf(file_path("uploads"))
+      FileUtils.rm_rf(public_path("uploads"))
     end
 
     describe 'normally' do
@@ -1466,7 +1504,7 @@ describe CarrierWave::ActiveRecord do
     end
 
     after do
-      FileUtils.rm_rf(file_path("uploads"))
+      FileUtils.rm_rf(public_path("uploads"))
     end
 
     it "should remove old file if old file had a different path" do
@@ -1503,7 +1541,7 @@ describe CarrierWave::ActiveRecord do
     end
 
     after do
-      FileUtils.rm_rf(file_path("uploads"))
+      FileUtils.rm_rf(public_path("uploads"))
     end
 
     it "should remove old file1 and file2 if old file1 and file2 had a different paths" do
@@ -1545,7 +1583,7 @@ describe CarrierWave::ActiveRecord do
     end
 
     after do
-      FileUtils.rm_rf(file_path("uploads"))
+      FileUtils.rm_rf(public_path("uploads"))
     end
 
     it "should remove old file if old file had a different path" do
