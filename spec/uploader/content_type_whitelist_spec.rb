@@ -41,6 +41,12 @@ describe CarrierWave::Uploader do
 
           expect { uploader.cache!(bork_file) }.to raise_error(CarrierWave::IntegrityError)
         end
+
+        it "raises an integrity error which lists the allowed content types" do
+          allow(uploader).to receive(:content_type_whitelist).and_return(['image/gif', 'image/jpg'])
+
+          expect { uploader.cache!(bork_file) }.to raise_error(CarrierWave::IntegrityError, %r{(?:image/gif|image/jpg)})
+        end
       end
 
       context "when the whitelist is a single value" do

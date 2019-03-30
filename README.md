@@ -4,8 +4,8 @@ This gem provides a simple and extremely flexible way to upload files from Ruby 
 It works well with Rack based web applications, such as Ruby on Rails.
 
 [![Build Status](https://travis-ci.org/carrierwaveuploader/carrierwave.svg?branch=master)](http://travis-ci.org/carrierwaveuploader/carrierwave)
-[![Code Climate](http://img.shields.io/codeclimate/github/carrierwaveuploader/carrierwave.svg)](https://codeclimate.com/github/carrierwaveuploader/carrierwave)
-[![git.legal](https://git.legal/projects/1363/badge.svg "Number of libraries approved")](https://git.legal/projects/1363)
+[![Code Climate](https://codeclimate.com/github/carrierwaveuploader/carrierwave.svg)](https://codeclimate.com/github/carrierwaveuploader/carrierwave)
+[![SemVer](https://api.dependabot.com/badges/compatibility_score?dependency-name=carrierwave&package-manager=bundler&version-scheme=semver)](https://dependabot.com/compatibility-score.html?dependency-name=carrierwave&package-manager=bundler&version-scheme=semver)
 
 
 ## Information
@@ -89,7 +89,7 @@ a migration:
 
 
 	rails g migration add_avatar_to_users avatar:string
-	rake db:migrate
+	rails db:migrate
 
 Open your model file and mount the uploader:
 
@@ -144,12 +144,12 @@ example, create a migration like this:
 #### For databases with ActiveRecord json data type support (e.g. PostgreSQL, MySQL)
 
 	rails g migration add_avatars_to_users avatars:json
-	rake db:migrate
+	rails db:migrate
 
 #### For database without ActiveRecord json data type support (e.g. SQLite)
 
 	rails g migration add_avatars_to_users avatars:string
-	rake db:migrate
+	rails db:migrate
 
 __Note__: JSON datatype doesn't exists in SQLite adapter, that's why you can use a string datatype which will be serialized in model.
 
@@ -162,6 +162,9 @@ class User < ActiveRecord::Base
   serialize :avatars, JSON # If you use SQLite, add this line.
 end
 ```
+
+Make sure that you mount the uploader with write (mount_uploaders) with `s` not (mount_uploader)
+in order to avoid errors when uploading multiple files
 
 Make sure your file input fields are set up as multiple file fields. For
 example in Rails you'll want to do something like this:
@@ -307,7 +310,7 @@ to exactly 200 by 200 pixels.
 
 If you would like to crop images to a specific height and width you
 can use the alternative option of '''resize_to_fill'''. It will make sure
-that the width and height specified are filled, only cropping 
+that the width and height specified are filled, only cropping
 if the aspect ratio requires it.
 
 The uploader could be used like this:
@@ -633,6 +636,8 @@ describe MyUploader do
 end
 ```
 
+If you're looking for minitest asserts, checkout [carrierwave_asserts](https://github.com/hcfairbanks/carrierwave_asserts).
+
 Setting the enable_processing flag on an uploader will prevent any of the versions from processing as well.
 Processing can be enabled for a single version by setting the processing flag on the version like so:
 
@@ -667,13 +672,14 @@ CarrierWave.configure do |config|
   config.fog_provider = 'fog/aws'                        # required
   config.fog_credentials = {
     provider:              'AWS',                        # required
-    aws_access_key_id:     'xxx',                        # required
-    aws_secret_access_key: 'yyy',                        # required
+    aws_access_key_id:     'xxx',                        # required unless using use_iam_profile
+    aws_secret_access_key: 'yyy',                        # required unless using use_iam_profile
+    use_iam_profile:       true,                         # optional, defaults to false
     region:                'eu-west-1',                  # optional, defaults to 'us-east-1'
     host:                  's3.example.com',             # optional, defaults to nil
     endpoint:              'https://s3.example.com:8080' # optional, defaults to nil
   }
-  config.fog_directory  = 'name_of_directory'                                   # required
+  config.fog_directory  = 'name_of_bucket'                                      # required
   config.fog_public     = false                                                 # optional, defaults to true
   config.fog_attributes = { cache_control: "public, max-age=#{365.days.to_i}" } # optional, defaults to {}
 end
@@ -920,7 +926,7 @@ errors:
     carrierwave_download_error: could not be downloaded
     extension_whitelist_error: "You are not allowed to upload %{extension} files, allowed types: %{allowed_types}"
     extension_blacklist_error: "You are not allowed to upload %{extension} files, prohibited types: %{prohibited_types}"
-    content_type_whitelist_error: "You are not allowed to upload %{content_type} files"
+    content_type_whitelist_error: "You are not allowed to upload %{content_type} files, allowed types: %{allowed_types}"
     content_type_blacklist_error: "You are not allowed to upload %{content_type} files"
     rmagick_processing_error: "Failed to manipulate with rmagick, maybe it is not an image?"
     mini_magick_processing_error: "Failed to manipulate with MiniMagick, maybe it is not an image? Original Error: %{e}"

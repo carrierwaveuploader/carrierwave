@@ -108,12 +108,11 @@ module CarrierWave
     # [String, nil] the path where the file is located.
     #
     def path
-      unless @file.blank?
-        if is_path?
-          File.expand_path(@file)
-        elsif @file.respond_to?(:path) and not @file.path.blank?
-          File.expand_path(@file.path)
-        end
+      return if @file.blank?
+      if is_path?
+        File.expand_path(@file)
+      elsif @file.respond_to?(:path) && !@file.path.blank?
+        File.expand_path(@file.path)
       end
     end
 

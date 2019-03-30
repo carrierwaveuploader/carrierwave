@@ -7,6 +7,26 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 * Replace mime-types dependency with mini_mime(@bradleypriest [#2292](https://github.com/carrierwaveuploader/carrierwave/pull/2292))
 
+## 1.3.1 - 2018-12-29
+### Fixed
+* Fix `#url_options_supported?` causing nil error(@mshibuya [0b9a64a1](https://github.com/carrierwaveuploader/carrierwave/commit/0b9a64a1bb9f20d1de154dc3bf2e2dd988210220), [#2361](https://github.com/carrierwaveuploader/carrierwave/issues/2361))
+
+## 1.3.0 - 2018-12-24
+### Added
+* Query parameter support for fog-google(@stanhu [#2332](https://github.com/carrierwaveuploader/carrierwave/pull/2332))
+* Jets Turbine Support(@tongueroo [#2355](https://github.com/carrierwaveuploader/carrierwave/pull/2355))
+* Add `allowed_types` to `content_type_whitelist_error`(@mhluska [#2270](https://github.com/carrierwaveuploader/carrierwave/pull/2270))
+
+### Fixed
+* S3 HTTPS url causes certificate issue when bucket name contains period(@ransombriggs [#2359](https://github.com/carrierwaveuploader/carrierwave/pull/2359))
+* Failed to get image dimensions when image is cached but not stored yet(@artygus [#2349](https://github.com/carrierwaveuploader/carrierwave/pull/2349))
+* Only include `x-amz-acl` header for AWS(@stanhu [#2356](https://github.com/carrierwaveuploader/carrierwave/pull/2356))
+* Remove old caches when no space is left on disk(@dosuken123 [#2342](https://github.com/carrierwaveuploader/carrierwave/pull/2342))
+
+## 1.2.3 - 2018-06-30
+### Fixed
+* Fix reading whole content of large files into memory on storing(@dosuken123 [#2314](https://github.com/carrierwaveuploader/carrierwave/pull/2314))
+
 ## 1.2.2 - 2018-01-02
 ### Fixed
 * Reset Content-Type on converting file format(@kyoshidajp [#2237](https://github.com/carrierwaveuploader/carrierwave/pull/2237))

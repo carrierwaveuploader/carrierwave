@@ -5,6 +5,10 @@ describe CarrierWave::SanitizedFile do
     FileUtils.cp(file_path('test.jpg'), file_path('llama.jpg'))
   end
 
+  after do
+    FileUtils.rm_rf(file_path("new_dir"))
+  end
+
   after(:all) do
     if File.exist?(file_path('llama.jpg'))
       FileUtils.rm(file_path('llama.jpg'))
@@ -294,7 +298,6 @@ describe CarrierWave::SanitizedFile do
         sanitized_file.move_to(file_path("new_dir","gurr.png"), nil, 0775)
 
         expect(sanitized_file).to have_directory_permissions(0775)
-        FileUtils.rm_rf(file_path("new_dir"))
       end
 
       it "should return itself" do
@@ -388,7 +391,6 @@ describe CarrierWave::SanitizedFile do
         new_file = sanitized_file.copy_to(file_path("new_dir", "gurr.png"), nil, 0755)
 
         expect(new_file).to have_directory_permissions(0755)
-        FileUtils.rm_rf(file_path("new_dir"))
       end
 
       it "should preserve the file's content type" do
