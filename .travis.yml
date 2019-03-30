@@ -11,9 +11,6 @@ rvm:
   - jruby-9.2.5.0
 
 gemfile:
-  - gemfiles/rails-4-0.gemfile
-  - gemfiles/rails-4-1.gemfile
-  - gemfiles/rails-4-2.gemfile
   - gemfiles/rails-5-0.gemfile
   - gemfiles/rails-5-1.gemfile
   - gemfiles/rails-5-2.gemfile
@@ -30,18 +27,6 @@ before_script:
 
 matrix:
   include:
-    - rvm: 2.0
-      gemfile: gemfiles/rails-4-0.gemfile
-    - rvm: 2.0
-      gemfile: gemfiles/rails-4-1.gemfile
-    - rvm: 2.0
-      gemfile: gemfiles/rails-4-2.gemfile
-    - rvm: 2.1.10
-      gemfile: gemfiles/rails-4-0.gemfile
-    - rvm: 2.1.10
-      gemfile: gemfiles/rails-4-1.gemfile
-    - rvm: 2.1.10
-      gemfile: gemfiles/rails-4-2.gemfile
     - rvm: 2.6.0
       gemfile: gemfiles/rails-master.gemfile
     - rvm: ruby-head
@@ -52,25 +37,6 @@ matrix:
       gemfile: gemfiles/rails-5-0.gemfile
     - rvm: jruby-head
       gemfile: gemfiles/rails-5-1.gemfile
-  exclude:
-    - rvm: 2.4.5
-      gemfile: gemfiles/rails-4-0.gemfile
-    - rvm: 2.4.5
-      gemfile: gemfiles/rails-4-1.gemfile
-    - rvm: 2.5.3
-      gemfile: gemfiles/rails-4-0.gemfile
-    - rvm: 2.5.3
-      gemfile: gemfiles/rails-4-1.gemfile
-    - rvm: 2.6.0
-      gemfile: gemfiles/rails-4-0.gemfile
-    - rvm: 2.6.0
-      gemfile: gemfiles/rails-4-1.gemfile
-    - rvm: 2.6.0
-      gemfile: gemfiles/rails-4-2.gemfile
-    - rvm: jruby-9.2.5.0
-      gemfile: gemfiles/rails-4-0.gemfile
-    - rvm: jruby-9.2.5.0
-      gemfile: gemfiles/rails-4-1.gemfile
   allow_failures:
     - rvm: ruby-head
     - rvm: jruby-head

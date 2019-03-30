@@ -19,17 +19,17 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.licenses = ["MIT"]
 
-  s.required_ruby_version = ">= 2.0.0"
+  s.required_ruby_version = ">= 2.2.2"
 
-  s.add_dependency "activesupport", ">= 4.0.0"
-  s.add_dependency "activemodel", ">= 4.0.0"
+  s.add_dependency "activesupport", ">= 5.0.0"
+  s.add_dependency "activemodel", ">= 5.0.0"
   s.add_dependency "mime-types", ">= 1.16"
   if RUBY_ENGINE == 'jruby'
     s.add_development_dependency 'activerecord-jdbcpostgresql-adapter'
   else
     s.add_development_dependency "pg"
   end
-  s.add_development_dependency "rails", ">= 4.0.0"
+  s.add_development_dependency "rails", ">= 5.0.0"
   s.add_development_dependency "cucumber", "~> 2.3"
   s.add_development_dependency "rspec", "~> 3.4"
   s.add_development_dependency "webmock"
