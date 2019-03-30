@@ -74,6 +74,9 @@ module CarrierWave
       def change_locale_and_store_translations(locale, translations, &block)
         current_locale = I18n.locale
         begin
+          # I18n.available_locales needs to be cleared before storing translations:
+          #   https://github.com/svenfuchs/i18n/pull/391
+          I18n.available_locales = nil
           I18n.backend.store_translations locale, translations
           I18n.locale = locale
           yield
@@ -103,7 +106,7 @@ module CarrierWave
     module ManipulationHelpers
       def color_of_pixel(path, x, y)
         image = ::MiniMagick::Image.open(path)
-        color = image.run_command("convert", "#{image.path}[1x1+#{x}+#{y}]", "-depth", "8", "txt:").split("\n")[1]
+        image.run_command("convert", "#{image.path}[1x1+#{x}+#{y}]", "-depth", "8", "txt:").split("\n")[1]
       end
     end
   end

@@ -5,19 +5,65 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 1.3.1 - 2018-12-29
+### Fixed
+* Fix `#url_options_supported?` causing nil error(@mshibuya [0b9a64a1](https://github.com/carrierwaveuploader/carrierwave/commit/0b9a64a1bb9f20d1de154dc3bf2e2dd988210220), [#2361](https://github.com/carrierwaveuploader/carrierwave/issues/2361))
+
+## 1.3.0 - 2018-12-24
 ### Added
-* Support for `process` callback(@cfcosta [#2045](https://github.com/carrierwaveuploader/carrierwave/pull/2045))
-* S3 Transfer Acceleration support(@krekoten [#2108](https://github.com/carrierwaveuploader/carrierwave/pull/2108))
+* Query parameter support for fog-google(@stanhu [#2332](https://github.com/carrierwaveuploader/carrierwave/pull/2332))
+* Jets Turbine Support(@tongueroo [#2355](https://github.com/carrierwaveuploader/carrierwave/pull/2355))
+* Add `allowed_types` to `content_type_whitelist_error`(@mhluska [#2270](https://github.com/carrierwaveuploader/carrierwave/pull/2270))
+
+### Fixed
+* S3 HTTPS url causes certificate issue when bucket name contains period(@ransombriggs [#2359](https://github.com/carrierwaveuploader/carrierwave/pull/2359))
+* Failed to get image dimensions when image is cached but not stored yet(@artygus [#2349](https://github.com/carrierwaveuploader/carrierwave/pull/2349))
+* Only include `x-amz-acl` header for AWS(@stanhu [#2356](https://github.com/carrierwaveuploader/carrierwave/pull/2356))
+* Remove old caches when no space is left on disk(@dosuken123 [#2342](https://github.com/carrierwaveuploader/carrierwave/pull/2342))
+
+## 1.2.3 - 2018-06-30
+### Fixed
+* Fix reading whole content of large files into memory on storing(@dosuken123 [#2314](https://github.com/carrierwaveuploader/carrierwave/pull/2314))
+
+## 1.2.2 - 2018-01-02
+### Fixed
+* Reset Content-Type on converting file format(@kyoshidajp [#2237](https://github.com/carrierwaveuploader/carrierwave/pull/2237))
+
+## 1.2.1 - 2017-10-04
+### Fixed
+* Locale check breaks when a Symbol is given to available_locales(@mshibuya [#2234](https://github.com/carrierwaveuploader/carrierwave/issues/2234))
+
+## 1.2.0 - 2017-09-30
+
+### Added
+* Added Proc Support for Width and Height(@tomprats [#2169](https://github.com/carrierwaveuploader/carrierwave/pull/2169))
 
 ### Changed
-* Stop falling back to en locale when I18n is missing(@kryzhovnik [#2083](https://github.com/carrierwaveuploader/carrierwave/pull/2083))
+* Decode unicode filenames from URL(@fedorkk [#2131](https://github.com/carrierwaveuploader/carrierwave/pull/2131))
+* Change file size of error message to human size(@aki77 [#2199](https://github.com/carrierwaveuploader/carrierwave/pull/2199))
+
+### Fixed
+* Bundled en translation was not loaded by default, causing translation missing(@mshibuya [95ce39d3](https://github.com/carrierwaveuploader/carrierwave/commit/95ce39d3ec98bee9b2846b32fdcf093c78fa44fb))
+* Remove potentially redundant HEAD request on checking fog file existence(@eritiro [#2140](https://github.com/carrierwaveuploader/carrierwave/pull/2140))
+* Failing with uninitialized constant if uri is not loaded(@jasdeepsingh [#2223](https://github.com/carrierwaveuploader/carrierwave/pull/2223))
+* RMagick cloud not process remotely stored files(@zog [#2185](https://github.com/carrierwaveuploader/carrierwave/pull/2185))
+* Check if files are identical via FS rather than name before move(@riffraff [#2191](https://github.com/carrierwaveuploader/carrierwave/pull/2191))
+* Regexp `extension_whitelist` is also case-insensitive now(@vmdhoke [#2201](https://github.com/carrierwaveuploader/carrierwave/pull/2201))
+* Use `__send__` instead of `send` (@dminuoso [#2178](https://github.com/carrierwaveuploader/carrierwave/pull/2178))
+
+## 1.1.0 - 2017-04-30
+
+### Added
+* Rails 5.1 compatibility(@paulsturgess [#2130](https://github.com/carrierwaveuploader/carrierwave/pull/2130), [#2133](https://github.com/carrierwaveuploader/carrierwave/pull/2133))
+* Support for `process` callback(@cfcosta [#2045](https://github.com/carrierwaveuploader/carrierwave/pull/2045))
+* S3 Transfer Acceleration support(@krekoten [#2108](https://github.com/carrierwaveuploader/carrierwave/pull/2108))
 * Allow non-argument options to be passed in mini magick combine_options(@krismartin [#2097](https://github.com/carrierwaveuploader/carrierwave/pull/2097))
 
 ### Fixed
+* Stop falling back to en locale when I18n is missing(@kryzhovnik [#2083](https://github.com/carrierwaveuploader/carrierwave/pull/2083))
 * Allow nagative timestamp in cache id(@NickOttrando [#2092](https://github.com/carrierwaveuploader/carrierwave/pull/2092))
 * Avoid calling `file.url` twice(@lukeasrodgers [#2078](https://github.com/carrierwaveuploader/carrierwave/pull/2078))
 * Content Type being reset when moving cached file(@dweinand [#2117](https://github.com/carrierwaveuploader/carrierwave/pull/2117))
-
 
 ## 1.0.0 - 2016-12-24
 

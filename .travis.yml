@@ -3,69 +3,49 @@ language: ruby
 cache: bundler
 
 rvm:
- - 2.0
- - 2.1
- - 2.2.5
- - 2.3.1
- - 2.4.0
- - ruby-head
- - jruby
- - jruby-head
-
-env:
-  global:
-    - JRUBY_OPTS="--2.0"
+  - 2.5.5
+  - 2.6.2
+  - jruby-9.2.5.0
 
 gemfile:
-  - Gemfile
-  - gemfiles/rails-4-0-stable.gemfile
-  - gemfiles/rails-4-1-stable.gemfile
-  - gemfiles/rails-4-2-stable.gemfile
-  - gemfiles/rails-5-0-stable.gemfile
-  - gemfiles/rails-master.gemfile
+  - gemfiles/rails-5-2.gemfile
+  - gemfiles/rails-6-0.gemfile
 
 sudo: false
+
+before_install:
+  # https://github.com/danmayer/coverband/issues/162#issuecomment-452173268
+  - rm /home/travis/.rvm/gems/*/specifications/bundler-2.*.gemspec || true
+  - gem install bundler -v '<2'
 
 before_script:
   - psql -c 'create database carrierwave_test;' -U postgres
 
 matrix:
-  exclude:
-    - rvm: 2.0
-      gemfile: Gemfile
-    - rvm: 2.0
+  include:
+    - rvm: 2.2.10
+      gemfile: gemfiles/rails-5-2.gemfile
+    - rvm: 2.3.8
+      gemfile: gemfiles/rails-5-2.gemfile
+    - rvm: 2.4.5
+      gemfile: gemfiles/rails-5-2.gemfile
+    - rvm: 2.5.5
+      gemfile: gemfiles/rails-5-0.gemfile
+    - rvm: 2.5.5
+      gemfile: gemfiles/rails-5-1.gemfile
+    - rvm: 2.6.2
       gemfile: gemfiles/rails-master.gemfile
-    - rvm: 2.1
-      gemfile: Gemfile
-    - rvm: 2.1
-      gemfile: gemfiles/rails-master.gemfile
-    - rvm: 2.0
-      gemfile: gemfiles/rails-5-0-stable.gemfile
-    - rvm: 2.1
-      gemfile: gemfiles/rails-5-0-stable.gemfile
-    - rvm: 2.4.0
-      gemfile: gemfiles/rails-4-0-stable.gemfile
-    - rvm: 2.4.0
-      gemfile: gemfiles/rails-4-1-stable.gemfile
-    - rvm: 2.4.0
-      gemfile: gemfiles/rails-4-2-stable.gemfile
     - rvm: ruby-head
-      gemfile: gemfiles/rails-4-0-stable.gemfile
-    - rvm: ruby-head
-      gemfile: gemfiles/rails-4-1-stable.gemfile
-    - rvm: ruby-head
-      gemfile: gemfiles/rails-4-2-stable.gemfile
-    - rvm: jruby
-      gemfile: Gemfile
-    - rvm: jruby
-      gemfile: gemfiles/rails-master.gemfile
-    - rvm: jruby
-      gemfile: gemfiles/rails-5-0-stable.gemfile
+      gemfile: gemfiles/rails-6-0.gemfile
     - rvm: jruby-head
-      gemfile: gemfiles/rails-master.gemfile
+      gemfile: gemfiles/rails-5-2.gemfile
+  exclude:
+    - rvm: jruby-9.2.5.0
+      gemfile: gemfiles/rails-6-0.gemfile
   allow_failures:
     - rvm: ruby-head
     - rvm: jruby-head
+    - gemfile: gemfiles/rails-master.gemfile
   fast_finish: true
 
 notifications:
@@ -75,3 +55,6 @@ notifications:
 
 addons:
   postgresql: "9.3"
+  apt:
+    packages:
+      - ghostscript

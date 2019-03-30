@@ -23,6 +23,7 @@ describe CarrierWave::RMagick, :rmagick => true do
       instance.convert(:png)
       expect(instance.file.extension).to eq('png')
       expect(instance).to be_format('png')
+      expect(instance.file.content_type).to eq('image/png')
     end
   end
 
@@ -217,6 +218,64 @@ describe CarrierWave::RMagick, :rmagick => true do
       instance.resize_to_fill(200, 300)
       expect(instance.width).to eq(200)
       expect(instance.height).to eq(300)
+    end
+  end
+
+  describe '#dimension_from' do
+    it 'evaluates procs' do
+      instance.resize_to_fill(Proc.new { 200 }, Proc.new { 200 })
+
+      expect(instance).to have_dimensions(200, 200)
+    end
+
+    it 'evaluates procs with uploader instance' do
+      width_argument = nil
+      width = Proc.new do |uploader|
+        width_argument = uploader
+        200
+      end
+      height_argument = nil
+      height = Proc.new do |uploader|
+        height_argument = uploader
+        200
+      end
+      instance.resize_to_fill(width, height)
+
+      expect(instance).to have_dimensions(200, 200)
+      expect(instance).to eq(width_argument)
+      expect(instance).to eq(height_argument)
+    end
+  end
+
+  describe "#rmagick_image" do
+    it "returns a ::Magick::Image" do
+      expect{instance.send(:rmagick_image)}.to_not raise_exception
+      expect(instance.send(:rmagick_image).class).to eq(::Magick::Image)
+    end
+
+    context "with a remotely stored file" do
+      class RemoteFile < CarrierWave::SanitizedFile
+        def initialize local_path
+          @local_path = local_path
+        end
+
+        def current_path
+          "foo/bar.jpg"
+        end
+
+        def read
+          File.read @local_path
+        end
+      end
+
+      before do
+        allow(instance).to receive(:file).and_return(RemoteFile.new(landscape_file_copy_path))
+      end
+
+      it "returns a ::Magick::Image" do
+        expect{instance.send(:rmagick_image)}.to_not raise_exception
+        expect(instance.send(:rmagick_image).class).to eq(::Magick::Image)
+      end
     end
   end
 

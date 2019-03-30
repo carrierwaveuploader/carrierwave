@@ -12,6 +12,10 @@ describe CarrierWave::SanitizedFile do
     FileUtils.cp(file_path('test.jpg'), file_path('llama.jpg'))
   end
 
+  after do
+    FileUtils.rm_rf(file_path("new_dir"))
+  end
+
   after(:all) do
     if File.exist?(file_path('llama.jpg'))
       FileUtils.rm(file_path('llama.jpg'))
@@ -345,18 +349,35 @@ describe CarrierWave::SanitizedFile do
         sanitized_file.move_to(file_path("new_dir","gurr.png"), nil, 0775)
 
         expect(sanitized_file).to have_directory_permissions(0775)
-        FileUtils.rm_rf(file_path("new_dir"))
       end
 
       it "should return itself" do
         expect(sanitized_file.move_to(file_path("gurr.png"))).to eq(sanitized_file)
       end
 
-      it "should preserve the file's content type" do
-        content_type = sanitized_file.content_type
+      it "should convert the file's content type" do
         sanitized_file.move_to(file_path("new_dir","gurr.png"))
 
-        expect(sanitized_file.content_type).to eq(content_type)
+        expect(sanitized_file.content_type).to eq("image/jpeg")
+      end
+
+      context 'target path only differs by case' do
+        let(:upcased_sanitized_file) { CarrierWave::SanitizedFile.new(stub_file("upcase.JPG", "image/jpeg")) }
+
+        before do
+          FileUtils.cp(file_path("test.jpg"), file_path("upcase.JPG"))
+
+          expect(upcased_sanitized_file).not_to be_empty
+        end
+
+	after(:all) do
+	  FileUtils.rm_f(file_path("upcase.JPG"))
+	  FileUtils.rm_f(file_path("upcase.jpg"))
+        end
+
+        it "should not raise an error when moved" do
+          expect(running { upcased_sanitized_file.move_to(upcased_sanitized_file.path.downcase) }).not_to raise_error
+        end
       end
     end
 
@@ -421,7 +442,6 @@ describe CarrierWave::SanitizedFile do
         new_file = sanitized_file.copy_to(file_path("new_dir", "gurr.png"), nil, 0755)
 
         expect(new_file).to have_directory_permissions(0755)
-        FileUtils.rm_rf(file_path("new_dir"))
       end
 
       it "should preserve the file's content type" do

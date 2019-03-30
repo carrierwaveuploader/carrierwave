@@ -1,6 +1,7 @@
 source "https://rubygems.org"
 
-gem "rails", :github => "rails/rails", :branch => "5-0-stable"
+gem "rails", "~> 6.0.0.beta3"
 gem "activemodel-serializers-xml"
+gem 'pg', '~> 0.21.0', platforms: :ruby
 
 gemspec :path => "../"

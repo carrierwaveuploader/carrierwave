@@ -19,27 +19,29 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.licenses = ["MIT"]
 
-  s.required_ruby_version = ">= 2.0.0"
+  s.required_ruby_version = ">= 2.2.2"
 
-  s.add_dependency "activesupport", ">= 4.0.0"
-  s.add_dependency "activemodel", ">= 4.0.0"
+  s.add_dependency "activesupport", ">= 5.0.0"
+  s.add_dependency "activemodel", ">= 5.0.0"
   s.add_dependency "mime-types", ">= 1.16"
   if RUBY_ENGINE == 'jruby'
     s.add_development_dependency 'activerecord-jdbcpostgresql-adapter'
   else
     s.add_development_dependency "pg"
   end
-  s.add_development_dependency "rails", ">= 4.0.0"
-  s.add_development_dependency "cucumber", "~> 2.3.2"
-  s.add_development_dependency "rspec", "~> 3.4.0"
+  s.add_development_dependency "rails", ">= 5.0.0"
+  s.add_development_dependency "cucumber", "~> 2.3"
+  s.add_development_dependency "rspec", "~> 3.4"
   s.add_development_dependency "webmock"
-  s.add_development_dependency "fog", ">= 1.28.0"
+  s.add_development_dependency "fog-aws"
+  s.add_development_dependency "fog-google", "~> 1.7"
+  s.add_development_dependency "fog-local"
+  s.add_development_dependency "fog-rackspace"
   s.add_development_dependency "mini_magick", ">= 3.6.0"
   if RUBY_ENGINE != 'jruby'
-    s.add_development_dependency "rmagick"
+    s.add_development_dependency "rmagick", "~> 2.16"
   end
-  s.add_development_dependency "nokogiri", "~> 1.6.3"
-  s.add_development_dependency "timecop", "0.7.1"
+  s.add_development_dependency "timecop"
   s.add_development_dependency "generator_spec", ">= 0.9.1"
   s.add_development_dependency "pry"
 end

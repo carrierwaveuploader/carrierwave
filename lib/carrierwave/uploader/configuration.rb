@@ -117,19 +117,21 @@ module CarrierWave
 
         def add_config(name)
           class_eval <<-RUBY, __FILE__, __LINE__ + 1
+            @#{name} = nil
+
             def self.eager_load_fog(fog_credentials)
               # see #1198. This will hopefully no longer be necessary after fog 2.0
               require self.fog_provider
               require 'carrierwave/storage/fog'
               Fog::Storage.new(fog_credentials) if fog_credentials.present?
-            end
+            end unless defined? eager_load_fog
 
             def self.#{name}(value=nil)
               @#{name} = value if value
               eager_load_fog(value) if value && '#{name}' == 'fog_credentials'
               return @#{name} if self.object_id == #{self.object_id} || defined?(@#{name})
               name = superclass.#{name}
-              return nil if name.nil? && !instance_variable_defined?("@#{name}")
+              return nil if name.nil? && !instance_variable_defined?(:@#{name})
               @#{name} = name && !name.is_a?(Module) && !name.is_a?(Symbol) && !name.is_a?(Numeric) && !name.is_a?(TrueClass) && !name.is_a?(FalseClass) ? name.dup : name
             end
 

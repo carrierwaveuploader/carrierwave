@@ -31,6 +31,7 @@ module CarrierWave
 
     def initialize(file)
       self.file = file
+      @content = nil
     end
 
     ##
@@ -194,7 +195,7 @@ module CarrierWave
     #
     def move!(new_path)
       if exists?
-        FileUtils.mv(path, new_path) unless new_path == path
+        FileUtils.mv(path, new_path) unless File.identical?(new_path, path)
       else
         File.open(new_path, "wb") { |f| f.write(read) }
       end

@@ -164,6 +164,30 @@ describe CarrierWave::ActiveRecord do
 
         expect(@event.reload.image).to be_blank
       end
+
+      context "with CarrierWave::MiniMagick" do
+        before(:each) do
+          @uploader.send(:include, CarrierWave::MiniMagick)
+        end
+
+        it "has width and height" do
+          @event.image = stub_file('landscape.jpg')
+          expect(@event.image.width).to eq 640
+          expect(@event.image.height).to eq 480
+        end
+      end
+
+      context "with CarrierWave::RMagick", :rmagick => true do
+        before(:each) do
+          @uploader.send(:include, CarrierWave::RMagick)
+        end
+
+        it "has width and height" do
+          @event.image = stub_file('landscape.jpg')
+          expect(@event.image.width).to eq 640
+          expect(@event.image.height).to eq 480
+        end
+      end
     end
 
     describe '#image=' do
@@ -681,12 +705,10 @@ describe CarrierWave::ActiveRecord do
         expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
       end
 
-      pending do
-        it "should only delete the file once when the file is removed" do
-          @event.remove_image = true
-          expect_any_instance_of(CarrierWave::SanitizedFile).to receive(:delete).exactly(1).times
-          expect(@event.save).to be_truthy
-        end
+      pending("should only delete the file once when the file is removed") do
+        @event.remove_image = true
+        expect_any_instance_of(CarrierWave::SanitizedFile).to receive(:delete).exactly(1).times
+        expect(@event.save).to be_truthy
       end
     end
 

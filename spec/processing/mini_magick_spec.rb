@@ -10,7 +10,6 @@ describe CarrierWave::MiniMagick do
   before do
     FileUtils.cp(landscape_file_path, landscape_copy_file_path)
     allow(instance).to receive(:cached?).and_return true
-    allow(instance).to receive(:url).and_return nil
     allow(instance).to receive(:file).and_return(CarrierWave::SanitizedFile.new(landscape_copy_file_path))
   end
 
@@ -21,6 +20,7 @@ describe CarrierWave::MiniMagick do
       instance.convert('png')
       expect(instance.file.extension).to eq('png')
       expect(instance).to be_format('png')
+      expect(instance.file.content_type).to eq('image/png')
     end
 
     it "converts all pages when no page number is specified" do
@@ -188,6 +188,32 @@ describe CarrierWave::MiniMagick do
 
       expect(instance.width).to eq(200)
       expect(instance.height).to eq(300)
+    end
+  end
+
+  describe '#dimension_from' do
+    it 'evaluates procs' do
+      instance.resize_to_fill(Proc.new { 200 }, Proc.new { 200 })
+
+      expect(instance).to have_dimensions(200, 200)
+    end
+
+    it 'evaluates procs with uploader instance' do
+      width_argument = nil
+      width = Proc.new do |uploader|
+        width_argument = uploader
+        200
+      end
+      height_argument = nil
+      height = Proc.new do |uploader|
+        height_argument = uploader
+        200
+      end
+      instance.resize_to_fill(width, height)
+
+      expect(instance).to have_dimensions(200, 200)
+      expect(instance).to eq(width_argument)
+      expect(instance).to eq(height_argument)
     end
   end
 

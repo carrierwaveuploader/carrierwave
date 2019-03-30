@@ -67,6 +67,13 @@ module CarrierWave
         e.message << " (You may need to install the rmagick gem)"
         raise e
       end
+
+      prepend Module.new {
+        def initialize(*)
+          super
+          @format = nil
+        end
+      }
     end
 
     module ClassMethods
@@ -133,6 +140,8 @@ module CarrierWave
     # [Magick::Image] additional manipulations to perform
     #
     def resize_to_limit(width, height)
+      width = dimension_from width
+      height = dimension_from height
       manipulate! do |img|
         geometry = Magick::Geometry.new(width, height, 0, 0, Magick::GreaterGeometry)
         new_img = img.change_geometry(geometry) do |new_width, new_height|
@@ -162,6 +171,8 @@ module CarrierWave
     # [Magick::Image] additional manipulations to perform
     #
     def resize_to_fit(width, height)
+      width = dimension_from width
+      height = dimension_from height
       manipulate! do |img|
         img.resize_to_fit!(width, height)
         img = yield(img) if block_given?
@@ -186,6 +197,8 @@ module CarrierWave
     # [Magick::Image] additional manipulations to perform
     #
     def resize_to_fill(width, height, gravity=::Magick::CenterGravity)
+      width = dimension_from width
+      height = dimension_from height
       manipulate! do |img|
         img.crop_resized!(width, height, gravity)
         img = yield(img) if block_given?
@@ -211,6 +224,8 @@ module CarrierWave
     # [Magick::Image] additional manipulations to perform
     #
     def resize_and_pad(width, height, background=:transparent, gravity=::Magick::CenterGravity)
+      width = dimension_from width
+      height = dimension_from height
       manipulate! do |img|
         img.resize_to_fit!(width, height)
         new_img = ::Magick::Image.new(width, height) { self.background_color = background == :transparent ? 'rgba(255,255,255,0)' : background.to_s }
@@ -338,7 +353,7 @@ module CarrierWave
       frames = ::Magick::ImageList.new
 
       image.each_with_index do |frame, index|
-        frame = yield *[frame, index, options].take(block.arity) if block_given?
+        frame = yield(*[frame, index, options].take(block.arity)) if block_given?
         frames << frame if frame
       end
       frames.append(true) if block_given?
@@ -348,6 +363,7 @@ module CarrierWave
       if options[:format] || @format
         frames.write("#{options[:format] || @format}:#{current_path}", &write_block)
         move_to = current_path.chomp(File.extname(current_path)) + ".#{options[:format] || @format}"
+        file.content_type = ::MIME::Types.type_for(move_to).first.to_s
         file.move_to(move_to, permissions, directory_permissions)
       else
         frames.write(current_path, &write_block)
@@ -371,8 +387,13 @@ module CarrierWave
       image.try(:destroy!)
     end
 
+    def dimension_from(value)
+      return value unless value.instance_of?(Proc)
+      value.arity >= 1 ? value.call(self) : value.call
+    end
+
     def rmagick_image
-      ::Magick::Image.read(current_path).first
+      ::Magick::Image.from_blob(self.read).first
     end
 
   end # RMagick
