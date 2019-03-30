@@ -1,12 +1,5 @@
 require 'spec_helper'
 
-begin
-  # Use mime/types/columnar if available, for reduced memory usage
-  require 'mime/types/columnar'
-rescue LoadError
-  require 'mime/types'
-end
-
 describe CarrierWave::SanitizedFile do
   before do
     FileUtils.cp(file_path('test.jpg'), file_path('llama.jpg'))
@@ -237,7 +230,7 @@ describe CarrierWave::SanitizedFile do
 
     it "handles Mime::Type object" do
       file = File.open(file_path('sponsored.doc'))
-      allow(file).to receive(:content_type).and_return(MIME::Type.new("application/msword"))
+
       sanitized_file = CarrierWave::SanitizedFile.new(file)
       allow(sanitized_file).to receive(:file).and_return(file)
 

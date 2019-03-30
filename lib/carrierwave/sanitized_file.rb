@@ -1,12 +1,6 @@
 require 'pathname'
 require 'active_support/core_ext/string/multibyte'
-
-begin
-  # Use mime/types/columnar if available, for reduced memory usage
-  require 'mime/types/columnar'
-rescue LoadError
-  require 'mime/types'
-end
+require 'mini_mime'
 
 module CarrierWave
 
@@ -266,7 +260,8 @@ module CarrierWave
       if @file.respond_to?(:content_type) and @file.content_type
         @content_type = @file.content_type.to_s.chomp
       elsif path
-        @content_type = ::MIME::Types.type_for(path).first.to_s
+        mime_type = ::MiniMime.lookup_by_filename(path)
+        @content_type = (mime_type && mime_type.content_type).to_s
       end
     end
 
