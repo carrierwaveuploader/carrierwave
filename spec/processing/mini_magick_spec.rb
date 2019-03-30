@@ -10,7 +10,6 @@ describe CarrierWave::MiniMagick do
   before do
     FileUtils.cp(landscape_file_path, landscape_copy_file_path)
     allow(instance).to receive(:cached?).and_return true
-    allow(instance).to receive(:url).and_return nil
     allow(instance).to receive(:file).and_return(CarrierWave::SanitizedFile.new(landscape_copy_file_path))
   end
 

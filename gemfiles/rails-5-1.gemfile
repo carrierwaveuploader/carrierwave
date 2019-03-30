@@ -3,6 +3,6 @@ source "https://rubygems.org"
 gem "rails", "~> 5.1.0"
 gem "activemodel-serializers-xml"
 gem 'pg', '~> 0.21.0', platforms: :ruby
-gem "activerecord-jdbcpostgresql-adapter", "~> 51.0", platforms: :jruby
+gem "activerecord-jdbcpostgresql-adapter", '~> 51.0',  platforms: :jruby
 
 gemspec :path => "../"
