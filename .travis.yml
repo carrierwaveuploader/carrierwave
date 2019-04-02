@@ -5,13 +5,11 @@ cache: bundler
 rvm:
   - 2.5.5
   - 2.6.2
-  - jruby-9.2.5.0
+  - jruby-9.2.6.0
 
 gemfile:
   - gemfiles/rails-5-2.gemfile
   - gemfiles/rails-6-0.gemfile
-
-sudo: false
 
 before_install:
   # https://github.com/danmayer/coverband/issues/162#issuecomment-452173268
@@ -40,7 +38,7 @@ matrix:
     - rvm: jruby-head
       gemfile: gemfiles/rails-5-2.gemfile
   exclude:
-    - rvm: jruby-9.2.5.0
+    - rvm: jruby-9.2.6.0
       gemfile: gemfiles/rails-6-0.gemfile
   allow_failures:
     - rvm: ruby-head
