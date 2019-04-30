@@ -133,12 +133,13 @@ describe CarrierWave::Uploader::Base do
           uc.hoobatz = this_proc
         end
       end
-    after do
-      uploader_class.singleton_class.send :undef_method, :hoobatz
-      uploader_class.singleton_class.send :undef_method, :hoobatz=
-      uploader_class.send :undef_method, :hoobatz
-      uploader_class.send :undef_method, :hoobatz=
-    end
+
+      after do
+        uploader_class.singleton_class.send :undef_method, :hoobatz
+        uploader_class.singleton_class.send :undef_method, :hoobatz=
+        uploader_class.send :undef_method, :hoobatz
+        uploader_class.send :undef_method, :hoobatz=
+      end
 
       context "when the proc accepts no arguments" do
         let(:this_proc) { proc { "a return value" } }
@@ -155,6 +156,14 @@ describe CarrierWave::Uploader::Base do
           uploader_class.new.hoobatz
         end
       end
+    end
+  end
+
+  describe '.eager_load_fog' do
+    before { uploader_class.fog_provider = 'fog/aws' }
+    it "caches Fog::Storage instance" do
+      expect { uploader_class.eager_load_fog(provider: 'AWS', aws_access_key_id: 'foo', aws_secret_access_key: 'bar') }.
+        to change { CarrierWave::Storage::Fog.connection_cache }
     end
   end
 end
