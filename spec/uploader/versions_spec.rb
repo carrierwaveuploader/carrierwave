@@ -638,5 +638,59 @@ describe CarrierWave::Uploader do
         expect(File.read(public_path(@uploader.thumb.to_s))).to eq(File.read(public_path(@uploader.small_thumb.to_s)))
       end
     end
+
+    describe "#recreate_versions!" do
+      let(:bork_file) { File.open(file_path('bork.txt')) }
+      let(:original_contents) { File.read(public_path(@uploader.to_s)) }
+      let(:thumb_contents) { File.read(public_path(@uploader.thumb.to_s)) }
+      let(:small_thumb_contents) { File.read(public_path(@uploader.small_thumb.to_s)) }
+
+      context "when no versions are given" do
+        it "should process file based on the version" do
+          @uploader.store!(bork_file)
+          @uploader.recreate_versions!
+          expect(thumb_contents).to eq(small_thumb_contents)
+        end
+      end
+
+      context "when version is given" do
+        it "should process file based on the version" do
+          @uploader.store!(bork_file)
+          FileUtils.rm([@uploader.small_thumb.path, @uploader.thumb.path])
+          @uploader.recreate_versions!(:small_thumb)
+          expect(File.exists?(public_path(@uploader.thumb.to_s))).to be true
+          expect(small_thumb_contents).to eq(thumb_contents)
+          expect(small_thumb_contents).not_to eq(original_contents)
+        end
+
+        it "reprocess parent version, too" do
+          @uploader.store!(bork_file)
+          FileUtils.rm(@uploader.thumb.path)
+          @uploader.recreate_versions!(:small_thumb)
+        end
+
+        it "works fine when recreating both dependent and parent versions" do
+          @uploader.store!(bork_file)
+          FileUtils.rm([@uploader.small_thumb.path, @uploader.thumb.path])
+          @uploader.recreate_versions!(:small_thumb, :thumb)
+          expect(File.exists?(public_path(@uploader.small_thumb.to_s))).to be true
+          expect(File.exists?(public_path(@uploader.thumb.to_s))).to be true
+
+          # doesn't depend on arguments order
+          FileUtils.rm([@uploader.small_thumb.path, @uploader.thumb.path])
+          @uploader.recreate_versions!(:thumb, :small_thumb)
+          expect(File.exists?(public_path(@uploader.small_thumb.to_s))).to be true
+          expect(File.exists?(public_path(@uploader.thumb.to_s))).to be true
+        end
+
+        it "doesn't touch other versions" do
+          @uploader_class.version(:another)
+          @uploader.store!(bork_file)
+          FileUtils.rm(@uploader.another.path)
+          @uploader.recreate_versions!(:small_thumb)
+          expect(File.exists?(public_path(@uploader.another.to_s))).to be false
+        end
+      end
+    end
   end
 end

@@ -220,16 +220,20 @@ module CarrierWave
       # Recreate versions and reprocess them. This can be used to recreate
       # versions if their parameters somehow have changed.
       #
-      def recreate_versions!(*versions)
+      def recreate_versions!(*names)
         # Some files could possibly not be stored on the local disk. This
         # doesn't play nicely with processing. Make sure that we're only
         # processing a cached file
         #
         # The call to store! will trigger the necessary callbacks to both
         # process this version and all sub-versions
-        if versions.any?
-          file = sanitized_file if !cached?
-          store_versions!(file, versions)
+
+        if names.any?
+          file = sanitized_file
+          set_versions_to_cache_and_store(names)
+          cache!(file)
+          store!(file)
+          reset_versions_to_cache_and_store
         else
           cache! if !cached?
           store!
@@ -237,6 +241,39 @@ module CarrierWave
       end
 
     private
+
+      def set_versions_to_cache_and_store(names)
+        @versions_to_cache = source_versions_of(names)
+        @versions_to_store = active_versions_with_names_in(@versions_to_cache + names)
+      end
+
+      def reset_versions_to_cache_and_store
+        @versions_to_cache, @versions_to_store = nil, nil
+      end
+
+      def versions_to_cache
+        @versions_to_cache || dependent_versions
+      end
+
+      def versions_to_store
+        @versions_to_store || active_versions
+      end
+
+      def source_versions_of(requested_names)
+        versions.inject([]) do |sources, (name, uploader)|
+          next sources unless requested_names.include?(name)
+          next sources unless source_name = uploader.class.version_options[:from_version]
+
+          sources << [source_name, versions[source_name]]
+        end.uniq
+      end
+
+      def active_versions_with_names_in(names)
+        active_versions.select do |pretendent_name, uploader|
+          names.include?(pretendent_name)
+        end
+      end
+
       def assign_parent_cache_id(file)
         active_versions.each do |name, uploader|
           uploader.parent_cache_id = @cache_id
@@ -270,19 +307,14 @@ module CarrierWave
       end
 
       def cache_versions!(new_file)
-        dependent_versions.each do |name, v|
+        versions_to_cache.each do |name, v|
           v.send(:cache_id=, @cache_id)
           v.cache!(new_file)
         end
       end
 
-      def store_versions!(new_file, versions=nil)
-        if versions
-          active = Hash[active_versions]
-          versions.each { |v| active[v].try(:store!, new_file) } unless active.empty?
-        else
-          active_versions.each { |name, v| v.store!(new_file) }
-        end
+      def store_versions!(new_file)
+        versions_to_store.each { |name, v| v.store!(new_file) }
       end
 
       def remove_versions!
