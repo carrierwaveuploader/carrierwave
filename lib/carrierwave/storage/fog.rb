@@ -177,7 +177,7 @@ module CarrierWave
 
         ##
         # Return a temporary authenticated url to a private file, if available
-        # Only supported for AWS, Rackspace, Google and AzureRM providers
+        # Only supported for AWS, Rackspace, Google, AzureRM and Aliyun providers
         #
         # === Returns
         #
@@ -186,7 +186,7 @@ module CarrierWave
         # [NilClass] no authenticated url available
         #
         def authenticated_url(options = {})
-          if ['AWS', 'Google', 'Rackspace', 'OpenStack', 'AzureRM'].include?(@uploader.fog_credentials[:provider])
+          if ['AWS', 'Google', 'Rackspace', 'OpenStack', 'AzureRM', 'Aliyun'].include?(@uploader.fog_credentials[:provider])
             # avoid a get by using local references
             local_directory = connection.directories.new(:key => @uploader.fog_directory)
             local_file = local_directory.files.new(:key => path)
@@ -202,6 +202,9 @@ module CarrierWave
                 end
               when 'Rackspace', 'OpenStack'
                 connection.get_object_https_url(@uploader.fog_directory, path, expire_at, options)
+              when 'Aliyun'
+                expire_at = expire_at - Time.now
+                local_file.url(expire_at)
               else
                 local_file.url(expire_at)
             end
