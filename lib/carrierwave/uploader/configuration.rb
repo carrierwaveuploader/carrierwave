@@ -123,7 +123,9 @@ module CarrierWave
               # see #1198. This will hopefully no longer be necessary after fog 2.0
               require self.fog_provider
               require 'carrierwave/storage/fog'
-              Fog::Storage.new(fog_credentials) if fog_credentials.present?
+              if fog_credentials.present?
+                CarrierWave::Storage::Fog.connection_cache[fog_credentials] ||= Fog::Storage.new(fog_credentials)
+              end
             end unless defined? eager_load_fog
 
             def self.#{name}(value=nil)
