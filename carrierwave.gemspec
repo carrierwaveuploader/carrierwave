@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
   s.add_dependency "activemodel", ">= 5.0.0"
   s.add_dependency "mini_mime", ">= 0.1.3"
   s.add_dependency "image_processing", "~> 1.1"
+  s.add_dependency "mimemagic", ">= 0.3.0"
   if RUBY_ENGINE == 'jruby'
     s.add_development_dependency 'activerecord-jdbcpostgresql-adapter'
   else

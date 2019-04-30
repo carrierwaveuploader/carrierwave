@@ -243,6 +243,21 @@ describe CarrierWave::SanitizedFile do
 
       expect(sanitized_file.content_type).to eq("image/jpeg")
     end
+
+    it "does not allow spoofing of the mime type" do
+      file = File.open(file_path("zip.png"))
+
+      sanitized_file = CarrierWave::SanitizedFile.new(file)
+      expect { sanitized_file.content_type }.not_to raise_error
+
+      expect(sanitized_file.content_type).to eq("application/zip")
+    end
+
+    it "does not raise an error if the path is not present" do
+      sanitized_file = CarrierWave::SanitizedFile.new(nil)
+
+      expect { sanitized_file.content_type }.not_to raise_error
+    end
   end
 
   describe "#content_type=" do

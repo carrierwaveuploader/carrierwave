@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Changed
 * Replace mime-types dependency with mini_mime(@bradleypriest [#2292](https://github.com/carrierwaveuploader/carrierwave/pull/2292))
+* Use the MimeMagic gem to inspect file headers for the mime type. This allows for mitigation of CVE-2016-3714, in combination with a `content_type_whitelist`. (@locriani [#1934](https://github.com/carrierwaveuploader/carrierwave/pull/1934))
 
 ## 1.3.1 - 2018-12-29
 ### Fixed
