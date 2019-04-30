@@ -207,6 +207,17 @@ describe CarrierWave::SanitizedFile do
       sanitized_file.content_type.should == 'image/jpeg'
     end
 
+    it 'does not allow spoofing of the mime type if the mime type is not detectable' do
+      file = File.open(file_path('spoof.png'))
+
+      sanitized_file = CarrierWave::SanitizedFile.new(file)
+
+      lambda { sanitized_file.content_type }.should_not raise_error
+
+      sanitized_file.content_type.should_not == 'image/png'
+      sanitized_file.content_type.should == 'invalid/invalid'
+    end
+
     it 'does not raise an error if the path is not present' do
       sanitized_file = CarrierWave::SanitizedFile.new(nil)
 

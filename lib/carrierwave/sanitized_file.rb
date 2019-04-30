@@ -317,7 +317,7 @@ module CarrierWave
     def mime_magic_content_type
       if path
         File.open(path) do |file|
-          MimeMagic.by_magic(file).try(:type)
+          MimeMagic.by_magic(file).try(:type) || 'invalid/invalid'
         end
       end
     rescue Errno::ENOENT

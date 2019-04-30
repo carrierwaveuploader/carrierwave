@@ -57,7 +57,7 @@ describe CarrierWave::Uploader do
     end
 
     it "should get the content type when the file has been cached" do
-      @uploader.cache!(File.open(file_path('test.jpg')))
+      @uploader.cache!(File.open(file_path('landscape.jpg')))
       @uploader.content_type.should == 'image/jpeg'
     end
 
