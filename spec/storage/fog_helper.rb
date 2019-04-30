@@ -251,8 +251,12 @@ end
               expect { @fog_file.size }.not_to raise_error
             end
 
-            it "should return a string or nil for content type" do
-              expect { @fog_file.content_type&.size }.not_to raise_error
+            it "should not error getting the content type" do
+              expect { @fog_file.content_type }.not_to raise_error
+            end
+
+            it "should return false for content type" do
+              expect(@fog_file.content_type).not_to be false
             end
           end
         end
