@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
   s.add_dependency "mime-types", ">= 1.16"
   s.add_dependency "mimemagic", ">= 0.3.0"
 
-  s.add_development_dependency "pg"
+  s.add_development_dependency "pg", "< 1"
   s.add_development_dependency "rails", ">= 3.2.0"
   s.add_development_dependency "cucumber", "~> 1.3.2"
   s.add_development_dependency "rspec", "~> 2.13.0"
@@ -39,7 +39,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "unf"
   s.add_development_dependency "net-ssh", "~> 2.9.0"
   s.add_development_dependency "mini_magick", ">= 3.6.0"
-  s.add_development_dependency "rmagick"
+  s.add_development_dependency "rmagick", "< 3"
   s.add_development_dependency "nokogiri", "~> 1.5.10" # 1.6 requires ruby > 1.8.7
   s.add_development_dependency "timecop", "0.6.1" # 0.6.2 requires ruby > 1.8.7
   s.add_development_dependency "generator_spec"
