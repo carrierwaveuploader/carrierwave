@@ -255,7 +255,7 @@ end
               expect { @fog_file.content_type }.not_to raise_error
             end
 
-            it "should return false for content type" do
+            it "should not return false for content type" do
               expect(@fog_file.content_type).not_to be false
             end
           end
