@@ -38,7 +38,7 @@ module CarrierWave
     end
 
     def cache(new_files)
-      return if not new_files or new_files == ""
+      return if new_files.blank?
       @uploaders = new_files.map do |new_file|
         uploader = blank_uploader
         uploader.cache!(new_file)
@@ -60,7 +60,7 @@ module CarrierWave
     end
 
     def cache_names=(cache_names)
-      return if not cache_names or cache_names == "" or uploaders.any?(&:cached?)
+      return if cache_names.blank? || uploaders.any?(&:cached?)
       @uploaders = cache_names.map do |cache_name|
         uploader = blank_uploader
         uploader.retrieve_from_cache!(cache_name)
@@ -70,7 +70,7 @@ module CarrierWave
     end
 
     def remote_urls=(urls)
-      return if not urls or urls == "" or urls.all?(&:blank?)
+      return if urls.blank? || urls.all?(&:blank?)
 
       @remote_urls = urls
       @download_error = nil
@@ -146,9 +146,7 @@ module CarrierWave
         end.path
       end
       before.each do |uploader|
-        if uploader.remove_previously_stored_files_after_update and not after_paths.include?(uploader.path)
-          uploader.remove!
-        end
+        uploader.remove! if uploader.remove_previously_stored_files_after_update && !after_paths.include?(uploader.path)
       end
     end
 

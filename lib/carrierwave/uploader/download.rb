@@ -26,7 +26,7 @@ module CarrierWave
         end
 
         def respond_to?(*args)
-          super or file.respond_to?(*args)
+          super || file.respond_to?(*args)
         end
 
         def http?
