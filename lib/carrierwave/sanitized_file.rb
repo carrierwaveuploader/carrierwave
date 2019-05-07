@@ -318,7 +318,7 @@ module CarrierWave
       name = File.basename(name)
       name = name.gsub(sanitize_regexp,"_")
       name = "_#{name}" if name =~ /\A\.+\z/
-      name = "unnamed" if name.size == 0
+      name = "unnamed" if name.size.zero?
       return name.mb_chars.to_s
     end
 
