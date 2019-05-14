@@ -447,6 +447,17 @@ end
             end
           end
 
+          it "should have an custom authenticated_url" do
+            if ['AWS', 'Rackspace', 'Google', 'OpenStack', 'AzureRM'].include?(@provider)
+              timestamp = ::Fog::Time.now + 999
+              if @provider == "AWS"
+                expect(@fog_file.authenticated_url({expire_at: timestamp })).to include("Expires=999&")
+              elsif @provider == "Google"
+                expect(@fog_file.authenticated_url({expire_at: timestamp })).to include("Expires=#{timestamp.to_i}")
+              end
+            end
+          end
+
           it 'should generate correct filename' do
             expect(@fog_file.filename).to eq('private.txt')
           end
