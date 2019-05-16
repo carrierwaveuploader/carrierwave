@@ -1,3 +1,5 @@
+require 'securerandom'
+
 module CarrierWave
 
   class FormNotMultipart < UploadError
@@ -24,8 +26,8 @@ module CarrierWave
   def self.generate_cache_id
     [Time.now.utc.to_i,
       Process.pid,
-      '%04d' % (CarrierWave::CacheCounter.increment % 1000),
-      '%04d' % rand(9999)
+      '%04d' % (CarrierWave::CacheCounter.increment % 10000),
+      '%04d' % SecureRandom.random_number(10000)
     ].map(&:to_s).join('-')
   end
 
