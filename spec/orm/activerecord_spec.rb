@@ -1604,13 +1604,53 @@ describe CarrierWave::ActiveRecord do
     end
   end
 
-  describe "#dup" do
-    it "appropriately removes the model reference from the new models uploader" do
+  describe '#reload' do
+    before do
       Event.mount_uploader(:image, @uploader)
+    end
+
+    context 'when #reload is overriden in the model' do
+      before do
+        Event.class_eval do
+          def reload(*)
+            super
+          end
+        end
+        @event.save
+        @event.image
+      end
+
+      it "clears @_mounters" do
+        expect { @event.reload }.to change { @event.instance_variable_get(:@_mounters) }.to(nil)
+      end
+    end
+  end
+
+  describe "#dup" do
+    before do
+      Event.mount_uploader(:image, @uploader)
+    end
+
+    it "appropriately removes the model reference from the new models uploader" do
       @event.save
       new_event = @event.dup
 
       expect(new_event.image.model).not_to eq @event
+    end
+
+    context 'when #initialize_dup is overriden in the model' do
+      before do
+        Event.class_eval do
+          def initialize_dup(*)
+            super
+          end
+        end
+        @event.image
+      end
+
+      it "clears @_mounters" do
+        expect(@event.dup.instance_variable_get(:@_mounters)).to be_blank
+      end
     end
   end
 end

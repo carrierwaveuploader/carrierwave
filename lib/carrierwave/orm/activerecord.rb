@@ -12,7 +12,9 @@ module CarrierWave
     def mount_uploader(column, uploader=nil, options={}, &block)
       super
 
-      class_eval <<-RUBY, __FILE__, __LINE__+1
+      mod = Module.new
+      prepend mod
+      mod.class_eval <<-RUBY, __FILE__, __LINE__+1
         def remote_#{column}_url=(url)
           column = _mounter(:#{column}).serialization_column
           __send__(:"\#{column}_will_change!")
@@ -27,7 +29,9 @@ module CarrierWave
     def mount_uploaders(column, uploader=nil, options={}, &block)
       super
 
-      class_eval <<-RUBY, __FILE__, __LINE__+1
+      mod = Module.new
+      prepend mod
+      mod.class_eval <<-RUBY, __FILE__, __LINE__+1
         def remote_#{column}_urls=(url)
           column = _mounter(:#{column}).serialization_column
           __send__(:"\#{column}_will_change!")
@@ -59,7 +63,9 @@ module CarrierWave
       after_commit :"remove_previously_stored_#{column}", :on => :update
       after_commit :"store_#{column}!", :on => [:create, :update]
 
-      class_eval <<-RUBY, __FILE__, __LINE__+1
+      mod = Module.new
+      prepend mod
+      mod.class_eval <<-RUBY, __FILE__, __LINE__+1
         def #{column}=(new_file)
           column = _mounter(:#{column}).serialization_column
           if !(new_file.blank? && __send__(:#{column}).blank?)
