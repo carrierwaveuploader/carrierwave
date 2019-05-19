@@ -11,7 +11,7 @@ module CarrierWave
         prepend Module.new {
           def initialize(*)
             super
-            @file, @filename, @cache_id = nil
+            @file, @filename, @cache_id, @identifier = nil
           end
         }
       end
@@ -69,7 +69,7 @@ module CarrierWave
               cache_storage.delete_dir!(cache_path(nil))
             end
             @file = new_file
-            @cache_id = nil
+            @cache_id = @identifier = nil
           end
         end
       end
@@ -84,6 +84,7 @@ module CarrierWave
       def retrieve_from_store!(identifier)
         with_callbacks(:retrieve_from_store, identifier) do
           @file = storage.retrieve!(identifier)
+          @identifier = identifier
         end
       end
 

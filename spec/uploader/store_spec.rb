@@ -66,6 +66,13 @@ describe CarrierWave::Uploader do
       expect(@uploader.identifier).to eq('this-is-me')
     end
 
+    it "should clear the retrieved identifier when new file is stored" do
+      allow(@storage).to receive(:retrieve!).and_return(@stored_file)
+      @uploader.retrieve_from_store!('monkey.txt')
+      @uploader.store!(@file)
+      expect(@uploader.identifier).to eq('this-is-me')
+    end
+
     it "should, if a file is given as argument, cache that file" do
       expect(@uploader).to receive(:cache!).with(@file)
       @uploader.store!(@file)
@@ -203,7 +210,7 @@ describe CarrierWave::Uploader do
 
     it "should set the identifier" do
       @uploader.retrieve_from_store!('monkey.txt')
-      expect(@uploader.identifier).to eq('this-is-me')
+      expect(@uploader.identifier).to eq('monkey.txt')
     end
 
     it "should instruct the storage engine to retrieve the file and store the result" do

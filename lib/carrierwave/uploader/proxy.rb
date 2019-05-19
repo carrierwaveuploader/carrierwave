@@ -23,14 +23,14 @@ module CarrierWave
       alias_method :path, :current_path
 
       ##
-      # Returns a string that uniquely identifies the last stored file
+      # Returns a string that uniquely identifies the retrieved or last stored file
       #
       # === Returns
       #
       # [String] uniquely identifies a file
       #
       def identifier
-        storage.try(:identifier)
+        @identifier || storage.try(:identifier)
       end
 
       ##
