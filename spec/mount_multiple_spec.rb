@@ -236,6 +236,54 @@ describe CarrierWave::Mount do
 
         it { expect(instance.images).to be_empty }
       end
+
+      describe "with stored files" do
+        before do
+          instance.images = [text_file_stub, test_file_stub]
+          instance.store_images!
+        end
+        let(:identifiers) { instance.images.map(&:identifier) }
+
+        it "preserves existing image of given identifier" do
+          instance.images = [identifiers[0], old_image_stub]
+          instance.store_images!
+          expect(instance.images.map(&:identifier)).to eq ['bork.txt','old.jpeg']
+        end
+
+        it "reorders existing image" do
+          instance.images = identifiers.reverse
+          instance.store_images!
+          expect(instance.images.map(&:identifier)).to eq ['test.jpg', 'bork.txt']
+        end
+
+        it "allows uploading and reordering at once" do
+          instance.images = [identifiers[1], old_image_stub, identifiers[0]]
+          instance.store_images!
+          expect(instance.images.map(&:identifier)).to eq ['test.jpg', 'old.jpeg', 'bork.txt']
+        end
+
+        it "allows repeating the same identifiers" do
+          instance.images = ['bork.txt', 'test.jpg', 'bork.txt']
+          instance.store_images!
+          expect(instance.images.map(&:identifier)).to eq ['bork.txt', 'test.jpg', 'bork.txt']
+        end
+
+        it "removes image which is unused" do
+          @image_paths = instance.images.map(&:current_path)
+          instance.images = [identifiers[0]]
+          instance.store_images!
+          instance.send(:_mounter, :images).remove_previous(identifiers, identifiers[0..0])
+          expect(instance.images.map(&:identifier)).to eq ['bork.txt']
+          expect(File.exist?(@image_paths[0])).to be_truthy
+          expect(File.exist?(@image_paths[1])).to be_falsey
+        end
+
+        it "ignores unknown identifier" do
+          instance.images = ['unknown.txt']
+          expect { instance.store_images! }.not_to raise_error
+          expect(instance.images.map(&:identifier)).to be_empty
+        end
+      end
     end
 
     describe '#images?' do

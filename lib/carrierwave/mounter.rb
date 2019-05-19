@@ -39,11 +39,16 @@ module CarrierWave
 
     def cache(new_files)
       return if new_files.blank?
+      old_uploaders = uploaders
       @uploaders = new_files.map do |new_file|
-        uploader = blank_uploader
-        uploader.cache!(new_file)
-        uploader
-      end
+        if new_file.is_a?(String)
+          old_uploaders.detect { |uploader| uploader.identifier == new_file }
+        else
+          uploader = blank_uploader
+          uploader.cache!(new_file)
+          uploader
+        end
+      end.compact
 
       @integrity_error = nil
       @processing_error = nil
