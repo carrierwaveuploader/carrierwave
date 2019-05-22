@@ -242,7 +242,9 @@ module CarrierWave
         #
         def delete
           # avoid a get by just using local reference
-          directory.files.new(:key => path).destroy
+          directory.files.new(:key => path).destroy.tap do |result|
+            @file = nil if result
+          end
         end
 
         ##

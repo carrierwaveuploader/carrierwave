@@ -258,6 +258,10 @@ end
             it "should not return false for content type" do
               expect(@fog_file.content_type).not_to be false
             end
+
+            it "should let #exists? be false" do
+              expect(@fog_file.exists?).to be false
+            end
           end
         end
 
