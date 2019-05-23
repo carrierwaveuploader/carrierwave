@@ -94,5 +94,12 @@ describe CarrierWave::Storage::File do
 
       expect(Dir.glob("#{cache_dir}/*").size).to eq(2)
     end
+
+    it "cleans a directory named using old format of cache id" do
+      FileUtils.mkdir_p File.expand_path("#{yesterday.utc.to_i}-100-1234", cache_dir)
+      Timecop.freeze(today) { uploader_class.clean_cached_files!(0) }
+
+      expect(Dir.glob("#{cache_dir}/*").size).to eq(0)
+    end
   end
 end

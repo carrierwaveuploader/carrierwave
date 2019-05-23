@@ -397,6 +397,14 @@ end
           end
           expect(@directory.files.all(:prefix => 'uploads/tmp').size).to eq(2)
         end
+
+        it "cleans a directory named using old format of cache id" do
+          @directory.files.create(:key => "uploads/tmp/#{yesterday.utc.to_i}-100-1234/test.jpg", :body => 'A test, 1234', :public => true)
+          Timecop.freeze(today) do
+            @uploader.clean_cached_files!(0)
+          end
+          expect(@directory.files.all(:prefix => 'uploads/tmp').size).to eq(0)
+        end
       end
 
       describe 'fog_public' do
