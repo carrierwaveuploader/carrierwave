@@ -711,6 +711,14 @@ end
 
 That's it! You can still use the `CarrierWave::Uploader#url` method to return the url to the file on Amazon S3.
 
+**Note**: for Carrierwave to work properly it needs credentials with the following permissions:
+
+* `s3:ListBucket`
+* `s3:PutObject`
+* `s3:GetObject`
+* `s3:DeleteObject`
+* `s3:PutObjectAcl`
+
 ## Using Rackspace Cloud Files
 
 [Fog](http://github.com/fog/fog) is used to support Rackspace Cloud Files. Ensure you have it in your Gemfile:
