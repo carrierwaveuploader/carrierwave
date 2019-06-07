@@ -8,6 +8,7 @@ describe CarrierWave::Uploader::Download do
   let(:url) { base_url + "/test.jpg" }
   let(:test_file) { File.read(file_path(test_file_name)) }
   let(:test_file_name) { "test.jpg" }
+  let(:content_disposition){ 'filename="another_test.jpg"' }
   let(:unicode_named_file) { File.read(file_path(unicode_filename)) }
   let(:unicode_URL) { URI.encode(base_url + "/#{unicode_filename}") }
   let(:unicode_filename) { "юникод.jpg" }
@@ -36,7 +37,7 @@ describe CarrierWave::Uploader::Download do
         to_return(body: test_file)
 
       stub_request(:get, "www.example.com/content-disposition").
-        to_return(body: test_file, headers: { "Content-Disposition" => 'filename="another_test.jpg"' })
+        to_return(body: test_file, headers: { "Content-Disposition" => content_disposition })
 
       stub_request(:get, "www.redirect.com").
         to_return(status: 301, body: "Redirecting", headers: { "Location" => url })
@@ -145,9 +146,40 @@ describe CarrierWave::Uploader::Download do
       expect(uploader.url).to eq("/uploads/tmp/#{cache_id}/#{test_file_name}")
     end
 
-    it "reads content-disposition headers" do
-      uploader.download!("#{base_url}/content-disposition")
-      expect(uploader.url).to eq("/uploads/tmp/#{cache_id}/another_#{test_file_name}")
+    describe 'with content-disposition' do
+      context 'when filename is quoted' do
+        it "reads filename correctly" do
+          uploader.download!("#{base_url}/content-disposition")
+          expect(uploader.url).to eq("/uploads/tmp/#{cache_id}/another_#{test_file_name}")
+        end
+      end
+
+      context 'when filename is not quoted' do
+        let(:content_disposition){ 'filename=another_test.jpg' }
+
+        it "reads filename correctly" do
+          uploader.download!("#{base_url}/content-disposition")
+          expect(uploader.url).to eq("/uploads/tmp/#{cache_id}/another_#{test_file_name}")
+        end
+      end
+
+      context 'when filename is not quoted and terminated by semicolon' do
+        let(:content_disposition){ 'filename=another_test.jpg; size=1234' }
+
+        it "reads filename correctly" do
+          uploader.download!("#{base_url}/content-disposition")
+          expect(uploader.url).to eq("/uploads/tmp/#{cache_id}/another_#{test_file_name}")
+        end
+      end
+
+      context 'when filename is quoted and contains a semicolon' do
+        let(:content_disposition){ 'filename="another;_test.jpg"; size=1234' }
+
+        it "reads filename and replaces semicolon correctly" do
+          uploader.download!("#{base_url}/content-disposition")
+          expect(uploader.url).to eq("/uploads/tmp/#{cache_id}/another__#{test_file_name}")
+        end
+      end
     end
 
     it 'sets file extension based on content-type if missing' do
