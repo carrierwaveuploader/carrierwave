@@ -26,6 +26,21 @@ describe CarrierWave::Downloader::Base do
     end
   end
 
+  context "with a URL with internationalized domain name" do
+    let(:uri) { URI.encode("http://ドメイン名例.jp/#{filename}") }
+    before do
+      stub_request(:get, 'http://xn--eckwd4c7cu47r2wf.jp/test.jpg').to_return(body: file)
+    end
+
+    it "converts to Punycode URI" do
+      expect(subject.process_uri(uri).to_s).to eq 'http://xn--eckwd4c7cu47r2wf.jp/test.jpg'
+    end
+
+    it "downloads a file" do
+      expect(subject.download(uri).file.read).to eq file
+    end
+  end
+
   context 'with request headers' do
     let(:authentication_headers) do
       {

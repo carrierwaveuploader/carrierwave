@@ -1,4 +1,5 @@
 require 'open-uri'
+require 'addressable'
 require 'carrierwave/downloader/remote_file'
 
 module CarrierWave
@@ -37,13 +38,12 @@ module CarrierWave
       # [url (String)] The URL where the remote file is stored
       #
       def process_uri(uri)
-        URI.parse(uri)
-      rescue URI::InvalidURIError
         uri_parts = uri.split('?')
-        # regexp from Ruby's URI::Parser#regexp[:UNSAFE], with [] specifically removed
-        encoded_uri = URI.encode(uri_parts.shift, /[^\-_.!~*'()a-zA-Z\d;\/?:@&=+$,]/)
+        encoded_uri = Addressable::URI.parse(uri_parts.shift).normalize.to_s
         encoded_uri << '?' << URI.encode(uri_parts.join('?')) if uri_parts.any?
-        URI.parse(encoded_uri) rescue raise CarrierWave::DownloadError, "couldn't parse URL"
+        URI.parse(encoded_uri)
+      rescue URI::InvalidURIError, Addressable::URI::InvalidURIError
+        raise CarrierWave::DownloadError, "couldn't parse URL: #{uri}"
       end
     end
   end
