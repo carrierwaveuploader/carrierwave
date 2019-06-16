@@ -81,6 +81,7 @@ module CarrierWave
 
       def sanitized_file
         _content = file.read
+        return if _content.nil?
         if _content.is_a?(File) # could be if storage is Fog
           sanitized = CarrierWave::Storage::Fog.new(self).retrieve!(File.basename(_content.path))
         else
