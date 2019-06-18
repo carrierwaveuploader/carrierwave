@@ -3,14 +3,17 @@ module CarrierWave
   # this is an internal class, used by CarrierWave::Mount so that
   # we don't pollute the model with a lot of methods.
   class Mounter #:nodoc:
-    attr_reader :column, :record, :remote_urls, :integrity_error,
-      :processing_error, :download_error
+    attr_reader :column, :record, :remote_urls, :integrity_errors,
+      :processing_errors, :download_errors
     attr_accessor :remove, :remote_request_headers
 
     def initialize(record, column, options={})
       @record = record
       @column = column
       @options = record.class.uploader_options[column]
+      @download_errors = []
+      @processing_errors = []
+      @integrity_errors = []
     end
 
     def uploader_class
@@ -41,25 +44,18 @@ module CarrierWave
       return if new_files.blank?
       old_uploaders = uploaders
       @uploaders = new_files.map do |new_file|
-        if new_file.is_a?(String)
-          uploader = old_uploaders.detect { |uploader| uploader.identifier == new_file }
-          uploader.staged = true if uploader
-          uploader
-        else
-          uploader = blank_uploader
-          uploader.cache!(new_file)
-          uploader
+        handle_error do
+          if new_file.is_a?(String)
+            uploader = old_uploaders.detect { |uploader| uploader.identifier == new_file }
+            uploader.staged = true if uploader
+            uploader
+          else
+            uploader = blank_uploader
+            uploader.cache!(new_file)
+            uploader
+          end
         end
       end.compact
-
-      @integrity_error = nil
-      @processing_error = nil
-    rescue CarrierWave::IntegrityError => e
-      @integrity_error = e
-      raise e unless option(:ignore_integrity_errors)
-    rescue CarrierWave::ProcessingError => e
-      @processing_error = e
-      raise e unless option(:ignore_processing_errors)
     end
 
     def cache_names
@@ -70,36 +66,29 @@ module CarrierWave
       return if cache_names.blank?
       clear_unstaged
       cache_names.map do |cache_name|
-        uploader = blank_uploader
-        uploader.retrieve_from_cache!(cache_name)
-        @uploaders << uploader
+        begin
+          uploader = blank_uploader
+          uploader.retrieve_from_cache!(cache_name)
+          @uploaders << uploader
+        rescue CarrierWave::InvalidParameter
+          # ignore
+        end
       end
-    rescue CarrierWave::InvalidParameter
     end
 
     def remote_urls=(urls)
       return if urls.blank? || urls.all?(&:blank?)
 
       @remote_urls = urls
-      @download_error = nil
-      @integrity_error = nil
 
       clear_unstaged
       urls.zip(remote_request_headers || []).map do |url, header|
-        uploader = blank_uploader
-        uploader.download!(url, header || {})
-        @uploaders << uploader
+        handle_error do
+          uploader = blank_uploader
+          uploader.download!(url, header || {})
+          @uploaders << uploader
+        end
       end
-
-    rescue CarrierWave::DownloadError => e
-      @download_error = e
-      raise e unless option(:ignore_download_errors)
-    rescue CarrierWave::ProcessingError => e
-      @processing_error = e
-      raise e unless option(:ignore_processing_errors)
-    rescue CarrierWave::IntegrityError => e
-      @integrity_error = e
-      raise e unless option(:ignore_integrity_errors)
     end
 
     def store!
@@ -171,6 +160,19 @@ module CarrierWave
     def clear_unstaged
       @uploaders ||= []
       @uploaders.keep_if(&:staged)
+    end
+
+    def handle_error
+      yield
+    rescue CarrierWave::DownloadError => e
+      @download_errors << e
+      raise e unless option(:ignore_download_errors)
+    rescue CarrierWave::ProcessingError => e
+      @processing_errors << e
+      raise e unless option(:ignore_processing_errors)
+    rescue CarrierWave::IntegrityError => e
+      @integrity_errors << e
+      raise e unless option(:ignore_integrity_errors)
     end
   end # Mounter
 end # CarrierWave

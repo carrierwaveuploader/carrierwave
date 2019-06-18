@@ -199,47 +199,62 @@ describe CarrierWave::Mount do
         instance.images = [test_file_stub]
       end
 
-      context "fails silently if the images fails a white list integrity check" do
+      context "if the images fails a white list integrity check" do
         before do
           uploader.class_eval do
             def extension_whitelist
               %w(txt)
             end
           end
-
-          instance.images = [text_file_stub, test_file_stub]
         end
 
-        it { expect(instance.images).to be_empty }
+        it "fails silently" do
+          expect { instance.images = [test_file_stub] }.not_to raise_error
+        end
+
+        it "keeps files which passed the check" do
+          instance.images = [test_file_stub, text_file_stub]
+          expect(instance.images.map(&:identifier)).to eq ['bork.txt']
+        end
       end
 
-      describe "fails silently if the images fails a black list integrity check" do
+      describe "if the images fails a black list integrity check" do
         before do
           uploader.class_eval do
             def extension_blacklist
               %w(jpg)
             end
           end
-
-          instance.images = [text_file_stub, test_file_stub]
         end
 
-        it { expect(instance.images).to be_empty }
+        it "fails silently" do
+          expect { instance.images = [test_file_stub] }.not_to raise_error
+        end
+
+        it "keeps files which passed the check" do
+          instance.images = [test_file_stub, text_file_stub]
+          expect(instance.images.map(&:identifier)).to eq ['bork.txt']
+        end
       end
 
-      describe "fails silently if the images fails to be processed" do
+      describe "if the images fails to be processed" do
         before do
           uploader.class_eval do
             process :monkey
             def monkey
-              raise CarrierWave::ProcessingError, "Ohh noez!"
+              raise CarrierWave::ProcessingError, "Ohh noez!" if file.path =~ /test\.jpg/
             end
           end
-
-          instance.images = [test_file_stub]
         end
 
-        it { expect(instance.images).to be_empty }
+        it "fails silently" do
+          expect { instance.images = [test_file_stub] }.not_to raise_error
+        end
+
+        it "keeps files which was processed successfully" do
+          instance.images = [test_file_stub, text_file_stub]
+          expect(instance.images.map(&:identifier)).to eq ['bork.txt']
+        end
       end
 
       describe "with stored files" do
@@ -441,6 +456,14 @@ describe CarrierWave::Mount do
 
         it { expect(instance.images[0].current_path).to match(/test.jpg$/) }
       end
+
+      context "when valid and invalid cache names are assigned" do
+        before { instance.images_cache = ['1369894322-123-0123-1234/test.jpg', 'invalid'].to_json }
+
+        it "retrieves valid file only from cache" do
+          expect(instance.images.map(&:cache_name)).to eq(['1369894322-123-0123-1234/test.jpg'])
+        end
+      end
     end
 
     describe "#remote_images_urls" do
@@ -464,6 +487,7 @@ describe CarrierWave::Mount do
 
       before do
         stub_request(:get, "www.example.com/#{test_file_name}").to_return(body: File.read(test_file_stub))
+        stub_request(:get, "http://www.example.com/test.txt").to_return(status: 404)
         instance.remote_images_urls = remote_images_url
       end
 
@@ -516,6 +540,14 @@ describe CarrierWave::Mount do
         end
 
         it { is_expected.to match(/portrait.jpg$/) }
+      end
+
+      context "if a file fails to be downloaded" do
+        let(:remote_images_url) { ["http://www.example.com/test.txt", "http://www.example.com/test.jpg"] }
+
+        it "keeps files which was downloaded successfully" do
+          expect(instance.images.map(&:identifier)).to eq ['test.jpg']
+        end
       end
     end
 
@@ -631,17 +663,17 @@ describe CarrierWave::Mount do
       end
     end
 
-    describe '#images_integrity_error' do
-      subject(:images_integrity_error) { instance.images_integrity_error }
+    describe '#images_integrity_errors' do
+      subject(:images_integrity_errors) { instance.images_integrity_errors }
 
       describe "default behaviour" do
-        it { is_expected.to be_nil }
+        it { is_expected.to be_empty }
       end
 
       context "when a file is cached" do
         before { instance.images = test_file_stub }
 
-        it { is_expected.to be_nil }
+        it { is_expected.to be_empty }
       end
 
       describe "when an integrity check fails" do
@@ -656,10 +688,10 @@ describe CarrierWave::Mount do
         context "when file is cached" do
           before { instance.images = [test_file_stub] }
 
-          it { is_expected.to be_an_instance_of(CarrierWave::IntegrityError) }
+          it { is_expected.to include(a_kind_of(CarrierWave::IntegrityError)) }
 
           it "has an error message" do
-            expect(images_integrity_error.message.lines.grep(/^You are not allowed to upload/)).to be_truthy
+            expect(images_integrity_errors[0].message.lines.grep(/^You are not allowed to upload/)).to be_truthy
           end
         end
 
@@ -669,10 +701,10 @@ describe CarrierWave::Mount do
             instance.remote_images_urls = ["http://www.example.com/#{test_file_name}"]
           end
 
-          it { is_expected.to be_an_instance_of(CarrierWave::IntegrityError) }
+          it { is_expected.to include(a_kind_of(CarrierWave::IntegrityError)) }
 
           it "has an error message" do
-            expect(images_integrity_error.message.lines.grep(/^You are not allowed to upload/)).to be_truthy
+            expect(images_integrity_errors[0].message.lines.grep(/^You are not allowed to upload/)).to be_truthy
           end
         end
 
@@ -682,26 +714,26 @@ describe CarrierWave::Mount do
             instance.remote_images_urls = ""
           end
 
-          it { is_expected.to be_an_instance_of(CarrierWave::IntegrityError) }
+          it { is_expected.to include(a_kind_of(CarrierWave::IntegrityError)) }
 
           it "has an error message" do
-            expect(images_integrity_error.message.lines.grep(/^You are not allowed to upload/)).to be_truthy
+            expect(images_integrity_errors[0].message.lines.grep(/^You are not allowed to upload/)).to be_truthy
           end
         end
       end
     end
 
-    describe '#images_processing_error' do
-      subject(:images_processing_error) { instance.images_processing_error }
+    describe '#images_processing_errors' do
+      subject(:images_processing_errors) { instance.images_processing_errors }
 
       describe "default behavior" do
-        it { is_expected.to be_nil }
+        it { is_expected.to be_empty }
       end
 
       context "when file is cached" do
         before { instance.images = [test_file_stub] }
 
-        it { is_expected.to be_nil }
+        it { is_expected.to be_empty }
       end
 
       describe "when an processing error occurs" do
@@ -717,7 +749,7 @@ describe CarrierWave::Mount do
         context "when file is cached" do
           before { instance.images = [test_file_stub] }
 
-          it { is_expected.to be_an_instance_of(CarrierWave::ProcessingError) }
+          it { is_expected.to include(a_kind_of(CarrierWave::ProcessingError)) }
         end
 
         context "when file was downloaded" do
@@ -726,13 +758,13 @@ describe CarrierWave::Mount do
             instance.remote_images_urls = ["http://www.example.com/#{test_file_name}"]
           end
 
-          it { is_expected.to be_an_instance_of(CarrierWave::ProcessingError) }
+          it { is_expected.to include(a_kind_of(CarrierWave::ProcessingError)) }
         end
       end
     end
 
-    describe '#images_download_error' do
-      subject(:images_download_error) { instance.images_download_error }
+    describe '#images_download_errors' do
+      subject(:images_download_errors) { instance.images_download_errors }
 
       before do
         stub_request(:get, "www.example.com/#{test_file_name}").to_return(body: File.read(test_file_stub))
@@ -740,19 +772,19 @@ describe CarrierWave::Mount do
       end
 
       describe "default behaviour" do
-        it { expect(instance.images_download_error).to be_nil }
+        it { expect(instance.images_download_errors).to be_empty }
       end
 
       context "when file download was successful" do
         before { instance.remote_images_urls = ["http://www.example.com/#{test_file_name}"] }
 
-        it { is_expected.to be_nil }
+        it { is_expected.to be_empty }
       end
 
       context "when file couldn't be found" do
         before { instance.remote_images_urls = ["http://www.example.com/missing.jpg"] }
 
-        it { is_expected.to be_an_instance_of(CarrierWave::DownloadError) }
+        it { is_expected.to include(a_kind_of(CarrierWave::DownloadError)) }
       end
     end
 
