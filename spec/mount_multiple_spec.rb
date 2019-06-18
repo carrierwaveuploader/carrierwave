@@ -309,6 +309,16 @@ describe CarrierWave::Mount do
           expect { instance.store_images! }.not_to raise_error
           expect(instance.images.map(&:identifier)).to be_empty
         end
+
+        it "allows deleting all files" do
+          instance.images = []
+          expect(instance.images.map(&:identifier)).to be_empty
+        end
+
+        it "allows assignment of uploader instances" do
+          instance.images = [instance.images[0]]
+          expect(instance.images.map(&:identifier)).to eq ['bork.txt']
+        end
       end
     end
 

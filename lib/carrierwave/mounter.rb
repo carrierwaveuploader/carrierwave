@@ -41,7 +41,7 @@ module CarrierWave
     end
 
     def cache(new_files)
-      return if new_files.blank?
+      return if !new_files.is_a?(Array) && new_files.blank?
       old_uploaders = uploaders
       @uploaders = new_files.map do |new_file|
         handle_error do
