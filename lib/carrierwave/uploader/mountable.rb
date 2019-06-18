@@ -33,6 +33,12 @@ module CarrierWave
         @mounted_as = mounted_as
       end
 
+      ##
+      # Returns array index of given uploader within currently mounted uploaders
+      #
+      def index
+        model.__send__(:_mounter, mounted_as).uploaders.index(self)
+      end
     end # Mountable
   end # Uploader
 end # CarrierWave
