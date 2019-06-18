@@ -38,6 +38,16 @@ module CarrierWave
       include CarrierWave::Uploader::Callbacks
       include CarrierWave::Uploader::Configuration
 
+      included do
+        prepend Module.new {
+          def initialize(*)
+            super
+            @staged = false
+          end
+        }
+        attr_accessor :staged
+      end
+
       module ClassMethods
 
         ##
@@ -125,6 +135,7 @@ module CarrierWave
 
         self.cache_id = CarrierWave.generate_cache_id unless cache_id
 
+        @staged = true
         @filename = new_file.filename
         self.original_filename = new_file.filename
 
@@ -158,6 +169,7 @@ module CarrierWave
       def retrieve_from_cache!(cache_name)
         with_callbacks(:retrieve_from_cache, cache_name) do
           self.cache_id, self.original_filename = cache_name.to_s.split('/', 2)
+          @staged = true
           @filename = original_filename
           @file = cache_storage.retrieve_from_cache!(full_filename(original_filename))
         end

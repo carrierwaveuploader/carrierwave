@@ -70,6 +70,7 @@ module CarrierWave
             end
             @file = new_file
             @cache_id = @identifier = nil
+            @staged = false
           end
         end
       end

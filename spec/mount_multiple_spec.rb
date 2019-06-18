@@ -181,6 +181,11 @@ describe CarrierWave::Mount do
         it "copies files into the cache directory" do
           expect(instance.images[0].current_path).to match(/^#{public_path('uploads/tmp')}/)
         end
+
+        it "marks the uploader as staged" do
+          expect(instance.images[0].staged).to be true
+          expect(instance.images[1].staged).to be true
+        end
       end
 
       it "does nothing when nil is assigned" do
@@ -243,6 +248,12 @@ describe CarrierWave::Mount do
           instance.store_images!
         end
         let(:identifiers) { instance.images.map(&:identifier) }
+
+        it "writes over a previously stored file" do
+          instance.images = [old_image_stub]
+          instance.store_images!
+          expect(instance.images.map(&:identifier)).to eq ['old.jpeg']
+        end
 
         it "preserves existing image of given identifier" do
           instance.images = [identifiers[0], old_image_stub]
@@ -390,30 +401,43 @@ describe CarrierWave::Mount do
         CarrierWave::SanitizedFile.new(test_file_stub).copy_to(public_path('uploads/tmp/1369894322-123-0123-1234/test.jpg'))
       end
 
-      before { instance.images_cache = images_cache }
-
       context "does nothing when nil is assigned" do
-        let(:images_cache) { nil }
+        before { instance.images_cache = nil }
 
         it { expect(instance.images).to be_empty }
       end
 
       context "does nothing when an empty string is assigned" do
-        let(:images_cache) { '' }
+        before { instance.images_cache = '' }
 
         it { expect(instance.images).to be_empty }
       end
 
       context "retrieve from cache when a cache name is assigned" do
-        let(:images_cache) { ['1369894322-123-0123-1234/test.jpg'].to_json }
+        before { instance.images_cache = ['1369894322-123-0123-1234/test.jpg'].to_json }
 
         it { expect(instance.images[0].current_path).to eq(public_path('uploads/tmp/1369894322-123-0123-1234/test.jpg')) }
+
+        it "marks the uploader as staged" do
+          expect(instance.images[0].staged).to be true
+        end
+      end
+
+      context "writes over a previously stored file" do
+        before do
+          instance.images = [test_file_stub]
+          instance.store_images!
+          instance.images_cache = ['1369894322-123-0123-1234/monkey.jpg'].to_json
+        end
+
+        it { expect(instance.images[0].current_path).to match(/monkey.jpg$/) }
       end
 
       context "doesn't write over a previously assigned file" do
-        let(:images_cache) { ['1369894322-123-0123-1234/monkey.jpg'].to_json }
-
-        before { instance.images = [test_file_stub] }
+        before do
+          instance.images = [test_file_stub]
+          instance.images_cache = ['1369894322-123-0123-1234/monkey.jpg'].to_json
+        end
 
         it { expect(instance.images[0].current_path).to match(/test.jpg$/) }
       end
@@ -461,9 +485,27 @@ describe CarrierWave::Mount do
         let(:remote_images_url) { ["http://www.example.com/test.jpg"] }
 
         it { is_expected.to match(/test.jpg$/) }
+
+        it "marks the uploader as staged" do
+          expect(instance.images[0].staged).to be true
+        end
       end
 
-      context "writes over a previously assigned file" do
+      context "writes over a previously stored file" do
+        subject { images[0].current_path }
+
+        let(:remote_images_url) { ["http://www.example.com/test.jpg"] }
+
+        before do
+          instance.images = [stub_file("portrait.jpg")]
+          instance.store_images!
+          instance.remote_images_urls = remote_images_url
+        end
+
+        it { is_expected.to match(/test.jpg$/) }
+      end
+
+      context "does not write over a previously assigned file" do
         subject { images[0].current_path }
 
         let(:remote_images_url) { ["http://www.example.com/test.jpg"] }
@@ -473,7 +515,7 @@ describe CarrierWave::Mount do
           instance.remote_images_urls = remote_images_url
         end
 
-        it { is_expected.to match(/test.jpg$/) }
+        it { is_expected.to match(/portrait.jpg$/) }
       end
     end
 
@@ -498,6 +540,10 @@ describe CarrierWave::Mount do
         end
 
         it { expect(instance.images[0].current_path).to eq(public_path("uploads/#{test_file_name}")) }
+
+        it "marks the uploader as unstaged" do
+          expect(instance.images[0].staged).to be false
+        end
       end
 
       context "removes an uploaded file when remove_images is true" do

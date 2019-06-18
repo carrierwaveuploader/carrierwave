@@ -42,7 +42,9 @@ module CarrierWave
       old_uploaders = uploaders
       @uploaders = new_files.map do |new_file|
         if new_file.is_a?(String)
-          old_uploaders.detect { |uploader| uploader.identifier == new_file }
+          uploader = old_uploaders.detect { |uploader| uploader.identifier == new_file }
+          uploader.staged = true if uploader
+          uploader
         else
           uploader = blank_uploader
           uploader.cache!(new_file)
@@ -65,11 +67,12 @@ module CarrierWave
     end
 
     def cache_names=(cache_names)
-      return if cache_names.blank? || uploaders.any?(&:cached?)
-      @uploaders = cache_names.map do |cache_name|
+      return if cache_names.blank?
+      clear_unstaged
+      cache_names.map do |cache_name|
         uploader = blank_uploader
         uploader.retrieve_from_cache!(cache_name)
-        uploader
+        @uploaders << uploader
       end
     rescue CarrierWave::InvalidParameter
     end
@@ -81,10 +84,11 @@ module CarrierWave
       @download_error = nil
       @integrity_error = nil
 
-      @uploaders = urls.zip(remote_request_headers || []).map do |url, header|
+      clear_unstaged
+      urls.zip(remote_request_headers || []).map do |url, header|
         uploader = blank_uploader
         uploader.download!(url, header || {})
-        uploader
+        @uploaders << uploader
       end
 
     rescue CarrierWave::DownloadError => e
@@ -164,5 +168,9 @@ module CarrierWave
       self.uploader_options[name] ||= record.class.uploader_option(column, name)
     end
 
+    def clear_unstaged
+      @uploaders ||= []
+      @uploaders.keep_if(&:staged)
+    end
   end # Mounter
 end # CarrierWave
