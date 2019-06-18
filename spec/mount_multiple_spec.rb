@@ -257,6 +257,19 @@ describe CarrierWave::Mount do
         end
       end
 
+      describe "with cached files" do
+        before do
+          instance.images = [text_file_stub, test_file_stub]
+        end
+        let(:cache_names) { instance.images.map(&:cache_name) }
+        let(:identifiers) { instance.images.map(&:identifier) }
+
+        it "accepts cache name and retrieves from cache" do
+          instance.images = [cache_names[1]]
+          expect(instance.images.map { |u| u.file.filename }).to eq ['test.jpg']
+        end
+      end
+
       describe "with stored files" do
         before do
           instance.images = [text_file_stub, test_file_stub]

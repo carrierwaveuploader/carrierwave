@@ -46,9 +46,18 @@ module CarrierWave
       @uploaders = new_files.map do |new_file|
         handle_error do
           if new_file.is_a?(String)
-            uploader = old_uploaders.detect { |uploader| uploader.identifier == new_file }
-            uploader.staged = true if uploader
-            uploader
+            if (uploader = old_uploaders.detect { |uploader| uploader.identifier == new_file })
+              uploader.staged = true
+              uploader
+            else
+              begin
+                uploader = blank_uploader
+                uploader.retrieve_from_cache!(new_file)
+                uploader
+              rescue CarrierWave::InvalidParameter
+                nil
+              end
+            end
           else
             uploader = blank_uploader
             uploader.cache!(new_file)
