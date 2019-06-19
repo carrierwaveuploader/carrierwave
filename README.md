@@ -199,7 +199,7 @@ If you want to preserve existing files on uploading new one, you can go like:
 <%= form.file_field :avatars, multiple: true %>
 ```
 
-Sorting avatars is supported as well by reordering `hidden_field`.
+Sorting avatars is supported as well by reordering `hidden_field`, an example using jQuery UI Sortable is available [here](https://github.com/carrierwaveuploader/carrierwave/wiki/How-to%3A-Add%2C-remove-and-reorder-images-using-multiple-file-upload).
 
 ## Changing the storage directory
 
