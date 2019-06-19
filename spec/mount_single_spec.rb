@@ -348,11 +348,11 @@ describe CarrierWave::Mount do
         expect(@instance.image.current_path).to match(/test.jpg$/)
       end
 
-      it "writes over a previously assigned file" do
+      it "does not write over a previously assigned file" do
         @instance.image = stub_file("portrait.jpg")
         @instance.remote_image_url = "http://www.example.com/test.jpg"
 
-        expect(@instance.image.current_path).to match(/test.jpg$/)
+        expect(@instance.image.current_path).to match(/portrait.jpg$/)
       end
     end
 

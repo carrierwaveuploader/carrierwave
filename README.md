@@ -190,6 +190,17 @@ u.avatars[0].current_path # => 'path/to/file.png'
 u.avatars[0].identifier # => 'file.png'
 ```
 
+If you want to preserve existing files on uploading new one, you can go like:
+
+```erb
+<% user.avatars.each do |avatar| %>
+  <%= hidden_field :user, :avatars, multiple: true, value: avatar.identifier %>
+<% end %>
+<%= form.file_field :avatars, multiple: true %>
+```
+
+Sorting avatars is supported as well by reordering `hidden_field`, an example using jQuery UI Sortable is available [here](https://github.com/carrierwaveuploader/carrierwave/wiki/How-to%3A-Add%2C-remove-and-reorder-images-using-multiple-file-upload).
+
 ## Changing the storage directory
 
 In order to change where uploaded files are put, just override the `store_dir`

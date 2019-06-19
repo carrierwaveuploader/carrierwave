@@ -23,4 +23,17 @@ describe CarrierWave::Uploader do
       expect(uploader.mounted_as).to eq(:llama)
     end
   end
+
+  describe '#index' do
+    let(:model) { Class.new.send(:extend, CarrierWave::Mount) }
+    let(:instance) { model.new }
+    before do
+      model.mount_uploaders(:images, uploader_class)
+      instance.images = [stub_file('test.jpg'), stub_file('bork.txt')]
+    end
+
+    it "returns the current index in uploaders" do
+      expect(instance.images.map(&:index)).to eq [0, 1]
+    end
+  end
 end
