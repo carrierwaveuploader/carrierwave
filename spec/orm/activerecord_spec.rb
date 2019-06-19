@@ -1249,6 +1249,13 @@ describe CarrierWave::ActiveRecord do
         @event.remove_images = "1"
         expect(@event.images_changed?).to be_truthy
       end
+
+      it "should not mark the images as changed if falsey value is assigned" do
+        @event.remove_images = "0"
+        expect(@event.images_changed?).to be_falsey
+        @event.remove_images = "false"
+        expect(@event.images_changed?).to be_falsey
+      end
     end
 
     describe "#remote_images_urls=" do
