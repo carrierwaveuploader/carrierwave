@@ -600,21 +600,6 @@ describe CarrierWave::Mount do
           expect(instance.images[0].staged).to be false
         end
       end
-
-      context "removes an uploaded file when remove_images is true" do
-        let(:images) { [test_file_stub] }
-
-        before do
-          instance.images = images
-          @image_path = instance.images[0].current_path.dup
-          instance.remove_images = true
-          instance.store_images!
-        end
-
-        it { expect(instance.images).to be_empty }
-
-        it { expect(File.exist?(@image_path)).to be_falsey }
-      end
     end
 
     describe '#remove_images!' do
@@ -827,7 +812,11 @@ describe CarrierWave::Mount do
           instance.remove_images = true
         end
 
-        it "removes from the column when remove_images is true" do
+        it "clears existing uploaders" do
+          expect(instance.images).to be_empty
+        end
+
+        it "removes from the column" do
           expect(instance).to receive(:write_uploader).with(:images, nil)
         end
       end

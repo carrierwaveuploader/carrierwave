@@ -373,15 +373,6 @@ describe CarrierWave::Mount do
         @instance.store_image!
         expect(@instance.image.current_path).to eq(public_path('uploads/test.jpg'))
       end
-
-      it "should remove an uploaded file when remove_image? returns true" do
-        @instance.image = stub_file('test.jpg')
-        path = @instance.image.current_path
-        @instance.remove_image = true
-        @instance.store_image!
-        expect(@instance.image).to be_blank
-        expect(File.exist?(path)).to be_falsey
-      end
     end
 
     describe '#remove_image!' do
@@ -579,6 +570,7 @@ describe CarrierWave::Mount do
         @instance.remove_image = true
         expect(@instance).to receive(:write_uploader).with(:image, nil)
         @instance.write_image_identifier
+        expect(@instance.image).to be_blank
       end
     end
 

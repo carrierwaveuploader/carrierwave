@@ -101,11 +101,7 @@ module CarrierWave
     end
 
     def store!
-      if remove?
-        remove!
-      else
-        uploaders.reject(&:blank?).each(&:store!)
-      end
+      uploaders.reject(&:blank?).each(&:store!)
     end
 
     def urls(*args)
@@ -122,6 +118,10 @@ module CarrierWave
 
     def remove!
       uploaders.reject(&:blank?).each(&:remove!)
+      @uploaders = []
+    end
+
+    def clear!
       @uploaders = []
     end
 

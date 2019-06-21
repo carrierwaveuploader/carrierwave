@@ -174,11 +174,8 @@ module CarrierWave
           return if frozen?
           mounter = _mounter(:#{column})
 
-          if mounter.remove?
-            write_uploader(mounter.serialization_column, nil)
-          elsif mounter.identifiers.first
-            write_uploader(mounter.serialization_column, mounter.identifiers.first)
-          end
+          mounter.clear! if mounter.remove?
+          write_uploader(mounter.serialization_column, mounter.identifiers.first)
         end
 
         def #{column}_identifier
@@ -341,11 +338,8 @@ module CarrierWave
           return if frozen?
           mounter = _mounter(:#{column})
 
-          if mounter.remove?
-            write_uploader(mounter.serialization_column, nil)
-          elsif mounter.identifiers.any?
-            write_uploader(mounter.serialization_column, mounter.identifiers)
-          end
+          mounter.clear! if mounter.remove?
+          write_uploader(mounter.serialization_column, mounter.identifiers.presence)
         end
 
         def #{column}_identifiers
