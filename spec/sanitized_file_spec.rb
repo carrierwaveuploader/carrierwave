@@ -186,7 +186,7 @@ describe CarrierWave::SanitizedFile do
 
     it "handles Mime::Type object" do
       file = File.open(file_path('sponsored.doc'))
-      file.stub(:content_type) { 'application/msword' }
+      allow(file).to receive(:content_type) { 'application/msword' }
 
       sanitized_file = CarrierWave::SanitizedFile.new(file)
       allow(sanitized_file).to receive(:file).and_return(file)
@@ -215,10 +215,10 @@ describe CarrierWave::SanitizedFile do
 
       sanitized_file = CarrierWave::SanitizedFile.new(file)
 
-      lambda { sanitized_file.content_type }.should_not raise_error
+      expect { sanitized_file.content_type }.not_to raise_error
 
-      sanitized_file.content_type.should_not == 'image/png'
-      sanitized_file.content_type.should == 'invalid/invalid'
+      expect(sanitized_file.content_type).to_not eq 'image/png'
+      expect(sanitized_file.content_type).to eq 'invalid/invalid'
     end
 
     it "does not raise an error if the path is not present" do

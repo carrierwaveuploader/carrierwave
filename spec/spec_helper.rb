@@ -67,7 +67,7 @@ module CarrierWave
 
       def stub_file(filename, mime_type=nil, fake_name=nil)
         f = File.open(file_path(filename))
-        f.stub(:content_type) { mime_type } if mime_type
+        allow(f).to receive(:content_type) { mime_type } if mime_type
         return f
       end
     end
