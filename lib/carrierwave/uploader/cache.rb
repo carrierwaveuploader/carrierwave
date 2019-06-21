@@ -90,14 +90,8 @@ module CarrierWave
       end
 
       def sanitized_file
-        _content = file.read
-        if _content.is_a?(File) # could be if storage is Fog
-          sanitized = CarrierWave::Storage::Fog.new(self).retrieve!(File.basename(_content.path))
-        else
-          sanitized = SanitizedFile.new :tempfile => StringIO.new(_content),
-            :filename => File.basename(path), :content_type => file.content_type
-        end
-        sanitized
+        ActiveSupport::Deprecation.warn('#sanitized_file is deprecated, use #file instead.')
+        file
       end
 
       ##
@@ -127,7 +121,7 @@ module CarrierWave
       #
       # [CarrierWave::FormNotMultipart] if the assigned parameter is a string
       #
-      def cache!(new_file = sanitized_file)
+      def cache!(new_file = file)
         new_file = CarrierWave::SanitizedFile.new(new_file)
         return if new_file.empty?
 

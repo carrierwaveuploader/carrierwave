@@ -44,6 +44,18 @@ end
           uploader.store!(file)
           expect { uploader.cache_stored_file! }.not_to raise_error
         end
+
+        it "should create local file for processing" do
+          @uploader.class_eval do
+            def check_file
+              raise unless File.exists?(file.path)
+            end
+            process :check_file
+          end
+          uploader = @uploader.new
+          uploader.store!(file)
+          uploader.cache_stored_file!
+        end
       end
 
       context '#acl_header' do

@@ -19,20 +19,6 @@ describe CarrierWave::Uploader do
     end
   end
 
-  describe '#sanitized_file' do
-    before { uploader.store! CarrierWave::SanitizedFile.new(test_file) }
-
-    it "returns a sanitized file" do
-      expect(uploader.sanitized_file).to be_an_instance_of(CarrierWave::SanitizedFile)
-    end
-
-    it "only read the file once" do
-      expect(uploader.file).to receive(:read).once.and_return('this is stuff')
-
-      uploader.sanitized_file
-    end
-  end
-
   context "permissions" do
     it "sets permissions if options are given" do
       uploader_class.permissions = permission
@@ -113,6 +99,10 @@ describe CarrierWave::Uploader do
         uploader.cache!(nil)
       end
 
+      it "does not read whole content of file into memory" do
+        expect(uploader.file).not_to receive(:read)
+        uploader.cache!
+      end
 
       context 'negative cache id' do
         let(:cache_id) { '-1369894322-345-1234-2255' }
