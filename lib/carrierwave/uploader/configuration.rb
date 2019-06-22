@@ -110,8 +110,8 @@ module CarrierWave
         #     cache_storage CarrierWave::Storage::File
         #     cache_storage MyCustomStorageEngine
         #
-        def cache_storage(storage = nil)
-          if storage
+        def cache_storage(storage = false)
+          unless storage == false
             self._cache_storage = storage.is_a?(Symbol) ? eval(storage_engines[storage]) : storage
           end
           _cache_storage
@@ -186,7 +186,7 @@ module CarrierWave
               :fog  => "CarrierWave::Storage::Fog"
             }
             config.storage = :file
-            config.cache_storage = :file
+            config.cache_storage = nil
             config.fog_attributes = {}
             config.fog_credentials = {}
             config.fog_public = true

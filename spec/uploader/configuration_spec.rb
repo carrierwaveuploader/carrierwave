@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'carrierwave/storage/fog'
 
 describe CarrierWave do
   describe '.configure' do
@@ -78,6 +77,21 @@ describe CarrierWave::Uploader::Base do
 
     it "raises UnknownStorageError when set unknown storage" do
       expect{ uploader_class.storage :unknown }.to raise_error(CarrierWave::UnknownStorageError, "Unknown storage: unknown")
+    end
+  end
+
+  describe ".cache_storage" do
+    it "returns the same storage as given by #storage" do
+      uploader_class.storage :file
+      expect(uploader_class.new.send(:cache_storage)).to be_a(CarrierWave::Storage::File)
+      uploader_class.storage :fog
+      expect(uploader_class.new.send(:cache_storage)).to be_a(CarrierWave::Storage::Fog)
+    end
+
+    it "can be explicitly set" do
+      uploader_class.storage :fog
+      uploader_class.cache_storage :file
+      expect(uploader_class.new.send(:cache_storage)).to be_a(CarrierWave::Storage::File)
     end
   end
 
