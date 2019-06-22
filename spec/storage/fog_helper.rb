@@ -6,7 +6,6 @@ def fog_tests(fog_credentials)
         WebMock.disable! unless Fog.mocking?
         CarrierWave.configure do |config|
           config.reset_config
-          config.fog_provider = "fog/#{fog_credentials[:provider].downcase}"
           config.fog_attributes = {}
           config.fog_credentials = fog_credentials
           config.fog_directory = CARRIERWAVE_DIRECTORY

@@ -60,6 +60,14 @@ module CarrierWave
         def connection_cache
           @connection_cache ||= {}
         end
+
+        def eager_load
+          # see #1198. This will hopefully no longer be necessary in future release of fog
+          fog_credentials = CarrierWave::Uploader::Base.fog_credentials
+          if fog_credentials.present?
+            CarrierWave::Storage::Fog.connection_cache[fog_credentials] ||= ::Fog::Storage.new(fog_credentials)
+          end
+        end
       end
 
       ##

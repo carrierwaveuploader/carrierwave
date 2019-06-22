@@ -158,12 +158,4 @@ describe CarrierWave::Uploader::Base do
       end
     end
   end
-
-  describe '.eager_load_fog' do
-    before { uploader_class.fog_provider = 'fog/aws' }
-    it "caches Fog::Storage instance" do
-      expect { uploader_class.eager_load_fog(provider: 'AWS', aws_access_key_id: 'foo', aws_secret_access_key: 'bar') }.
-        to change { CarrierWave::Storage::Fog.connection_cache }
-    end
-  end
 end

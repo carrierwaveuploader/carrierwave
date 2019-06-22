@@ -678,7 +678,6 @@ If you want to use fog you must add in your CarrierWave initializer the
 following lines
 
 ```ruby
-config.fog_provider = 'fog' # 'fog/aws' etc. Defaults to 'fog'
 config.fog_credentials = { ... } # Provider specific credentials
 ```
 
@@ -696,7 +695,6 @@ You can also pass in additional options, as documented fully in lib/carrierwave/
 
 ```ruby
 CarrierWave.configure do |config|
-  config.fog_provider = 'fog/aws'                        # required
   config.fog_credentials = {
     provider:              'AWS',                        # required
     aws_access_key_id:     'xxx',                        # required unless using use_iam_profile
@@ -745,7 +743,6 @@ Using a US-based account:
 
 ```ruby
 CarrierWave.configure do |config|
-  config.fog_provider = "fog/rackspace/storage"   # optional, defaults to "fog"
   config.fog_credentials = {
     provider:           'Rackspace',
     rackspace_username: 'xxxxxx',
@@ -760,7 +757,6 @@ Using a UK-based account:
 
 ```ruby
 CarrierWave.configure do |config|
-  config.fog_provider = "fog/rackspace/storage"   # optional, defaults to "fog"
   config.fog_credentials = {
     provider:           'Rackspace',
     rackspace_username: 'xxxxxx',
@@ -809,7 +805,6 @@ Please read the [fog-google README](https://github.com/fog/fog-google/blob/maste
 
 ```ruby
 CarrierWave.configure do |config|
-  config.fog_provider = 'fog/google'                        # required
   config.fog_credentials = {
     provider:                         'Google',
     google_storage_access_key_id:     'xxxxxx',

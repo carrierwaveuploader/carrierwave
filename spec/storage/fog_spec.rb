@@ -3,7 +3,6 @@ require 'fog/aws'
 require 'fog/google'
 require 'fog/local'
 require 'fog/rackspace'
-require 'carrierwave/storage/fog'
 
 unless ENV['REMOTE'] == 'true'
   Fog.mock!
@@ -14,6 +13,29 @@ require_relative './fog_helper'
 
 FOG_CREDENTIALS.each do |credential|
   fog_tests(credential)
+end
+
+describe CarrierWave::Storage::Fog do
+  describe '.eager_load' do
+    after do
+      CarrierWave::Storage::Fog.connection_cache.clear
+      CarrierWave::Uploader::Base.fog_credentials = nil
+    end
+
+    it "caches Fog::Storage instance" do
+      CarrierWave::Uploader::Base.fog_credentials = {
+        provider: 'AWS', aws_access_key_id: 'foo', aws_secret_access_key: 'bar'
+      }
+      expect { CarrierWave::Storage::Fog.eager_load }.
+        to change { CarrierWave::Storage::Fog.connection_cache }
+    end
+
+    it "does nothing when fog_credentials is empty" do
+      CarrierWave::Uploader::Base.fog_credentials = {}
+      expect { CarrierWave::Storage::Fog.eager_load }.
+        not_to change { CarrierWave::Storage::Fog.connection_cache }
+    end
+  end
 end
 
 describe CarrierWave::Storage::Fog::File do
