@@ -25,9 +25,9 @@ module CarrierWave
   #
   def self.generate_cache_id
     [Time.now.utc.to_i,
-      Process.pid,
-      '%04d' % (CarrierWave::CacheCounter.increment % 10000),
-      '%04d' % SecureRandom.random_number(10000)
+      SecureRandom.random_number(1_000_000_000_000_000),
+      '%04d' % (CarrierWave::CacheCounter.increment % 10_000),
+      '%04d' % SecureRandom.random_number(10_000)
     ].map(&:to_s).join('-')
   end
 
