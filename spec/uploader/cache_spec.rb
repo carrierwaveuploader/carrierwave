@@ -319,11 +319,10 @@ describe CarrierWave::Uploader do
       expect(CarrierWave.generate_cache_id.split('-')[2].to_i).to eq(counter + 1)
     end
 
-    it 'generates dir name with constant length even when counter has big value' do
-      length = CarrierWave.generate_cache_id.length
+    it 'generates dir name using constant length for the counter' do
       allow(CarrierWave::CacheCounter).to receive(:increment).and_return(1234567890)
 
-      expect(CarrierWave.generate_cache_id.length).to eq(length)
+      expect(CarrierWave.generate_cache_id.split('-')[2].length).to eq(4)
     end
   end
 end
