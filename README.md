@@ -30,13 +30,13 @@ $ gem install carrierwave
 In Rails, add it to your Gemfile:
 
 ```ruby
-gem 'carrierwave', '~> 1.0'
+gem 'carrierwave', '>= 2.0.0.rc', '< 3.0'
 ```
 
 Finally, restart the server to apply the changes.
 
-As of version 1.0, CarrierWave requires Rails 4.0 or higher and Ruby 2.0
-or higher. If you're on Rails 3, you should use v0.11.0.
+As of version 2.0, CarrierWave requires Rails 5.0 or higher and Ruby 2.2
+or higher. If you're on Rails 4, you should use 1.x.
 
 ## Getting Started
 
