@@ -23,6 +23,17 @@ module CarrierWave
         serializable_hash.to_xml(merged_options)
       end
 
+      def to_base64
+        {"data" => as_base64(url)}.merge Hash[versions.map { |name, version| [name.to_s, { "data" => as_base64(version.url) }] }]
+      end
+
+      private
+
+      def as_base64(url)
+        bytes = open(url) {|f| f.read }
+        "data:image/png;base64," + Base64.strict_encode64(bytes)
+      end
+
     end
   end
 end
