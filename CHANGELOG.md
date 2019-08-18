@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 2.0.0 - 2019-08-18
+
+_No changes._
+
 ## 2.0.0.rc - 2019-06-23
 ### Added
 * Append, reorder, and remove-single-file feature for multiple file uploader(@mshibuya [#2401](https://github.com/carrierwaveuploader/carrierwave/pull/2401))

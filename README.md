@@ -30,7 +30,7 @@ $ gem install carrierwave
 In Rails, add it to your Gemfile:
 
 ```ruby
-gem 'carrierwave', '>= 2.0.0.rc', '< 3.0'
+gem 'carrierwave', '~> 2.0'
 ```
 
 Finally, restart the server to apply the changes.
