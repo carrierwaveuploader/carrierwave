@@ -72,9 +72,10 @@ module CarrierWave
     end
 
     def cache_names=(cache_names)
+      cache_names = cache_names.reject(&:blank?)
       return if cache_names.blank?
       clear_unstaged
-      cache_names.map do |cache_name|
+      cache_names.each do |cache_name|
         begin
           uploader = blank_uploader
           uploader.retrieve_from_cache!(cache_name)
@@ -91,7 +92,7 @@ module CarrierWave
       @remote_urls = urls
 
       clear_unstaged
-      urls.zip(remote_request_headers || []).map do |url, header|
+      urls.zip(remote_request_headers || []).each do |url, header|
         handle_error do
           uploader = blank_uploader
           uploader.download!(url, header || {})

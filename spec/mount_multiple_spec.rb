@@ -487,6 +487,18 @@ describe CarrierWave::Mount do
           expect(instance.images.map(&:cache_name)).to eq(['1369894322-123-0123-1234/test.jpg'])
         end
       end
+
+      context "when an empty string is assigned" do
+        before do
+          instance.images = [test_file_stub]
+          instance.store_images!
+          instance.images_cache = [''].to_json
+        end
+
+        it "does not write over a previously stored file" do
+          expect(instance.images[0].current_path).to match(/test.jpg$/)
+        end
+      end
     end
 
     describe "#remote_images_urls" do
@@ -563,6 +575,22 @@ describe CarrierWave::Mount do
         end
 
         it { is_expected.to match(/portrait.jpg$/) }
+      end
+
+      context "when an empty string is assigned" do
+        subject { images[0].current_path }
+
+        let(:remote_images_url) { [""] }
+
+        before do
+          instance.images = [stub_file("portrait.jpg")]
+          instance.store_images!
+          instance.remote_images_urls = remote_images_url
+        end
+
+        it "does not write over a previously stored file" do
+          is_expected.to match(/portrait.jpg$/)
+        end
       end
 
       context "if a file fails to be downloaded" do

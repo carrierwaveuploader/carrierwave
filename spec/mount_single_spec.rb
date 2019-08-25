@@ -288,6 +288,13 @@ describe CarrierWave::Mount do
         @instance.image_cache = '1369894322-123-0123-1234/monkey.jpg'
         expect(@instance.image.current_path).to match(/test.jpg$/)
       end
+
+      it "should not clear a previously stored file when an empty string is assigned" do
+        @instance.image = stub_file('test.jpg')
+        @instance.image.store!
+        @instance.image_cache = ''
+        expect(@instance.image.current_path).to match(/test.jpg$/)
+      end
     end
 
     describe "#remote_image_url" do
@@ -353,6 +360,13 @@ describe CarrierWave::Mount do
         @instance.remote_image_url = "http://www.example.com/test.jpg"
 
         expect(@instance.image.current_path).to match(/portrait.jpg$/)
+      end
+
+      it "does not clear a previously stored file when an empty string is assigned" do
+        @instance.remote_image_url = "http://www.example.com/test.jpg"
+        @instance.image.store!
+        @instance.remote_image_url = ""
+        expect(@instance.image.current_path).to match(/test.jpg$/)
       end
     end
 
