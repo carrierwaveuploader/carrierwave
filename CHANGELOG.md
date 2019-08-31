@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 2.0.1 - 2019-08-31
+
+### Fixed
+* Fix `#{column}_cache` unintentionally removing files on assigning empty string(@mshibuya [22e8005e](https://github.com/carrierwaveuploader/carrierwave/commit/22e8005e44751fbce9f088497853aa60b6c89fcc), [#2412](https://github.com/carrierwaveuploader/carrierwave/issues/2412))
+
 ## 2.0.0 - 2019-08-18
 
 _No changes._
