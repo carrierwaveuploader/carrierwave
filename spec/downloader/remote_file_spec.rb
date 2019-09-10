@@ -6,9 +6,12 @@ describe CarrierWave::Downloader::RemoteFile do
   end
   subject { CarrierWave::Downloader::RemoteFile.new(file) }
 
-  it 'sets file extension based on content-type if missing' do
+  before do
     subject.base_uri = URI.parse 'http://example.com/test'
     subject.meta_add_field 'content-type', 'image/jpeg'
+  end
+
+  it 'sets file extension based on content-type if missing' do
     expect(subject.original_filename).to eq "test.jpeg"
   end
 
@@ -22,6 +25,22 @@ describe CarrierWave::Downloader::RemoteFile do
 
       it "reads filename correctly" do
         expect(subject.original_filename).to eq 'another_test.jpg'
+      end
+    end
+
+    context 'when filename is quoted and empty' do
+      let(:content_disposition){ 'filename=""' }
+
+      it "sets file extension based on content-type if missing" do
+        expect(subject.original_filename).to eq 'test.jpeg'
+      end
+    end
+
+    context 'when filename is not quoted and empty' do
+      let(:content_disposition){ 'filename=' }
+
+      it "reads filename correctly" do
+        expect(subject.original_filename).to eq 'test.jpeg'
       end
     end
 
