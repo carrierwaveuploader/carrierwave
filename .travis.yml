@@ -2,6 +2,9 @@ language: ruby
 
 cache: bundler
 
+env:
+  - IM_VERSION=6.9.10
+
 rvm:
   - 2.5.5
   - 2.6.2
@@ -19,6 +22,7 @@ before_install:
 before_script:
   - psql -c 'create database carrierwave_test;' -U postgres
   - sudo sh -c 'echo '\''<policymap><policy domain="coder" rights="read|write" pattern="PDF" /></policymap>'\'' > /etc/ImageMagick-6/policy.xml'
+  - bash install/imagemagick.sh
 
 matrix:
   include:
