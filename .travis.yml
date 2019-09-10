@@ -1,3 +1,5 @@
+dist: trusty
+
 language: ruby
 
 cache: bundler
@@ -8,7 +10,7 @@ rvm:
   - 2.4.5
   - 2.5.3
   - 2.6.0
-  - jruby-9.2.5.0
+  - jruby-9.2.8.0
 
 gemfile:
   - gemfiles/rails-4-0.gemfile
@@ -27,7 +29,6 @@ before_install:
 
 before_script:
   - psql -c 'create database carrierwave_test;' -U postgres
-  - sudo sh -c 'echo '\''<policymap><policy domain="coder" rights="read|write" pattern="PDF" /></policymap>'\'' > /etc/ImageMagick-6/policy.xml'
 
 matrix:
   include:
@@ -68,9 +69,9 @@ matrix:
       gemfile: gemfiles/rails-4-1.gemfile
     - rvm: 2.6.0
       gemfile: gemfiles/rails-4-2.gemfile
-    - rvm: jruby-9.2.5.0
+    - rvm: jruby-9.2.8.0
       gemfile: gemfiles/rails-4-0.gemfile
-    - rvm: jruby-9.2.5.0
+    - rvm: jruby-9.2.8.0
       gemfile: gemfiles/rails-4-1.gemfile
   allow_failures:
     - rvm: ruby-head
