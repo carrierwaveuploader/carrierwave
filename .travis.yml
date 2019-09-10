@@ -18,6 +18,7 @@ before_install:
 
 before_script:
   - psql -c 'create database carrierwave_test;' -U postgres
+  - sudo sh -c 'echo '\''<policymap><policy domain="coder" rights="read|write" pattern="PDF" /></policymap>'\'' > /etc/ImageMagick-6/policy.xml'
 
 matrix:
   include:
@@ -52,7 +53,7 @@ notifications:
     secure: Npzanyv/LXLIRlrNs8iTUbZNRhXlP+K2ZpjZoS2UKkr09jYyP1qdf5a//R3Lu7Yat7g2b4qTJGbaZBEMUQSVaJ6UX6quiBJjVWxjxjQ4Ugk8k/yOIAcGEGYPfS6YzRXemRwo9j4uy76cmwlv8cwEuYTSTBRK4XrdYHslX6pKSXM=
 
 addons:
-  postgresql: "9.3"
+  postgresql: "9.6"
   apt:
     packages:
       - ghostscript
