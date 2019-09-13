@@ -26,7 +26,7 @@ _No changes._
 * Allow custom expires_at when building an authenticated_url(@stephankaag [#2397](https://github.com/carrierwaveuploader/carrierwave/pull/2397))
 
 ### Changed
-* Use the storage given by `storage` configuration also for `cache_storage` unless explicitly specified(@mshibuya [629afecb](https://github.com/carrierwaveuploader/carrierwave/commit/629afecbaeccd2300e4660b78ee36bd95dd845c5))
+* [BREAKING CHANGE] Use the storage given by `storage` configuration also for `cache_storage` unless explicitly specified(@mshibuya [629afecb](https://github.com/carrierwaveuploader/carrierwave/commit/629afecbaeccd2300e4660b78ee36bd95dd845c5))
 * Improve Fog initialization(@mshibuya [#2395](https://github.com/carrierwaveuploader/carrierwave/issues/2395))
 * [BREAKING CHANGE] Multiple file uploader now keeps successful files on update, only discarding failed ones(@mshibuya [7db9195d](https://github.com/carrierwaveuploader/carrierwave/commit/7db9195de3197fcecfb442caa434369fe0e37846))
 * [BREAKING CHANGE] `#remote_#{column}_urls=` was changed to preserve precedent updates(@mshibuya [8f18a95b](https://github.com/carrierwaveuploader/carrierwave/commit/8f18a95b74517ba96f6c571401d537f048e36961))
