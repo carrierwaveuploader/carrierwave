@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 2.0.2 - 2019-09-28
+
+### Fixed
+* Fix download causing nil error if the file has empty filename(@fukayatsu [#2419](https://github.com/carrierwaveuploader/carrierwave/pull/2419), [#2411](https://github.com/carrierwaveuploader/carrierwave/issues/2411))
+
 ## 2.0.1 - 2019-08-31
 
 ### Fixed
