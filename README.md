@@ -332,15 +332,13 @@ end
 
 When this uploader is used, an uploaded image would be scaled to be no larger
 than 800 by 800 pixels. The original aspect ratio will be kept.
-A version called thumb is then created, which is scaled
-to exactly 200 by 200 pixels.
 
-If you would like to crop images to a specific height and width you
-can use the alternative option of '''resize_to_fill'''. It will make sure
+A version called `:thumb` is then created, which is scaled
+to exactly 200 by 200 pixels. The thumbnail uses `resize_to_fill` which makes sure
 that the width and height specified are filled, only cropping
 if the aspect ratio requires it.
 
-The uploader could be used like this:
+The above uploader could be used like this:
 
 ```ruby
 uploader = AvatarUploader.new
@@ -352,6 +350,18 @@ uploader.thumb.url # => '/url/to/thumb_my_file.png'   # size: 200x200
 
 One important thing to remember is that process is called *before* versions are
 created. This can cut down on processing cost.
+
+### Processing Methods: mini_magick
+
+- `convert` - Changes the image encoding format to the given format, eg. jpg
+- `resize_to_limit` - Resize the image to fit within the specified dimensions while retaining the original aspect ratio. Will only resize the image if it is larger than the specified dimensions. The resulting image may be shorter or narrower than specified in the smaller dimension but will not be larger than the specified values.
+- `resize_to_fit` - Resize the image to fit within the specified dimensions while retaining the original aspect ratio. The image may be shorter or narrower than specified in the smaller dimension but will not be larger than the specified values.
+- `resize_to_fill` - Resize the image to fit within the specified dimensions while retaining the aspect ratio of the original image. If necessary, crop the image in the larger dimension. Optionally, a "gravity" may be specified, for example "Center", or "NorthEast".
+- `resize_and_pad` - Resize the image to fit within the specified dimensions while retaining the original aspect ratio. If necessary, will pad the remaining area with the given color, which defaults to transparent (for gif and png, white for jpeg). Optionally, a "gravity" may be specified, as above.
+
+See `carrierwave/processing/mini_magick.rb` for details.
+
+### Nested versions
 
 It is possible to nest versions within versions:
 
