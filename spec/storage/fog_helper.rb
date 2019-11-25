@@ -163,6 +163,24 @@ end
               end
             end
 
+            {
+              nil            => 's3.amazonaws.com',
+              'us-east-1'    => 's3.amazonaws.com',
+              'us-east-2'    => 's3.us-east-2.amazonaws.com',
+              'eu-central-1' => 's3.eu-central-1.amazonaws.com'
+            }.each do |region, expected_host|
+              it "should use a #{expected_host} hostname when using path style for access #{region} region" do
+                if @provider == 'AWS'
+                  allow(@uploader).to receive(:fog_use_ssl_for_aws).and_return(true)
+                  allow(@uploader).to receive(:fog_directory).and_return('foo.bar')
+
+                  allow(@uploader).to receive(:fog_credentials).and_return(@uploader.fog_credentials.merge(region: region))
+
+                  expect(@fog_file.public_url).to include("https://#{expected_host}/foo.bar")
+                end
+              end
+            end
+
             it "should use https as a default protocol" do
               if @provider == 'AWS'
                 expect(@fog_file.public_url).to start_with 'https://'
