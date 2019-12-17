@@ -36,6 +36,12 @@ describe CarrierWave::Uploader do
           expect { uploader.cache!(bork_file) }.to raise_error(CarrierWave::IntegrityError)
         end
 
+        it "raises an integrity error the file has not an allowlisted content type" do
+          allow(uploader).to receive(:content_type_allowlist).and_return(['image/gif'])
+
+          expect { uploader.cache!(bork_file) }.to raise_error(CarrierWave::IntegrityError)
+        end
+
         it "accepts content types as regular expressions" do
           allow(uploader).to receive(:content_type_whitelist).and_return([/image\//])
 
