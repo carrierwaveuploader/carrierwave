@@ -32,7 +32,11 @@ module CarrierWave
       #     end
       #
 
-      def extension_blacklist; end
+      def extension_blacklist
+        extension_blocklist
+      end
+
+      def extension_blocklist; end
 
     private
 
