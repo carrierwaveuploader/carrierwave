@@ -161,6 +161,8 @@ module CarrierWave
       end
 
       class File
+        DEFAULT_S3_REGION = 'us-east-1'
+
         include CarrierWave::Utilities::Uri
 
         ##
@@ -384,9 +386,15 @@ module CarrierWave
                 if valid_subdomain
                   s3_subdomain = @uploader.fog_aws_accelerate ? "s3-accelerate" : "s3"
                   "#{protocol}://#{@uploader.fog_directory}.#{s3_subdomain}.amazonaws.com/#{encoded_path}"
-                else
-                  # directory is not a valid subdomain, so use path style for access
-                  "#{protocol}://s3.amazonaws.com/#{@uploader.fog_directory}/#{encoded_path}"
+                else # directory is not a valid subdomain, so use path style for access
+                  region = @uploader.fog_credentials[:region].to_s
+                  host   = case region
+                           when DEFAULT_S3_REGION, ''
+                             's3.amazonaws.com'
+                           else
+                             "s3.#{region}.amazonaws.com"
+                           end
+                  "#{protocol}://#{host}/#{@uploader.fog_directory}/#{encoded_path}"
                 end
               end
             when 'Google'
