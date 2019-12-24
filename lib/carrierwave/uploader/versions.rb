@@ -229,9 +229,7 @@ module CarrierWave
         # process this version and all sub-versions
 
         if names.any?
-          file = sanitized_file
           set_versions_to_cache_and_store(names)
-          cache!(file)
           store!(file)
           reset_versions_to_cache_and_store
         else

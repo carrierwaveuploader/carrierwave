@@ -5,7 +5,6 @@ describe CarrierWave::Uploader do
     Class.new(CarrierWave::Uploader::Base).tap do |uc|
       uc.configure do |config|
 
-        config.fog_provider = 'fog/aws'
         config.fog_credentials = {
           :provider               => 'AWS',         # required
           :aws_access_key_id      => 'XXXX',        # required

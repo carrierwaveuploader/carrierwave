@@ -288,6 +288,13 @@ describe CarrierWave::Mount do
         @instance.image_cache = '1369894322-123-0123-1234/monkey.jpg'
         expect(@instance.image.current_path).to match(/test.jpg$/)
       end
+
+      it "should not clear a previously stored file when an empty string is assigned" do
+        @instance.image = stub_file('test.jpg')
+        @instance.image.store!
+        @instance.image_cache = ''
+        expect(@instance.image.current_path).to match(/test.jpg$/)
+      end
     end
 
     describe "#remote_image_url" do
@@ -348,10 +355,17 @@ describe CarrierWave::Mount do
         expect(@instance.image.current_path).to match(/test.jpg$/)
       end
 
-      it "writes over a previously assigned file" do
+      it "does not write over a previously assigned file" do
         @instance.image = stub_file("portrait.jpg")
         @instance.remote_image_url = "http://www.example.com/test.jpg"
 
+        expect(@instance.image.current_path).to match(/portrait.jpg$/)
+      end
+
+      it "does not clear a previously stored file when an empty string is assigned" do
+        @instance.remote_image_url = "http://www.example.com/test.jpg"
+        @instance.image.store!
+        @instance.remote_image_url = ""
         expect(@instance.image.current_path).to match(/test.jpg$/)
       end
     end
@@ -372,15 +386,6 @@ describe CarrierWave::Mount do
         @instance.image = stub_file('test.jpg')
         @instance.store_image!
         expect(@instance.image.current_path).to eq(public_path('uploads/test.jpg'))
-      end
-
-      it "should remove an uploaded file when remove_image? returns true" do
-        @instance.image = stub_file('test.jpg')
-        path = @instance.image.current_path
-        @instance.remove_image = true
-        @instance.store_image!
-        expect(@instance.image).to be_blank
-        expect(File.exist?(path)).to be_falsey
       end
     end
 
@@ -579,6 +584,7 @@ describe CarrierWave::Mount do
         @instance.remove_image = true
         expect(@instance).to receive(:write_uploader).with(:image, nil)
         @instance.write_image_identifier
+        expect(@instance.image).to be_blank
       end
     end
 

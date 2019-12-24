@@ -23,10 +23,12 @@ module CarrierWave
       private
 
       def filename_from_header
-        if file.meta.include? 'content-disposition'
-          match = file.meta['content-disposition'].match(/filename=(?:"([^"]+)"|([^";]+))/)
-          match[1].presence || match[2].presence
-        end
+        return nil unless file.meta.include? 'content-disposition'
+
+        match = file.meta['content-disposition'].match(/filename=(?:"([^"]+)"|([^";]+))/)
+        return nil unless match
+
+        match[1].presence || match[2].presence
       end
 
       def filename_from_uri

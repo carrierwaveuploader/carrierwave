@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'carrierwave/storage/fog'
 
 describe CarrierWave do
   describe '.configure' do
@@ -81,6 +80,21 @@ describe CarrierWave::Uploader::Base do
     end
   end
 
+  describe ".cache_storage" do
+    it "returns the same storage as given by #storage" do
+      uploader_class.storage :file
+      expect(uploader_class.new.send(:cache_storage)).to be_a(CarrierWave::Storage::File)
+      uploader_class.storage :fog
+      expect(uploader_class.new.send(:cache_storage)).to be_a(CarrierWave::Storage::Fog)
+    end
+
+    it "can be explicitly set" do
+      uploader_class.storage :fog
+      uploader_class.cache_storage :file
+      expect(uploader_class.new.send(:cache_storage)).to be_a(CarrierWave::Storage::File)
+    end
+  end
+
   describe '.add_config' do
     before do
       uploader_class.add_config :foo_bar
@@ -156,14 +170,6 @@ describe CarrierWave::Uploader::Base do
           uploader_class.new.hoobatz
         end
       end
-    end
-  end
-
-  describe '.eager_load_fog' do
-    before { uploader_class.fog_provider = 'fog/aws' }
-    it "caches Fog::Storage instance" do
-      expect { uploader_class.eager_load_fog(provider: 'AWS', aws_access_key_id: 'foo', aws_secret_access_key: 'bar') }.
-        to change { CarrierWave::Storage::Fog.connection_cache }
     end
   end
 end

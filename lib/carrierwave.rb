@@ -72,6 +72,10 @@ elsif defined?(Rails)
           require 'carrierwave/orm/activerecord'
         end
       end
+
+      config.before_eager_load do
+        CarrierWave::Storage::Fog.eager_load
+      end
     end
   end
 

@@ -705,7 +705,7 @@ describe CarrierWave::ActiveRecord do
         expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
       end
 
-      pending("should only delete the file once when the file is removed") do
+      it "should only delete the file once when the file is removed" do
         @event.remove_image = true
         expect_any_instance_of(CarrierWave::SanitizedFile).to receive(:delete).exactly(1).times
         expect(@event.save).to be_truthy
@@ -1248,6 +1248,13 @@ describe CarrierWave::ActiveRecord do
         expect(@event.remove_images).to be_nil
         @event.remove_images = "1"
         expect(@event.images_changed?).to be_truthy
+      end
+
+      it "should not mark the images as changed if falsey value is assigned" do
+        @event.remove_images = "0"
+        expect(@event.images_changed?).to be_falsey
+        @event.remove_images = "false"
+        expect(@event.images_changed?).to be_falsey
       end
     end
 

@@ -297,7 +297,7 @@ module CarrierWave
 
       # backwards compatibility (we want to eventually move away from MiniMagick::Image)
       if block
-        image  = MiniMagick::Image.new(result.path, result)
+        image  = ::MiniMagick::Image.new(result.path, result)
         image  = block.call(image)
         result = image.instance_variable_get(:@tempfile)
       end

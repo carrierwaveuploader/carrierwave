@@ -14,6 +14,7 @@ module CarrierWave
   # It's probably needlessly comprehensive and complex. Help is appreciated.
   #
   class SanitizedFile
+
     attr_reader :file
 
     class << self
@@ -30,7 +31,7 @@ module CarrierWave
     end
 
     ##
-    # Returns the filename (not the path) as is, without sanitizing it.
+    # Returns the filename as is, without sanitizing it.
     #
     # === Returns
     #
@@ -38,10 +39,11 @@ module CarrierWave
     #
     def original_filename
       return @original_filename if @original_filename
-      return @file.original_filename if @file && @file.respond_to?(:original_filename)
-      return unless path
-      uri = try_uri(path)
-      File.basename(uri && uri.hostname ? uri.path : path)
+      if @file and @file.respond_to?(:original_filename)
+        @file.original_filename
+      elsif path
+        File.basename(path)
+      end
     end
 
     ##
@@ -108,10 +110,11 @@ module CarrierWave
     #
     def path
       return if @file.blank?
-      return File.expand_path(@file.path) if @file.respond_to?(:path) && !@file.path.blank?
-      return unless is_path?
-      uri = try_uri(@file)
-      uri && uri.hostname ? uri.to_s : File.expand_path(@file)
+      if is_path?
+        File.expand_path(@file)
+      elsif @file.respond_to?(:path) && !@file.path.blank?
+        File.expand_path(@file.path)
+      end
     end
 
     ##
@@ -122,7 +125,6 @@ module CarrierWave
     def is_path?
       !!((@file.is_a?(String) || @file.is_a?(Pathname)) && !@file.blank?)
     end
-    alias_method :path?, :is_path?
 
     ##
     # === Returns
@@ -173,8 +175,8 @@ module CarrierWave
     #
     def move_to(new_path, permissions=nil, directory_permissions=nil, keep_filename=false)
       return if self.empty?
-      uri = try_uri(new_path)
-      new_path = File.expand_path(new_path) unless uri && uri.hostname
+      new_path = File.expand_path(new_path)
+
       mkdir!(new_path, directory_permissions)
       move!(new_path)
       chmod!(new_path, permissions)
@@ -211,8 +213,8 @@ module CarrierWave
     #
     def copy_to(new_path, permissions=nil, directory_permissions=nil)
       return if self.empty?
-      uri = try_uri(new_path)
-      new_path = File.expand_path(new_path) unless uri && uri.hostname
+      new_path = File.expand_path(new_path)
+
       mkdir!(new_path, directory_permissions)
       copy!(new_path)
       chmod!(new_path, permissions)
@@ -313,25 +315,11 @@ module CarrierWave
     # Sanitize the filename, to prevent hacking
     def sanitize(name)
       name = name.tr("\\", "/") # work-around for IE
-      uri = try_uri(name)
-      name = uri.path if uri # only assign if parse was successful, otherwise treat as local
       name = File.basename(name)
       name = name.gsub(sanitize_regexp,"_")
       name = "_#{name}" if name =~ /\A\.+\z/
       name = "unnamed" if name.size.zero?
       return name.mb_chars.to_s
-    end
-
-    ##
-    # Returns URI if the String param can be parsed as URI, nil otherwise.  Swallows parse errors.
-    #
-    # === Returns
-    #
-    # [URI, nil] URI object
-    #
-    def try_uri(candidate)
-      URI.parse(candidate)
-    rescue URI::InvalidURIError
     end
 
     def existing_content_type

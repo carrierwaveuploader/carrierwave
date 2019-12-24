@@ -174,15 +174,24 @@ module CarrierWave
           return if frozen?
           mounter = _mounter(:#{column})
 
-          if mounter.remove?
-            write_uploader(mounter.serialization_column, nil)
-          elsif mounter.identifiers.first
-            write_uploader(mounter.serialization_column, mounter.identifiers.first)
-          end
+          mounter.clear! if mounter.remove?
+          write_uploader(mounter.serialization_column, mounter.identifiers.first)
         end
 
         def #{column}_identifier
           _mounter(:#{column}).read_identifiers[0]
+        end
+
+        def #{column}_integrity_error
+          #{column}_integrity_errors.last
+        end
+
+        def #{column}_processing_error
+          #{column}_processing_errors.last
+        end
+
+        def #{column}_download_error
+          #{column}_download_errors.last
         end
 
         def store_previous_changes_for_#{column}
@@ -240,9 +249,9 @@ module CarrierWave
     # [store_images!]           Stores all files that have been assigned with +images=+
     # [remove_images!]          Removes the uploaded file from the filesystem.
     #
-    # [images_integrity_error]  Returns an error object if the last files to be assigned caused an integrity error
-    # [images_processing_error] Returns an error object if the last files to be assigned caused a processing error
-    # [images_download_error]   Returns an error object if the last files to be remotely assigned caused a download error
+    # [image_integrity_errors]   Returns error objects of files which failed to pass integrity check
+    # [image_processing_errors]  Returns error objects of files which failed to be processed
+    # [image_download_errors]    Returns error objects of files which failed to be downloaded
     #
     # [image_identifiers]       Reads out the identifiers of the files
     #
@@ -329,11 +338,8 @@ module CarrierWave
           return if frozen?
           mounter = _mounter(:#{column})
 
-          if mounter.remove?
-            write_uploader(mounter.serialization_column, nil)
-          elsif mounter.identifiers.any?
-            write_uploader(mounter.serialization_column, mounter.identifiers)
-          end
+          mounter.clear! if mounter.remove?
+          write_uploader(mounter.serialization_column, mounter.identifiers.presence)
         end
 
         def #{column}_identifiers
@@ -395,16 +401,16 @@ module CarrierWave
           _mounter(:#{column}).store!
         end
 
-        def #{column}_integrity_error
-          _mounter(:#{column}).integrity_error
+        def #{column}_integrity_errors
+          _mounter(:#{column}).integrity_errors
         end
 
-        def #{column}_processing_error
-          _mounter(:#{column}).processing_error
+        def #{column}_processing_errors
+          _mounter(:#{column}).processing_errors
         end
 
-        def #{column}_download_error
-          _mounter(:#{column}).download_error
+        def #{column}_download_errors
+          _mounter(:#{column}).download_errors
         end
 
         def mark_remove_#{column}_false

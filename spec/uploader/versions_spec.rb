@@ -308,6 +308,7 @@ describe CarrierWave::Uploader do
 
     describe '#store!' do
       before do
+        @uploader_class.cache_storage = :file
         @uploader_class.storage = mock_storage('base')
         @uploader_class.version(:thumb).storage = mock_storage('thumb')
         @uploader_class.version(:preview).storage = mock_storage('preview')
@@ -490,6 +491,7 @@ describe CarrierWave::Uploader do
 
     describe '#remove!' do
       before do
+        @uploader_class.cache_storage = :file
         @uploader_class.storage = mock_storage('base')
         @uploader_class.version(:thumb).storage = mock_storage('thumb')
 
