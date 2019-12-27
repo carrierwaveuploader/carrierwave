@@ -5,7 +5,7 @@ describe CarrierWave::Downloader::Base do
   let(:uploader) { uploader_class.new }
   let(:file) { File.read(file_path("test.jpg")) }
   let(:filename) { "test.jpg" }
-  let(:uri) { URI.encode("http://www.example.com/#{filename}") }
+  let(:uri) { "http://www.example.com/#{CGI.escape(filename)}" }
 
   subject { CarrierWave::Downloader::Base.new(uploader) }
 
@@ -27,7 +27,7 @@ describe CarrierWave::Downloader::Base do
   end
 
   context "with a URL with internationalized domain name" do
-    let(:uri) { URI.encode("http://ドメイン名例.jp/#{filename}") }
+    let(:uri) { "http://ドメイン名例.jp/#{CGI.escape(filename)}" }
     before do
       stub_request(:get, 'http://xn--eckwd4c7cu47r2wf.jp/test.jpg').to_return(body: file)
     end

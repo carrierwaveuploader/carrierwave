@@ -5,8 +5,9 @@ language: ruby
 cache: bundler
 
 rvm:
-  - 2.5.5
-  - 2.6.2
+  - 2.5.7
+  - 2.6.5
+  - 2.7.0
   - jruby-9.2.8.0
 
 gemfile:
@@ -27,13 +28,13 @@ matrix:
       gemfile: gemfiles/rails-5-2.gemfile
     - rvm: 2.3.8
       gemfile: gemfiles/rails-5-2.gemfile
-    - rvm: 2.4.5
+    - rvm: 2.4.9
       gemfile: gemfiles/rails-5-2.gemfile
-    - rvm: 2.5.5
+    - rvm: 2.5.7
       gemfile: gemfiles/rails-5-0.gemfile
-    - rvm: 2.5.5
+    - rvm: 2.5.7
       gemfile: gemfiles/rails-5-1.gemfile
-    - rvm: 2.6.2
+    - rvm: 2.7.0
       gemfile: gemfiles/rails-master.gemfile
     - rvm: ruby-head
       gemfile: gemfiles/rails-6-0.gemfile

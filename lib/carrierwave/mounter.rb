@@ -114,7 +114,7 @@ module CarrierWave
     end
 
     def remove?
-      remove.present? && remove !~ /\A0|false$\z/
+      remove.present? && (remove == true || remove !~ /\A0|false$\z/)
     end
 
     def remove!
