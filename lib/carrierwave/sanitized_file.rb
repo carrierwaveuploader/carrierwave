@@ -2,6 +2,7 @@ require 'pathname'
 require 'active_support/core_ext/string/multibyte'
 require 'mini_mime'
 require 'mimemagic'
+require 'mimemagic/overlay'
 
 module CarrierWave
 
