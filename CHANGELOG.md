@@ -5,13 +5,20 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-## 2.0.2 - 2019-09-28
+## 2.1.0 - 2020-02-16
+### Added
+* Support authenticated_url for Blackblaze provider(@kevivmatrix [#2444](https://github.com/carrierwaveuploader/carrierwave/pull/2444))
 
+### Fixed
+* Fix Ruby 2.7 deprecations(@mshibuya [9a37fc9e](https://github.com/carrierwaveuploader/carrierwave/commit/9a37fc9e7ce2937c66d5419ce1943ed114385beb))
+* Fix S3 path-style URL for host with dots for buckets that are placed in other regions than us-east-1(@Bonias [#2439](https://github.com/carrierwaveuploader/carrierwave/pull/2439))
+* Make MiniMagick::Image constant absolute to prevent misleading 'uninitialized constant' error(@p8 [#2437](https://github.com/carrierwaveuploader/carrierwave/pull/2437))
+
+## 2.0.2 - 2019-09-28
 ### Fixed
 * Fix download causing nil error if the file has empty filename(@fukayatsu [#2419](https://github.com/carrierwaveuploader/carrierwave/pull/2419), [#2411](https://github.com/carrierwaveuploader/carrierwave/issues/2411))
 
 ## 2.0.1 - 2019-08-31
-
 ### Fixed
 * Fix `#{column}_cache` unintentionally removing files on assigning empty string(@mshibuya [22e8005e](https://github.com/carrierwaveuploader/carrierwave/commit/22e8005e44751fbce9f088497853aa60b6c89fcc), [#2412](https://github.com/carrierwaveuploader/carrierwave/issues/2412))
 
