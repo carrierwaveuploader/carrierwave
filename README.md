@@ -1015,12 +1015,12 @@ end
 Will add these callbacks:
 
 ```ruby
-after_save :store_avatar!
 before_save :write_avatar_identifier
+after_save :store_previous_changes_for_avatar
 after_commit :remove_avatar!, on: :destroy
 after_commit :mark_remove_avatar_false, on: :update
-after_save :store_previous_changes_for_avatar
 after_commit :remove_previously_stored_avatar, on: :update
+after_commit :store_avatar!, on: [:create, :update]
 ```
 
 If you want to skip any of these callbacks (eg. you want to keep the existing
