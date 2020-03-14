@@ -129,7 +129,7 @@ describe CarrierWave::Downloader::Base do
       expect(processed.to_s).to eq('http://example.com/%20%25%5B%5D.jpg')
     end
 
-    it "parses but not escape uris with query-string characters representing urls not needing escaping " do
+    it "parses but not escape uris with query-string characters representing urls not needing escaping" do
       uri = 'http://example.com/?src0=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F1234_1280x720.jpg'
       processed = subject.process_uri(uri)
       expect(processed.class).to eq(URI::HTTP)
