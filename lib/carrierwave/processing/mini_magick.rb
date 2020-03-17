@@ -126,7 +126,7 @@ module CarrierWave
       width, height = resolve_dimensions(width, height)
 
       minimagick!(block) do |builder|
-        builder.resize_to_limit(width, height)
+        builder.resize_to_limit(width, height, sharpen: false)
           .apply(combine_options)
       end
     end
@@ -150,7 +150,7 @@ module CarrierWave
       width, height = resolve_dimensions(width, height)
 
       minimagick!(block) do |builder|
-        builder.resize_to_fit(width, height)
+        builder.resize_to_fit(width, height, sharpen: false)
           .apply(combine_options)
       end
     end
@@ -175,7 +175,7 @@ module CarrierWave
       width, height = resolve_dimensions(width, height)
 
       minimagick!(block) do |builder|
-        builder.resize_to_fill(width, height, gravity: gravity)
+        builder.resize_to_fill(width, height, gravity: gravity, sharpen: false)
           .apply(combine_options)
       end
     end
@@ -205,7 +205,7 @@ module CarrierWave
       width, height = resolve_dimensions(width, height)
 
       minimagick!(block) do |builder|
-        builder.resize_and_pad(width, height, background: background, gravity: gravity)
+        builder.resize_and_pad(width, height, background: background, gravity: gravity, sharpen: false)
           .apply(combine_options)
       end
     end
