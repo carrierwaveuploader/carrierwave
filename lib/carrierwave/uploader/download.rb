@@ -40,7 +40,7 @@ module CarrierWave
             headers = @remote_headers.
               reverse_merge('User-Agent' => "CarrierWave/#{CarrierWave::VERSION}")
 
-            @file = Kernel.open(@uri.to_s, headers)
+            @file = URI.open(@uri.to_s, headers)
             @file = @file.is_a?(String) ? StringIO.new(@file) : @file
           end
           @file
