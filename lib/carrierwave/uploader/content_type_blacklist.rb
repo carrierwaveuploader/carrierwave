@@ -33,8 +33,10 @@ module CarrierWave
     private
 
       def check_content_type_blacklist!(new_file)
+        return unless content_type_blacklist
+
         content_type = new_file.content_type
-        if content_type_blacklist && blacklisted_content_type?(content_type)
+        if blacklisted_content_type?(content_type)
           raise CarrierWave::IntegrityError, I18n.translate(:"errors.messages.content_type_blacklist_error", content_type: content_type)
         end
       end
