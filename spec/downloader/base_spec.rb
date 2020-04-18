@@ -41,6 +41,22 @@ describe CarrierWave::Downloader::Base do
     end
   end
 
+  context "with equal and colons in the query path" do
+    let(:query) { 'test=query&with=equal&before=colon:param' }
+    let(:uri) { "https://example.com/#{filename}?#{query}" }
+    before do
+      stub_request(:get, uri).to_return(body: file)
+    end
+
+    it "leaves colon in resulting URI" do
+      expect(subject.process_uri(uri).query).to eq query
+    end
+
+    it "downloads a file" do
+      expect(subject.download(uri).file.read).to eq file
+    end
+  end
+
   context 'with request headers' do
     let(:authentication_headers) do
       {
