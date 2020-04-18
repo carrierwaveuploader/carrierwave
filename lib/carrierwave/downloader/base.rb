@@ -40,7 +40,8 @@ module CarrierWave
       def process_uri(uri)
         uri_parts = uri.split('?')
         encoded_uri = Addressable::URI.parse(uri_parts.shift).normalize.to_s
-        encoded_uri << '?' << Addressable::URI.encode(uri_parts.join('?')).gsub('%5B', '[').gsub('%5D', ']') if uri_parts.any?
+        query = uri_parts.join('?').split(':').map { |part| Addressable::URI.encode(part) }.join(':') if uri_parts.any?
+        encoded_uri << '?' << query.gsub('%5B', '[').gsub('%5D', ']') if query
         URI.parse(encoded_uri)
       rescue URI::InvalidURIError, Addressable::URI::InvalidURIError
         raise CarrierWave::DownloadError, "couldn't parse URL: #{uri}"
