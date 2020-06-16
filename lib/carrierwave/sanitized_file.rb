@@ -176,14 +176,15 @@ module CarrierWave
     def move_to(new_path, permissions=nil, directory_permissions=nil, keep_filename=false)
       return if self.empty?
       new_path = File.expand_path(new_path)
+      new_content_type = content_type
 
       mkdir!(new_path, directory_permissions)
       move!(new_path)
       chmod!(new_path, permissions)
       if keep_filename
-        self.file = {:tempfile => new_path, :filename => original_filename, :content_type => content_type}
+        self.file = {:tempfile => new_path, :filename => original_filename, :content_type => new_content_type}
       else
-        self.file = {:tempfile => new_path, :content_type => content_type}
+        self.file = {:tempfile => new_path, :content_type => new_content_type}
       end
       self
     end

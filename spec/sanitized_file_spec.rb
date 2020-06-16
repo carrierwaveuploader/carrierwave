@@ -237,7 +237,7 @@ describe CarrierWave::SanitizedFile do
     end
   end
 
-  shared_examples_for "all valid sanitized files" do
+  shared_examples_for "all valid sanitized files" do |sanitized_file_size = 13, sanitized_file_path = nil|
     describe '#empty?' do
       it "should not be empty" do
         expect(sanitized_file).not_to be_empty
@@ -270,13 +270,19 @@ describe CarrierWave::SanitizedFile do
 
     describe "#read" do
       it "should return the contents of the file" do
-        expect(sanitized_file.read).to eq("this is stuff")
+        file_read = 'this is stuff'
+
+        if sanitized_file_path.present?
+          file_read = File.open(file_path(sanitized_file_path), "rb") {|file| file.read}
+        end
+
+        expect(sanitized_file.read).to eq(file_read)
       end
     end
 
     describe "#size" do
       it "should return the size of the file" do
-        expect(sanitized_file.size).to eq(13)
+        expect(sanitized_file.size).to eq(sanitized_file_size)
       end
     end
 
@@ -658,12 +664,12 @@ describe CarrierWave::SanitizedFile do
     let(:sanitized_file) { CarrierWave::SanitizedFile.new(file_path("llama.jpg")) }
 
     before do
-      FileUtils.cp(file_path("test.jpg"), file_path("llama.jpg"))
+      FileUtils.cp(file_path("portrait.jpg"), file_path("llama.jpg"))
 
       expect(sanitized_file).not_to be_empty
     end
 
-    it_should_behave_like "all valid sanitized files"
+    it_should_behave_like "all valid sanitized files", 43379, "llama.jpg"
 
     it_should_behave_like "all valid sanitized files that are stored on disk"
 
@@ -686,12 +692,12 @@ describe CarrierWave::SanitizedFile do
     let(:sanitized_file) { CarrierWave::SanitizedFile.new(Pathname.new(file_path("llama.jpg"))) }
 
     before do
-      FileUtils.copy_file(file_path("test.jpg"), file_path("llama.jpg"))
+      FileUtils.copy_file(file_path("portrait.jpg"), file_path("llama.jpg"))
 
       expect(sanitized_file).not_to be_empty
     end
 
-    it_should_behave_like "all valid sanitized files"
+    it_should_behave_like "all valid sanitized files", 43379, "llama.jpg"
 
     it_should_behave_like "all valid sanitized files that are stored on disk"
 
