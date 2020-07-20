@@ -10,5 +10,6 @@ en:
       content_type_denylist_error: "You are not allowed to upload %{content_type} files"
       rmagick_processing_error: "Failed to manipulate with rmagick, maybe it is not an image?"
       mini_magick_processing_error: "Failed to manipulate with MiniMagick, maybe it is not an image? Original Error: %{e}"
+      vips_processing_error: "Failed to manipulate with vips, maybe it is not an image? Original Error: %{e}"
       min_size_error: "File size should be greater than %{min_size}"
       max_size_error: "File size should be less than %{max_size}"
