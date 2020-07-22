@@ -797,30 +797,43 @@ end
 That's it! You can still use the `CarrierWave::Uploader#url` method to return
 the url to the file on Rackspace Cloud Files.
 
-## Using Google Storage for Developers
+## Using Google Cloud Storage
 
-[Fog](http://github.com/fog/fog-google) is used to support Google Storage for Developers. Ensure you have it in your Gemfile:
+[Fog](http://github.com/fog/fog-google) is used to support Google Cloud Storage. Ensure you have it in your Gemfile:
 
 ```ruby
 gem "fog-google"
-gem "google-api-client", "> 0.8.5", "< 0.9"
-gem "mime-types"
 ```
 
-You'll need to configure a directory (also known as a bucket), access key id and secret access key in the initializer.
+You'll need to configure a directory (also known as a bucket) and the credentials in the initializer.
 For the sake of performance it is assumed that the directory already exists, so please create it if need be.
 
 Please read the [fog-google README](https://github.com/fog/fog-google/blob/master/README.md) on how to get credentials.
 
-
+For Google Storage JSON API (recommended):
 ```ruby
 CarrierWave.configure do |config|
-  config.fog_credentials = {
-    provider:                         'Google',
-    google_storage_access_key_id:     'xxxxxx',
-    google_storage_secret_access_key: 'yyyyyy'
-  }
-  config.fog_directory = 'name_of_directory'
+    config.fog_provider = 'fog/google'
+    config.fog_credentials = {
+        provider:               'Google',
+        google_project:         'my-project',
+        google_json_key_string: 'xxxxxx'
+        # or use google_json_key_location if using an actual file
+    }
+    config.fog_directory = 'google_cloud_storage_bucket_name'
+end
+```
+
+For Google Storage XML API:
+```ruby
+CarrierWave.configure do |config|
+    config.fog_provider = 'fog/google'
+    config.fog_credentials = {
+        provider:                         'Google',
+        google_storage_access_key_id:     'xxxxxx',
+        google_storage_secret_access_key: 'yyyyyy'
+    }
+    config.fog_directory = 'google_cloud_storage_bucket_name'
 end
 ```
 
