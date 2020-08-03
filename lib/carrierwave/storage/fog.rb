@@ -450,7 +450,7 @@ module CarrierWave
         # @return [CarrierWave::Storage::Fog::File] the location where the file will be stored.
         #
         def copy_to(new_path)
-          connection.copy_object(@uploader.fog_directory, file.key, @uploader.fog_directory, new_path, uploader_options)
+          connection.copy_object(@uploader.fog_directory, file.key, @uploader.fog_directory, new_path, copy_to_options)
           CarrierWave::Storage::Fog::File.new(@uploader, @base, new_path)
         end
 
@@ -491,10 +491,14 @@ module CarrierWave
         # [Fog::#{provider}::File] file data from remote service
         #
         def file
-          @file ||= directory.files.head(path)
+          @file ||= directory.files.head(path, head_options)
         end
 
-        def uploader_options
+        def head_options
+          @uploader.fog_attributes
+        end
+
+        def copy_to_options
           acl_header.merge(@uploader.fog_attributes)
         end
 
