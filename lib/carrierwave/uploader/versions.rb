@@ -250,11 +250,11 @@ module CarrierWave
       end
 
       def versions_to_cache
-        @versions_to_cache || dependent_versions
+        @versions_to_cache ||= dependent_versions
       end
 
       def versions_to_store
-        @versions_to_store || active_versions
+        @versions_to_store ||= active_versions
       end
 
       def source_versions_of(requested_names)
