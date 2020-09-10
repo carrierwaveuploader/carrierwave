@@ -5,10 +5,7 @@ language: ruby
 cache: bundler
 
 rvm:
-  - 2.5.7
-  - 2.6.5
-  - 2.7.0
-  - jruby-9.2.8.0
+  - truffleruby-head
 
 gemfile:
   - gemfiles/rails-5-2.gemfile
