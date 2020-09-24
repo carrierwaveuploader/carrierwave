@@ -76,7 +76,7 @@ module CarrierWave
       # [Bool] whether the current file is cached
       #
       def cached?
-        @cache_id
+        !!@cache_id
       end
 
       ##
