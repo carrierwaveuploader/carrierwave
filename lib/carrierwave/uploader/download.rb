@@ -92,8 +92,8 @@ module CarrierWave
       rescue URI::InvalidURIError
         uri_parts = uri.split('?')
         # regexp from Ruby's URI::Parser#regexp[:UNSAFE], with [] specifically removed
-        encoded_uri = URI::DEFAULT_PARSER.unescape(uri_parts.shift, /[^\-_.!~*'()a-zA-Z\d;\/?:@&=+$,]/)
-        encoded_uri << '?' << URI::DEFAULT_PARSER.unescape(uri_parts.join('?')) if uri_parts.any?
+        encoded_uri = URI::DEFAULT_PARSER.escape(uri_parts.shift, /[^\-_.!~*'()a-zA-Z\d;\/?:@&=+$,]/)
+        encoded_uri << '?' << URI::DEFAULT_PARSER.escape(uri_parts.join('?')) if uri_parts.any?
         URI.parse(encoded_uri) rescue raise CarrierWave::DownloadError, "couldn't parse URL"
       end
 
