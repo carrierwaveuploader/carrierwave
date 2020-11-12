@@ -15,9 +15,12 @@ module CarrierWave
       # [String] the location where this file is accessible via a url
       #
       def url(options = {})
-        if file.respond_to?(:url) && !(tmp_url = file.url).blank?
-          file.method(:url).arity.zero? ? tmp_url : file.url(options)
-        elsif file.respond_to?(:path)
+        if file.respond_to?(:url)
+          tmp_url = file.method(:url).arity.zero? ? file.url : file.url(options)
+          return tmp_url if tmp_url.present?
+        end
+
+        if file.respond_to?(:path)
           path = encode_path(file.path.sub(File.expand_path(root), ''))
 
           if host = asset_host
