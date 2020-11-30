@@ -325,4 +325,20 @@ describe CarrierWave::Uploader do
       expect(CarrierWave.generate_cache_id.split('-')[2].length).to eq(4)
     end
   end
+
+  describe '#cached?' do
+    context 'when cache_id is present' do
+      before { uploader.cache!(test_file) }
+
+      it 'returns true' do
+        expect(uploader).to be_cached
+      end
+    end
+
+    context 'when cache_id is NOT present' do
+      it 'returns false' do
+        expect(uploader).not_to be_cached
+      end
+    end
+  end
 end
