@@ -40,7 +40,10 @@ module CarrierWave
       end
 
       def whitelisted_content_type?(content_type)
-        Array(content_type_whitelist).any? { |item| content_type =~ /#{item}/ }
+        Array(content_type_whitelist).any? do |item|
+          item = Regexp.quote(item) if item.class != Regexp
+          content_type =~ /#{item}/
+        end
       end
 
     end # ContentTypeWhitelist

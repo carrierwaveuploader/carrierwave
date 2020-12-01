@@ -4,6 +4,7 @@ describe CarrierWave::Uploader do
   let(:uploader_class) { Class.new(CarrierWave::Uploader::Base) }
   let(:uploader) { uploader_class.new }
   let(:ruby_file) { File.open(file_path('ruby.gif')) }
+  let(:vector_file) { File.open(file_path('ruby.svg')) }
 
   after { FileUtils.rm_rf(public_path) }
 
@@ -26,6 +27,18 @@ describe CarrierWave::Uploader do
 
         it "does not raise an integrity error when the file has a whitelisted content type" do
           allow(uploader).to receive(:content_type_whitelist).and_return(['image/png'])
+
+          expect { uploader.cache!(ruby_file) }.not_to raise_error
+        end
+
+        it "accepts content types with a + symbol" do
+          allow(uploader).to receive(:content_type_whitelist).and_return(['image/svg+xml'])
+
+          expect { uploader.cache!(vector_file) }.not_to raise_error
+        end
+
+        it "accepts a list of content types with mixed regular expressions and strings" do
+          allow(uploader).to receive(:content_type_whitelist).and_return(['application/pdf', %r{image/}])
 
           expect { uploader.cache!(ruby_file) }.not_to raise_error
         end
