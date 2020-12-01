@@ -1,0 +1,74 @@
+name: Test
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: RSpec and Cucumber
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: [ 2.5, 2.6, 2.7, jruby ]
+        gemfile: [ gemfiles/rails-6-0.gemfile ]
+        experimental: [ false ]
+        include:
+          - ruby: 2.2
+            gemfile: gemfiles/rails-5-0.gemfile
+            experimental: false
+          - ruby: 2.3
+            gemfile: gemfiles/rails-5-1.gemfile
+            experimental: false
+          - ruby: 2.4
+            gemfile: gemfiles/rails-5-2.gemfile
+            experimental: false
+          - ruby: 2.7
+            gemfile: gemfiles/rails-6-1.gemfile
+            experimental: false
+          - ruby: 2.7
+            gemfile: gemfiles/rails-master.gemfile
+            experimental: true
+          - ruby: ruby-head
+            gemfile: gemfiles/rails-6-1.gemfile
+            experimental: true
+          - ruby: jruby-head
+            gemfile: gemfiles/rails-6-0.gemfile
+            experimental: true
+    runs-on: ubuntu-16.04
+    services:
+      postgres:
+        image: postgres:11
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: carrierwave_test
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    env:
+      BUNDLE_GEMFILE: ${{ matrix.gemfile }}
+      EXPERIMENTAL: ${{ matrix.experimental }}
+      JRUBY_OPTS: --debug
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+    - name: Cache gems
+      uses: actions/cache@v2
+      with:
+        path: vendor/bundle
+        key: ${{ runner.os }}-gems-${{ matrix.ruby }}-${{ hashFiles(matrix.gemfile) }}
+        restore-keys: |
+          ${{ runner.os }}-gems-${{ matrix.ruby }}-
+    - name: Setup ImageMagick policy
+      run: sudo sh -c 'echo '\''<policymap><policy domain="coder" rights="read|write" pattern="PDF" /></policymap>'\'' > /etc/ImageMagick-6/policy.xml'
+    - name: Install dependencies
+      run: bundle install --jobs=3 --retry=3 --path=vendor/bundle || [ "$EXPERIMENTAL" == "true" ] && true
+    - name: Run RSpec
+      run: bundle exec rake spec || [ "$EXPERIMENTAL" == "true" ] && true
+    - name: Run Cucumber
+      # Workaround for OpenSSL 'undefined symbol: SSLv2_method' error
+      if: ${{ matrix.ruby > 2.3 || contains(matrix.ruby, 'ruby') }}
+      run: bundle exec rake features || [ "$EXPERIMENTAL" == "true" ] && true
+
