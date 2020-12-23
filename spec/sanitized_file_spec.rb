@@ -195,6 +195,26 @@ describe CarrierWave::SanitizedFile do
       expect(sanitized_file.content_type).to eq("application/msword")
     end
 
+    it "handles Mime::Type of docx" do
+      file = File.open(file_path('resume.docx'))
+
+      sanitized_file = CarrierWave::SanitizedFile.new(file)
+      allow(sanitized_file).to receive(:file).and_return(file)
+
+      expect { sanitized_file.content_type }.not_to raise_error
+      expect(sanitized_file.content_type).to eq("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+    end
+
+    it "handles Mime::Type of pptx" do
+      file = File.open(file_path('slidedeck.pptx'))
+
+      sanitized_file = CarrierWave::SanitizedFile.new(file)
+      allow(sanitized_file).to receive(:file).and_return(file)
+
+      expect { sanitized_file.content_type }.not_to raise_error
+      expect(sanitized_file.content_type).to eq("application/vnd.openxmlformats-officedocument.presentationml.presentation")
+    end
+
     it "reads content type from path if missing" do
       sanitized_file = CarrierWave::SanitizedFile.new("llama.jpg")
 
