@@ -450,7 +450,20 @@ module CarrierWave
         # @return [CarrierWave::Storage::Fog::File] the location where the file will be stored.
         #
         def copy_to(new_path)
-          connection.copy_object(@uploader.fog_directory, file.key, @uploader.fog_directory, new_path, acl_header)
+          # fog-aws v3.7.0 supports multithreaded, multipart uploads
+          if fog_provider == 'AWS' && file.respond_to?(:concurrency=)
+            # AWS SDK uses 10 threads by default and a multipart chunk size of 10 MB
+            file.concurrency = 10
+            file.multipart_chunk_size = 10485760
+            file.copy(@uploader.fog_directory, new_path, acl_header)
+          else
+            # Some Fog providers may issue a GET request
+            # instead of a HEAD request after the transfer completes,
+            # which might cause the file to be downloaded locally, so
+            # we fallback to the original copy_object for non-AWS providers.
+            connection.copy_object(@uploader.fog_directory, file.key, @uploader.fog_directory, new_path, acl_header)
+          end
+
           CarrierWave::Storage::Fog::File.new(@uploader, @base, new_path)
         end
 
