@@ -371,10 +371,18 @@ describe CarrierWave::SanitizedFile do
         expect(sanitized_file.move_to(file_path("gurr.png"))).to eq(sanitized_file)
       end
 
-      it "should convert the file's content type" do
+      it "should preserve the file's content type" do
+        sanitized_file.content_type = 'application/octet-stream'
         sanitized_file.move_to(file_path("new_dir","gurr.png"))
 
-        expect(sanitized_file.content_type).to eq("image/jpeg")
+        expect(sanitized_file.content_type).to eq("application/octet-stream")
+      end
+
+      it "should detect content type correctly using MagicMime when content_type is not set" do
+        sanitized_file.content_type = nil
+        sanitized_file.move_to(file_path("new_dir","gurr.png"))
+
+        expect(sanitized_file.content_type).to eq("invalid/invalid")
       end
 
       context 'target path only differs by case' do

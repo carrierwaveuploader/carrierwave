@@ -182,9 +182,9 @@ module CarrierWave
       move!(new_path)
       chmod!(new_path, permissions)
       if keep_filename
-        self.file = {:tempfile => new_path, :filename => original_filename, :content_type => content_type}
+        self.file = {:tempfile => new_path, :filename => original_filename, :content_type => @content_type}
       else
-        self.file = {:tempfile => new_path, :content_type => content_type}
+        self.file = {:tempfile => new_path, :content_type => @content_type}
       end
       self
     end
