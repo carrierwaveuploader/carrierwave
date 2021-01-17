@@ -21,10 +21,10 @@ jobs:
           - ruby: 2.4
             gemfile: gemfiles/rails-5-2.gemfile
             experimental: false
-          - ruby: 2.7
+          - ruby: 3.0
             gemfile: gemfiles/rails-6-1.gemfile
             experimental: false
-          - ruby: 2.7
+          - ruby: 3.0
             gemfile: gemfiles/rails-master.gemfile
             experimental: true
           - ruby: ruby-head
