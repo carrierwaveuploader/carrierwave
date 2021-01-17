@@ -159,6 +159,20 @@ describe CarrierWave::Downloader::Base do
       expect(processed.to_s).to eq('http://example.com/%5D.jpg?test[]')
     end
 
+    it "escapes and parse unescaped characters in path" do
+      uri = 'http://example.com/あああ.jpg'
+      processed = subject.process_uri(uri)
+      expect(processed.class).to eq(URI::HTTP)
+      expect(processed.to_s).to eq('http://example.com/%E3%81%82%E3%81%82%E3%81%82.jpg')
+    end
+
+    it "escapes and parse unescaped characters in query string" do
+      uri = 'http://example.com/?q=あああ'
+      processed = subject.process_uri(uri)
+      expect(processed.class).to eq(URI::HTTP)
+      expect(processed.to_s).to eq('http://example.com/?q=%E3%81%82%E3%81%82%E3%81%82')
+    end
+
     it "throws an exception on bad uris" do
       uri = '~http:'
       expect { subject.process_uri(uri) }.to raise_error(CarrierWave::DownloadError)

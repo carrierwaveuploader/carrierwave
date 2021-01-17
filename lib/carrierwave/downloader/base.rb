@@ -31,7 +31,7 @@ module CarrierWave
       end
 
       ##
-      # Processes the given URL by parsing and escaping it. Public to allow overriding.
+      # Processes the given URL by parsing it, and escaping if necessary. Public to allow overriding.
       #
       # === Parameters
       #
@@ -40,8 +40,12 @@ module CarrierWave
       def process_uri(uri)
         uri_parts = uri.split('?')
         encoded_uri = Addressable::URI.parse(uri_parts.shift).normalize.to_s
-        encoded_uri << '?' << Addressable::URI.encode(uri_parts.join('?')).gsub('%5B', '[').gsub('%5D', ']') if uri_parts.any?
-        URI.parse(encoded_uri)
+        query = uri_parts.any? ? "?#{uri_parts.join('?')}" : ''
+        begin
+          URI.parse("#{encoded_uri}#{query}")
+        rescue URI::InvalidURIError
+          URI.parse("#{encoded_uri}#{URI::DEFAULT_PARSER.escape(query)}")
+        end
       rescue URI::InvalidURIError, Addressable::URI::InvalidURIError
         raise CarrierWave::DownloadError, "couldn't parse URL: #{uri}"
       end
