@@ -331,9 +331,16 @@ module CarrierWave
 
     def mime_magic_content_type
       if path
-        File.open(path) do |file|
-          MimeMagic.by_magic(file).try(:type) || 'invalid/invalid'
+        type = File.open(path) do |file|
+          MimeMagic.by_magic(file).try(:type)
         end
+
+        if type.nil?
+          type = ::MiniMime.lookup_by_filename(path).try(:content_type)
+          type = 'invalid/invalid' unless type.nil? || type.start_with?('text/')
+        end
+
+        type
       end
     rescue Errno::ENOENT
       nil

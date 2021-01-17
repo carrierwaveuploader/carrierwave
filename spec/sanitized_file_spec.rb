@@ -241,6 +241,26 @@ describe CarrierWave::SanitizedFile do
       expect(sanitized_file.content_type).to eq 'invalid/invalid'
     end
 
+    it "returns valid content type on text file" do
+      file = File.open(file_path('bork.txt'))
+
+      sanitized_file = CarrierWave::SanitizedFile.new(file)
+
+      expect { sanitized_file.content_type }.not_to raise_error
+
+      expect(sanitized_file.content_type).to eq 'text/plain'
+    end
+
+    it "returns missing content type with unknown extension" do
+      file = File.open(file_path('bork.ABCDE'))
+
+      sanitized_file = CarrierWave::SanitizedFile.new(file)
+
+      expect { sanitized_file.content_type }.not_to raise_error
+
+      expect(sanitized_file.content_type).to eq ""
+    end
+
     it "does not raise an error if the path is not present" do
       sanitized_file = CarrierWave::SanitizedFile.new(nil)
 
