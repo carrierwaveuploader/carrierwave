@@ -60,21 +60,23 @@ describe CarrierWave::Uploader do
       end
     end
 
-    context "when File#url method doesn't get params" do
-      before do
-        module StorageX
-          class File
-            def url
-              true
-            end
-          end
-        end
+    context "File#url" do
+      let(:file_class) { FileX = Class.new }
+      let(:file) { file_class.new }
 
-        allow(uploader).to receive(:file).and_return(StorageX::File.new)
+      before do
+        allow(uploader).to receive(:file).and_return(file)
       end
 
-      it "raises ArgumentError" do
-        expect { uploader.url }.not_to raise_error
+      it "does not accept arguments" do
+        file.define_singleton_method(:url) { true }
+        uploader.url
+      end
+
+      it "does accept arguments" do
+        file.define_singleton_method(:url) { |x = true| x }
+        expect(file).to receive(:url).once.and_call_original
+        uploader.url
       end
     end
 
