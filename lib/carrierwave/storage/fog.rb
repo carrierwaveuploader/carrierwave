@@ -497,6 +497,8 @@ module CarrierWave
         def acl_header
           if fog_provider == 'AWS'
             { 'x-amz-acl' => @uploader.fog_public ? 'public-read' : 'private' }
+          elsif fog_provider == "Google"
+            @uploader.fog_public ? { destination_predefined_acl: "publicRead" } : {}
           else
             {}
           end
