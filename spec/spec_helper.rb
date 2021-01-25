@@ -111,6 +111,14 @@ module CarrierWave
         image.run_command("convert", "#{image.path}[1x1+#{x}+#{y}]", "-depth", "8", "txt:").split("\n")[1]
       end
     end
+
+    module SsrfProtectionAwareWebMock
+      def stub_request(method, uri)
+        uri = URI.parse(uri) if uri.is_a?(String)
+        uri.hostname = Resolv.getaddress(uri.hostname) if uri.is_a?(URI)
+        super
+      end
+    end
   end
 end
 
@@ -120,6 +128,7 @@ RSpec.configure do |config|
   config.include CarrierWave::Test::MockStorage
   config.include CarrierWave::Test::I18nHelpers
   config.include CarrierWave::Test::ManipulationHelpers
+  config.prepend CarrierWave::Test::SsrfProtectionAwareWebMock
   if RUBY_ENGINE == 'jruby'
     config.filter_run_excluding :rmagick => true
   end

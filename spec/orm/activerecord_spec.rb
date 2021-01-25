@@ -496,7 +496,7 @@ describe CarrierWave::ActiveRecord do
 
     describe "#remote_image_url=" do
       before do
-        stub_request(:get, "www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
+        stub_request(:get, "http://www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
       end
 
       # FIXME ideally image_changed? and remote_image_url_changed? would return true
@@ -1260,7 +1260,7 @@ describe CarrierWave::ActiveRecord do
 
     describe "#remote_images_urls=" do
       before do
-        stub_request(:get, "www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
+        stub_request(:get, "http://www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
       end
 
       # FIXME ideally images_changed? and remote_images_urls_changed? would return true
