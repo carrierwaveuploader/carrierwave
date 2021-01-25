@@ -15,8 +15,8 @@ describe CarrierWave::Uploader::Download do
     before do
       allow(CarrierWave).to receive(:generate_cache_id).and_return(cache_id)
 
-      stub_request(:get, "www.example.com/#{test_file_name}")
-        .to_return(body: test_file)
+      stub_request(:get, "http://www.example.com/#{test_file_name}")
+        .to_return(body: test_file, headers: {'content-type': 'image/jpeg'})
     end
 
     context "when a file was downloaded" do
@@ -47,6 +47,10 @@ describe CarrierWave::Uploader::Download do
 
       it "sets the url" do
         expect(uploader.url).to eq("/uploads/tmp/#{cache_id}/#{test_file_name}")
+      end
+
+      it "sets the content type" do
+        expect(uploader.content_type).to eq("image/jpeg")
       end
     end
 

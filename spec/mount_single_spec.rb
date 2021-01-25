@@ -299,7 +299,7 @@ describe CarrierWave::Mount do
 
     describe "#remote_image_url" do
       before do
-        stub_request(:get, "www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
+        stub_request(:get, "http://www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
       end
 
       it "returns nil" do
@@ -334,7 +334,7 @@ describe CarrierWave::Mount do
 
     describe "#remote_image_url=" do
       before do
-        stub_request(:get, "www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
+        stub_request(:get, "http://www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
       end
 
       it "does nothing when nil is assigned" do
@@ -476,7 +476,7 @@ describe CarrierWave::Mount do
         end
 
         it "should be an error instance if file was downloaded" do
-          stub_request(:get, "www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
+          stub_request(:get, "http://www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
           @instance.remote_image_url = "http://www.example.com/test.jpg"
           e = @instance.image_integrity_error
 
@@ -521,7 +521,7 @@ describe CarrierWave::Mount do
         end
 
         it "should be an error instance if file was downloaded" do
-          stub_request(:get, "www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
+          stub_request(:get, "http://www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
           @instance.remote_image_url = "http://www.example.com/test.jpg"
 
           expect(@instance.image_processing_error).to be_an_instance_of(CarrierWave::ProcessingError)
@@ -531,8 +531,8 @@ describe CarrierWave::Mount do
 
     describe '#image_download_error' do
       before do
-        stub_request(:get, "www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
-        stub_request(:get, "www.example.com/missing.jpg").to_return(status: 404)
+        stub_request(:get, "http://www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
+        stub_request(:get, "http://www.example.com/missing.jpg").to_return(status: 404)
       end
 
       it "should be nil by default" do
@@ -552,8 +552,8 @@ describe CarrierWave::Mount do
 
     describe '#image_download_error' do
       before do
-        stub_request(:get, "www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
-        stub_request(:get, "www.example.com/missing.jpg").to_return(status: 404)
+        stub_request(:get, "http://www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
+        stub_request(:get, "http://www.example.com/missing.jpg").to_return(status: 404)
       end
 
       it "should be nil by default" do
@@ -708,7 +708,7 @@ describe CarrierWave::Mount do
     end
 
     it "should raise an error if the image fails an integrity check when downloaded" do
-      stub_request(:get, "www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
+      stub_request(:get, "http://www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
 
       expect(running {
         @instance.remote_image_url = "http://www.example.com/test.jpg"
@@ -742,7 +742,7 @@ describe CarrierWave::Mount do
     end
 
     it "should raise an error if the image fails to be processed when downloaded" do
-      stub_request(:get, "www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
+      stub_request(:get, "http://www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
 
       expect(running {
         @instance.remote_image_url = "http://www.example.com/test.jpg"
