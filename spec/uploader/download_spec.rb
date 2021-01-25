@@ -22,29 +22,77 @@ describe CarrierWave::Uploader::Download do
 
   after { FileUtils.rm_rf(public_path) }
 
+  describe 'RemoteFile' do
+    context 'when skip_ssrf_protection is false' do
+      subject do
+        CarrierWave::Uploader::Download::RemoteFile.new(url, {}, skip_ssrf_protection: false)
+      end
+      before do
+        stub_request(:get, "http://www.example.com/#{test_file_name}")
+            .to_return(body: test_file, headers: {"Content-Type" =>  'image/jpeg', "Vary" => 'Accept-Encoding'})
+        subject.read
+      end
+
+      it 'returns content type' do
+        expect(subject.content_type).to eq 'image/jpeg'
+      end
+
+      it 'returns header' do
+        expect(subject.headers['vary']).to eq 'Accept-Encoding'
+      end
+
+      it 'returns resolved URI' do
+        expect(subject.uri.to_s).to match %r{http://[^/]+/test.jpg}
+      end
+    end
+
+    context 'when skip_ssrf_protection is true' do
+      subject do
+        CarrierWave::Uploader::Download::RemoteFile.new(url, {}, skip_ssrf_protection: true)
+      end
+      before do
+        WebMock.stub_request(:get, "http://www.example.com/#{test_file_name}")
+          .to_return(body: test_file, headers: {"Content-Type" => 'image/jpeg', "Vary" => 'Accept-Encoding'})
+        subject.read
+      end
+
+      it 'returns content type' do
+        expect(subject.content_type).to eq 'image/jpeg'
+      end
+
+      it 'returns header' do
+        expect(subject.headers['vary']).to eq 'Accept-Encoding'
+      end
+
+      it 'returns URI' do
+        expect(subject.uri.to_s).to eq 'http://www.example.com/test.jpg'
+      end
+    end
+  end
+
   describe '#download!' do
     before do
       allow(CarrierWave).to receive(:generate_cache_id).and_return(cache_id)
 
-      stub_request(:get, "www.example.com/#{test_file_name}")
-        .to_return(body: test_file)
+      stub_request(:get, "http://www.example.com/#{test_file_name}").
+        to_return(body: test_file, headers: { "Content-Type" => 'image/jpeg' })
 
-      stub_request(:get, "www.example.com/test-with-no-extension/test").
+      stub_request(:get, "http://www.example.com/test-with-no-extension/test").
         to_return(body: test_file, headers: { "Content-Type" => "image/jpeg" })
 
-      stub_request(:get, "www.example.com/test%20with%20spaces/#{test_file_name}").
+      stub_request(:get, "http://www.example.com/test%20with%20spaces/#{test_file_name}").
         to_return(body: test_file)
 
-      stub_request(:get, "www.example.com/content-disposition").
+      stub_request(:get, "http://www.example.com/content-disposition").
         to_return(body: test_file, headers: { "Content-Disposition" => 'filename="another_test.jpg"' })
 
-      stub_request(:get, "www.redirect.com").
+      stub_request(:get, "http://www.redirect.com").
         to_return(status: 301, body: "Redirecting", headers: { "Location" => url })
 
-      stub_request(:get, "www.example.com/missing.jpg").
+      stub_request(:get, "http://www.example.com/missing.jpg").
         to_return(status: 404)
 
-      stub_request(:get, "www.example.com/authorization_required.jpg").
+      stub_request(:get, "http://www.example.com/authorization_required.jpg").
         with(:headers => authentication_headers).
         to_return(body: test_file)
 
@@ -79,6 +127,10 @@ describe CarrierWave::Uploader::Download do
 
       it "sets the url" do
         expect(uploader.url).to eq("/uploads/tmp/#{cache_id}/#{test_file_name}")
+      end
+
+      it "sets the content type" do
+        expect(uploader.content_type).to eq("image/jpeg")
       end
     end
 
@@ -195,6 +247,37 @@ describe CarrierWave::Uploader::Download do
         expect { uploader.download!("#{base_url}/content-disposition") }.to raise_error(CarrierWave::IntegrityError)
       end
     end
+
+    context "with server error" do
+      before do
+        stub_request(:get, url).to_return(status: 500)
+      end
+
+      it "raises an error when trying to download" do
+        expect{ uploader.download!(url) }.to raise_error(CarrierWave::DownloadError)
+      end
+
+      it "doesn't obscure original exception message" do
+        expect { uploader.download!(url) }.to raise_error(CarrierWave::DownloadError, /could not download file: 500/)
+      end
+    end
+
+    context "with SSRF prevention" do
+      before do
+        stub_request(:get, 'http://169.254.169.254/').to_return(body: test_file)
+        stub_request(:get, 'http://127.0.0.1/').to_return(body: test_file)
+      end
+
+      it "prevents accessing local files" do
+        expect { uploader.download!('/etc/passwd') }.to raise_error(CarrierWave::DownloadError)
+        expect { uploader.download!('file:///etc/passwd') }.to raise_error(CarrierWave::DownloadError)
+      end
+
+      it "prevents accessing internal addresses" do
+        expect { uploader.download!("http://169.254.169.254/") }.to raise_error CarrierWave::DownloadError
+        expect { uploader.download!("http://lvh.me/") }.to raise_error CarrierWave::DownloadError
+      end
+    end
   end
 
   describe '#download! with an overridden process_uri method' do
@@ -243,6 +326,19 @@ describe CarrierWave::Uploader::Download do
     it "throws an exception on bad uris" do
       uri = '~http:'
       expect { uploader.process_uri(uri) }.to raise_error(CarrierWave::DownloadError)
+    end
+  end
+
+  describe "#skip_ssrf_protection?" do
+    let(:uri) { 'http://localhost/test.jpg' }
+    before do
+      WebMock.stub_request(:get, uri).to_return(body: test_file)
+      allow(uploader).to receive(:skip_ssrf_protection?).and_return(true)
+    end
+
+    it "allows local request to be made" do
+      uploader.download!(uri)
+      expect(uploader.file.read).to eq 'this is stuff'
     end
   end
 end

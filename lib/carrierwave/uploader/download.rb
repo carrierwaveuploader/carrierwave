@@ -1,4 +1,5 @@
 require 'open-uri'
+require 'ssrf_filter'
 
 module CarrierWave
   module Uploader
@@ -10,15 +11,18 @@ module CarrierWave
       include CarrierWave::Uploader::Cache
 
       class RemoteFile
-        def initialize(uri, remote_headers = {})
+        attr_reader :uri
+
+        def initialize(uri, remote_headers = {}, skip_ssrf_protection: false)
           @uri = uri
-          @remote_headers = remote_headers
-          @file = nil
+          @remote_headers = remote_headers.reverse_merge('User-Agent' => "CarrierWave/#{CarrierWave::VERSION}")
+          @file, @content_type, @headers = nil
+          @skip_ssrf_protection = skip_ssrf_protection
         end
 
         def original_filename
           filename = filename_from_header || filename_from_uri
-          mime_type = MIME::Types[file.content_type].first
+          mime_type = MIME::Types[content_type].first
           unless File.extname(filename).present? || mime_type.blank?
             filename = "#{filename}.#{mime_type.extensions.first}"
           end
@@ -33,15 +37,35 @@ module CarrierWave
           @uri.scheme =~ /^https?$/
         end
 
-      private
+        def content_type
+          @content_type || 'application/octet-stream'
+        end
+
+        def headers
+          @headers || {}
+        end
+
+        private
 
         def file
           if @file.blank?
-            headers = @remote_headers.
-              reverse_merge('User-Agent' => "CarrierWave/#{CarrierWave::VERSION}")
-
-            @file = (URI.respond_to?(:open) ? URI : Kernel).open(@uri.to_s, headers)
-            @file = @file.is_a?(String) ? StringIO.new(@file) : @file
+            if @skip_ssrf_protection
+              @file = (URI.respond_to?(:open) ? URI : Kernel).open(@uri.to_s, @remote_headers)
+              @file = @file.is_a?(String) ? StringIO.new(@file) : @file
+              @content_type = @file.content_type
+              @headers = @file.meta
+              @uri = @file.base_uri
+            else
+              request = nil
+              response = SsrfFilter.get(@uri, headers: @remote_headers) do |req|
+                request = req
+              end
+              response.value
+              @file = StringIO.new(response.body)
+              @content_type = response.content_type
+              @headers = response
+              @uri = request.uri
+            end
           end
           @file
 
@@ -50,14 +74,14 @@ module CarrierWave
         end
 
         def filename_from_header
-          if file.meta.include? 'content-disposition'
-            match = file.meta['content-disposition'].match(/filename="?([^"]+)/)
+          if headers['content-disposition']
+            match = headers['content-disposition'].match(/filename="?([^"]+)/)
             return match[1] unless match.nil? || match[1].empty?
           end
         end
 
         def filename_from_uri
-          URI::DEFAULT_PARSER.unescape(File.basename(file.base_uri.path))
+          URI::DEFAULT_PARSER.unescape(File.basename(@uri.path))
         end
 
         def method_missing(*args, &block)
@@ -75,7 +99,7 @@ module CarrierWave
       #
       def download!(uri, remote_headers = {})
         processed_uri = process_uri(uri)
-        file = RemoteFile.new(processed_uri, remote_headers)
+        file = RemoteFile.new(processed_uri, remote_headers, skip_ssrf_protection: skip_ssrf_protection?(processed_uri))
         raise CarrierWave::DownloadError, "trying to download a file which is not served over HTTP" unless file.http?
         cache!(file)
       end
@@ -97,6 +121,25 @@ module CarrierWave
         URI.parse(encoded_uri) rescue raise CarrierWave::DownloadError, "couldn't parse URL"
       end
 
+      ##
+      # If this returns true, SSRF protection will be bypassed.
+      # You can override this if you want to allow accessing specific local URIs that are not SSRF exploitable.
+      #
+      # === Parameters
+      #
+      # [uri (URI)] The URI where the remote file is stored
+      #
+      # === Examples
+      #
+      #     class MyUploader < CarrierWave::Uploader::Base
+      #       def skip_ssrf_protection?(uri)
+      #         uri.hostname == 'localhost' && uri.port == 80
+      #       end
+      #     end
+      #
+      def skip_ssrf_protection?(uri)
+        false
+      end
     end # Download
   end # Uploader
 end # CarrierWave

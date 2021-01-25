@@ -374,7 +374,7 @@ describe CarrierWave::Mount do
     describe "#remote_images_urls" do
       subject { instance.remote_images_urls }
 
-      before { stub_request(:get, "www.example.com/#{test_file_name}").to_return(body: File.read(test_file_stub)) }
+      before { stub_request(:get, "http://www.example.com/#{test_file_name}").to_return(body: File.read(test_file_stub)) }
 
       context "returns nil" do
         it { is_expected.to be_nil }
@@ -391,7 +391,7 @@ describe CarrierWave::Mount do
       subject(:images) { instance.images }
 
       before do
-        stub_request(:get, "www.example.com/#{test_file_name}").to_return(body: File.read(test_file_stub))
+        stub_request(:get, "http://www.example.com/#{test_file_name}").to_return(body: File.read(test_file_stub))
         instance.remote_images_urls = remote_images_url
       end
 
@@ -571,7 +571,7 @@ describe CarrierWave::Mount do
 
         context "when file was downloaded" do
           before do
-            stub_request(:get, "www.example.com/#{test_file_name}").to_return(body: File.read(test_file_stub))
+            stub_request(:get, "http://www.example.com/#{test_file_name}").to_return(body: File.read(test_file_stub))
             instance.remote_images_urls = ["http://www.example.com/#{test_file_name}"]
           end
 
@@ -628,7 +628,7 @@ describe CarrierWave::Mount do
 
         context "when file was downloaded" do
           before do
-            stub_request(:get, "www.example.com/#{test_file_name}").to_return(body: File.read(test_file_stub))
+            stub_request(:get, "http://www.example.com/#{test_file_name}").to_return(body: File.read(test_file_stub))
             instance.remote_images_urls = ["http://www.example.com/#{test_file_name}"]
           end
 
@@ -641,8 +641,8 @@ describe CarrierWave::Mount do
       subject(:images_download_error) { instance.images_download_error }
 
       before do
-        stub_request(:get, "www.example.com/#{test_file_name}").to_return(body: File.read(test_file_stub))
-        stub_request(:get, "www.example.com/missing.jpg").to_return(status: 404)
+        stub_request(:get, "http://www.example.com/#{test_file_name}").to_return(body: File.read(test_file_stub))
+        stub_request(:get, "http://www.example.com/missing.jpg").to_return(status: 404)
       end
 
       describe "default behaviour" do
@@ -812,7 +812,7 @@ describe CarrierWave::Mount do
 
     context "when a downloaded image fails an integity check" do
       before do
-        stub_request(:get, "www.example.com/#{test_file_name}").to_return(body: test_file_stub)
+        stub_request(:get, "http://www.example.com/#{test_file_name}").to_return(body: test_file_stub)
       end
 
       it { expect(running {instance.remote_images_urls = ["http://www.example.com/#{test_file_name}"]}).to raise_error(CarrierWave::IntegrityError) }
@@ -844,7 +844,7 @@ describe CarrierWave::Mount do
 
     context "when a downloaded image fails an integity check" do
       before do
-        stub_request(:get, "www.example.com/#{test_file_name}").to_return(body: test_file_stub)
+        stub_request(:get, "http://www.example.com/#{test_file_name}").to_return(body: test_file_stub)
       end
 
       it { expect(running {instance.remote_images_urls = ["http://www.example.com/#{test_file_name}"]}).to raise_error(CarrierWave::ProcessingError) }
