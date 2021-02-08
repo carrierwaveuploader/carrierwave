@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 1.3.2 - 2021-02-08
+### Fixed
+* Fix Ruby 2.7 deprecations(@aubinlrx [#2462](https://github.com/carrierwaveuploader/carrierwave/pull/2462))
+
+### Security
+* Fix Code Injection vulnerability in CarrierWave::RMagick (@mshibuya [eb9346df](https://github.com/carrierwaveuploader/carrierwave/commit/eb9346df598a758a5f8c4a338852982fd7f8f6b8), [GHSA-cf3w-g86h-35x4](https://github.com/carrierwaveuploader/carrierwave/security/advisories/GHSA-cf3w-g86h-35x4))
+* Fix SSRF vulnerability in the remote file download feature (@mshibuya [91714add](https://github.com/carrierwaveuploader/carrierwave/commit/91714adda998bc9e8decf5b1f5d260d808761304), [GHSA-fwcm-636p-68r5](https://github.com/carrierwaveuploader/carrierwave/security/advisories/GHSA-fwcm-636p-68r5))
+
 ## 1.3.1 - 2018-12-29
 ### Fixed
 * Fix `#url_options_supported?` causing nil error(@mshibuya [0b9a64a1](https://github.com/carrierwaveuploader/carrierwave/commit/0b9a64a1bb9f20d1de154dc3bf2e2dd988210220), [#2361](https://github.com/carrierwaveuploader/carrierwave/issues/2361))
