@@ -57,7 +57,7 @@ end
         end
       end
 
-      context '#uploader_options' do
+      context '#copy_options' do
         let(:store_path) { 'uploads/test+.jpg' }
         let(:fog_attributes) { { 'x-amz-server-side-encryption' => true } }
 
@@ -75,6 +75,9 @@ end
               expect(@storage.connection).to receive(:copy_object)
                                                .with(anything, anything, anything, anything,
                                                      { "Content-Type"=>file.content_type, "x-amz-acl"=>"public-read", 'x-amz-server-side-encryption' => true }).and_call_original
+            elsif @provider == 'Google'
+              expect(@storage.connection).to receive(:copy_object)
+                                               .with(anything, anything, anything, anything, { "Content-Type"=>file.content_type, destination_predefined_acl: "publicRead" }).and_call_original
             else
               expect(@storage.connection).to receive(:copy_object)
                                                .with(anything, anything, anything, anything, { "Content-Type"=>file.content_type }).and_call_original
