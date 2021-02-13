@@ -1,6 +1,12 @@
 require 'rubygems'
 require 'bundler/setup'
 
+if RUBY_ENGINE == 'jruby'
+  # Workaround for JRuby CI failure https://github.com/jruby/jruby/issues/6547#issuecomment-774104996
+  require 'i18n/backend'
+  require 'i18n/backend/simple'
+end
+
 require 'pry'
 require 'tempfile'
 require 'time'
