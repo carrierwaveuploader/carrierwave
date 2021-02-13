@@ -228,7 +228,7 @@ module CarrierWave
       height = dimension_from height
       manipulate! do |img|
         img.resize_to_fit!(width, height)
-        new_img = ::Magick::Image.new(width, height) { self.background_color = background == :transparent ? 'rgba(255,255,255,0)' : background.to_s }
+        new_img = ::Magick::Image.new(width, height) { |img| img.background_color = background == :transparent ? 'rgba(255,255,255,0)' : background.to_s }
         if background == :transparent
           filled = new_img.matte_floodfill(1, 1)
         else
@@ -378,9 +378,15 @@ module CarrierWave
 
     def create_info_block(options)
       return nil unless options
-      assignments = options.map { |k, v| "self.#{k} = #{v}" }
-      code = "lambda { |img| " + assignments.join(";") + "}"
-      eval code
+      proc do |img|
+        options.each do |k, v|
+          if v.is_a?(String) && (matches = v.match(/^["'](.+)["']/))
+            ActiveSupport::Deprecation.warn "Passing quoted strings like #{v} to #manipulate! is deprecated, pass them without quoting."
+            v = matches[1]
+          end
+          img.public_send(:"#{k}=", v)
+        end
+      end
     end
 
     def destroy_image(image)

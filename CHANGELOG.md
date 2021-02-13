@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Security
+* Fix Code Injection vulnerability in CarrierWave::RMagick (@mshibuya [387116f5](https://github.com/carrierwaveuploader/carrierwave/commit/387116f5c72efa42bc3938d946b4c8d2f22181b7), [GHSA-cf3w-g86h-35x4](https://github.com/carrierwaveuploader/carrierwave/security/advisories/GHSA-cf3w-g86h-35x4))
+* Fix SSRF vulnerability in the remote file download feature (@mshibuya [012702eb](https://github.com/carrierwaveuploader/carrierwave/commit/012702eb3ba1663452aa025831caa304d1a665c0), [GHSA-fwcm-636p-68r5](https://github.com/carrierwaveuploader/carrierwave/security/advisories/GHSA-fwcm-636p-68r5))
+
+## 2.1.1 - 2021-02-08
+### Security
+* Fix Code Injection vulnerability in CarrierWave::RMagick (@mshibuya [15bcf8d8](https://github.com/carrierwaveuploader/carrierwave/commit/15bcf8d84f5cf56e9fe5bcdcc2074aafbd45630b), [GHSA-cf3w-g86h-35x4](https://github.com/carrierwaveuploader/carrierwave/security/advisories/GHSA-cf3w-g86h-35x4))
+* Fix SSRF vulnerability in the remote file download feature (@mshibuya [e0f79e36](https://github.com/carrierwaveuploader/carrierwave/commit/e0f79e3678f2b58e98bc72495db1033646d14cd1), [GHSA-fwcm-636p-68r5](https://github.com/carrierwaveuploader/carrierwave/security/advisories/GHSA-fwcm-636p-68r5))
 
 ## 2.1.0 - 2020-02-16
 ### Added
@@ -38,7 +46,7 @@ _No changes._
 * Allow custom expires_at when building an authenticated_url(@stephankaag [#2397](https://github.com/carrierwaveuploader/carrierwave/pull/2397))
 
 ### Changed
-* Use the storage given by `storage` configuration also for `cache_storage` unless explicitly specified(@mshibuya [629afecb](https://github.com/carrierwaveuploader/carrierwave/commit/629afecbaeccd2300e4660b78ee36bd95dd845c5))
+* [BREAKING CHANGE] Use the storage given by `storage` configuration also for `cache_storage` unless explicitly specified(@mshibuya [629afecb](https://github.com/carrierwaveuploader/carrierwave/commit/629afecbaeccd2300e4660b78ee36bd95dd845c5))
 * Improve Fog initialization(@mshibuya [#2395](https://github.com/carrierwaveuploader/carrierwave/issues/2395))
 * [BREAKING CHANGE] Multiple file uploader now keeps successful files on update, only discarding failed ones(@mshibuya [7db9195d](https://github.com/carrierwaveuploader/carrierwave/commit/7db9195de3197fcecfb442caa434369fe0e37846))
 * [BREAKING CHANGE] `#remote_#{column}_urls=` was changed to preserve precedent updates(@mshibuya [8f18a95b](https://github.com/carrierwaveuploader/carrierwave/commit/8f18a95b74517ba96f6c571401d537f048e36961))
@@ -69,6 +77,14 @@ _No changes._
 * Fix `#content_type` returning false, instead of nil(@longkt90 [#2384](https://github.com/carrierwaveuploader/carrierwave/pull/2384))
 * Preserve connection cache when eagar-loading fog(@dmitryshagin [#2383](https://github.com/carrierwaveuploader/carrierwave/pull/2383))
 * `#recreate_versions!` ignored `:from_version` when versions to recreate are given(@hedgesky [#1879](https://github.com/carrierwaveuploader/carrierwave/pull/1879) [#1164](https://github.com/carrierwaveuploader/carrierwave/issues/1164))
+
+## 1.3.2 - 2021-02-08
+### Fixed
+* Fix Ruby 2.7 deprecations(@aubinlrx [#2462](https://github.com/carrierwaveuploader/carrierwave/pull/2462))
+
+### Security
+* Fix Code Injection vulnerability in CarrierWave::RMagick (@mshibuya [eb9346df](https://github.com/carrierwaveuploader/carrierwave/commit/eb9346df598a758a5f8c4a338852982fd7f8f6b8), [GHSA-cf3w-g86h-35x4](https://github.com/carrierwaveuploader/carrierwave/security/advisories/GHSA-cf3w-g86h-35x4))
+* Fix SSRF vulnerability in the remote file download feature (@mshibuya [91714add](https://github.com/carrierwaveuploader/carrierwave/commit/91714adda998bc9e8decf5b1f5d260d808761304), [GHSA-fwcm-636p-68r5](https://github.com/carrierwaveuploader/carrierwave/security/advisories/GHSA-fwcm-636p-68r5))
 
 ## 1.3.1 - 2018-12-29
 ### Fixed

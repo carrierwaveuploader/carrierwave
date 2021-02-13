@@ -195,6 +195,26 @@ describe CarrierWave::SanitizedFile do
       expect(sanitized_file.content_type).to eq("application/msword")
     end
 
+    it "handles Mime::Type of docx" do
+      file = File.open(file_path('resume.docx'))
+
+      sanitized_file = CarrierWave::SanitizedFile.new(file)
+      allow(sanitized_file).to receive(:file).and_return(file)
+
+      expect { sanitized_file.content_type }.not_to raise_error
+      expect(sanitized_file.content_type).to eq("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+    end
+
+    it "handles Mime::Type of pptx" do
+      file = File.open(file_path('slidedeck.pptx'))
+
+      sanitized_file = CarrierWave::SanitizedFile.new(file)
+      allow(sanitized_file).to receive(:file).and_return(file)
+
+      expect { sanitized_file.content_type }.not_to raise_error
+      expect(sanitized_file.content_type).to eq("application/vnd.openxmlformats-officedocument.presentationml.presentation")
+    end
+
     it "reads content type from path if missing" do
       sanitized_file = CarrierWave::SanitizedFile.new("llama.jpg")
 
@@ -219,6 +239,26 @@ describe CarrierWave::SanitizedFile do
 
       expect(sanitized_file.content_type).to_not eq 'image/png'
       expect(sanitized_file.content_type).to eq 'invalid/invalid'
+    end
+
+    it "returns valid content type on text file" do
+      file = File.open(file_path('bork.txt'))
+
+      sanitized_file = CarrierWave::SanitizedFile.new(file)
+
+      expect { sanitized_file.content_type }.not_to raise_error
+
+      expect(sanitized_file.content_type).to eq 'text/plain'
+    end
+
+    it "returns missing content type with unknown extension" do
+      file = File.open(file_path('bork.ABCDE'))
+
+      sanitized_file = CarrierWave::SanitizedFile.new(file)
+
+      expect { sanitized_file.content_type }.not_to raise_error
+
+      expect(sanitized_file.content_type).to eq ""
     end
 
     it "does not raise an error if the path is not present" do
@@ -331,10 +371,18 @@ describe CarrierWave::SanitizedFile do
         expect(sanitized_file.move_to(file_path("gurr.png"))).to eq(sanitized_file)
       end
 
-      it "should convert the file's content type" do
+      it "should preserve the file's content type" do
+        sanitized_file.content_type = 'application/octet-stream'
         sanitized_file.move_to(file_path("new_dir","gurr.png"))
 
-        expect(sanitized_file.content_type).to eq("image/jpeg")
+        expect(sanitized_file.content_type).to eq("application/octet-stream")
+      end
+
+      it "should detect content type correctly using MagicMime when content_type is not set" do
+        sanitized_file.content_type = nil
+        sanitized_file.move_to(file_path("new_dir","gurr.png"))
+
+        expect(sanitized_file.content_type).to eq("invalid/invalid")
       end
 
       context 'target path only differs by case' do

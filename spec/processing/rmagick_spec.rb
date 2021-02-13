@@ -208,8 +208,40 @@ describe CarrierWave::RMagick, :rmagick => true do
 
       instance.manipulate! :read => {
           :density => 10,
-          :size => %{"200x200"}
+          :size => "200x200"
         }
+    end
+
+    it 'shows deprecation but still accepts strings enclosed with double quotes' do
+      expect_any_instance_of(::Magick::Image::Info).to receive(:size=).once.with("200x200")
+      expect(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
+      instance.manipulate! :read => {:size => %{"200x200"}}
+    end
+
+    it 'shows deprecation but still accepts strings enclosed with single quotes' do
+      expect_any_instance_of(::Magick::Image::Info).to receive(:size=).once.with("200x200")
+      expect(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
+      instance.manipulate! :read => {:size => %{'200x200'}}
+    end
+
+    it 'does not allow arbitrary code execution' do
+      expect_any_instance_of(Kernel).not_to receive(:puts)
+      expect do
+        instance.manipulate! :read => {
+            :density => "1 }; raise; {"
+        }
+      end.to raise_error ArgumentError, /invalid density geometry/
+    end
+
+    it 'does not allow invocation of non-public methods' do
+      module Kernel
+        private def foo=(value); raise; end
+      end
+      expect do
+        instance.manipulate! :read => {
+            :foo => "1"
+        }
+      end.to raise_error NoMethodError, /private method `foo=' called/
     end
   end
 

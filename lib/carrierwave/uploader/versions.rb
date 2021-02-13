@@ -23,7 +23,7 @@ module CarrierWave
         prepend Module.new {
           def initialize(*)
             super
-            @versions = nil
+            @versions, @versions_to_cache, @versions_to_store = nil
           end
         }
       end

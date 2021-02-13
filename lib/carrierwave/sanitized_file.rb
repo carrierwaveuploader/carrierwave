@@ -2,6 +2,7 @@ require 'pathname'
 require 'active_support/core_ext/string/multibyte'
 require 'mini_mime'
 require 'mimemagic'
+require 'mimemagic/overlay'
 
 module CarrierWave
 
@@ -181,9 +182,9 @@ module CarrierWave
       move!(new_path)
       chmod!(new_path, permissions)
       if keep_filename
-        self.file = {:tempfile => new_path, :filename => original_filename, :content_type => content_type}
+        self.file = {:tempfile => new_path, :filename => original_filename, :content_type => @content_type}
       else
-        self.file = {:tempfile => new_path, :content_type => content_type}
+        self.file = {:tempfile => new_path, :content_type => @content_type}
       end
       self
     end
@@ -330,9 +331,16 @@ module CarrierWave
 
     def mime_magic_content_type
       if path
-        File.open(path) do |file|
-          MimeMagic.by_magic(file).try(:type) || 'invalid/invalid'
+        type = File.open(path) do |file|
+          MimeMagic.by_magic(file).try(:type)
         end
+
+        if type.nil?
+          type = ::MiniMime.lookup_by_filename(path).try(:content_type)
+          type = 'invalid/invalid' unless type.nil? || type.start_with?('text/')
+        end
+
+        type
       end
     rescue Errno::ENOENT
       nil

@@ -8,5 +8,7 @@ gem "sprockets-rails", github: "rails/sprockets-rails", branch: "master"
 gem "sass-rails", github: "rails/sass-rails"
 gem "activemodel-serializers-xml"
 gem "activerecord-jdbcpostgresql-adapter", github: "jruby/activerecord-jdbc-adapter", platforms: :jruby
+gem 'rmagick', github: 'rmagick/rmagick', platform: :ruby
+gem 'fog-google', github: 'binti-family/fog-google', branch: 'ruby-3.0'
 
 gemspec :path => "../"
