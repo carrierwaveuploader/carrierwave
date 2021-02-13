@@ -57,6 +57,34 @@ end
         end
       end
 
+      context '#uploader_options' do
+        let(:store_path) { 'uploads/test+.jpg' }
+        let(:fog_attributes) { { 'x-amz-server-side-encryption' => true } }
+
+        before do
+          allow(@uploader).to receive(:store_path).and_return(store_path)
+
+          if @provider == 'AWS'
+            allow(@uploader).to receive(:fog_attributes).and_return(fog_attributes)
+          end
+        end
+
+        it 'includes custom attributes' do
+          if file.is_a?(CarrierWave::Storage::Fog::File)
+            if @provider == 'AWS'
+              expect(@storage.connection).to receive(:copy_object)
+                                               .with(anything, anything, anything, anything,
+                                                     { "Content-Type"=>file.content_type, "x-amz-acl"=>"public-read", 'x-amz-server-side-encryption' => true }).and_call_original
+            else
+              expect(@storage.connection).to receive(:copy_object)
+                                               .with(anything, anything, anything, anything, { "Content-Type"=>file.content_type }).and_call_original
+            end
+
+            @storage.store!(file)
+          end
+        end
+      end
+
       context '#acl_header' do
         let(:store_path) { 'uploads/test+.jpg' }
 
@@ -68,13 +96,13 @@ end
           if file.is_a?(CarrierWave::Storage::Fog::File)
             if @provider == 'AWS'
               expect(@storage.connection).to receive(:copy_object)
-                                              .with(anything, anything, anything, anything, { "x-amz-acl"=>"public-read" }).and_call_original
+                                              .with(anything, anything, anything, anything, { "Content-Type"=>file.content_type, "x-amz-acl"=>"public-read" }).and_call_original
             elsif @provider == 'Google'
               expect(@storage.connection).to receive(:copy_object)
-                                              .with(anything, anything, anything, anything, { destination_predefined_acl: "publicRead" }).and_call_original
+                                              .with(anything, anything, anything, anything, { "Content-Type"=>file.content_type, destination_predefined_acl: "publicRead" }).and_call_original
             else
               expect(@storage.connection).to receive(:copy_object)
-                                              .with(anything, anything, anything, anything, {}).and_call_original
+                                              .with(anything, anything, anything, anything, { "Content-Type"=>file.content_type }).and_call_original
             end
           end
 
