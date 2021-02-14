@@ -14,7 +14,7 @@ describe CarrierWave::Uploader do
   before { allow(CarrierWave).to receive(:generate_cache_id).and_return(cache_id) }
 
   describe '#cache!' do
-    before { allow(uploader).to receive(:extension_blacklist).and_return(extension_blacklist) }
+    before { allow(uploader).to receive(:extension_blocklist).and_return(extension_blacklist) }
 
     context "when there are no blacklisted extensions" do
       let(:extension_blacklist) { nil }

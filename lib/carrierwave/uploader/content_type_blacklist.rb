@@ -28,7 +28,11 @@ module CarrierWave
       #       [/(text|application)\/json/]
       #     end
       #
-      def content_type_blacklist; end
+      def content_type_blacklist
+        content_type_blocklist
+      end
+
+      def content_type_blocklist; end
 
     private
 

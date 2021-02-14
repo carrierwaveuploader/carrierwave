@@ -7,6 +7,8 @@ module CarrierWave
         before :cache, :check_extension_whitelist!
       end
 
+      def extension_allowlist; end
+
       ##
       # Override this method in your uploader to provide a white list of extensions which
       # are allowed to be uploaded. Compares the file's extension case insensitive.
@@ -31,7 +33,9 @@ module CarrierWave
       #       [/jpe?g/, 'gif', 'png']
       #     end
       #
-      def extension_whitelist; end
+      def extension_whitelist
+        extension_allowlist
+      end
 
     private
 

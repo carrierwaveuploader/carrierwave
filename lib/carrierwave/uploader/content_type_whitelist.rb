@@ -7,6 +7,8 @@ module CarrierWave
         before :cache, :check_content_type_whitelist!
       end
 
+      def content_type_allowlist; end
+
       ##
       # Override this method in your uploader to provide a whitelist of files content types
       # which are allowed to be uploaded.
@@ -28,7 +30,9 @@ module CarrierWave
       #       [/(text|application)\/json/]
       #     end
       #
-      def content_type_whitelist; end
+      def content_type_whitelist
+        content_type_allowlist
+      end
 
     private
 

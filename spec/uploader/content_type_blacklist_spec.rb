@@ -36,6 +36,12 @@ describe CarrierWave::Uploader do
           expect { uploader.cache!(ruby_file) }.to raise_error(CarrierWave::IntegrityError)
         end
 
+        it "raises an integrity error if the file has a blocklisted content type" do
+          allow(uploader).to receive(:content_type_blocklist).and_return(['image/png'])
+
+          expect { uploader.cache!(ruby_file) }.to raise_error(CarrierWave::IntegrityError)
+        end
+
         it "accepts content types as regular expressions" do
           allow(uploader).to receive(:content_type_blacklist).and_return([/image\//])
 

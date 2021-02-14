@@ -43,6 +43,14 @@ describe CarrierWave::Uploader do
           }).to raise_error(CarrierWave::IntegrityError)
         end
 
+        it "raises an integrity error if the file has not an allowlisted extension" do
+          allow(@uploader).to receive(:extension_allowlist).and_return(%w(txt doc xls))
+
+          expect(running {
+            @uploader.cache!(File.open(file_path('test.jpg')))
+          }).to raise_error(CarrierWave::IntegrityError)
+        end
+
         it "raises an integrity error if the file has not a whitelisted extension, using start of string matcher" do
           allow(@uploader).to receive(:extension_whitelist).and_return(%w(txt))
 
