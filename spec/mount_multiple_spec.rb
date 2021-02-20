@@ -199,10 +199,10 @@ describe CarrierWave::Mount do
         instance.images = [test_file_stub]
       end
 
-      context "if the images fails a white list integrity check" do
+      context "if the images fails an allowlist integrity check" do
         before do
           uploader.class_eval do
-            def extension_whitelist
+            def extension_allowlist
               %w(txt)
             end
           end
@@ -218,10 +218,10 @@ describe CarrierWave::Mount do
         end
       end
 
-      describe "if the images fails a black list integrity check" do
+      describe "if the images fails a denylist integrity check" do
         before do
           uploader.class_eval do
-            def extension_blacklist
+            def extension_denylist
               %w(jpg)
             end
           end
@@ -715,7 +715,7 @@ describe CarrierWave::Mount do
       describe "when an integrity check fails" do
         before do
           uploader.class_eval do
-            def extension_whitelist
+            def extension_allowlist
               %w(txt)
             end
           end
@@ -965,7 +965,7 @@ describe CarrierWave::Mount do
     let(:uploader) do
       Class.new(CarrierWave::Uploader::Base).tap do |u|
         u.class_eval do
-          def extension_whitelist
+          def extension_allowlist
             %w(txt)
           end
         end
