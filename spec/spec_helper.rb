@@ -17,6 +17,7 @@ require 'timecop'
 require 'open-uri'
 require "webmock/rspec"
 require 'mini_magick'
+require 'active_support/core_ext'
 
 I18n.enforce_available_locales = false
 
