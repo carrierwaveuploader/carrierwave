@@ -33,7 +33,7 @@ jobs:
           - ruby: jruby-head
             gemfile: gemfiles/rails-6-0.gemfile
             experimental: true
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     services:
       postgres:
         image: postgres:11

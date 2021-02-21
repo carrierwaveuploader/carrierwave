@@ -533,6 +533,34 @@ end
             end
           end
 
+          context 'in a timezone with DST' do
+            before do
+              @prev_tz = ENV['TZ']
+              ENV['TZ'] = 'US/Pacific'
+            end
+            after { ENV['TZ'] = @prev_tz }
+
+            it "should generate a proper X-Amz-Expires when expires spans a move to DST" do
+              if @provider == 'AWS'
+                Timecop.freeze(Time.at(1477932000)) do |now|
+                  expiration = 7 * 24 * 60 * 60 # 1 week
+                  allow(@uploader).to receive(:fog_authenticated_url_expiration).and_return(expiration)
+                  expect(@fog_file.authenticated_url).to include("X-Amz-Expires=#{expiration.to_s}")
+                end
+              end
+            end
+
+            it "should generate a proper X-Amz-Expires when expires spans a move to DST and an ActiveRecord::Duration is provided" do
+              if @provider == 'AWS'
+                Timecop.freeze(Time.at(1477932000)) do |now|
+                  expiration = 1.week
+                  allow(@uploader).to receive(:fog_authenticated_url_expiration).and_return(expiration)
+                  expect(@fog_file.authenticated_url).to include("X-Amz-Expires=#{expiration.to_s}")
+                end
+              end
+            end
+          end
+
           it 'should generate correct filename' do
             expect(@fog_file.filename).to eq('private.txt')
           end
