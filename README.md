@@ -94,7 +94,7 @@ a migration:
 Open your model file and mount the uploader:
 
 ```ruby
-class User < ActiveRecord::Base
+class User < ApplicationRecord
   mount_uploader :avatar, AvatarUploader
 end
 ```
@@ -157,7 +157,7 @@ Open your model file and mount the uploader:
 
 
 ```ruby
-class User < ActiveRecord::Base
+class User < ApplicationRecord
   mount_uploaders :avatars, AvatarUploader
   serialize :avatars, JSON # If you use SQLite, add this line.
 end
