@@ -106,8 +106,6 @@ describe CarrierWave::Vips do
     end
 
     it "doesn't pad with transparent" do
-      binding.pry
-
       instance.resize_and_pad(200, 200)
       instance.convert('png')
 
