@@ -230,7 +230,7 @@ end
 ## Securing uploads
 
 Certain files might be dangerous if uploaded to the wrong location, such as PHP
-files or other script files. CarrierWave allows you to specify a whitelist of
+files or other script files. CarrierWave allows you to specify an allowlist of
 allowed extensions or content types.
 
 If you're mounting the uploader, uploading a file with the wrong extension will
@@ -238,7 +238,7 @@ make the record invalid instead. Otherwise, an error is raised.
 
 ```ruby
 class MyUploader < CarrierWave::Uploader::Base
-  def extension_whitelist
+  def extension_allowlist
     %w(jpg jpeg gif png)
   end
 end
@@ -249,45 +249,45 @@ Let's say we need an uploader that accepts only images. This can be done like th
 
 ```ruby
 class MyUploader < CarrierWave::Uploader::Base
-  def content_type_whitelist
+  def content_type_allowlist
     /image\//
   end
 end
 ```
 
-You can use a blacklist to reject content types.
+You can use a denylist to reject content types.
 Let's say we need an uploader that reject JSON files. This can be done like this
 
 ```ruby
 class NoJsonUploader < CarrierWave::Uploader::Base
-  def content_type_blacklist
+  def content_type_denylist
     ['application/text', 'application/json']
   end
 end
 ```
 
 ### CVE-2016-3714 (ImageTragick)
-This version of CarrierWave has the ability to mitigate CVE-2016-3714. However, you **MUST** set a content_type_whitelist in your uploaders for this protection to be effective, and you **MUST** either disable ImageMagick's default SVG delegate or use the RSVG delegate for SVG processing.
+This version of CarrierWave has the ability to mitigate CVE-2016-3714. However, you **MUST** set a content_type_allowlist in your uploaders for this protection to be effective, and you **MUST** either disable ImageMagick's default SVG delegate or use the RSVG delegate for SVG processing.
 
 
-A valid whitelist that will restrict your uploader to images only, and mitigate the CVE is:
+A valid allowlist that will restrict your uploader to images only, and mitigate the CVE is:
 
 ```ruby
 class MyUploader < CarrierWave::Uploader::Base
-  def content_type_whitelist
+  def content_type_allowlist
     [/image\//]
   end
 end
 ```
 
-**WARNING**: A `content_type_whitelist` is the only form of whitelist or blacklist supported by CarrierWave that can effectively mitigate against CVE-2016-3714. Use of `extension_whitelist` will not inspect the file headers, and thus still leaves your application open to the vulnerability.
+**WARNING**: A `content_type_allowlist` is the only form of allowlist or denylist supported by CarrierWave that can effectively mitigate against CVE-2016-3714. Use of `extension_allowlist` will not inspect the file headers, and thus still leaves your application open to the vulnerability.
 
 ### Filenames and unicode chars
 
 Another security issue you should care for is the file names (see
 [Ruby On Rails Security Guide](http://guides.rubyonrails.org/security.html#file-uploads)).
 By default, CarrierWave provides only English letters, arabic numerals and some symbols as
-white-listed characters in the file name. If you want to support local scripts (Cyrillic letters, letters with diacritics and so on), you
+allowlisted characters in the file name. If you want to support local scripts (Cyrillic letters, letters with diacritics and so on), you
 have to override `sanitize_regexp` method. It should return regular expression which would match
 all *non*-allowed symbols.
 
@@ -980,10 +980,10 @@ errors:
     carrierwave_processing_error: failed to be processed
     carrierwave_integrity_error: is not of an allowed file type
     carrierwave_download_error: could not be downloaded
-    extension_whitelist_error: "You are not allowed to upload %{extension} files, allowed types: %{allowed_types}"
-    extension_blacklist_error: "You are not allowed to upload %{extension} files, prohibited types: %{prohibited_types}"
-    content_type_whitelist_error: "You are not allowed to upload %{content_type} files, allowed types: %{allowed_types}"
-    content_type_blacklist_error: "You are not allowed to upload %{content_type} files"
+    extension_allowlist_error: "You are not allowed to upload %{extension} files, allowed types: %{allowed_types}"
+    extension_denylist_error: "You are not allowed to upload %{extension} files, prohibited types: %{prohibited_types}"
+    content_type_allowlist_error: "You are not allowed to upload %{content_type} files, allowed types: %{allowed_types}"
+    content_type_denylist_error: "You are not allowed to upload %{content_type} files"
     rmagick_processing_error: "Failed to manipulate with rmagick, maybe it is not an image?"
     mini_magick_processing_error: "Failed to manipulate with MiniMagick, maybe it is not an image? Original Error: %{e}"
     min_size_error: "File size should be greater than %{min_size}"
