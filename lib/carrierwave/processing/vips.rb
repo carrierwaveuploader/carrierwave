@@ -44,10 +44,7 @@ module CarrierWave
   # === Note
   #
   # The ImageProcessing gem uses ruby-vips, a binding for the vips image
-  # library, to build a "convert" command that
-  # performs the processing.
-  #
-  # You can find more information here:
+  # library. You can find more information here:
   #
   # https://github.com/libvips/ruby-vips
   #
@@ -100,8 +97,8 @@ module CarrierWave
     #
     #     image.convert(:png)
     #
-    def convert(format, page=nil, &block)
-      vips!(block) do |builder|
+    def convert(format, page=nil)
+      vips! do |builder|
         builder = builder.convert(format)
         builder = builder.loader(page: page) if page
         builder
@@ -124,10 +121,10 @@ module CarrierWave
     #
     # [Vips::Image] additional manipulations to perform
     #
-    def resize_to_limit(width, height, combine_options: {}, &block)
+    def resize_to_limit(width, height, combine_options: {})
       width, height = resolve_dimensions(width, height)
 
-      vips!(block) do |builder|
+      vips! do |builder|
         builder.resize_to_limit(width, height)
           .apply(combine_options)
       end
@@ -148,10 +145,10 @@ module CarrierWave
     #
     # [Vips::Image] additional manipulations to perform
     #
-    def resize_to_fit(width, height, combine_options: {}, &block)
+    def resize_to_fit(width, height, combine_options: {})
       width, height = resolve_dimensions(width, height)
 
-      vips!(block) do |builder|
+      vips! do |builder|
         builder.resize_to_fit(width, height)
           .apply(combine_options)
       end
@@ -172,10 +169,10 @@ module CarrierWave
     #
     # [Vips::Image] additional manipulations to perform
     #
-    def resize_to_fill(width, height, _gravity = nil, combine_options: {}, &block)
+    def resize_to_fill(width, height, _gravity = nil, combine_options: {})
       width, height = resolve_dimensions(width, height)
 
-      vips!(block) do |builder|
+      vips! do |builder|
         builder.resize_to_fill(width, height).apply(combine_options)
       end
     end
@@ -202,10 +199,10 @@ module CarrierWave
     #
     # [Vips::Image] additional manipulations to perform
     #
-    def resize_and_pad(width, height, background=nil, gravity='centre', alpha=nil, combine_options: {}, &block)
+    def resize_and_pad(width, height, background=nil, gravity='centre', alpha=nil, combine_options: {})
       width, height = resolve_dimensions(width, height)
 
-      vips!(block) do |builder|
+      vips! do |builder|
         builder.resize_and_pad(width, height, background: background, gravity: gravity, alpha: alpha)
           .apply(combine_options)
       end
@@ -233,44 +230,6 @@ module CarrierWave
       vips_image.height
     end
 
-    ##
-    # Manipulate the image with vips. This method will load up an image
-    # and then pass each of its frames to the supplied block. It will then
-    # save the image to disk.
-    #
-    # NOTE: This method exists mostly for backwards compatibility, you should
-    # probably use #vips!.
-    #
-    # === Gotcha
-    #
-    # This method assumes that the object responds to +current_path+.
-    # Any class that this module is mixed into must have a +current_path+ method.
-    # CarrierWave::Uploader does, so you won't need to worry about this in
-    # most cases.
-    #
-    # === Yields
-    #
-    # [Vips::Image] manipulations to perform
-    #
-    # === Raises
-    #
-    # [CarrierWave::ProcessingError] if manipulation failed.
-    #
-    def manipulate!
-      cache_stored_file! if !cached?
-      image = ::Vips::Image.open(current_path)
-
-      image = yield(image)
-      FileUtils.mv image.path, current_path
-
-      image.run_command("identify", current_path)
-    rescue ::Vips::Error, ::Vips::Invalid => e
-      message = I18n.translate(:"errors.messages.vips_processing_error", :e => e)
-      raise CarrierWave::ProcessingError, message
-    ensure
-      image.destroy! if image
-    end
-
     # Process the image with vip, using the ImageProcessing gem. This
     # method will build a "convert" vips command and execute it on the
     # current image.
@@ -289,19 +248,12 @@ module CarrierWave
     # === Raises
     #
     # [CarrierWave::ProcessingError] if processing failed.
-    def vips!(block = nil)
+    def vips!
       builder = ImageProcessing::Vips.source(current_path)
       builder = yield(builder)
 
       result = builder.call
       result.close
-
-      # backwards compatibility (we want to eventually move away from Vips::Image)
-      if block
-        image  = ::Vips::Image.new(result.path, result)
-        image  = block.call(image)
-        result = image.instance_variable_get(:@tempfile)
-      end
 
       FileUtils.mv result.path, current_path
 
