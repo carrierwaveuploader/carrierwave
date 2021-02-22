@@ -57,6 +57,8 @@ module CarrierWave
 
     included do
       require "image_processing/vips"
+      # We need to disable caching since we're editing images in place.
+      ::Vips.cache_set_max(0)
     end
 
     module ClassMethods

@@ -106,7 +106,7 @@ describe CarrierWave::Vips do
     end
 
     it "doesn't pad with transparent" do
-      instance.resize_and_pad(200, 200)
+      instance.resize_and_pad(200, 200, [255, 255, 255])
       instance.convert('png')
 
       color_of_pixel(instance.current_path, 0, 0).tap do |color|
