@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## 2.2.0 - 2021-02-23
+### Added
+* libvips support through [ImageProcessing::Vips](https://github.com/janko/image_processing) and [ruby-vips](https://github.com/libvips/ruby-vips) (@rhymes [#2500](https://github.com/carrierwaveuploader/carrierwave/pull/2500), [e8421978](https://github.com/carrierwaveuploader/carrierwave/commit/e84219787aa1c95a55cbc78ad062b7539d8e5813), [4ae8dc64](https://github.com/carrierwaveuploader/carrierwave/commit/4ae8dc64ff0dcbcf66c6d79df90268d57438df55))
+* Provide alternatives to whitelist/blacklist terminology as allowlist/denylist, while old ones are still available but deprecated (@grantbdev [#2442](https://github.com/carrierwaveuploader/carrierwave/pull/2442), [4c3cac75](https://github.com/carrierwaveuploader/carrierwave/commit/4c3cac75f3a473e941045c23ebb781f61af67d79), [#2491](https://github.com/carrierwaveuploader/carrierwave/issues/2491))
+* Support for the latest version of RMagick (@mshibuya [88f24451](https://github.com/carrierwaveuploader/carrierwave/commit/88f24451352bda128825f857cde473107d98fca7))
+
+### Deprecated
+* `#(content_type|extension)_whitelist`, `#(content_type|extension)_blacklist` are deprecated. Use `#(content_type|extension)_allowlist` and `#(content_type|extension)_denylist` instead (@grantbdev [#2442](https://github.com/carrierwaveuploader/carrierwave/pull/2442), [4c3cac75](https://github.com/carrierwaveuploader/carrierwave/commit/4c3cac75f3a473e941045c23ebb781f61af67d79))
+
+### Fixed
+* Calculate Fog expiration taking DST into account (@mshibuya, [f90e14ca](https://github.com/carrierwaveuploader/carrierwave/commit/f90e14ca91892d677ee6ed42321a21a2fe98f360), [#2059](https://github.com/carrierwaveuploader/carrierwave/issues/2059))
+* Set correct content type on copy of fog files (@ZuevEvgenii [#2503](https://github.com/carrierwaveuploader/carrierwave/pull/2503), [6682f7ac](https://github.com/carrierwaveuploader/carrierwave/commit/6682f7ac5dd480269448a614026a5f4524e61550), [#2487](https://github.com/carrierwaveuploader/carrierwave/issues/2487))
+* Fix fog-google support to pass acl_header for public read if fog is public (@yosiat [#2525](https://github.com/carrierwaveuploader/carrierwave/pull/2525), [#2426](https://github.com/carrierwaveuploader/carrierwave/issues/2426))
+* Fix various URL escape issues by escaping on URI parse error only (@mshibuya [3faf7491](https://github.com/carrierwaveuploader/carrierwave/commit/3faf7491e33bd10ae8b3e0010501fc96a76c21c3), [#2457](https://github.com/carrierwaveuploader/carrierwave/pull/2457), [#2473](https://github.com/carrierwaveuploader/carrierwave/pull/2473))
+* Fix instance variables `@versions_to_*` not initialized warning (@mshibuya [c10b82ed](https://github.com/carrierwaveuploader/carrierwave/commit/c10b82ed2f7b20cb58772281e3510dc70c410732), [#2493](https://github.com/carrierwaveuploader/carrierwave/issues/2493))
+* Fix `SanitizedFile#move_to` wrongly detects content_type based on the path before move (@mshibuya [a42e1b4c](https://github.com/carrierwaveuploader/carrierwave/commit/a42e1b4c504c6f69c4c4c7802ebd45523134c42e), [#2495](https://github.com/carrierwaveuploader/carrierwave/issues/2495))
+* Fix returning invalid content type on text files (@inkstak [#2474](https://github.com/carrierwaveuploader/carrierwave/pull/2474), [#2424](https://github.com/carrierwaveuploader/carrierwave/issues/2424))
+* Skip content type and extension filters where possible (@alexpooley [#2464](https://github.com/carrierwaveuploader/carrierwave/pull/2464))
+* Fix file's `#url` being called twice, which might be costly for non-local files (@skyeagle [#2519](https://github.com/carrierwaveuploader/carrierwave/pull/2519))
+* Fix mime type detection failing with types which contain `+` symbol, such as `image/svg+xml` (@sylvainbx [#2489](https://github.com/carrierwaveuploader/carrierwave/pull/2489))
+* Fix `#cached?` to return boolean instead of `@cache_id` value (@kmiyake [#2510](https://github.com/carrierwaveuploader/carrierwave/pull/2510))
+* Fix mime type detection for MS Office files (@anthonypenner [#2447](https://github.com/carrierwaveuploader/carrierwave/pull/2447))
+
 ### Security
 * Fix Code Injection vulnerability in CarrierWave::RMagick (@mshibuya [387116f5](https://github.com/carrierwaveuploader/carrierwave/commit/387116f5c72efa42bc3938d946b4c8d2f22181b7), [GHSA-cf3w-g86h-35x4](https://github.com/carrierwaveuploader/carrierwave/security/advisories/GHSA-cf3w-g86h-35x4))
 * Fix SSRF vulnerability in the remote file download feature (@mshibuya [012702eb](https://github.com/carrierwaveuploader/carrierwave/commit/012702eb3ba1663452aa025831caa304d1a665c0), [GHSA-fwcm-636p-68r5](https://github.com/carrierwaveuploader/carrierwave/security/advisories/GHSA-fwcm-636p-68r5))
