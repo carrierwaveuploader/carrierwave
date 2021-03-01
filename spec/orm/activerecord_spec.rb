@@ -302,7 +302,7 @@ describe CarrierWave::ActiveRecord do
           @uploader.class_eval do
             process :monkey
             def monkey
-              raise CarrierWave::ProcessingError
+              raise CarrierWave::ProcessingError.new(nil, 'public message')
             end
           end
           @event.image = stub_file('test.jpg')
@@ -312,52 +312,9 @@ describe CarrierWave::ActiveRecord do
           expect(@event).to_not be_valid
         end
 
-        it "should use I18n for processing errors without messages" do
+        it "should use the error's public message" do
           @event.valid?
-          expect(@event.errors[:image]).to eq(['failed to be processed'])
-
-          change_locale_and_store_translations(:pt, :activerecord => {
-            :errors => {
-              :messages => {
-                :carrierwave_processing_error => 'falha ao processar imagem.'
-              }
-            }
-          }) do
-            expect(@event).to_not be_valid
-            expect(@event.errors[:image]).to eq(['falha ao processar imagem.'])
-          end
-        end
-      end
-
-      context 'when validating processing' do
-        before do
-          @uploader.class_eval do
-            process :monkey
-            def monkey
-              raise CarrierWave::ProcessingError, "Ohh noez!"
-            end
-          end
-          @event.image = stub_file('test.jpg')
-        end
-
-        it "should make the record invalid when a processing error occurs" do
-          expect(@event).to_not be_valid
-        end
-
-        it "should use the error's messages for processing errors with messages" do
-          @event.valid?
-          expect(@event.errors[:image]).to eq(['Ohh noez!'])
-
-          change_locale_and_store_translations(:pt, :activerecord => {
-            :errors => {
-              :messages => {
-                :carrierwave_processing_error => 'falha ao processar imagem.'
-              }
-            }
-          }) do
-            expect(@event).to_not be_valid
-            expect(@event.errors[:image]).to eq(['Ohh noez!'])
-          end
+          expect(@event.errors[:image]).to eq(['public message'])
         end
       end
     end
@@ -513,7 +470,7 @@ describe CarrierWave::ActiveRecord do
         before do
           @uploader.class_eval do
             def download! file, headers = {}
-              raise CarrierWave::DownloadError
+              raise CarrierWave::DownloadError.new(nil, 'public message')
             end
           end
           @event.remote_image_url = 'http://www.example.com/missing.jpg'
@@ -523,20 +480,9 @@ describe CarrierWave::ActiveRecord do
           expect(@event).to_not be_valid
         end
 
-        it "should use I18n for download errors without messages" do
+        it "should use the error's public message" do
           @event.valid?
-          expect(@event.errors[:image]).to eq(['could not be downloaded'])
-
-          change_locale_and_store_translations(:pt, :activerecord => {
-            :errors => {
-              :messages => {
-                :carrierwave_download_error => 'não pode ser descarregado'
-              }
-            }
-          }) do
-            expect(@event).to_not be_valid
-            expect(@event.errors[:image]).to eq(['não pode ser descarregado'])
-          end
+          expect(@event.errors[:image]).to eq(['public message'])
         end
       end
 
@@ -1097,7 +1043,7 @@ describe CarrierWave::ActiveRecord do
           @uploader.class_eval do
             process :monkey
             def monkey
-              raise CarrierWave::ProcessingError
+              raise CarrierWave::ProcessingError.new(nil, 'public message')
             end
           end
           @event.images = [stub_file('test.jpg')]
@@ -1107,52 +1053,9 @@ describe CarrierWave::ActiveRecord do
           expect(@event).to_not be_valid
         end
 
-        it "should use I18n for processing errors without messages" do
+        it "should use the error's public message" do
           @event.valid?
-          expect(@event.errors[:images]).to eq(['failed to be processed'])
-
-          change_locale_and_store_translations(:pt, :activerecord => {
-            :errors => {
-              :messages => {
-                :carrierwave_processing_error => 'falha ao processar imagesm.'
-              }
-            }
-          }) do
-            expect(@event).to_not be_valid
-            expect(@event.errors[:images]).to eq(['falha ao processar imagesm.'])
-          end
-        end
-      end
-
-      context 'when validating processing' do
-        before do
-          @uploader.class_eval do
-            process :monkey
-            def monkey
-              raise CarrierWave::ProcessingError, "Ohh noez!"
-            end
-          end
-          @event.images = [stub_file('test.jpg')]
-        end
-
-        it "should make the record invalid when a processing error occurs" do
-          expect(@event).to_not be_valid
-        end
-
-        it "should use the error's messages for processing errors with messages" do
-          @event.valid?
-          expect(@event.errors[:images]).to eq(['Ohh noez!'])
-
-          change_locale_and_store_translations(:pt, :activerecord => {
-            :errors => {
-              :messages => {
-                :carrierwave_processing_error => 'falha ao processar imagesm.'
-              }
-            }
-          }) do
-            expect(@event).to_not be_valid
-            expect(@event.errors[:images]).to eq(['Ohh noez!'])
-          end
+          expect(@event.errors[:images]).to eq(['public message'])
         end
       end
     end
@@ -1277,7 +1180,7 @@ describe CarrierWave::ActiveRecord do
         before do
           @uploader.class_eval do
             def download! file, headers = {}
-              raise CarrierWave::DownloadError
+              raise CarrierWave::DownloadError.new(nil, 'public message')
             end
           end
           @event.remote_images_urls = ['http://www.example.com/missing.jpg']
@@ -1287,20 +1190,9 @@ describe CarrierWave::ActiveRecord do
           expect(@event).to_not be_valid
         end
 
-        it "should use I18n for download errors without messages" do
+        it "should use the error's public message" do
           @event.valid?
-          expect(@event.errors[:images]).to eq(['could not be downloaded'])
-
-          change_locale_and_store_translations(:pt, :activerecord => {
-            :errors => {
-              :messages => {
-                :carrierwave_download_error => 'não pode ser descarregado'
-              }
-            }
-          }) do
-            expect(@event).to_not be_valid
-            expect(@event.errors[:images]).to eq(['não pode ser descarregado'])
-          end
+          expect(@event.errors[:images]).to eq(['public message'])
         end
       end
 

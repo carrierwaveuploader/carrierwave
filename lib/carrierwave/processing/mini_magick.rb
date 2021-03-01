@@ -265,7 +265,8 @@ module CarrierWave
       image.run_command("identify", current_path)
     rescue ::MiniMagick::Error, ::MiniMagick::Invalid => e
       message = I18n.translate(:"errors.messages.mini_magick_processing_error", :e => e)
-      raise CarrierWave::ProcessingError, message
+      public_message = I18n.translate(:"errors.messages.public_processing_error")
+      raise CarrierWave::ProcessingError.new(message, public_message)
     ensure
       image.destroy! if image
     end
@@ -311,7 +312,8 @@ module CarrierWave
       end
     rescue ::MiniMagick::Error, ::MiniMagick::Invalid => e
       message = I18n.translate(:"errors.messages.mini_magick_processing_error", :e => e)
-      raise CarrierWave::ProcessingError, message
+      public_message = I18n.translate(:"errors.messages.carrierwave_processing_error")
+      raise CarrierWave::ProcessingError.new(message, public_message)
     end
 
     private

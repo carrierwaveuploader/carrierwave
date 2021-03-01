@@ -264,7 +264,8 @@ module CarrierWave
       end
     rescue ::Vips::Error => e
       message = I18n.translate(:"errors.messages.vips_processing_error", :e => e)
-      raise CarrierWave::ProcessingError, message
+      public_message = I18n.translate(:"errors.messages.carrierwave_processing_error")
+      raise CarrierWave::ProcessingError.new(message, public_message)
     end
 
     private
