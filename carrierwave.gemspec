@@ -36,9 +36,10 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rails", ">= 5.0.0"
   s.add_development_dependency "cucumber", "~> 2.3"
   s.add_development_dependency "rspec", "~> 3.4"
+  s.add_development_dependency "rspec-retry"
   s.add_development_dependency "webmock"
   s.add_development_dependency "fog-aws"
-  s.add_development_dependency "fog-google", "~> 1.7"
+  s.add_development_dependency "fog-google", ["~> 1.7", "!= 1.12.1"]
   s.add_development_dependency "fog-local"
   s.add_development_dependency "fog-rackspace"
   s.add_development_dependency "mini_magick", ">= 3.6.0"
