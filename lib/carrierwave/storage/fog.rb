@@ -147,8 +147,9 @@ module CarrierWave
           :public => uploader.fog_public
         ).files.all(:prefix => uploader.cache_dir).each do |file|
           # generate_cache_id returns key formated TIMEINT-PID(-COUNTER)-RND
-          time = file.key.scan(/(\d+)-\d+-\d+(?:-\d+)?/).first.map { |t| t.to_i }
-          time = Time.at(*time)
+          matched = file.key.match(/(\d+)-\d+-\d+(?:-\d+)?/)
+          next unless matched
+          time = Time.at(matched[1].to_i)
           file.destroy if time < (Time.now.utc - seconds)
         end
       end

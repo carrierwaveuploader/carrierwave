@@ -338,6 +338,19 @@ end
         end
         expect(@directory.files.all(:prefix => 'uploads/tmp').size).to eq(0)
       end
+
+      context "when a file which does not conform to the cache_id format exists" do
+        before do
+          @directory.files.create(:key => "uploads/tmp/invalid", :body => 'A test, 1234', :public => true)
+        end
+
+        it "should just ignore that" do
+          Timecop.freeze(today) do
+            @uploader.clean_cached_files!(0)
+          end
+          expect(@directory.files.all(:prefix => 'uploads/tmp').size).to eq(1)
+        end
+      end
     end
 
     describe "CarrierWave::Storage::Fog::File" do
