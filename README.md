@@ -361,6 +361,22 @@ created. This can cut down on processing cost.
 
 See `carrierwave/processing/mini_magick.rb` for details.
 
+### conditional process
+
+If you want to use conditional process, you can only use `if` statement.
+
+See `carrierwave/uploader/processing.rb` for details.
+
+```ruby
+class MyUploader < CarrierWave::Uploader::Base
+  process :scale => [200, 200], :if => :image?
+  
+  def image?(carrier_wave_sanitized_file)
+    true
+  end
+end
+```
+
 ### Nested versions
 
 It is possible to nest versions within versions:
