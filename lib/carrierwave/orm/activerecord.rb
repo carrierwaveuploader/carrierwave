@@ -56,12 +56,13 @@ module CarrierWave
       validates_processing_of column if uploader_option(column.to_sym, :validate_processing)
       validates_download_of column if uploader_option(column.to_sym, :validate_download)
 
+      after_save :"store_#{column}!"
       before_save :"write_#{column}_identifier"
-      after_save :"store_previous_changes_for_#{column}"
       after_commit :"remove_#{column}!", :on => :destroy
       after_commit :"mark_remove_#{column}_false", :on => :update
+
+      after_save :"store_previous_changes_for_#{column}"
       after_commit :"remove_previously_stored_#{column}", :on => :update
-      after_commit :"store_#{column}!", :on => [:create, :update]
 
       mod = Module.new
       prepend mod

@@ -780,48 +780,10 @@ describe CarrierWave::ActiveRecord do
       Event.transaction do
         @event.image = stub_file('new.jpeg')
         @event.save
+        expect(File.exist?(public_path('uploads/new.jpeg'))).to be_truthy
         expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
         raise ActiveRecord::Rollback
       end
-      expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
-    end
-  end
-
-  describe "#mount_uploader into transaction" do
-    before do
-      @uploader.version :thumb
-      reset_class("Event")
-      Event.mount_uploader(:image, @uploader)
-      @event = Event.new
-    end
-
-    after do
-      FileUtils.rm_rf(public_path("uploads"))
-    end
-
-    it "should not store file during rollback" do
-      Event.transaction do
-        @event.image = stub_file('new.jpeg')
-        @event.save
-
-        raise ActiveRecord::Rollback
-      end
-
-      expect(File.exist?(public_path('uploads/new.jpeg'))).to be_falsey
-    end
-
-    it "should not change file during rollback" do
-      @event.image = stub_file('old.jpeg')
-      @event.save
-
-      Event.transaction do
-        @event.image = stub_file('new.jpeg')
-        @event.save
-
-        raise ActiveRecord::Rollback
-      end
-
-      expect(File.exist?(public_path('uploads/new.jpeg'))).to be_falsey
       expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
     end
   end
