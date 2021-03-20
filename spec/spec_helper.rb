@@ -120,10 +120,31 @@ module CarrierWave
     end
 
     module SsrfProtectionAwareWebMock
+      class Matcher
+        def initialize(uri)
+          @uri = uri
+        end
+
+        def call(target_uri)
+          Resolv.getaddresses(@uri.hostname).any? do |address|
+            candidate = @uri.dup
+            candidate.hostname = address
+            target_uri === WebMock::Util::URI.normalize_uri(candidate)
+          end
+        end
+
+        def inspect
+          "#<#{self.class.name}: #{@uri}>"
+        end
+      end
+
       def stub_request(method, uri)
         uri = URI.parse(uri) if uri.is_a?(String)
-        uri.hostname = Resolv.getaddress(uri.hostname) if uri.is_a?(URI)
-        super
+        if uri.is_a?(URI)
+          super method, Matcher.new(uri)
+        else
+          super
+        end
       end
     end
   end
