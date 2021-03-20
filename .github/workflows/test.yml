@@ -26,13 +26,13 @@ jobs:
             experimental: false
           - ruby: 3.0
             gemfile: gemfiles/rails-master.gemfile
-            experimental: true
+            experimental: false
           - ruby: ruby-head
             gemfile: gemfiles/rails-6-1.gemfile
-            experimental: true
+            experimental: false
           - ruby: jruby-head
             gemfile: gemfiles/rails-6-0.gemfile
-            experimental: true
+            experimental: false
     runs-on: ubuntu-20.04
     services:
       postgres:

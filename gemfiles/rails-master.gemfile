@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "rails", github: "rails/rails", branch: "master"
+gem "rails", github: "rails/rails", branch: "main"
 gem "rack", github: "rack/rack", branch: "master"
 gem "arel", github: "rails/arel", branch: "master"
 gem "sprockets", github: "rails/sprockets", branch: "master"
@@ -8,7 +8,7 @@ gem "sprockets-rails", github: "rails/sprockets-rails", branch: "master"
 gem "sass-rails", github: "rails/sass-rails"
 gem "activemodel-serializers-xml"
 gem "activerecord-jdbcpostgresql-adapter", github: "jruby/activerecord-jdbc-adapter", platforms: :jruby
-gem 'rmagick', github: 'rmagick/rmagick', platform: :ruby
+gem 'rmagick', platform: :ruby
 gem 'fog-google', github: 'binti-family/fog-google', branch: 'ruby-3.0'
 
 gemspec :path => "../"
