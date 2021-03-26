@@ -1072,6 +1072,8 @@ See [CONTRIBUTING.md](https://github.com/carrierwaveuploader/carrierwave/blob/ma
 
 ## License
 
+The MIT License (MIT)
+
 Copyright (c) 2008-2015 Jonas Nicklas
 
 Permission is hereby granted, free of charge, to any person obtaining
