@@ -378,7 +378,7 @@ describe CarrierWave::SanitizedFile do
         expect(sanitized_file.content_type).to eq("application/octet-stream")
       end
 
-      it "should detect content type correctly using MagicMime when content_type is not set" do
+      it "should detect content type correctly using Marcel when content_type is not set" do
         sanitized_file.content_type = nil
         sanitized_file.move_to(file_path("new_dir","gurr.png"))
 
