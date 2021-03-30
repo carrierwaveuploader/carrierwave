@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 2.2.1 - 2021-03-30
+### Changed
+* Replace mimemagic with marcel due to licensing concern (@pjmartorell [#2551](https://github.com/carrierwaveuploader/carrierwave/pull/2551), [#2548](https://github.com/carrierwaveuploader/carrierwave/issues/2548))
+
+### Fixed
+* Fog storage's #clean_cache! breaks when non-cache objects exist in cache_dir (@mshibuya [42c620a1](https://github.com/carrierwaveuploader/carrierwave/commit/42c620a1a19afa61e15e617faa7ce9cc89ec1863), [#2532](https://github.com/carrierwaveuploader/carrierwave/pull/2532))
+
 ## 2.2.0 - 2021-02-23
 ### Added
 * libvips support through [ImageProcessing::Vips](https://github.com/janko/image_processing) and [ruby-vips](https://github.com/libvips/ruby-vips) (@rhymes [#2500](https://github.com/carrierwaveuploader/carrierwave/pull/2500), [e8421978](https://github.com/carrierwaveuploader/carrierwave/commit/e84219787aa1c95a55cbc78ad062b7539d8e5813), [4ae8dc64](https://github.com/carrierwaveuploader/carrierwave/commit/4ae8dc64ff0dcbcf66c6d79df90268d57438df55))
