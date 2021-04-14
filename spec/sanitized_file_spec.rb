@@ -221,6 +221,14 @@ describe CarrierWave::SanitizedFile do
       expect(sanitized_file.content_type).to eq("image/jpeg")
     end
 
+    it "reads content type of a CSV linked to a file" do
+      file = File.open(file_path('addresses.csv'))
+      csv_file = CSV.new(file)
+      sanitized_file = CarrierWave::SanitizedFile.new(csv_file)
+
+      expect(sanitized_file.content_type).to eq("text/csv")
+    end
+
     it "does not allow spoofing of the mime type" do
       file = File.open(file_path("zip.png"))
 
