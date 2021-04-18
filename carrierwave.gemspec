@@ -25,17 +25,12 @@ Gem::Specification.new do |s|
   s.add_dependency "activemodel", ">= 4.0.0"
   s.add_dependency "mime-types", ">= 1.16"
   s.add_dependency "ssrf_filter", "~> 1.0"
-  if RUBY_ENGINE == 'jruby'
-    s.add_development_dependency 'activerecord-jdbcpostgresql-adapter'
-  else
-    s.add_development_dependency "pg"
-  end
-  s.add_development_dependency "rails", ">= 4.0.0"
+  s.add_development_dependency "rails", ">= 5.0.0"
   s.add_development_dependency "cucumber", "~> 2.3"
   s.add_development_dependency "rspec", "~> 3.4"
   s.add_development_dependency "webmock"
   s.add_development_dependency "fog-aws"
-  s.add_development_dependency "fog-google", "~> 1.7.1"
+  s.add_development_dependency "fog-google", ["~> 1.7", "!= 1.12.1"]
   s.add_development_dependency "fog-local"
   s.add_development_dependency "fog-rackspace"
   s.add_development_dependency "mini_magick", ">= 3.6.0"

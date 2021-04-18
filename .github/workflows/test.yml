@@ -28,16 +28,6 @@ jobs:
             gemfile: gemfiles/rails-6-1.gemfile
             experimental: true
     runs-on: ubuntu-20.04
-    services:
-      postgres:
-        image: postgres:11
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: carrierwave_test
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
       EXPERIMENTAL: ${{ matrix.experimental }}
@@ -56,7 +46,6 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
-          bundler-cache: true
       - name: Run RSpec
         run: bundle exec rake spec || [ "$EXPERIMENTAL" == "true" ] && true
       - name: Run Cucumber
