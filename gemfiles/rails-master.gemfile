@@ -10,5 +10,7 @@ gem "activemodel-serializers-xml"
 gem "activerecord-jdbcpostgresql-adapter", github: "jruby/activerecord-jdbc-adapter", platforms: :jruby
 gem 'rmagick', platform: :ruby
 gem 'fog-google', github: 'binti-family/fog-google', branch: 'ruby-3.0'
+gem 'sqlite3', platforms: :ruby
+gem "activerecord-jdbcsqlite3-adapter", platform: [:jruby, :truffleruby]
 
 gemspec :path => "../"

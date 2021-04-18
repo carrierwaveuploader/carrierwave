@@ -28,11 +28,6 @@ Gem::Specification.new do |s|
   s.add_dependency "marcel", "~> 1.0.0"
   s.add_dependency "addressable", "~> 2.6"
   s.add_dependency "ssrf_filter", "~> 1.0"
-  if RUBY_ENGINE == 'jruby'
-    s.add_development_dependency 'activerecord-jdbcpostgresql-adapter'
-  else
-    s.add_development_dependency "pg"
-  end
   s.add_development_dependency "rails", ">= 5.0.0"
   s.add_development_dependency "cucumber", "~> 2.3"
   s.add_development_dependency "rspec", "~> 3.4"

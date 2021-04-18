@@ -6,5 +6,8 @@ if RUBY_VERSION >= '3'
   gem 'rmagick', github: 'rmagick/rmagick', platform: :ruby
   gem 'fog-google', github: 'binti-family/fog-google', branch: 'ruby-3.0'
 end
+gem 'sqlite3', platforms: :ruby
+gem "activerecord-jdbcsqlite3-adapter", platform: [:jruby, :truffleruby]
+
 
 gemspec :path => "../"
