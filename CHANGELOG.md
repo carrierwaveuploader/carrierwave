@@ -5,6 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## Changed
+* Remove support for Merb (@seuros [#2564](https://github.com/carrierwaveuploader/carrierwave/pull/2564))
+
 ## 2.2.1 - 2021-03-30
 ### Changed
 * Replace mimemagic with marcel due to licensing concern (@pjmartorell [#2551](https://github.com/carrierwaveuploader/carrierwave/pull/2551), [#2548](https://github.com/carrierwaveuploader/carrierwave/issues/2548))
