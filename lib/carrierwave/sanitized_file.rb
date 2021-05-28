@@ -158,7 +158,7 @@ module CarrierWave
       else
         @file.try(:rewind)
         @content = @file.read
-        @file.try(:close) unless @file.try(:closed?)
+        @file.try(:close) unless @file.class.ancestors.include?(::StringIO) || @file.try(:closed?)
         @content
       end
     end
