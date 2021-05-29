@@ -335,7 +335,7 @@ module CarrierWave
       end
 
       if type.nil?
-        type = Marcel::Magic.by_path(file).try(:type)
+        type = Marcel::Magic.by_path(path).try(:type)
         type = 'invalid/invalid' unless type.nil? || type.start_with?('text/')
       end
 

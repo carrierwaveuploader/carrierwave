@@ -11,6 +11,7 @@ require 'pry'
 require 'tempfile'
 require 'time'
 require 'logger'
+require 'csv'
 
 require 'carrierwave'
 require 'timecop'
