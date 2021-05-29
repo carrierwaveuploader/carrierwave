@@ -92,7 +92,7 @@ module CarrierWave
       @remote_urls = urls
 
       clear_unstaged
-      urls.zip(remote_request_headers || []).each do |url, header|
+      urls.zip(remote_request_headers || []) do |url, header|
         handle_error do
           uploader = blank_uploader
           uploader.download!(url, header || {})
