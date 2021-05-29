@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 2.2.2 - 2021-05-28
+### Fixed
+* Fix `no implicit conversion of CSV into String` error when parsing a CSV object (@pjmartorell [#2562](https://github.com/carrierwaveuploader/carrierwave/pull/2562), [#2559](https://github.com/carrierwaveuploader/carrierwave/issues/2559))
+
 ## 2.2.1 - 2021-03-30
 ### Changed
 * Replace mimemagic with marcel due to licensing concern (@pjmartorell [#2551](https://github.com/carrierwaveuploader/carrierwave/pull/2551), [#2548](https://github.com/carrierwaveuploader/carrierwave/issues/2548))
