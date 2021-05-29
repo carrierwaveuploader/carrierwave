@@ -1,6 +1,5 @@
 require 'pathname'
 require 'active_support/core_ext/string/multibyte'
-require 'mini_mime'
 require 'marcel'
 
 module CarrierWave
@@ -261,8 +260,8 @@ module CarrierWave
     def content_type
       @content_type ||=
         existing_content_type ||
-        marcel_magic_content_type ||
-        mini_mime_content_type
+        marcel_magic_by_mime_type ||
+        marcel_magic_by_path
     end
 
     ##
@@ -328,27 +327,27 @@ module CarrierWave
       end
     end
 
-    def marcel_magic_content_type
-      if path
-        type = File.open(path) do |file|
-          Marcel::Magic.by_magic(file).try(:type)
-        end
+    def marcel_magic_by_mime_type
+      return unless path
 
-        if type.nil?
-          type = Marcel::Magic.by_path(path).try(:type)
-          type = 'invalid/invalid' unless type.nil? || type.start_with?('text/')
-        end
-
-        type
+      type = File.open(path) do |file|
+        Marcel::Magic.by_magic(file).try(:type)
       end
+
+      if type.nil?
+        type = Marcel::Magic.by_path(path).try(:type)
+        type = 'invalid/invalid' unless type.nil? || type.start_with?('text/')
+      end
+
+      type
     rescue Errno::ENOENT
       nil
     end
 
-    def mini_mime_content_type
+    def marcel_magic_by_path
       return unless path
-      mime_type = ::MiniMime.lookup_by_filename(path)
-      @content_type = (mime_type && mime_type.content_type).to_s
+
+      Marcel::Magic.by_path(path).to_s
     end
 
     def split_extension(filename)

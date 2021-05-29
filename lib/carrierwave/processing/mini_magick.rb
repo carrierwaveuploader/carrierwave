@@ -306,7 +306,7 @@ module CarrierWave
 
       if File.extname(result.path) != File.extname(current_path)
         move_to = current_path.chomp(File.extname(current_path)) + File.extname(result.path)
-        file.content_type = ::MiniMime.lookup_by_filename(move_to).content_type
+        file.content_type = Marcel::Magic.by_path(move_to).try(:type)
         file.move_to(move_to, permissions, directory_permissions)
       end
     rescue ::MiniMagick::Error, ::MiniMagick::Invalid => e

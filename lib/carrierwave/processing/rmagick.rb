@@ -363,7 +363,7 @@ module CarrierWave
       if options[:format] || @format
         frames.write("#{options[:format] || @format}:#{current_path}", &write_block)
         move_to = current_path.chomp(File.extname(current_path)) + ".#{options[:format] || @format}"
-        file.content_type = ::MiniMime.lookup_by_filename(move_to).content_type
+        file.content_type = Marcel::Magic.by_path(move_to).try(:type)
         file.move_to(move_to, permissions, directory_permissions)
       else
         frames.write(current_path, &write_block)

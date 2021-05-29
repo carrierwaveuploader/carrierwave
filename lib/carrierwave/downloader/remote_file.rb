@@ -30,9 +30,10 @@ module CarrierWave
 
       def original_filename
         filename = filename_from_header || filename_from_uri
-        mime_type = MiniMime.lookup_by_content_type(content_type)
+        mime_type = Marcel::TYPES[content_type]
         unless File.extname(filename).present? || mime_type.blank?
-          filename = "#{filename}.#{mime_type.extension}"
+          extension = mime_type[0].first
+          filename = "#{filename}.#{extension}"
         end
         filename
       end

@@ -23,7 +23,6 @@ Gem::Specification.new do |s|
 
   s.add_dependency "activesupport", ">= 5.0.0"
   s.add_dependency "activemodel", ">= 5.0.0"
-  s.add_dependency "mini_mime", ">= 0.1.3"
   s.add_dependency "image_processing", "~> 1.1"
   s.add_dependency "marcel", "~> 1.0.0"
   s.add_dependency "addressable", "~> 2.6"
