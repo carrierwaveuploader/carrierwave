@@ -4,9 +4,12 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+## Removed
+* Remove support for Merb (@seuros [#2566](https://github.com/carrierwaveuploader/carrierwave/pull/2566))
 
-## Changed
-* Remove support for Merb (@seuros [#2564](https://github.com/carrierwaveuploader/carrierwave/pull/2564))
+## 2.2.2 - 2021-05-28
+### Fixed
+* Fix `no implicit conversion of CSV into String` error when parsing a CSV object (@pjmartorell [#2562](https://github.com/carrierwaveuploader/carrierwave/pull/2562), [#2559](https://github.com/carrierwaveuploader/carrierwave/issues/2559))
 
 ## 2.2.1 - 2021-03-30
 ### Changed

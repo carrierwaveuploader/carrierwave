@@ -30,7 +30,7 @@ module CarrierWave
     #
     # Google credentials contain the following keys:
     # [:google_storage_access_key_id]
-    # [:google_storage_secrete_access_key]
+    # [:google_storage_secret_access_key]
     #
     #
     # Local credentials contain the following keys:

@@ -1,10 +1,6 @@
 source "https://rubygems.org"
 
-gem "rails", "~> 6.1.0.rc1"
+gem "rails", "~> 6.1.0"
 gem "activemodel-serializers-xml"
-if RUBY_VERSION >= '3'
-  gem 'rmagick', github: 'rmagick/rmagick', platform: :ruby
-  gem 'fog-google', github: 'binti-family/fog-google', branch: 'ruby-3.0'
-end
 
 gemspec :path => "../"

@@ -785,6 +785,45 @@ describe CarrierWave::ActiveRecord do
       end
       expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
     end
+
+    it 'should remove new file if transaction is rollback' do
+      Event.transaction do
+        @event.image = stub_file('new.jpeg')
+        @event.save
+        expect(File.exist?(public_path('uploads/new.jpeg'))).to be_truthy
+        raise ActiveRecord::Rollback
+      end
+      expect(File.exist?(public_path('uploads/new.jpeg'))).to be_falsey
+    end
+
+    it 'should give correct url during transaction' do
+      Event.transaction do
+        @event.image = stub_file('new.jpeg')
+        @event.save
+        expect(@event.image_url).to eq '/uploads/new.jpeg'
+        raise ActiveRecord::Rollback
+      end
+    end
+
+    it 'should raise error at save if storage cannot be done, preserving old' do
+      allow(@event).to receive(:store_image!).and_raise(CarrierWave::UploadError)
+      Event.transaction do
+        @event.image = stub_file('new.jpeg')
+        expect{ @event.save }.to raise_error(CarrierWave::UploadError)
+        raise ActiveRecord::Rollback
+      end
+      expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
+    end
+
+    it 'should remove new file if transaction is rollback' do
+      Event.transaction do
+        @event.image = stub_file('new.jpeg')
+        @event.save
+        expect(File.exist?(public_path('uploads/new.jpeg'))).to be_truthy
+        raise ActiveRecord::Rollback
+      end
+      expect(File.exist?(public_path('uploads/new.jpeg'))).to be_falsey
+    end
   end
 
   describe "#mount_uploader into transaction" do
