@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+## Removed
+* Remove support for Merb (@seuros [#2566](https://github.com/carrierwaveuploader/carrierwave/pull/2566))
 
 ## 2.2.2 - 2021-05-28
 ### Fixed

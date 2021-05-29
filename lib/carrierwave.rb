@@ -25,16 +25,7 @@ module CarrierWave
 
 end
 
-if defined?(Merb)
-
-  CarrierWave.root = Merb.dir_for(:public)
-  Merb::BootLoader.before_app_loads do
-    # Setup path for uploaders and load all of them before classes are loaded
-    Merb.push_path(:uploaders, Merb.root / 'app' / 'uploaders', '*.rb')
-    Dir.glob(File.join(Merb.load_paths[:uploaders])).each {|f| require f }
-  end
-
-elsif defined?(Jets)
+if defined?(Jets)
 
   module CarrierWave
     class Turbine < Jets::Turbine
