@@ -1,18 +1,10 @@
-require "carrierwave/uploader/configuration"
-require "carrierwave/uploader/callbacks"
-require "carrierwave/uploader/proxy"
-require "carrierwave/uploader/url"
-require "carrierwave/uploader/mountable"
-require "carrierwave/uploader/cache"
-require "carrierwave/uploader/store"
+require "carrierwave/metal"
 require "carrierwave/uploader/download"
-require "carrierwave/uploader/remove"
 require "carrierwave/uploader/extension_whitelist"
 require "carrierwave/uploader/extension_blacklist"
 require "carrierwave/uploader/content_type_whitelist"
 require "carrierwave/uploader/content_type_blacklist"
 require "carrierwave/uploader/file_size"
-require "carrierwave/uploader/processing"
 require "carrierwave/uploader/versions"
 require "carrierwave/uploader/default_url"
 
@@ -40,26 +32,14 @@ module CarrierWave
     # these are *very* simple (they are only a dozen lines of code), so adding your own should
     # be trivial.
     #
-    class Base
-      attr_reader :file
-
-      include CarrierWave::Uploader::Configuration
-      include CarrierWave::Uploader::Callbacks
-      include CarrierWave::Uploader::Proxy
-      include CarrierWave::Uploader::Url
-      include CarrierWave::Uploader::Mountable
-      include CarrierWave::Uploader::Cache
-      include CarrierWave::Uploader::Store
+    class Base < Metal
       include CarrierWave::Uploader::Download
-      include CarrierWave::Uploader::Remove
       include CarrierWave::Uploader::ExtensionWhitelist
       include CarrierWave::Uploader::ExtensionBlacklist
       include CarrierWave::Uploader::ContentTypeWhitelist
       include CarrierWave::Uploader::ContentTypeBlacklist
       include CarrierWave::Uploader::FileSize
-      include CarrierWave::Uploader::Processing
       include CarrierWave::Uploader::Versions
-      include CarrierWave::Uploader::DefaultUrl
       include CarrierWave::Uploader::Serialization
     end # Base
 
