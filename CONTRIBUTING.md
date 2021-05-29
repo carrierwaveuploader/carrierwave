@@ -30,8 +30,3 @@ You should now be able to run the remote tests:
     REMOTE=true bundle exec rake
 
 Please test with the latest Ruby 2.2.x version using RVM if possible.
-
-## Running active record tests
-
-Make sure you have a local PostgreSQL database named `carrierwave_test` with the username
-`postgres`

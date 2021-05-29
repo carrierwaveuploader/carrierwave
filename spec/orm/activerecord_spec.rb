@@ -1,6 +1,7 @@
 require 'spec_helper'
 require 'support/activerecord'
 
+
 def create_table(name)
   ActiveRecord::Base.connection.create_table(name, force: true) do |t|
     t.column :image, :string
@@ -17,7 +18,13 @@ end
 
 def reset_class(class_name)
   Object.send(:remove_const, class_name) rescue nil
-  Object.const_set(class_name, Class.new(ActiveRecord::Base))
+  klass = Object.const_set(class_name, Class.new(ActiveRecord::Base))
+  # TODO Remove when Rails 5.2 is dropped
+  klass.class_eval do
+    attribute :images, :json
+    attribute :textfiles, :json
+  end
+  klass
 end
 
 describe CarrierWave::ActiveRecord do
