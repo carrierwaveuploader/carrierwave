@@ -8,21 +8,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: [ 2.5, 2.6, 2.7, jruby ]
-        gemfile: [ gemfiles/rails-6-0.gemfile ]
+        ruby: [ 2.5, 2.6, 2.7, 3.0, jruby ]
+        gemfile: [ gemfiles/rails-6-1.gemfile ]
         experimental: [ false ]
         include:
-          - ruby: 2.2
-            gemfile: gemfiles/rails-5-0.gemfile
-            experimental: false
-          - ruby: 2.3
-            gemfile: gemfiles/rails-5-1.gemfile
-            experimental: false
-          - ruby: 2.4
-            gemfile: gemfiles/rails-5-2.gemfile
-            experimental: false
           - ruby: 3.0
-            gemfile: gemfiles/rails-6-1.gemfile
+            gemfile: gemfiles/rails-6-0.gemfile
             experimental: false
           - ruby: 3.0
             gemfile: gemfiles/rails-master.gemfile
@@ -31,7 +22,7 @@ jobs:
             gemfile: gemfiles/rails-6-1.gemfile
             experimental: true
           - ruby: jruby-head
-            gemfile: gemfiles/rails-6-0.gemfile
+            gemfile: gemfiles/rails-6-1.gemfile
             experimental: false
     runs-on: ubuntu-20.04
     env:
@@ -62,7 +53,5 @@ jobs:
     - name: Run RSpec
       run: bundle exec rake spec || [ "$EXPERIMENTAL" == "true" ] && true
     - name: Run Cucumber
-      # Workaround for OpenSSL 'undefined symbol: SSLv2_method' error
-      if: ${{ matrix.ruby > 2.3 || contains(matrix.ruby, 'ruby') }}
       run: bundle exec rake features || [ "$EXPERIMENTAL" == "true" ] && true
 
