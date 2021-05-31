@@ -262,8 +262,8 @@ module CarrierWave
         file.content_type = Marcel::Magic.by_path(move_to).try(:type)
         file.move_to(move_to, permissions, directory_permissions)
       end
-    rescue ::Vips::Error => e
-      message = I18n.translate(:"errors.messages.vips_processing_error", :e => e)
+    rescue ::Vips::Error
+      message = I18n.translate(:"errors.messages.processing_error")
       raise CarrierWave::ProcessingError, message
     end
 
