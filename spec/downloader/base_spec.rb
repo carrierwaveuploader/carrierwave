@@ -6,8 +6,9 @@ describe CarrierWave::Downloader::Base do
   let(:file) { File.read(file_path("test.jpg")) }
   let(:filename) { "test.jpg" }
   let(:uri) { "http://www.example.com/#{CGI.escape(filename)}" }
+  let(:skip_ssrf_protection) { false }
 
-  subject { CarrierWave::Downloader::Base.new(uploader) }
+  subject { CarrierWave::Downloader::Base.new(uploader, skip_ssrf_protection) }
 
   context "with unicode sybmols in URL" do
     let(:filename) { "юникод.jpg" }
@@ -200,13 +201,21 @@ describe CarrierWave::Downloader::Base do
 
   describe "#skip_ssrf_protection?" do
     let(:uri) { 'http://localhost/test.jpg' }
+
     before do
       WebMock.stub_request(:get, uri).to_return(body: file)
-      allow(subject).to receive(:skip_ssrf_protection?).and_return(true)
     end
 
-    it "allows local request to be made" do
-      expect(subject.download(uri).read).to eq 'this is stuff'
+    context 'skip_ssrf_protection is false' do
+      it "allows local request to be made" do
+        expect(subject.download(uri).read).to eq 'this is stuff'
+      end
+    end
+
+    context 'skip_ssrf_protection is true' do
+      it "allows local request to be made" do
+        expect(subject.download(uri).read).to eq 'this is stuff'
+      end
     end
   end
 end

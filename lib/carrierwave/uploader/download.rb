@@ -16,7 +16,7 @@ module CarrierWave
       # [remote_headers (Hash)] Request headers
       #
       def download!(uri, remote_headers = {})
-        file = downloader.new(self).download(uri, remote_headers)
+        file = downloader.new(self, skip_ssrf_protection_for_downloader).download(uri, remote_headers)
         cache!(file)
       end
     end # Download

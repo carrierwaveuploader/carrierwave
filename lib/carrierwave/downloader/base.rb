@@ -8,8 +8,9 @@ module CarrierWave
     class Base
       attr_reader :uploader
 
-      def initialize(uploader)
+      def initialize(uploader, skip_ssrf_protection)
         @uploader = uploader
+        @skip_ssrf_protection = skip_ssrf_protection
       end
 
       ##
@@ -80,7 +81,7 @@ module CarrierWave
       #     my_uploader.downloader = CarrierWave::Downloader::CustomDownloader
       #
       def skip_ssrf_protection?(uri)
-        false
+        @skip_ssrf_protection
       end
     end
   end
