@@ -75,7 +75,7 @@ describe CarrierWave::Uploader::Download do
     describe "custom downloader" do
       let(:klass) do
         Class.new(CarrierWave::Downloader::Base) {
-          def download(url, request_headers={})
+          def download(url, download_retry_count = 0, request_headers={})
           end
         }
       end
@@ -84,7 +84,7 @@ describe CarrierWave::Uploader::Download do
       end
 
       it "is supported" do
-        expect_any_instance_of(klass).to receive(:download).with(url, {})
+        expect_any_instance_of(klass).to receive(:download).with(url, 0, {})
         uploader.download!(url)
       end
     end

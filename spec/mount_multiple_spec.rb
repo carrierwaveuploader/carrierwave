@@ -1029,7 +1029,7 @@ describe CarrierWave::Mount do
 
     before do
       uploader.class_eval do
-        def download! uri, headers = {}
+        def download! uri, download_retry_count = 0, headers = {}
           raise CarrierWave::DownloadError
         end
       end

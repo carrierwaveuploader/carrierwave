@@ -6,7 +6,7 @@ require 'carrierwave/downloader/remote_file'
 module CarrierWave
   module Downloader
     class Base
-      attr_reader :uploader
+      attr_reader :uploader, :current_download_retry_count
 
       def initialize(uploader)
         @uploader = uploader
@@ -18,9 +18,11 @@ module CarrierWave
       # === Parameters
       #
       # [url (String)] The URL where the remote file is stored
+      # [download_retry_count （Int）] Retry count when download failed
       # [remote_headers (Hash)] Request headers
       #
-      def download(url, remote_headers = {})
+      def download(url, download_retry_count = 0, remote_headers = {})
+        @current_download_retry_count = 0
         headers = remote_headers.
           reverse_merge('User-Agent' => "CarrierWave/#{CarrierWave::VERSION}")
         uri = process_uri(url.to_s)
@@ -36,7 +38,13 @@ module CarrierWave
             response.value
           end
         rescue StandardError => e
-          raise CarrierWave::DownloadError, "could not download file: #{e.message}"
+          if @current_download_retry_count < download_retry_count
+            @current_download_retry_count += 1
+            sleep 5
+            retry
+          else
+            raise CarrierWave::DownloadError, "could not download file: #{e.message}"
+          end
         end
         CarrierWave::Downloader::RemoteFile.new(response)
       end

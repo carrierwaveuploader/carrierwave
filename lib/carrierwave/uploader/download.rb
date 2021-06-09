@@ -13,10 +13,11 @@ module CarrierWave
       # === Parameters
       #
       # [url (String)] The URL where the remote file is stored
+      # [download_retry_count （Int）] Retry count when download failed
       # [remote_headers (Hash)] Request headers
       #
-      def download!(uri, remote_headers = {})
-        file = downloader.new(self).download(uri, remote_headers)
+      def download!(uri, download_retry_count = 0, remote_headers = {})
+        file = downloader.new(self).download(uri, download_retry_count, remote_headers)
         cache!(file)
       end
     end # Download

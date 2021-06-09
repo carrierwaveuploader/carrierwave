@@ -513,7 +513,7 @@ describe CarrierWave::ActiveRecord do
       context 'when validating download' do
         before do
           @uploader.class_eval do
-            def download! file, headers = {}
+            def download! file, download_retry_count = 0, headers = {}
               raise CarrierWave::DownloadError
             end
           end
@@ -1316,7 +1316,7 @@ describe CarrierWave::ActiveRecord do
       context 'when validating download' do
         before do
           @uploader.class_eval do
-            def download! file, headers = {}
+            def download! file, download_retry_count = 0, headers = {}
               raise CarrierWave::DownloadError
             end
           end
