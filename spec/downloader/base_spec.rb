@@ -135,6 +135,27 @@ describe CarrierWave::Downloader::Base do
     end
   end
 
+  context 'with download_retry_count' do
+    before do
+      stub_request(:get, uri).to_return({ status: 503 }, { status: 200 })
+    end
+    let(:instance) { described_class.new(uploader) }
+    subject { instance.download uri }
+    context 'when download_retry_count == 0 ' do
+      before { uploader.download_retry_count = 0 }
+      it 'throws an exception' do
+        expect { subject }.to raise_error CarrierWave::DownloadError
+      end
+    end
+
+    context 'when download_retry_count > 0' do
+      before { uploader.download_retry_count = 1 }
+      it 'does not throw an exception' do
+        expect { subject }.not_to raise_error
+      end
+    end
+  end
+
   describe '#process_uri' do
     it "converts a URL with internationalized domain name to Punycode URI" do
       uri = "http://ドメイン名例.jp/#{CGI.escape(filename)}"
