@@ -1066,6 +1066,30 @@ class User
 end
 ```
 
+## Uploader Callbacks
+
+In addition to the ActiveRecord callbacks described above, uploaders also have callbacks.
+
+```ruby
+class MyUploader < ::CarrierWave::Uploader::Base
+  before :remove, :log_removal
+  private
+  def log_removal
+    ::Rails.logger.info(format('Deleting file on S3: %s', @file))
+  end
+end
+```
+
+Uploader callbacks can be `before` or `after` the following events:
+
+```
+cache
+process
+remove
+retrieve_from_cache
+store
+```
+
 ## Contributing to CarrierWave
 
 See [CONTRIBUTING.md](https://github.com/carrierwaveuploader/carrierwave/blob/master/CONTRIBUTING.md)
