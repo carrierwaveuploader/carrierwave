@@ -228,16 +228,16 @@ describe CarrierWave::Vips do
       before { File.open(instance.current_path, 'w') { |f| f.puts "bogus" } }
 
       it "fails to process a non image file" do
-        expect { instance.resize_to_limit(200, 200) }.to raise_exception(CarrierWave::ProcessingError, /^Failed to manipulate with vips, maybe it is not an image\?/)
+        expect { instance.resize_to_limit(200, 200) }.to raise_exception(CarrierWave::ProcessingError, /^Failed to manipulate, maybe it is not an image\?/)
       end
 
       it "uses I18n" do
         change_locale_and_store_translations(:nl, :errors => {
           :messages => {
-            :vips_processing_error => "Kon bestand niet met vips bewerken, misschien is het geen beeld bestand?"
+            :processing_error => "Kon bestand niet bewerken, misschien is het geen beeld bestand?"
           }
         }) do
-          expect {instance.resize_to_limit(200, 200)}.to raise_exception(CarrierWave::ProcessingError, /^Kon bestand niet met vips bewerken, misschien is het geen beeld bestand?\?/)
+          expect {instance.resize_to_limit(200, 200)}.to raise_exception(CarrierWave::ProcessingError, /^Kon bestand niet bewerken, misschien is het geen beeld bestand?\?/)
         end
       end
 

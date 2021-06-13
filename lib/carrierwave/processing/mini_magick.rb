@@ -263,8 +263,8 @@ module CarrierWave
       FileUtils.mv image.path, current_path
 
       image.run_command("identify", current_path)
-    rescue ::MiniMagick::Error, ::MiniMagick::Invalid => e
-      message = I18n.translate(:"errors.messages.mini_magick_processing_error", :e => e)
+    rescue ::MiniMagick::Error, ::MiniMagick::Invalid
+      message = I18n.translate(:"errors.messages.processing_error")
       raise CarrierWave::ProcessingError, message
     ensure
       image.destroy! if image
@@ -309,8 +309,8 @@ module CarrierWave
         file.content_type = Marcel::Magic.by_path(move_to).try(:type)
         file.move_to(move_to, permissions, directory_permissions)
       end
-    rescue ::MiniMagick::Error, ::MiniMagick::Invalid => e
-      message = I18n.translate(:"errors.messages.mini_magick_processing_error", :e => e)
+    rescue ::MiniMagick::Error, ::MiniMagick::Invalid
+      message = I18n.translate(:"errors.messages.processing_error")
       raise CarrierWave::ProcessingError, message
     end
 
