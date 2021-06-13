@@ -58,7 +58,7 @@ describe CarrierWave::Downloader::Base do
     end
 
     it 'pass custom headers to request' do
-      expect(subject.download(uri, { 'Authorization' => 'Bearer QWE' }).file.read).to eq file
+      expect(subject.download(uri, 0, { 'Authorization' => 'Bearer QWE' }).file.read).to eq file
     end
   end
 
@@ -132,6 +132,40 @@ describe CarrierWave::Downloader::Base do
     it "prevents accessing internal addresses" do
       expect { uploader.download!("http://169.254.169.254/") }.to raise_error CarrierWave::DownloadError
       expect { uploader.download!("http://lvh.me/") }.to raise_error CarrierWave::DownloadError
+    end
+  end
+
+  context 'with download_retry_count' do
+    before do
+      stub_request(:get, uri).to_return(status: 503)
+    end
+    let(:instance) { described_class.new(uploader) }
+    subject { instance.download uri, download_retry_count }
+    context 'when failed' do
+      context 'when download_retry_count == 0 ' do
+        let(:download_retry_count) { 0 }
+        it { expect { subject }.to raise_error CarrierWave::DownloadError }
+
+        it do
+          begin
+            subject
+          rescue CarrierWave::DownloadError
+            expect(instance.current_download_retry_count).to eq 0
+          end
+        end
+      end
+
+      context 'when download_retry_count > 0' do
+        let(:download_retry_count) { 1 }
+        it { expect { subject }.to raise_error CarrierWave::DownloadError }
+        it do
+          begin
+            subject
+          rescue CarrierWave::DownloadError
+            expect(instance.current_download_retry_count).to eq 1
+          end
+        end
+      end
     end
   end
 

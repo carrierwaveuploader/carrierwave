@@ -95,7 +95,7 @@ module CarrierWave
       urls.zip(remote_request_headers || []) do |url, header|
         handle_error do
           uploader = blank_uploader
-          uploader.download!(url, header || {})
+          uploader.download!(url, option(:download_retry_count), header || {})
           @uploaders << uploader
         end
       end
