@@ -31,25 +31,17 @@ jobs:
       JRUBY_OPTS: --debug
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: ${{ matrix.ruby }}
-    - name: Cache gems
-      uses: actions/cache@v2
-      with:
-        path: vendor/bundle
-        key: ${{ runner.os }}-gems-${{ matrix.ruby }}-${{ hashFiles(matrix.gemfile) }}
-        restore-keys: |
-          ${{ runner.os }}-gems-${{ matrix.ruby }}-
     - name: Setup ImageMagick policy
       run: sudo sh -c 'echo '\''<policymap><policy domain="coder" rights="read|write" pattern="PDF" /></policymap>'\'' > /etc/ImageMagick-6/policy.xml'
     - name: Install ghostscript to process PDF
       run: sudo apt-get -y install ghostscript
     - name: Install libvips-dev for Carrierwave::Vips
       run: sudo apt-get install libvips-dev
-    - name: Install dependencies
-      run: bundle install --jobs=3 --retry=3 --path=vendor/bundle || [ "$EXPERIMENTAL" == "true" ] && true
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+        bundler-cache: true
     - name: Run RSpec
       run: bundle exec rake spec || [ "$EXPERIMENTAL" == "true" ] && true
     - name: Run Cucumber
