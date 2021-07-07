@@ -451,7 +451,7 @@ module CarrierWave
         # @return [CarrierWave::Storage::Fog::File] the location where the file will be stored.
         #
         def copy_to(new_path)
-          connection.copy_object(@uploader.fog_directory, file.key, @uploader.fog_directory, new_path, copy_options)
+          file.copy(@uploader.fog_directory, new_path, copy_options)
           CarrierWave::Storage::Fog::File.new(@uploader, @base, new_path)
         end
 
