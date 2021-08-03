@@ -44,6 +44,7 @@ module CarrierWave
         add_config :validate_download
         add_config :mount_on
         add_config :cache_only
+        add_config :download_retry_count
 
         # set default values
         reset_config
@@ -210,6 +211,7 @@ module CarrierWave
             config.base_path = CarrierWave.base_path
             config.enable_processing = true
             config.ensure_multipart_form = true
+            config.download_retry_count = 0
           end
         end
       end
