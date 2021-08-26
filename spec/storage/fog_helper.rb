@@ -585,6 +585,14 @@ end
         end
       end
 
+      describe '#copy_to' do
+        it "uses Fog's File#copy, instead of Storage#copy_object" do
+          expect(@fog_file.send(:file)).to receive(:copy).with(anything, 'uploads/new_path.jpg', anything).and_call_original
+
+          @fog_file.copy_to('uploads/new_path.jpg')
+        end
+      end
+
       describe '#copy_options' do
         let(:fog_attributes) { { 'x-amz-server-side-encryption' => 'AES256' } }
 
