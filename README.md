@@ -531,7 +531,7 @@ failures automatically with attribute validation errors. If you aren't, or you
 disable CarrierWave's `validate_download` option, you'll need to handle those
 errors yourself.
 
-### Retry option for douwload from remote location
+### Retry option for download from remote location
 If you want to retry the download from the Remote URL, enable the download_retry_count option, an error occurs during download, it will try to execute the specified number of times every 5 second.
 This option is effective when the remote destination is unstable.
 
