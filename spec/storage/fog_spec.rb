@@ -69,5 +69,67 @@ describe CarrierWave::Storage::Fog do
         end
       end
     end
+
+    describe "#basename" do
+      subject(:basename) { file.basename }
+
+      before { allow(file).to receive(:filename).and_return(filename) }
+
+      context "when file has complicated extensions" do
+        let(:filename) { "complex.filename.tar.gz" }
+
+        it "return correct basename" do
+          is_expected.to eq("complex.filename")
+        end
+      end
+
+      context "when file has simple extension" do
+        let(:filename) { "simple.extension" }
+
+        it "return correct basename" do
+          is_expected.to eq("simple")
+        end
+      end
+
+      context "when file has no extension" do
+        let(:filename) { "filename" }
+
+        it "return correct basename" do
+          is_expected.to eq("filename")
+        end
+      end
+    end
+
+    describe "#extension" do
+      subject(:extension) { file.extension }
+
+      before { allow(file).to receive(:filename).and_return(filename) }
+
+      %w[gz bz2 z lz xz].each do |ext|
+        context "when file has complicated extensions (tar.#{ext})" do
+          let(:filename) { "complex.filename.tar.#{ext}" }
+
+          it "return correct extension" do
+            is_expected.to eq("tar.#{ext}")
+          end
+        end
+      end
+
+      context "when file has simple extension" do
+        let(:filename) { "simple.extension" }
+
+        it "return correct extension" do
+          is_expected.to eq("extension")
+        end
+      end
+
+      context "when file has no extension" do
+        let(:filename) { "filename" }
+
+        it "return correct extension" do
+          is_expected.to eq("")
+        end
+      end
+    end
   end
 end

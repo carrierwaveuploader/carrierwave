@@ -89,7 +89,7 @@ end
           let(:store_path) { 'uploads/test' }
 
           it "should have no extension" do
-            expect(@fog_file.extension).to be_nil
+            expect(@fog_file.extension).to eq("")
           end
 
         end
