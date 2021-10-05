@@ -367,36 +367,72 @@ describe CarrierWave::Uploader do
         @uploader.store!
       end
 
-      it "should process conditional versions if the condition method returns true" do
-        @uploader_class.version(:preview).version_options[:if] = :true?
-        expect(@uploader).to receive(:true?).at_least(:once).and_return(true)
-        @uploader.store!(@file)
-        expect(@uploader.thumb).to be_present
-        expect(@uploader.preview).to be_present
-      end
+      context "when there is an 'if' option" do
+        it "should process conditional versions if the condition method returns true" do
+          @uploader_class.version(:preview).version_options[:if] = :true?
+          expect(@uploader).to receive(:true?).at_least(:once).and_return(true)
+          @uploader.store!(@file)
+          expect(@uploader.thumb).to be_present
+          expect(@uploader.preview).to be_present
+        end
+         
+        it "should not process conditional versions if the condition method returns false" do
+          @uploader_class.version(:preview).version_options[:if] = :false?
+          expect(@uploader).to receive(:false?).at_least(:once).and_return(false)
+          @uploader.store!(@file)
+          expect(@uploader.thumb).to be_present
+          expect(@uploader.preview).to be_blank
+        end
+         
+        it "should process conditional version if the condition block returns true" do
+          @uploader_class.version(:preview).version_options[:if] = lambda{|record, args| record.true?(args[:file])}
+          expect(@uploader).to receive(:true?).at_least(:once).and_return(true)
+          @uploader.store!(@file)
+          expect(@uploader.thumb).to be_present
+          expect(@uploader.preview).to be_present
+        end
 
-      it "should not process conditional versions if the condition method returns false" do
-        @uploader_class.version(:preview).version_options[:if] = :false?
-        expect(@uploader).to receive(:false?).at_least(:once).and_return(false)
-        @uploader.store!(@file)
-        expect(@uploader.thumb).to be_present
-        expect(@uploader.preview).to be_blank
+        it "should not process conditional versions if the condition block returns false" do
+          @uploader_class.version(:preview).version_options[:if] = lambda{|record, args| record.false?(args[:file])}
+          expect(@uploader).to receive(:false?).at_least(:once).and_return(false)
+          @uploader.store!(@file)
+          expect(@uploader.thumb).to be_present
+          expect(@uploader.preview).to be_blank
+        end
       end
+         
+      context "when there is an 'unless' option" do
+        it "should not process conditional versions if the condition method returns true" do
+          @uploader_class.version(:preview).version_options[:unless] = :true?
+          expect(@uploader).to receive(:true?).at_least(:once).and_return(true)
+          @uploader.store!(@file)
+          expect(@uploader.thumb).to be_present
+          expect(@uploader.preview).to be_blank
+        end
 
-      it "should process conditional version if the condition block returns true" do
-        @uploader_class.version(:preview).version_options[:if] = lambda{|record, args| record.true?(args[:file])}
-        expect(@uploader).to receive(:true?).at_least(:once).and_return(true)
-        @uploader.store!(@file)
-        expect(@uploader.thumb).to be_present
-        expect(@uploader.preview).to be_present
-      end
+        it "should process conditional versions if the condition method returns false" do
+          @uploader_class.version(:preview).version_options[:unless] = :false?
+          expect(@uploader).to receive(:false?).at_least(:once).and_return(false)
+          @uploader.store!(@file)
+          expect(@uploader.thumb).to be_present
+          expect(@uploader.preview).to be_present
+        end
 
-      it "should not process conditional versions if the condition block returns false" do
-        @uploader_class.version(:preview).version_options[:if] = lambda{|record, args| record.false?(args[:file])}
-        expect(@uploader).to receive(:false?).at_least(:once).and_return(false)
-        @uploader.store!(@file)
-        expect(@uploader.thumb).to be_present
-        expect(@uploader.preview).to be_blank
+        it "should not process conditional version if the condition block returns true" do
+          @uploader_class.version(:preview).version_options[:unless] = lambda{|record, args| record.true?(args[:file])}
+          expect(@uploader).to receive(:true?).at_least(:once).and_return(true)
+          @uploader.store!(@file)
+          expect(@uploader.thumb).to be_present
+          expect(@uploader.preview).to be_blank
+        end
+
+        it "should process conditional versions if the condition block returns false" do
+          @uploader_class.version(:preview).version_options[:unless] = lambda{|record, args| record.false?(args[:file])}
+          expect(@uploader).to receive(:false?).at_least(:once).and_return(false)
+          @uploader.store!(@file)
+          expect(@uploader.thumb).to be_present
+          expect(@uploader.preview).to be_present
+        end
       end
 
       it "should not cache file twice when store! called with a file" do
@@ -469,15 +505,30 @@ describe CarrierWave::Uploader do
         expect(File.exist?(@uploader.mini.path)).to eq(false)
       end
 
-      it "should not create version if proc returns false" do
-        @uploader_class.version(:mini, :if => Proc.new { |*args| false } )
-        @uploader.store!(@file)
+      context "when there is an 'if' option" do
+        it "should not create version if proc returns false" do
+          @uploader_class.version(:mini, :if => Proc.new { |*args| false } )
+          @uploader.store!(@file)
 
-        expect(@uploader.mini.path).to be_nil
+          expect(@uploader.mini.path).to be_nil
+         
+          @uploader.recreate_versions!(:mini)
+         
+          expect(@uploader.mini.path).to be_nil
+        end
+      end
+         
+      context "when there is an 'unless' option" do
+        it "should not create version if proc returns true" do
+          @uploader_class.version(:mini, :unless => Proc.new { |*args| true } )
+          @uploader.store!(@file)
 
-        @uploader.recreate_versions!(:mini)
+          expect(@uploader.mini.path).to be_nil
 
-        expect(@uploader.mini.path).to be_nil
+          @uploader.recreate_versions!(:mini)
+
+          expect(@uploader.mini.path).to be_nil
+        end
       end
 
       it "should not change the case of versions" do
@@ -594,20 +645,40 @@ describe CarrierWave::Uploader do
         expect(@uploader.filename).to be_nil
       end
 
-      it "should process conditional versions if the condition method returns true" do
-        @uploader_class.version(:preview).version_options[:if] = :true?
-        expect(@uploader).to receive(:true?).at_least(:once).and_return(true)
-        @uploader.retrieve_from_store!('monkey.txt')
-        expect(@uploader.thumb).to be_present
-        expect(@uploader.preview).to be_present
-      end
+      context "when there is an 'if' option" do
+        it "should process conditional versions if the condition method returns true" do
+          @uploader_class.version(:preview).version_options[:if] = :true?
+          expect(@uploader).to receive(:true?).at_least(:once).and_return(true)
+          @uploader.retrieve_from_store!('monkey.txt')
+          expect(@uploader.thumb).to be_present
+          expect(@uploader.preview).to be_present
+        end
 
-      it "should not process conditional versions if the condition method returns false" do
-        @uploader_class.version(:preview).version_options[:if] = :false?
-        expect(@uploader).to receive(:false?).at_least(:once).and_return(false)
-        @uploader.retrieve_from_store!('monkey.txt')
-        expect(@uploader.thumb).to be_present
-        expect(@uploader.preview).to be_blank
+        it "should not process conditional versions if the condition method returns false" do
+          @uploader_class.version(:preview).version_options[:if] = :false?
+          expect(@uploader).to receive(:false?).at_least(:once).and_return(false)
+          @uploader.retrieve_from_store!('monkey.txt')
+          expect(@uploader.thumb).to be_present
+          expect(@uploader.preview).to be_blank
+        end
+      end
+         
+      context "when there is an 'unless' option" do
+        it "should not process conditional versions if the condition method returns true" do
+          @uploader_class.version(:preview).version_options[:unless] = :true?
+          expect(@uploader).to receive(:true?).at_least(:once).and_return(true)
+          @uploader.retrieve_from_store!('monkey.txt')
+          expect(@uploader.thumb).to be_present
+          expect(@uploader.preview).to be_blank
+        end
+
+        it "should process conditional versions if the condition method returns false" do
+          @uploader_class.version(:preview).version_options[:unless] = :false?
+          expect(@uploader).to receive(:false?).at_least(:once).and_return(false)
+          @uploader.retrieve_from_store!('monkey.txt')
+          expect(@uploader.thumb).to be_present
+          expect(@uploader.preview).to be_present
+        end
       end
     end
   end
