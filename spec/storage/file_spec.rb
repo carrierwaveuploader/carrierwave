@@ -39,7 +39,6 @@ describe CarrierWave::Storage::File do
   end
 
   describe '#cache!' do
-    before { pending "Fails in JRuby with 'undefined local variable or method __memoized...'" if RUBY_ENGINE == 'jruby' }
     context "when FileUtils.mkdir_p raises Errno::EMLINK" do
       before { fake_failed_mkdir_p(Errno::EMLINK) }
       after { storage.cache!(sanitized_temp_file) }
