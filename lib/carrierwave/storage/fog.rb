@@ -165,6 +165,7 @@ module CarrierWave
         DEFAULT_S3_REGION = 'us-east-1'
 
         include CarrierWave::Utilities::Uri
+        include CarrierWave::Utilities::FileName
 
         ##
         # Current local path to file
@@ -256,18 +257,6 @@ module CarrierWave
           directory.files.new(:key => path).destroy.tap do |result|
             @file = nil if result
           end
-        end
-
-        ##
-        # Return extension of file
-        #
-        # === Returns
-        #
-        # [String] extension of file or nil if the file has no extension
-        #
-        def extension
-          path_elements = path.split('.')
-          path_elements.last if path_elements.size > 1
         end
 
         ##

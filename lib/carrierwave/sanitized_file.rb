@@ -13,6 +13,7 @@ module CarrierWave
   # It's probably needlessly comprehensive and complex. Help is appreciated.
   #
   class SanitizedFile
+    include CarrierWave::Utilities::FileName
 
     attr_reader :file
 
@@ -57,29 +58,6 @@ module CarrierWave
     end
 
     alias_method :identifier, :filename
-
-    ##
-    # Returns the part of the filename before the extension. So if a file is called 'test.jpeg'
-    # this would return 'test'
-    #
-    # === Returns
-    #
-    # [String] the first part of the filename
-    #
-    def basename
-      split_extension(filename)[0] if filename
-    end
-
-    ##
-    # Returns the file extension
-    #
-    # === Returns
-    #
-    # [String] the extension
-    #
-    def extension
-      split_extension(filename)[1] if filename
-    end
 
     ##
     # Returns the file's size.
@@ -349,21 +327,5 @@ module CarrierWave
 
       Marcel::Magic.by_path(path).to_s
     end
-
-    def split_extension(filename)
-      # regular expressions to try for identifying extensions
-      extension_matchers = [
-        /\A(.+)\.(tar\.([glx]?z|bz2))\z/, # matches "something.tar.gz"
-        /\A(.+)\.([^\.]+)\z/ # matches "something.jpg"
-      ]
-
-      extension_matchers.each do |regexp|
-        if filename =~ regexp
-          return $1, $2
-        end
-      end
-      return filename, "" # In case we weren't able to split the extension
-    end
-
   end # SanitizedFile
 end # CarrierWave
