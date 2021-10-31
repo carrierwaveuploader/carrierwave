@@ -7,6 +7,7 @@ describe CarrierWave::Uploader do
   let(:bork_file) { File.open(file_path('bork.txt')) }
   let(:test_file) { File.open(file_path('test.jpeg')) }
 
+  before { uploader.instance_variable_set(:@content_type_denylist_warned, true) }
   after { FileUtils.rm_rf(public_path) }
 
   describe '#cache!' do
@@ -23,6 +24,18 @@ describe CarrierWave::Uploader do
     end
 
     context "when there is a denylist" do
+      describe "deprecation" do
+        before do
+          allow(uploader).to receive(:content_type_denylist).and_return(['image/png'])
+          uploader.remove_instance_variable(:@content_type_denylist_warned)
+        end
+
+        it "shows up" do
+          expect(ActiveSupport::Deprecation).to receive(:warn).with('Use of #content_type_denylist is deprecated for the security reason, use #content_type_allowlist instead to explicitly state what are safe to accept')
+          expect { uploader.cache!(ruby_file) }.to raise_error(CarrierWave::IntegrityError)
+        end
+      end
+
       context "when the denylist is an array of values" do
         it "does not raise an integrity error when the file has not a denylisted content type" do
           allow(uploader).to receive(:content_type_denylist).and_return(['image/gif'])
@@ -66,13 +79,13 @@ describe CarrierWave::Uploader do
         expect { uploader.cache!(ruby_file) }.to raise_error(CarrierWave::IntegrityError)
       end
 
-      it "looks for content_type_whitelist first for I18n translation" do
+      it "looks for content_type_denylist first for I18n translation" do
         allow(uploader).to receive(:content_type_denylist).and_return(['image/png'])
 
         change_locale_and_store_translations(:nl, :errors => {
           :messages => {
-            :content_type_denylist_error => "this will not be used",
-            :content_type_blacklist_error => "Het is niet toegestaan om %{content_type} bestanden te uploaden"
+            :content_type_blacklist_error => "this will not be used",
+            :content_type_denylist_error => "Het is niet toegestaan om %{content_type} bestanden te uploaden"
           }
         }) do
           expect { uploader.cache!(ruby_file) }.to raise_error(CarrierWave::IntegrityError, 'Het is niet toegestaan om image/png bestanden te uploaden')

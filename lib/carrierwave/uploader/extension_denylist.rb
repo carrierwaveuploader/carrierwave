@@ -1,10 +1,10 @@
 module CarrierWave
   module Uploader
-    module ExtensionBlacklist
+    module ExtensionDenylist
       extend ActiveSupport::Concern
 
       included do
-        before :cache, :check_extension_blacklist!
+        before :cache, :check_extension_denylist!
       end
 
       ##
@@ -32,27 +32,32 @@ module CarrierWave
       #     end
       #
       def extension_denylist
-        if respond_to?(:extension_blacklist)
-          ActiveSupport::Deprecation.warn "#extension_blacklist is deprecated, use #extension_denylist instead." unless instance_variable_defined?(:@extension_blacklist_warned)
-          @extension_blacklist_warned = true
-          extension_blacklist
-        end
       end
 
     private
 
-      def check_extension_blacklist!(new_file)
-        return unless extension_denylist
+      def check_extension_denylist!(new_file)
+        denylist = extension_denylist
+        if !denylist && respond_to?(:extension_blacklist) && extension_blacklist
+          ActiveSupport::Deprecation.warn "#extension_blacklist is deprecated, use #extension_denylist instead." unless instance_variable_defined?(:@extension_blacklist_warned)
+          @extension_blacklist_warned = true
+          denylist = extension_blacklist
+        end
+
+        return unless denylist
+
+        ActiveSupport::Deprecation.warn "Use of #extension_denylist is deprecated for the security reason, use #extension_allowlist instead to explicitly state what are safe to accept" unless instance_variable_defined?(:@extension_denylist_warned)
+        @extension_denylist_warned = true
 
         extension = new_file.extension.to_s
-        if blacklisted_extension?(extension)
-          raise CarrierWave::IntegrityError, I18n.translate(:"errors.messages.extension_blacklist_error", extension: new_file.extension.inspect,
-                                                            prohibited_types: Array(extension_denylist).join(", "), default: :"errors.messages.extension_denylist_error")
+        if denylisted_extension?(denylist, extension)
+          raise CarrierWave::IntegrityError, I18n.translate(:"errors.messages.extension_denylist_error", extension: new_file.extension.inspect,
+                                                            prohibited_types: Array(extension_denylist).join(", "), default: :"errors.messages.extension_blacklist_error")
         end
       end
 
-      def blacklisted_extension?(extension)
-        Array(extension_denylist).any? { |item| extension =~ /\A#{item}\z/i }
+      def denylisted_extension?(denylist, extension)
+        Array(denylist).any? { |item| extension =~ /\A#{item}\z/i }
       end
     end
   end

@@ -221,8 +221,8 @@ describe CarrierWave::Mount do
       describe "if the images fails a denylist integrity check" do
         before do
           uploader.class_eval do
-            def extension_denylist
-              %w(jpg)
+            def extension_allowlist
+              %w(png txt)
             end
           end
         end

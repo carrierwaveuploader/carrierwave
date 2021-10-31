@@ -157,8 +157,8 @@ describe CarrierWave::Mount do
 
       it "should fail silently if the image fails a denylist integrity check" do
         @uploader.class_eval do
-          def extension_denylist
-            %w(jpg)
+          def extension_allowlist
+            %w(png)
           end
         end
         @instance.image = stub_file('test.jpg')

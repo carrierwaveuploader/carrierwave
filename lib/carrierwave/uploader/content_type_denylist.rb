@@ -1,10 +1,10 @@
 module CarrierWave
   module Uploader
-    module ContentTypeBlacklist
+    module ContentTypeDenylist
       extend ActiveSupport::Concern
 
       included do
-        before :cache, :check_content_type_blacklist!
+        before :cache, :check_content_type_denylist!
       end
 
       ##
@@ -29,29 +29,34 @@ module CarrierWave
       #     end
       #
       def content_type_denylist
-        if respond_to?(:content_type_blacklist)
-          ActiveSupport::Deprecation.warn "#content_type_blacklist is deprecated, use #content_type_denylist instead." unless instance_variable_defined?(:@content_type_blacklist_warned)
-          @content_type_blacklist_warned = true
-          content_type_blacklist
-        end
       end
 
     private
 
-      def check_content_type_blacklist!(new_file)
-        return unless content_type_denylist
+      def check_content_type_denylist!(new_file)
+        denylist = content_type_denylist
+        if !denylist && respond_to?(:content_type_blacklist) && content_type_blacklist
+          ActiveSupport::Deprecation.warn "#content_type_blacklist is deprecated, use #content_type_denylist instead." unless instance_variable_defined?(:@content_type_blacklist_warned)
+          @content_type_blacklist_warned = true
+          denylist = content_type_blacklist
+        end
+
+        return unless denylist
+
+        ActiveSupport::Deprecation.warn "Use of #content_type_denylist is deprecated for the security reason, use #content_type_allowlist instead to explicitly state what are safe to accept" unless instance_variable_defined?(:@content_type_denylist_warned)
+        @content_type_denylist_warned = true
 
         content_type = new_file.content_type
-        if blacklisted_content_type?(content_type)
-          raise CarrierWave::IntegrityError, I18n.translate(:"errors.messages.content_type_blacklist_error",
-                                                            content_type: content_type, default: :"errors.messages.content_type_denylist_error")
+        if denylisted_content_type?(denylist, content_type)
+          raise CarrierWave::IntegrityError, I18n.translate(:"errors.messages.content_type_denylist_error",
+                                                            content_type: content_type, default: :"errors.messages.content_type_blacklist_error")
         end
       end
 
-      def blacklisted_content_type?(content_type)
-        Array(content_type_denylist).any? { |item| content_type =~ /#{item}/ }
+      def denylisted_content_type?(denylist, content_type)
+        Array(denylist).any? { |item| content_type =~ /#{item}/ }
       end
 
-    end # ContentTypeBlacklist
+    end # ContentTypeDenylist
   end # Uploader
 end # CarrierWave
