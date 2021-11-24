@@ -18,13 +18,7 @@ end
 
 def reset_class(class_name)
   Object.send(:remove_const, class_name) rescue nil
-  klass = Object.const_set(class_name, Class.new(ActiveRecord::Base))
-  # TODO Remove when Rails 5.2 is dropped
-  klass.class_eval do
-    attribute :images, :json
-    attribute :textfiles, :json
-  end
-  klass
+  Object.const_set(class_name, Class.new(ActiveRecord::Base))
 end
 
 describe CarrierWave::ActiveRecord do
@@ -280,6 +274,7 @@ describe CarrierWave::ActiveRecord do
 
       context 'when validating denylist integrity' do
         before do
+          allow(ActiveSupport::Deprecation).to receive(:warn).with(/#extension_denylist/)
           @uploader.class_eval do
             def extension_denylist
               %w(jpg)
@@ -1114,6 +1109,7 @@ describe CarrierWave::ActiveRecord do
 
       context 'when validating denylist integrity' do
         before do
+          allow(ActiveSupport::Deprecation).to receive(:warn).with(/#extension_denylist/)
           @uploader.class_eval do
             def extension_denylist
               %w(jpg)

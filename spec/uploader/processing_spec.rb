@@ -50,40 +50,80 @@ describe CarrierWave::Uploader do
       uploader.process!
     end
 
-    it "calls the processor if the condition method returns true" do
-      uploader_class.process :resize => [200, 300], :if => :true?
-      uploader_class.process :fancy, :if => :true?
-      expect(uploader).to receive(:true?).with("test.jpg").twice.and_return(true)
-      expect(uploader).to receive(:resize).with(200, 300)
-      expect(uploader).to receive(:fancy)
-      uploader.process!("test.jpg")
-    end
+    context "when there is an 'if' condition" do
+      it "calls the processor if the condition method returns true" do
+        uploader_class.process :resize => [200, 300], :if => :true?
+        uploader_class.process :fancy, :if => :true?
+        expect(uploader).to receive(:true?).with("test.jpg").twice.and_return(true)
+        expect(uploader).to receive(:resize).with(200, 300)
+        expect(uploader).to receive(:fancy)
+        uploader.process!("test.jpg")
+      end
+       
+      it "doesn't call the processor if the condition method returns false" do
+        uploader_class.process :resize => [200, 300], :if => :false?
+        uploader_class.process :fancy, :if => :false?
+        expect(uploader).to receive(:false?).with("test.jpg").twice.and_return(false)
+        expect(uploader).not_to receive(:resize)
+        expect(uploader).not_to receive(:fancy)
+        uploader.process!("test.jpg")
+      end
+       
+      it "calls the processor if the condition block returns true" do
+        uploader_class.process :resize => [200, 300], :if => lambda{|record, args| record.true?(args[:file])}
+        uploader_class.process :fancy, :if => :true?
+        expect(uploader).to receive(:true?).with("test.jpg").twice.and_return(true)
+        expect(uploader).to receive(:resize).with(200, 300)
+        expect(uploader).to receive(:fancy)
+        uploader.process!("test.jpg")
+      end
 
-    it "doesn't call the processor if the condition method returns false" do
-      uploader_class.process :resize => [200, 300], :if => :false?
-      uploader_class.process :fancy, :if => :false?
-      expect(uploader).to receive(:false?).with("test.jpg").twice.and_return(false)
-      expect(uploader).not_to receive(:resize)
-      expect(uploader).not_to receive(:fancy)
-      uploader.process!("test.jpg")
+      it "doesn't call the processor if the condition block returns false" do
+        uploader_class.process :resize => [200, 300], :if => lambda{|record, args| record.false?(args[:file])}
+        uploader_class.process :fancy, :if => :false?
+        expect(uploader).to receive(:false?).with("test.jpg").twice.and_return(false)
+        expect(uploader).not_to receive(:resize)
+        expect(uploader).not_to receive(:fancy)
+        uploader.process!("test.jpg")
+      end
     end
+       
+    context "when there is an 'unless' condition" do
+      it "doesn't call the processor if the condition method returns true" do
+        uploader_class.process :resize => [200, 300], :unless => :true?
+        uploader_class.process :fancy, :unless => :true?
+        expect(uploader).to receive(:true?).with("test.jpg").twice.and_return(true)
+        expect(uploader).not_to receive(:resize).with(200, 300)
+        expect(uploader).not_to receive(:fancy)
+        uploader.process!("test.jpg")
+      end
 
-    it "calls the processor if the condition block returns true" do
-      uploader_class.process :resize => [200, 300], :if => lambda{|record, args| record.true?(args[:file])}
-      uploader_class.process :fancy, :if => :true?
-      expect(uploader).to receive(:true?).with("test.jpg").twice.and_return(true)
-      expect(uploader).to receive(:resize).with(200, 300)
-      expect(uploader).to receive(:fancy)
-      uploader.process!("test.jpg")
-    end
+      it "calls the processor if the condition method returns false" do
+        uploader_class.process :resize => [200, 300], :unless => :false?
+        uploader_class.process :fancy, :unless => :false?
+        expect(uploader).to receive(:false?).with("test.jpg").twice.and_return(false)
+        expect(uploader).to receive(:resize)
+        expect(uploader).to receive(:fancy)
+        uploader.process!("test.jpg")
+      end
 
-    it "doesn't call the processor if the condition block returns false" do
-      uploader_class.process :resize => [200, 300], :if => lambda{|record, args| record.false?(args[:file])}
-      uploader_class.process :fancy, :if => :false?
-      expect(uploader).to receive(:false?).with("test.jpg").twice.and_return(false)
-      expect(uploader).not_to receive(:resize)
-      expect(uploader).not_to receive(:fancy)
-      uploader.process!("test.jpg")
+      it "doesn't call the processor if the condition block returns true" do
+        uploader_class.process :resize => [200, 300], :unless => lambda{|record, args| record.true?(args[:file])}
+        uploader_class.process :fancy, :unless => :true?
+        expect(uploader).to receive(:true?).with("test.jpg").twice.and_return(true)
+        expect(uploader).not_to receive(:resize).with(200, 300)
+        expect(uploader).not_to receive(:fancy)
+        uploader.process!("test.jpg")
+      end
+
+      it "calls the processor if the condition block returns false" do
+        uploader_class.process :resize => [200, 300], :unless => lambda{|record, args| record.false?(args[:file])}
+        uploader_class.process :fancy, :unless => :false?
+        expect(uploader).to receive(:false?).with("test.jpg").twice.and_return(false)
+        expect(uploader).to receive(:resize)
+        expect(uploader).to receive(:fancy)
+        uploader.process!("test.jpg")
+      end
     end
 
     context "when using RMagick", :rmagick => true do

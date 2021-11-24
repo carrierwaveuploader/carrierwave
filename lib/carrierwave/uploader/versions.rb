@@ -51,6 +51,10 @@ module CarrierWave
         #         process :scale => [200, 200]
         #       end
         #
+        #       version :square, :unless => :invalid_image_type? do
+        #         process :scale => [100, 100]
+        #       end
+        #
         #     end
         #
         def version(name, options = {}, &block)
@@ -161,7 +165,7 @@ module CarrierWave
       #
       # === Returns
       #
-      # [Boolean] True when the version exists according to its :if condition
+      # [Boolean] True when the version exists according to its :if or :unless condition
       #
       def version_exists?(name)
         name = name.to_sym
@@ -169,11 +173,20 @@ module CarrierWave
         return false unless self.class.versions.has_key?(name)
 
         condition = self.class.versions[name].version_options[:if]
-        if(condition)
-          if(condition.respond_to?(:call))
-            condition.call(self, :version => name, :file => file)
+        if_condition = self.class.versions[name].version_options[:if]
+        unless_condition = self.class.versions[name].version_options[:unless]
+
+        if(if_condition)
+          if(if_condition.respond_to?(:call))
+            if_condition.call(self, :version => name, :file => file)
           else
-            send(condition, file)
+            send(if_condition, file)
+          end
+        elsif(unless_condition)
+          if(unless_condition.respond_to?(:call))
+            !unless_condition.call(self, :version => name, :file => file)
+           else
+            !send(unless_condition, file)
           end
         else
           true

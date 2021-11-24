@@ -531,6 +531,16 @@ failures automatically with attribute validation errors. If you aren't, or you
 disable CarrierWave's `validate_download` option, you'll need to handle those
 errors yourself.
 
+### Retry option for download from remote location
+If you want to retry the download from the Remote URL, enable the download_retry_count option, an error occurs during download, it will try to execute the specified number of times every 5 second.
+This option is effective when the remote destination is unstable.
+
+```rb
+CarrierWave.configure do |config|
+  config.download_retry_count = 3 # Default 0
+end
+```
+
 ## Providing a default URL
 
 In many cases, especially when working with images, it might be a good idea to
@@ -1000,8 +1010,7 @@ errors:
     extension_denylist_error: "You are not allowed to upload %{extension} files, prohibited types: %{prohibited_types}"
     content_type_allowlist_error: "You are not allowed to upload %{content_type} files, allowed types: %{allowed_types}"
     content_type_denylist_error: "You are not allowed to upload %{content_type} files"
-    rmagick_processing_error: "Failed to manipulate with rmagick, maybe it is not an image?"
-    mini_magick_processing_error: "Failed to manipulate with MiniMagick, maybe it is not an image? Original Error: %{e}"
+    processing_error: "Failed to manipulate, maybe it is not an image?"
     min_size_error: "File size should be greater than %{min_size}"
     max_size_error: "File size should be less than %{max_size}"
 ```
@@ -1064,6 +1073,30 @@ class User
   mount_uploader :avatar, AvatarUploader
   skip_callback :commit, :after, :remove_previously_stored_avatar
 end
+```
+
+## Uploader Callbacks
+
+In addition to the ActiveRecord callbacks described above, uploaders also have callbacks.
+
+```ruby
+class MyUploader < ::CarrierWave::Uploader::Base
+  before :remove, :log_removal
+  private
+  def log_removal
+    ::Rails.logger.info(format('Deleting file on S3: %s', @file))
+  end
+end
+```
+
+Uploader callbacks can be `before` or `after` the following events:
+
+```
+cache
+process
+remove
+retrieve_from_cache
+store
 ```
 
 ## Contributing to CarrierWave

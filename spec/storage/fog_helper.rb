@@ -89,7 +89,7 @@ end
           let(:store_path) { 'uploads/test' }
 
           it "should have no extension" do
-            expect(@fog_file.extension).to be_nil
+            expect(@fog_file.extension).to eq("")
           end
 
         end
@@ -582,6 +582,14 @@ end
           it "does not include credentials" do
             expect(@fog_file.filename).to eq('test.jpg')
           end
+        end
+      end
+
+      describe '#copy_to' do
+        it "uses Fog's File#copy, instead of Storage#copy_object" do
+          expect(@fog_file.send(:file)).to receive(:copy).with(anything, 'uploads/new_path.jpg', anything).and_call_original
+
+          @fog_file.copy_to('uploads/new_path.jpg')
         end
       end
 

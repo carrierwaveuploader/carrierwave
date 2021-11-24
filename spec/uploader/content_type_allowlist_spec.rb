@@ -88,13 +88,13 @@ describe CarrierWave::Uploader do
         }).to raise_error(CarrierWave::IntegrityError)
       end
 
-      it "looks for content_type_whitelist first for I18n translation" do
+      it "looks for content_type_allowlist first for I18n translation" do
         allow(uploader).to receive(:content_type_allowlist).and_return(['image/gif'])
 
         change_locale_and_store_translations(:nl, :errors => {
           :messages => {
-            :content_type_allowlist_error => "this will not be used",
-            :content_type_whitelist_error => "Het is niet toegestaan om %{content_type} bestanden te uploaden"
+            :content_type_whitelist_error => "this will not be used",
+            :content_type_allowlist_error => "Het is niet toegestaan om %{content_type} bestanden te uploaden"
           }
         }) do
           expect(running {

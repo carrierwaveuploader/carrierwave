@@ -546,16 +546,33 @@ describe CarrierWave::SanitizedFile do
   end
 
   shared_examples_for "all valid sanitized files that are read from an IO object" do
-
     describe "#read" do
       it "should have an open IO object" do
         expect(sanitized_file.instance_variable_get(:@file).closed?).to be_falsey
       end
+    end
+  end
 
+  shared_examples_for "all valid sanitized files that are read from a non-StringIO object" do
+    it_should_behave_like "all valid sanitized files that are read from an IO object"
+
+    describe "#read" do
       it "should close the IO object after reading" do
         sanitized_file.read
 
         expect(sanitized_file.instance_variable_get(:@file).closed?).to be_truthy
+      end
+    end
+  end
+
+  shared_examples_for "all valid sanitized files that are read from a StringIO object" do
+    it_should_behave_like "all valid sanitized files that are read from an IO object"
+
+    describe "#read" do
+      it "should not close StringIO inherited object after reading" do
+        sanitized_file.read
+
+        expect(sanitized_file.instance_variable_get(:@file).closed?).to be_falsey
       end
     end
   end
@@ -574,7 +591,7 @@ describe CarrierWave::SanitizedFile do
 
     it_should_behave_like "all valid sanitized files that are stored on disk"
 
-    it_should_behave_like "all valid sanitized files that are read from an IO object"
+    it_should_behave_like "all valid sanitized files that are read from a non-StringIO object"
 
     describe "#path" do
       it "should return the path of the tempfile" do
@@ -598,7 +615,7 @@ describe CarrierWave::SanitizedFile do
 
     it_should_behave_like "all valid sanitized files that are stored on disk"
 
-    it_should_behave_like "all valid sanitized files that are read from an IO object"
+    it_should_behave_like "all valid sanitized files that are read from a non-StringIO object"
 
     describe "#is_path?" do
       it "should be false" do
@@ -619,7 +636,7 @@ describe CarrierWave::SanitizedFile do
 
     it_should_behave_like "all valid sanitized files"
 
-    it_should_behave_like "all valid sanitized files that are read from an IO object"
+    it_should_behave_like "all valid sanitized files that are read from a StringIO object"
 
     describe "#exists?" do
       it "should be false" do
@@ -665,7 +682,7 @@ describe CarrierWave::SanitizedFile do
 
     it_should_behave_like "all valid sanitized files that are stored on disk"
 
-    it_should_behave_like "all valid sanitized files that are read from an IO object"
+    it_should_behave_like "all valid sanitized files that are read from a non-StringIO object"
 
     describe "#is_path?" do
       it "should be false" do
@@ -694,7 +711,7 @@ describe CarrierWave::SanitizedFile do
 
     it_should_behave_like "all valid sanitized files that are stored on disk"
 
-    it_should_behave_like "all valid sanitized files that are read from an IO object"
+    it_should_behave_like "all valid sanitized files that are read from a non-StringIO object"
 
     describe "#is_path?" do
       it "should be false" do

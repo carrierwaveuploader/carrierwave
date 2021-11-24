@@ -1,9 +1,10 @@
 require "carrierwave/metal"
 require "carrierwave/uploader/download"
-require "carrierwave/uploader/extension_whitelist"
-require "carrierwave/uploader/extension_blacklist"
-require "carrierwave/uploader/content_type_whitelist"
-require "carrierwave/uploader/content_type_blacklist"
+require "carrierwave/uploader/remove"
+require "carrierwave/uploader/extension_allowlist"
+require "carrierwave/uploader/extension_denylist"
+require "carrierwave/uploader/content_type_allowlist"
+require "carrierwave/uploader/content_type_denylist"
 require "carrierwave/uploader/file_size"
 require "carrierwave/uploader/versions"
 require "carrierwave/uploader/default_url"
@@ -34,10 +35,11 @@ module CarrierWave
     #
     class Base < Metal
       include CarrierWave::Uploader::Download
-      include CarrierWave::Uploader::ExtensionWhitelist
-      include CarrierWave::Uploader::ExtensionBlacklist
-      include CarrierWave::Uploader::ContentTypeWhitelist
-      include CarrierWave::Uploader::ContentTypeBlacklist
+      include CarrierWave::Uploader::Remove
+      include CarrierWave::Uploader::ExtensionAllowlist
+      include CarrierWave::Uploader::ExtensionDenylist
+      include CarrierWave::Uploader::ContentTypeAllowlist
+      include CarrierWave::Uploader::ContentTypeDenylist
       include CarrierWave::Uploader::FileSize
       include CarrierWave::Uploader::Versions
       include CarrierWave::Uploader::Serialization

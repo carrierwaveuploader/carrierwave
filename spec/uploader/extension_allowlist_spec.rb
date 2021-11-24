@@ -126,13 +126,13 @@ describe CarrierWave::Uploader do
         }).to raise_error(CarrierWave::IntegrityError)
       end
 
-      it "looks for extension_whitelist first for I18n translation" do
+      it "looks for extension_allowlist first for I18n translation" do
         allow(@uploader).to receive(:extension_allowlist).and_return(%w(txt doc xls))
 
         change_locale_and_store_translations(:nl, :errors => {
           :messages => {
-            :extension_allowlist_error => "this will not be used",
-            :extension_whitelist_error => "Het is niet toegestaan om %{extension} bestanden te uploaden; toegestane bestandstypes: %{allowed_types}"
+            :extension_whitelist_error => "this will not be used",
+            :extension_allowlist_error => "Het is niet toegestaan om %{extension} bestanden te uploaden; toegestane bestandstypes: %{allowed_types}"
           }
         }) do
           expect(running {
