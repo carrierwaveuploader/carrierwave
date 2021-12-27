@@ -14,12 +14,12 @@ require 'logger'
 require 'csv'
 
 require 'carrierwave'
+require 'carrierwave/test/matchers'
 require 'timecop'
 require 'open-uri'
 require "webmock/rspec"
 require 'mini_magick'
 require "vips"
-require 'active_support/core_ext'
 require 'rspec/retry'
 
 I18n.enforce_available_locales = false

@@ -5,8 +5,7 @@ It works well with Rack based web applications, such as Ruby on Rails.
 
 [![Build Status](https://github.com/carrierwaveuploader/carrierwave/workflows/Test/badge.svg)](https://github.com/carrierwaveuploader/carrierwave/actions)
 [![Code Climate](https://codeclimate.com/github/carrierwaveuploader/carrierwave.svg)](https://codeclimate.com/github/carrierwaveuploader/carrierwave)
-[![SemVer](https://api.dependabot.com/badges/compatibility_score?dependency-name=carrierwave&package-manager=bundler&version-scheme=semver)](https://dependabot.com/compatibility-score.html?dependency-name=carrierwave&package-manager=bundler&version-scheme=semver)
-
+[![Gem Version](https://badge.fury.io/rb/carrierwave.svg)](http://badge.fury.io/rb/carrierwave)
 
 ## Information
 
@@ -35,8 +34,8 @@ gem 'carrierwave', '~> 2.0'
 
 Finally, restart the server to apply the changes.
 
-As of version 2.0, CarrierWave requires Rails 5.0 or higher and Ruby 2.2
-or higher. If you're on Rails 4, you should use 1.x.
+As of version 3.0, CarrierWave requires ActiveSupport 6.0 or higher and Ruby 2.5 or higher.
+if you are using a lower version you can use version 2 or 1.
 
 ## Getting Started
 
@@ -981,6 +980,8 @@ end
 If you are using Paperclip, you can use the provided compatibility module:
 
 ```ruby
+require 'carrierwave/compatibility/paperclip'
+
 class AvatarUploader < CarrierWave::Uploader::Base
   include CarrierWave::Compatibility::Paperclip
 end

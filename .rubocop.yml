@@ -26,7 +26,7 @@ Style/PredicateName:
   - is_
   - has_
   - have_
-  NamePrefixBlacklist:
+  ForbiddenPrefixes:
   - is_
   Exclude:
   - spec/**/*
@@ -109,12 +109,12 @@ Lint/EachWithObjectArgument:
   Description: Check for immutable argument given to each_with_object.
   Enabled: true
 
-Lint/HandleExceptions:
+Lint/SuppressedException:
   Description: Don't suppress exception.
   StyleGuide: https://github.com/bbatsov/ruby-style-guide#dont-hide-exceptions
   Enabled: false
 
-Lint/LiteralInCondition:
+Lint/LiteralAsCondition:
   Description: Checks of literals used in conditions.
   Enabled: false
 
@@ -231,7 +231,7 @@ Style/IfUnlessModifier:
   Description: Favor modifier if/unless usage when you have a single-line body.
   StyleGuide: https://github.com/bbatsov/ruby-style-guide#if-as-a-modifier
   Enabled: false
-  MaxLineLength: 80
+  Layout/LineLength: Max
 
 Style/OptionHash:
   Description: Don't use option hashes when you can use keyword arguments.
@@ -252,11 +252,9 @@ Style/PercentLiteralDelimiters:
     "%W": "()"
     "%x": "()"
 
-Style/TrailingComma:
-  Description: Checks for trailing comma in parameter lists and literals.
-  StyleGuide: https://github.com/bbatsov/ruby-style-guide#no-trailing-array-commas
+Style/TrailingCommaInArguments:
   Enabled: false
-  EnforcedStyleForMultiline: no_comma
-  SupportedStyles:
-  - comma
-  - no_comma
+Style/TrailingCommaInArrayLiteral:
+  Enabled: false
+Style/TrailingCommaInHashLiteral:
+  Enabled: false

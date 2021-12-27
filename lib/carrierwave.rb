@@ -1,11 +1,12 @@
-require 'fileutils'
-require 'active_support/core_ext/object/blank'
-require 'active_support/core_ext/object/try'
-require 'active_support/core_ext/class/attribute'
-require 'active_support/concern'
+# frozen_string_literal: true
+
+require "fileutils"
+require "active_support/core_ext/object/blank"
+require "active_support/core_ext/object/try"
+require "active_support/core_ext/class/attribute"
+require "active_support/concern"
 
 module CarrierWave
-
   class << self
     attr_accessor :root, :base_path
     attr_writer :tmp_path
@@ -14,73 +15,12 @@ module CarrierWave
       CarrierWave::Uploader::Base.configure(&block)
     end
 
-    def clean_cached_files!(seconds=60*60*24)
+    def clean_cached_files!(seconds = 60 * 60 * 24)
       CarrierWave::Uploader::Base.clean_cached_files!(seconds)
     end
 
     def tmp_path
-      @tmp_path ||= File.expand_path(File.join('..', 'tmp'), root)
-    end
-  end
-
-end
-
-if defined?(Jets)
-
-  module CarrierWave
-    class Turbine < Jets::Turbine
-      initializer "carrierwave.setup_paths" do |app|
-        CarrierWave.root = Jets.root.to_s
-        CarrierWave.tmp_path = "/tmp/carrierwave"
-        CarrierWave.configure do |config|
-          config.cache_dir = "/tmp/carrierwave/uploads/tmp"
-        end
-      end
-
-      initializer "carrierwave.active_record" do
-        ActiveSupport.on_load :active_record do
-          require 'carrierwave/orm/activerecord'
-        end
-      end
-    end
-  end
-
-elsif defined?(Rails)
-
-  module CarrierWave
-    class Railtie < Rails::Railtie
-      initializer "carrierwave.setup_paths" do |app|
-        CarrierWave.root = Rails.root.join(Rails.public_path).to_s
-        CarrierWave.base_path = ENV['RAILS_RELATIVE_URL_ROOT']
-        available_locales = Array(app.config.i18n.available_locales || [])
-        if available_locales.blank? || available_locales.include?(:en)
-          I18n.load_path.prepend(File.join(File.dirname(__FILE__), 'carrierwave', 'locale', "en.yml"))
-        end
-      end
-
-      initializer "carrierwave.active_record" do
-        ActiveSupport.on_load :active_record do
-          require 'carrierwave/orm/activerecord'
-        end
-      end
-
-      config.before_eager_load do
-        CarrierWave::Storage::Fog.eager_load
-      end
-    end
-  end
-
-elsif defined?(Sinatra)
-  if defined?(Padrino) && defined?(PADRINO_ROOT)
-    CarrierWave.root = File.join(PADRINO_ROOT, "public")
-  else
-
-    CarrierWave.root = if Sinatra::Application.respond_to?(:public_folder)
-      # Sinatra >= 1.3
-      Sinatra::Application.public_folder
-    else
-      # Sinatra < 1.3
-      Sinatra::Application.public
+      @tmp_path ||= File.expand_path(File.join("..", "tmp"), root)
     end
   end
 end
@@ -94,5 +34,5 @@ require "carrierwave/processing"
 require "carrierwave/version"
 require "carrierwave/storage"
 require "carrierwave/uploader"
-require "carrierwave/compatibility/paperclip"
-require "carrierwave/test/matchers"
+
+require "carrierwave/frameworks/railtie" if defined?(Rails)
