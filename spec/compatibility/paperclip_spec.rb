@@ -1,5 +1,8 @@
-require 'spec_helper'
-require 'carrierwave/orm/activerecord'
+# frozen_string_literal: true
+
+require "spec_helper"
+require "carrierwave/orm/activerecord"
+require "carrierwave/compatibility/paperclip"
 
 module Rails; end unless defined?(Rails)
 
@@ -13,21 +16,21 @@ describe CarrierWave::Compatibility::Paperclip do
     end
   end
 
-  let(:model) { double('model') }
+  let(:model) { double("model") }
 
   let(:uploader) { uploader_class.new(model, :monkey) }
 
   before do
-    allow(Rails).to receive(:root).and_return('/rails/root')
-    allow(Rails).to receive(:env).and_return('test')
+    allow(Rails).to receive(:root).and_return("/rails/root")
+    allow(Rails).to receive(:env).and_return("test")
     allow(model).to receive(:id).and_return(23)
-    allow(model).to receive(:ook).and_return('eek')
-    allow(model).to receive(:money).and_return('monkey.png')
+    allow(model).to receive(:ook).and_return("eek")
+    allow(model).to receive(:money).and_return("monkey.png")
   end
 
   after { FileUtils.rm_rf(public_path) }
 
-  describe '#store_path' do
+  describe "#store_path" do
     subject { uploader.store_path("monkey.png") }
 
     it "mimics paperclip default" do
@@ -36,7 +39,7 @@ describe CarrierWave::Compatibility::Paperclip do
 
     it "interpolates the root path" do
       allow(uploader).to receive(:paperclip_path).and_return(":rails_root/foo/bar")
-      is_expected.to eq(Rails.root + "/foo/bar")
+      is_expected.to eq("#{Rails.root}/foo/bar")
     end
 
     it "interpolates the attachment" do
@@ -65,30 +68,30 @@ describe CarrierWave::Compatibility::Paperclip do
     end
   end
 
-  describe '.interpolate' do
+  describe ".interpolate" do
     subject { uploader.store_path("monkey.png") }
 
     before do
-      uploader_class.interpolate :ook do |custom, style|
+      uploader_class.interpolate :ook do |custom, _style|
         custom.model.ook
       end
 
-      uploader_class.interpolate :aak do |model, style|
+      uploader_class.interpolate :aak do |_model, style|
         style
       end
     end
 
-    it 'allows you to add custom interpolations' do
+    it "allows you to add custom interpolations" do
       allow(uploader).to receive(:paperclip_path).and_return("/foo/:id/:ook")
-      is_expected.to eq('/foo/23/eek')
+      is_expected.to eq("/foo/23/eek")
     end
 
-    it 'mimics paperclips arguments' do
+    it "mimics paperclips arguments" do
       allow(uploader).to receive(:paperclip_path).and_return("/foo/:aak")
-      is_expected.to eq('/foo/original')
+      is_expected.to eq("/foo/original")
     end
 
-    context 'when multiple uploaders include the compatibility module' do
+    context "when multiple uploaders include the compatibility module" do
       let(:uploader) { uploader_class_other.new(model, :monkey) }
       let(:uploader_class_other) do
         Class.new(CarrierWave::Uploader::Base) do
@@ -102,17 +105,17 @@ describe CarrierWave::Compatibility::Paperclip do
       before { allow(uploader).to receive(:paperclip_path).and_return("/foo/:id/:ook") }
 
       it "doesn't share custom interpolations" do
-        is_expected.to eq('/foo/23/:ook')
+        is_expected.to eq("/foo/23/:ook")
       end
     end
 
-    context 'when there are multiple versions' do
+    context "when there are multiple versions" do
       let(:complex_uploader_class) do
         Class.new(CarrierWave::Uploader::Base) do
           include CarrierWave::Compatibility::Paperclip
 
-          interpolate :ook do |model, style|
-            'eek'
+          interpolate :ook do |_model, _style|
+            "eek"
           end
 
           version :thumb
@@ -125,11 +128,11 @@ describe CarrierWave::Compatibility::Paperclip do
       end
 
       let(:uploader) { complex_uploader_class.new(model, :monkey) }
-      let!(:file) { File.open(file_path('test.jpg')) }
+      let!(:file) { File.open(file_path("test.jpg")) }
 
       before { uploader.store!(file) }
 
-      it 'interpolates for all versions correctly' do
+      it "interpolates for all versions correctly" do
         expect(uploader.thumb.path).to eq("#{public_path}/foo/eek/23/thumb")
         expect(uploader.list.path).to eq("#{public_path}/foo/eek/23/list")
       end
