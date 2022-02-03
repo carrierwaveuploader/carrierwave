@@ -26,7 +26,7 @@ jobs:
             experimental: false
           - ruby: jruby-head
             gemfile: gemfiles/rails-6-1.gemfile
-            experimental: false
+            experimental: true
     runs-on: ubuntu-20.04
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
