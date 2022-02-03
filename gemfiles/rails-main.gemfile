@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 gem "rails", github: "rails/rails", branch: "main"
-gem "rack", github: "rack/rack", branch: "master"
+gem "rack", github: "rack/rack", branch: "main"
 gem "arel", github: "rails/arel", branch: "master"
 gem "sprockets", github: "rails/sprockets", branch: "master"
 gem "sprockets-rails", github: "rails/sprockets-rails", branch: "master"
