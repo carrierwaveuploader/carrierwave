@@ -8,17 +8,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: [ 2.5, 2.6, 2.7, 3.0, jruby ]
+        ruby: [ '2.5', '2.6', '2.7', '3.0', jruby ]
         gemfile: [ gemfiles/rails-6-1.gemfile ]
         experimental: [ false ]
         include:
-          - ruby: 3.0
+          - ruby: '3.0'
             gemfile: gemfiles/rails-6-0.gemfile
             experimental: false
-          - ruby: 3.0
+          - ruby: '3.0'
             gemfile: gemfiles/rails-7-0.gemfile
             experimental: false
-          - ruby: 3.0
+          - ruby: '3.0'
             gemfile: gemfiles/rails-master.gemfile
             experimental: false
           - ruby: ruby-head
