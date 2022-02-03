@@ -731,7 +731,7 @@ describe CarrierWave::Uploader do
           @uploader.store!(bork_file)
           FileUtils.rm([@uploader.small_thumb.path, @uploader.thumb.path])
           @uploader.recreate_versions!(:small_thumb)
-          expect(File.exists?(public_path(@uploader.thumb.to_s))).to be true
+          expect(File.exist?(public_path(@uploader.thumb.to_s))).to be true
           expect(small_thumb_contents).to eq(thumb_contents)
           expect(small_thumb_contents).not_to eq(original_contents)
         end
@@ -746,14 +746,14 @@ describe CarrierWave::Uploader do
           @uploader.store!(bork_file)
           FileUtils.rm([@uploader.small_thumb.path, @uploader.thumb.path])
           @uploader.recreate_versions!(:small_thumb, :thumb)
-          expect(File.exists?(public_path(@uploader.small_thumb.to_s))).to be true
-          expect(File.exists?(public_path(@uploader.thumb.to_s))).to be true
+          expect(File.exist?(public_path(@uploader.small_thumb.to_s))).to be true
+          expect(File.exist?(public_path(@uploader.thumb.to_s))).to be true
 
           # doesn't depend on arguments order
           FileUtils.rm([@uploader.small_thumb.path, @uploader.thumb.path])
           @uploader.recreate_versions!(:thumb, :small_thumb)
-          expect(File.exists?(public_path(@uploader.small_thumb.to_s))).to be true
-          expect(File.exists?(public_path(@uploader.thumb.to_s))).to be true
+          expect(File.exist?(public_path(@uploader.small_thumb.to_s))).to be true
+          expect(File.exist?(public_path(@uploader.thumb.to_s))).to be true
         end
 
         it "doesn't touch other versions" do
@@ -761,7 +761,7 @@ describe CarrierWave::Uploader do
           @uploader.store!(bork_file)
           FileUtils.rm(@uploader.another.path)
           @uploader.recreate_versions!(:small_thumb)
-          expect(File.exists?(public_path(@uploader.another.to_s))).to be false
+          expect(File.exist?(public_path(@uploader.another.to_s))).to be false
         end
       end
     end

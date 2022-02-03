@@ -7,7 +7,7 @@ if RUBY_ENGINE == 'jruby'
   require 'i18n/backend/simple'
 end
 
-require 'pry'
+require 'pry' unless ENV['GITHUB_ACTIONS']
 require 'tempfile'
 require 'time'
 require 'logger'

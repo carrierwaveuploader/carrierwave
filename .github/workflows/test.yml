@@ -8,25 +8,25 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: [ 2.5, 2.6, 2.7, 3.0, jruby ]
+        ruby: [ '2.5', '2.6', '2.7', '3.0', '3.1', jruby ]
         gemfile: [ gemfiles/rails-6-1.gemfile ]
         experimental: [ false ]
         include:
-          - ruby: 3.0
+          - ruby: '3.0'
             gemfile: gemfiles/rails-6-0.gemfile
             experimental: false
-          - ruby: 3.0
+          - ruby: '3.0'
             gemfile: gemfiles/rails-7-0.gemfile
             experimental: false
-          - ruby: 3.0
-            gemfile: gemfiles/rails-master.gemfile
+          - ruby: '3.1'
+            gemfile: gemfiles/rails-main.gemfile
             experimental: false
           - ruby: ruby-head
-            gemfile: gemfiles/rails-6-1.gemfile
-            experimental: true
+            gemfile: gemfiles/rails-7-0.gemfile
+            experimental: false
           - ruby: jruby-head
             gemfile: gemfiles/rails-6-1.gemfile
-            experimental: false
+            experimental: true
     runs-on: ubuntu-20.04
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
