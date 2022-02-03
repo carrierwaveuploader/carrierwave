@@ -224,7 +224,7 @@ end
       it "should create local file for processing" do
         @uploader.class_eval do
           def check_file
-            raise unless File.exists?(file.path)
+            raise unless File.exist?(file.path)
           end
           process :check_file
         end
