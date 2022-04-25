@@ -37,7 +37,7 @@ module CarrierWave
 
         def file
           if @file.blank?
-            @file = Kernel.open(@uri.to_s)
+            @file = URI.open(@uri.to_s)
             @file = @file.is_a?(String) ? StringIO.new(@file) : @file
           end
           @file
@@ -84,8 +84,8 @@ module CarrierWave
       rescue URI::InvalidURIError
         uri_parts = uri.split('?')
         # regexp from Ruby's URI::Parser#regexp[:UNSAFE], with [] specifically removed
-        encoded_uri = URI.encode(uri_parts.shift, /[^\-_.!~*'()a-zA-Z\d;\/?:@&=+$,]/)
-        encoded_uri << '?' << URI.encode(uri_parts.join('?')) if uri_parts.any?
+        encoded_uri = URI::DEFAULT_PARSER.escape(uri_parts.shift, /[^\-_.!~*'()a-zA-Z\d;\/?:@&=+$,]/)
+        encoded_uri << '?' << URI::DEFAULT_PARSER.escape(uri_parts.join('?')) if uri_parts.any?
         URI.parse(encoded_uri) rescue raise CarrierWave::DownloadError, "couldn't parse URL"
       end
 

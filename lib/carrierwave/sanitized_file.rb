@@ -291,7 +291,7 @@ module CarrierWave
     def mkdir!(path, directory_permissions)
       options = {}
       options[:mode] = directory_permissions if directory_permissions
-      FileUtils.mkdir_p(File.dirname(path), options) unless File.exists?(File.dirname(path))
+      FileUtils.mkdir_p(File.dirname(path), **options) unless File.exists?(File.dirname(path))
     end
 
     def chmod!(path, permissions)
