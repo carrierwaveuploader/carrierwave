@@ -151,6 +151,11 @@ describe CarrierWave::SanitizedFile do
       expect(sanitized_file).to receive(:original_filename).at_least(:once).and_return("ТестоВый Ёжик.jpg")
       expect(sanitized_file.filename).to eq("ТестоВый_Ёжик.jpg")
     end
+
+    it "should remove invalid byte sequences from the filename" do
+      expect(sanitized_file).to receive(:original_filename).at_least(:once).and_return("test\xDD.jpg")
+      expect(sanitized_file.filename).to eq("test_.jpg")
+    end
   end
 
   describe "#filename with an overridden sanitize_regexp" do
