@@ -198,7 +198,7 @@ describe CarrierWave::ActiveRecord do
         expect(@event.image).to be_an_instance_of(@uploader)
       end
 
-      it "should write nothing to the database, to prevent overriden filenames to fail because of unassigned attributes" do
+      it "should write nothing to the database, to prevent overridden filenames to fail because of unassigned attributes" do
         expect(@event[:image]).to be_nil
       end
 
@@ -714,7 +714,7 @@ describe CarrierWave::ActiveRecord do
       end
     end
 
-    describe 'with an overriden filename' do
+    describe 'with an overridden filename' do
       before do
         @uploader.class_eval do
           def filename
@@ -1063,7 +1063,7 @@ describe CarrierWave::ActiveRecord do
         expect(@event.images[0]).to be_an_instance_of(@uploader)
       end
 
-      it "should write nothing to the database, to prevent overriden filenames to fail because of unassigned attributes" do
+      it "should write nothing to the database, to prevent overridden filenames to fail because of unassigned attributes" do
         expect(@event[:images]).to be_nil
       end
 
@@ -1510,7 +1510,7 @@ describe CarrierWave::ActiveRecord do
       end
     end
 
-    describe 'with an overriden filename' do
+    describe 'with an overridden filename' do
       before do
         @uploader.class_eval do
           def filename
@@ -1658,7 +1658,7 @@ describe CarrierWave::ActiveRecord do
       Event.mount_uploader(:image, @uploader)
     end
 
-    context 'when #reload is overriden in the model' do
+    context 'when #reload is overridden in the model' do
       before do
         Event.class_eval do
           def reload(*)
@@ -1687,7 +1687,7 @@ describe CarrierWave::ActiveRecord do
       expect(new_event.image.model).not_to eq @event
     end
 
-    context 'when #initialize_dup is overriden in the model' do
+    context 'when #initialize_dup is overridden in the model' do
       before do
         Event.class_eval do
           def initialize_dup(*)

@@ -88,7 +88,7 @@ module CarrierWave
     #
     # === Parameters
     #
-    # [format (#to_s)] an abreviation of the format
+    # [format (#to_s)] an abbreviation of the format
     #
     # === Yields
     #
