@@ -310,7 +310,7 @@ end
         expect(@directory.files.all(:prefix => 'uploads/tmp').size).to eq(0)
       end
 
-      it "should clear all files older than, by defaul, 24 hours in the default cache directory" do
+      it "should clear all files older than, by default, 24 hours in the default cache directory" do
         Timecop.freeze(today) do
           @uploader.clean_cached_files!
         end

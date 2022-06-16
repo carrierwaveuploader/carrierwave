@@ -961,7 +961,7 @@ See the MiniMagick site for more details:
 
 https://github.com/minimagick/minimagick
 
-And the ImageMagick command line options for more for whats on offer:
+And the ImageMagick command line options for more for what's on offer:
 
 http://www.imagemagick.org/script/command-line-options.php
 

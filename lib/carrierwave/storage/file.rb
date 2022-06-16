@@ -17,7 +17,7 @@ module CarrierWave
       #
       # By default, store!() uses copy_to(), which operates by copying the file
       # from the cache to the store, then deleting the file from the cache.
-      # If move_to_store() is overriden to return true, then store!() uses move_to(),
+      # If move_to_store() is overridden to return true, then store!() uses move_to(),
       # which simply moves the file from cache to store.  Useful for large files.
       #
       # === Parameters
@@ -110,7 +110,7 @@ module CarrierWave
 
       def clean_cache!(seconds)
         Dir.glob(::File.expand_path(::File.join(uploader.cache_dir, '*'), CarrierWave.root)).each do |dir|
-          # generate_cache_id returns key formated TIMEINT-PID(-COUNTER)-RND
+          # generate_cache_id returns key formatted TIMEINT-PID(-COUNTER)-RND
           time = dir.scan(/(\d+)-\d+-\d+(?:-\d+)?/).first.map(&:to_i)
           time = Time.at(*time)
           if time < (Time.now.utc - seconds)

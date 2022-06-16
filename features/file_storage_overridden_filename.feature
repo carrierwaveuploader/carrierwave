@@ -1,7 +1,7 @@
-Feature: uploader with file storage and overriden filename
+Feature: uploader with file storage and overridden filename
   In order to be awesome
   As a developer using CarrierWave
-  I want to upload files to the filesystem with an overriden filename
+  I want to upload files to the filesystem with an overridden filename
 
   Background:
     Given an uploader class that uses the 'file' storage

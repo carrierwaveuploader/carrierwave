@@ -146,7 +146,7 @@ module CarrierWave
           :key    => uploader.fog_directory,
           :public => uploader.fog_public
         ).files.all(:prefix => uploader.cache_dir).each do |file|
-          # generate_cache_id returns key formated TIMEINT-PID(-COUNTER)-RND
+          # generate_cache_id returns key formatted TIMEINT-PID(-COUNTER)-RND
           matched = file.key.match(/(\d+)-\d+-\d+(?:-\d+)?/)
           next unless matched
           time = Time.at(matched[1].to_i)
@@ -398,7 +398,7 @@ module CarrierWave
         end
 
         ##
-        # Return url to file, if avaliable
+        # Return url to file, if available
         #
         # === Returns
         #

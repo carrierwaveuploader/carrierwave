@@ -179,7 +179,7 @@ _No changes._
 
 ### Fixed
 * Stop falling back to en locale when I18n is missing(@kryzhovnik [#2083](https://github.com/carrierwaveuploader/carrierwave/pull/2083))
-* Allow nagative timestamp in cache id(@NickOttrando [#2092](https://github.com/carrierwaveuploader/carrierwave/pull/2092))
+* Allow negative timestamp in cache id(@NickOttrando [#2092](https://github.com/carrierwaveuploader/carrierwave/pull/2092))
 * Avoid calling `file.url` twice(@lukeasrodgers [#2078](https://github.com/carrierwaveuploader/carrierwave/pull/2078))
 * Content Type being reset when moving cached file(@dweinand [#2117](https://github.com/carrierwaveuploader/carrierwave/pull/2117))
 
@@ -224,7 +224,7 @@ _No changes._
 * [BREAKING CHANGE] Allow non-ASCII filename by default (@shuhei [#1772](https://github.com/carrierwaveuploader/carrierwave/pull/1772))
 * [BREAKING CHANGE] `to_json` behavior changed when serializing an uploader (@jnicklas and @lisarutan [#1481](https://github.com/carrierwaveuploader/carrierwave/pull/1481))
 * Better error when the configured storage is unknown (@st0012 [#1779](https://github.com/carrierwaveuploader/carrierwave/pull/1779))
-* Allow to pass additionnal options to Rackspace `authenticated_url` (@duhast [#1722](https://github.com/carrierwaveuploader/carrierwave/pull/1722))
+* Allow to pass additional options to Rackspace `authenticated_url` (@duhast [#1722](https://github.com/carrierwaveuploader/carrierwave/pull/1722))
 * Reduced memory footprint (@schneems [#1652](https://github.com/carrierwaveuploader/carrierwave/pull/1652), @simonprev [#1706](https://github.com/carrierwaveuploader/carrierwave/pull/1706))
 * Improve Fog Loading (@plribeiro3000 [#1620](https://github.com/carrierwaveuploader/carrierwave/pull/1620), @eavgerinos)
 * All locales from `config.i18n.available_locales` are added to load_path (@printercu [#1521](https://github.com/carrierwaveuploader/carrierwave/pull/1521))
