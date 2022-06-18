@@ -6,8 +6,6 @@ require 'rspec'
 require 'carrierwave'
 require "webmock/cucumber"
 
-alias :running :lambda
-
 def file_path( *paths )
   File.expand_path(File.join('..', *paths), File.dirname(__FILE__))
 end

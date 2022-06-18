@@ -24,8 +24,6 @@ require 'rspec/retry'
 
 I18n.enforce_available_locales = false
 
-alias :running :lambda
-
 def file_path( *paths )
   File.expand_path(File.join(File.dirname(__FILE__), 'fixtures', *paths))
 end
