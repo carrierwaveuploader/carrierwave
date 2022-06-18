@@ -158,6 +158,7 @@ RSpec.configure do |config|
   config.prepend CarrierWave::Test::SsrfProtectionAwareWebMock
   config.verbose_retry = true
   config.display_try_failure_messages = true
+  config.raise_errors_for_deprecations!
   config.around :each, :with_retry do |example|
     example.run_with_retry retry: 2
   end
