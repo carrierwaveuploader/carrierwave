@@ -19,9 +19,9 @@ describe CarrierWave::Uploader do
       it "does not raise an integrity error" do
         allow(@uploader).to receive(:extension_allowlist).and_return(nil)
 
-        expect(running {
+        expect {
           @uploader.cache!(File.open(file_path('test.jpg')))
-        }).not_to raise_error
+        }.not_to raise_error
       end
     end
 
@@ -30,73 +30,73 @@ describe CarrierWave::Uploader do
         it "does not raise an integrity error when the file has an allowlisted extension" do
           allow(@uploader).to receive(:extension_allowlist).and_return(%w(jpg gif png))
 
-          expect(running {
+          expect {
             @uploader.cache!(File.open(file_path('test.jpg')))
-          }).not_to raise_error
+          }.not_to raise_error
         end
 
         it "raises an integrity error if the file has not an allowlisted extension" do
           allow(@uploader).to receive(:extension_allowlist).and_return(%w(txt doc xls))
 
-          expect(running {
+          expect {
             @uploader.cache!(File.open(file_path('test.jpg')))
-          }).to raise_error(CarrierWave::IntegrityError, 'You are not allowed to upload "jpg" files, allowed types: txt, doc, xls')
+          }.to raise_error(CarrierWave::IntegrityError, 'You are not allowed to upload "jpg" files, allowed types: txt, doc, xls')
         end
 
         it "raises an integrity error if the file has not an allowlisted extension" do
           allow(@uploader).to receive(:extension_allowlist).and_return(%w(txt doc xls))
 
-          expect(running {
+          expect {
             @uploader.cache!(File.open(file_path('test.jpg')))
-          }).to raise_error(CarrierWave::IntegrityError)
+          }.to raise_error(CarrierWave::IntegrityError)
         end
 
         it "raises an integrity error if the file has not an allowlisted extension, using start of string matcher" do
           allow(@uploader).to receive(:extension_allowlist).and_return(%w(txt))
 
-          expect(running {
+          expect {
             @uploader.cache!(File.open(file_path('bork.ttxt')))
-          }).to raise_error(CarrierWave::IntegrityError)
+          }.to raise_error(CarrierWave::IntegrityError)
         end
 
         it "raises an integrity error if the file has not an allowlisted extension, using end of string matcher" do
           allow(@uploader).to receive(:extension_allowlist).and_return(%w(txt))
 
-          expect(running {
+          expect {
             @uploader.cache!(File.open(file_path('bork.txtt')))
-          }).to raise_error(CarrierWave::IntegrityError)
+          }.to raise_error(CarrierWave::IntegrityError)
         end
 
         it "compares extensions in a case insensitive manner when capitalized extension provided" do
           allow(@uploader).to receive(:extension_allowlist).and_return(%w(jpg gif png))
 
-          expect(running {
+          expect {
             @uploader.cache!(File.open(file_path('case.JPG')))
-          }).not_to raise_error
+          }.not_to raise_error
         end
 
         it "compares extensions in a case insensitive manner when lowercase extension provided" do
           allow(@uploader).to receive(:extension_allowlist).and_return(%w(JPG GIF PNG))
 
-          expect(running {
+          expect {
             @uploader.cache!(File.open(file_path('test.jpg')))
-          }).not_to raise_error
+          }.not_to raise_error
         end
 
         it "accepts extensions as regular expressions" do
           allow(@uploader).to receive(:extension_allowlist).and_return([/jpe?g/, 'gif', 'png'])
 
-          expect(running {
+          expect {
             @uploader.cache!(File.open(file_path('test.jpeg')))
-          }).not_to raise_error
+          }.not_to raise_error
         end
 
         it "accepts extensions as regular expressions in a case insensitive manner" do
 
           allow(@uploader).to receive(:extension_allowlist).and_return([/jpe?g/, 'gif', 'png'])
-          expect(running {
+          expect {
             @uploader.cache!(File.open(file_path('case.JPG')))
-          }).not_to raise_error
+          }.not_to raise_error
         end
       end
 
@@ -121,9 +121,9 @@ describe CarrierWave::Uploader do
         allow(@uploader).to receive(:extension_whitelist).and_return(%w(txt doc xls))
 
         expect(ActiveSupport::Deprecation).to receive(:warn).with('#extension_whitelist is deprecated, use #extension_allowlist instead.')
-        expect(running {
+        expect {
           @uploader.cache!(File.open(file_path('test.jpg')))
-        }).to raise_error(CarrierWave::IntegrityError)
+        }.to raise_error(CarrierWave::IntegrityError)
       end
 
       it "looks for extension_allowlist first for I18n translation" do
@@ -135,9 +135,9 @@ describe CarrierWave::Uploader do
             :extension_allowlist_error => "Het is niet toegestaan om %{extension} bestanden te uploaden; toegestane bestandstypes: %{allowed_types}"
           }
         }) do
-          expect(running {
+          expect {
             @uploader.cache!(File.open(file_path('test.jpg')))
-          }).to raise_error(CarrierWave::IntegrityError, 'Het is niet toegestaan om "jpg" bestanden te uploaden; toegestane bestandstypes: txt, doc, xls')
+          }.to raise_error(CarrierWave::IntegrityError, 'Het is niet toegestaan om "jpg" bestanden te uploaden; toegestane bestandstypes: txt, doc, xls')
         end
       end
     end

@@ -40,15 +40,15 @@ describe CarrierWave::Uploader do
       end
 
       it "doesn't raise an error when trying to cache a string" do
-        expect(running {
-                 uploader.cache!(file_path(test_file_name))
-        }).not_to raise_error
+        expect {
+          uploader.cache!(file_path(test_file_name))
+        }.not_to raise_error
       end
 
       it "doesn't raise an error when trying to cache a pathname and " do
-        expect(running {
-                 uploader.cache!(Pathname.new(file_path(test_file_name)))
-        }).not_to raise_error
+        expect {
+          uploader.cache!(Pathname.new(file_path(test_file_name)))
+        }.not_to raise_error
       end
     end
   end
@@ -60,7 +60,7 @@ describe CarrierWave::Uploader do
       before { CarrierWave.configure { |config| config.ensure_multipart_form = true } }
 
       it "raises an error when trying to cache a string" do
-        expect(running { uploader.cache!(test_file_path) }).to raise_error(CarrierWave::FormNotMultipart)
+        expect { uploader.cache!(test_file_path) }.to raise_error(CarrierWave::FormNotMultipart)
       end
 
       it "raises an error when trying to cache a pathname" do
@@ -112,9 +112,9 @@ describe CarrierWave::Uploader do
         end
 
         it "doesn't raise an error when caching" do
-          expect(running {
-                   uploader.cache!(test_file)
-          }).not_to raise_error
+          expect {
+            uploader.cache!(test_file)
+          }.not_to raise_error
         end
       end
     end
@@ -250,22 +250,22 @@ describe CarrierWave::Uploader do
     end
 
     it "raises an error when the cache_id has an invalid format" do
-      expect(running {
+      expect {
         uploader.retrieve_from_cache!("12345/#{test_file_name}")
-      }).to raise_error(CarrierWave::InvalidParameter)
+      }.to raise_error(CarrierWave::InvalidParameter)
     end
 
     context "when the original filename has invalid characters" do
       it do
-        expect(running {
+        expect {
           uploader.retrieve_from_cache!('1369894322-345-1234-2255/te/st.jpeg')
-        }).to raise_error(CarrierWave::InvalidParameter)
+        }.to raise_error(CarrierWave::InvalidParameter)
       end
 
       it do
-        expect(running {
+        expect {
           uploader.retrieve_from_cache!('1369894322-345-1234-2255/te??%st.jpeg')
-        }).to raise_error(CarrierWave::InvalidParameter)
+        }.to raise_error(CarrierWave::InvalidParameter)
       end
     end
   end

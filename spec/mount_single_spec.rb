@@ -702,17 +702,17 @@ describe CarrierWave::Mount do
     end
 
     it "should raise an error if the image fails an integrity check when cached" do
-      expect(running {
+      expect {
         @instance.image = stub_file('test.jpg')
-      }).to raise_error(CarrierWave::IntegrityError)
+      }.to raise_error(CarrierWave::IntegrityError)
     end
 
     it "should raise an error if the image fails an integrity check when downloaded" do
       stub_request(:get, "http://www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
 
-      expect(running {
+      expect {
         @instance.remote_image_url = "http://www.example.com/test.jpg"
-      }).to raise_error(CarrierWave::IntegrityError)
+      }.to raise_error(CarrierWave::IntegrityError)
     end
   end
 
@@ -736,17 +736,17 @@ describe CarrierWave::Mount do
     end
 
     it "should raise an error if the image fails to be processed when cached" do
-      expect(running {
+      expect {
         @instance.image = stub_file('test.jpg')
-      }).to raise_error(CarrierWave::ProcessingError)
+      }.to raise_error(CarrierWave::ProcessingError)
     end
 
     it "should raise an error if the image fails to be processed when downloaded" do
       stub_request(:get, "http://www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
 
-      expect(running {
+      expect {
         @instance.remote_image_url = "http://www.example.com/test.jpg"
-      }).to raise_error(CarrierWave::ProcessingError)
+      }.to raise_error(CarrierWave::ProcessingError)
     end
 
   end
@@ -770,9 +770,9 @@ describe CarrierWave::Mount do
         end
       end
 
-      expect(running {
+      expect {
         @instance.remote_image_url = "http://www.example.com/test.jpg"
-      }).to raise_error(CarrierWave::DownloadError)
+      }.to raise_error(CarrierWave::DownloadError)
     end
 
   end

@@ -413,7 +413,7 @@ describe CarrierWave::SanitizedFile do
         end
 
         it "should not raise an error when moved" do
-          expect(running { upcased_sanitized_file.move_to(upcased_sanitized_file.path.downcase) }).not_to raise_error
+          expect { upcased_sanitized_file.move_to(upcased_sanitized_file.path.downcase) }.not_to raise_error
         end
       end
     end
@@ -432,11 +432,11 @@ describe CarrierWave::SanitizedFile do
       end
 
       it "should not have changed its path when copied" do
-        expect(running { sanitized_file.copy_to(file_path("gurr.png")) }).not_to change(sanitized_file, :path)
+        expect { sanitized_file.copy_to(file_path("gurr.png")) }.not_to change(sanitized_file, :path)
       end
 
       it "should not have changed its filename when copied" do
-        expect(running { sanitized_file.copy_to(file_path("gurr.png")) }).not_to change(sanitized_file, :filename)
+        expect { sanitized_file.copy_to(file_path("gurr.png")) }.not_to change(sanitized_file, :filename)
       end
 
       it "should return an object of the same class when copied" do
@@ -492,7 +492,7 @@ describe CarrierWave::SanitizedFile do
   shared_examples_for "all valid sanitized files that are stored on disk" do
     describe "#move_to" do
       it "should not raise an error when moved to its own location" do
-        expect(running { sanitized_file.move_to(sanitized_file.path) }).not_to raise_error
+        expect { sanitized_file.move_to(sanitized_file.path) }.not_to raise_error
       end
 
       it "should remove the original file" do
@@ -505,10 +505,10 @@ describe CarrierWave::SanitizedFile do
 
     describe '#copy_to' do
       it "should return a new instance when copied to its own location" do
-        expect(running {
+        expect {
           new_file = sanitized_file.copy_to(sanitized_file.path)
           expect(new_file).to be_an_instance_of(sanitized_file.class)
-        }).not_to raise_error
+        }.not_to raise_error
       end
 
       it "should not remove the original file" do
@@ -663,7 +663,7 @@ describe CarrierWave::SanitizedFile do
 
     describe "#delete" do
       it "should not raise an error" do
-        expect(running { sanitized_file.delete }).not_to raise_error
+        expect { sanitized_file.delete }.not_to raise_error
       end
     end
 
@@ -847,7 +847,7 @@ describe CarrierWave::SanitizedFile do
 
     describe "#delete" do
       it "should not raise an error" do
-        expect(running { empty.delete }).not_to raise_error
+        expect { empty.delete }.not_to raise_error
       end
     end
 
@@ -917,7 +917,7 @@ describe CarrierWave::SanitizedFile do
 
     describe "#delete" do
       it "should not raise an error" do
-        expect(running { empty.delete }).not_to raise_error
+        expect { empty.delete }.not_to raise_error
       end
     end
 
