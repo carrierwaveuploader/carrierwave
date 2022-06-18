@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe CarrierWave::Uploader do
-  subject { lambda { uploader.cache!(test_file) } }
+  subject { uploader.cache!(test_file) }
 
   let(:uploader_class) { Class.new(CarrierWave::Uploader::Base) }
   let(:uploader) { uploader_class.new }
@@ -18,7 +18,7 @@ describe CarrierWave::Uploader do
   describe '#cache!' do
     context "when there are no denylisted extensions" do
       it "doesn't raise an integrity error" do
-        is_expected.not_to raise_error
+        expect { subject }.not_to raise_error
       end
     end
 
@@ -33,7 +33,7 @@ describe CarrierWave::Uploader do
 
         it "shows up" do
           expect(ActiveSupport::Deprecation).to receive(:warn).with('Use of #extension_denylist is deprecated for the security reason, use #extension_allowlist instead to explicitly state what are safe to accept')
-          is_expected.to raise_error(CarrierWave::IntegrityError)
+          expect { subject }.to raise_error(CarrierWave::IntegrityError)
         end
       end
 
@@ -42,7 +42,7 @@ describe CarrierWave::Uploader do
           let(:extension_denylist) { %w(jpg gif png) }
 
           it "raises an integrity error" do
-            is_expected.to raise_error(CarrierWave::IntegrityError, 'You are not allowed to upload "jpg" files, prohibited types: jpg, gif, png')
+            expect { subject }.to raise_error(CarrierWave::IntegrityError, 'You are not allowed to upload "jpg" files, prohibited types: jpg, gif, png')
           end
         end
 
@@ -50,7 +50,7 @@ describe CarrierWave::Uploader do
           let(:extension_denylist) { %w(txt doc xls) }
 
           it "doesn't raise an integrity error" do
-            is_expected.to_not raise_error
+            expect { subject }.to_not raise_error
           end
         end
 
@@ -59,7 +59,7 @@ describe CarrierWave::Uploader do
           let(:extension_denylist) { %w(txt) }
 
           it "doesn't raise an integrity error" do
-            is_expected.to_not raise_error
+            expect { subject }.to_not raise_error
           end
         end
 
@@ -68,7 +68,7 @@ describe CarrierWave::Uploader do
           let(:extension_denylist) { %w(txt) }
 
           it "doesn't raise an integrity error" do
-            is_expected.to_not raise_error
+            expect { subject }.to_not raise_error
           end
         end
 
@@ -77,7 +77,7 @@ describe CarrierWave::Uploader do
           let(:extension_denylist) { %w(jpg gif png) }
 
           it "raise an integrity error" do
-            is_expected.to raise_error(CarrierWave::IntegrityError)
+            expect { subject }.to raise_error(CarrierWave::IntegrityError)
           end
         end
 
@@ -86,7 +86,7 @@ describe CarrierWave::Uploader do
           let(:extension_denylist) { %w(JPG GIF PNG) }
 
           it "raise an integrity error" do
-            is_expected.to raise_error(CarrierWave::IntegrityError)
+            expect { subject }.to raise_error(CarrierWave::IntegrityError)
           end
         end
 
@@ -95,7 +95,7 @@ describe CarrierWave::Uploader do
           let(:extension_denylist) { [/jpe?g/, 'gif', 'png'] }
 
           it "raise an integrity error" do
-            is_expected.to raise_error(CarrierWave::IntegrityError)
+            expect { subject }.to raise_error(CarrierWave::IntegrityError)
           end
         end
       end
@@ -106,7 +106,7 @@ describe CarrierWave::Uploader do
           let(:extension_denylist) { 'jpeg' }
 
           it "raises an integrity error" do
-            is_expected.to raise_error(CarrierWave::IntegrityError)
+            expect { subject }.to raise_error(CarrierWave::IntegrityError)
           end
         end
 
@@ -115,7 +115,7 @@ describe CarrierWave::Uploader do
           let(:extension_denylist) { /jpe?g/ }
 
           it "raise an integrity error" do
-            is_expected.to raise_error(CarrierWave::IntegrityError)
+            expect { subject }.to raise_error(CarrierWave::IntegrityError)
           end
         end
       end
@@ -126,7 +126,7 @@ describe CarrierWave::Uploader do
         allow(uploader).to receive(:extension_blacklist).and_return(%w(jpg gif png))
 
         expect(ActiveSupport::Deprecation).to receive(:warn).with('#extension_blacklist is deprecated, use #extension_denylist instead.')
-        is_expected.to raise_error(CarrierWave::IntegrityError)
+        expect { subject }.to raise_error(CarrierWave::IntegrityError)
       end
 
       it "looks for extension_denylist first for I18n translation" do
@@ -138,7 +138,7 @@ describe CarrierWave::Uploader do
             :extension_denylist_error => "Het is niet toegestaan om %{extension} bestanden te uploaden; verboden bestandstypes: %{prohibited_types}"
           }
         }) do
-          is_expected.to raise_error(CarrierWave::IntegrityError, 'Het is niet toegestaan om "jpg" bestanden te uploaden; verboden bestandstypes: jpg, gif, png')
+          expect { subject }.to raise_error(CarrierWave::IntegrityError, 'Het is niet toegestaan om "jpg" bestanden te uploaden; verboden bestandstypes: jpg, gif, png')
         end
       end
     end

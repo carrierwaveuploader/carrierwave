@@ -61,7 +61,7 @@ describe CarrierWave::Uploader do
     end
 
     context "File#url" do
-      let(:file_class) { FileX = Class.new }
+      let(:file_class) { Class.new }
       let(:file) { file_class.new }
 
       before do

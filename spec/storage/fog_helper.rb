@@ -283,7 +283,7 @@ end
 
     describe '#delete_dir' do
       it "should do nothing" do
-        expect(running{ @storage.delete_dir!('foobar') }).not_to raise_error
+        expect { @storage.delete_dir!('foobar') }.not_to raise_error
       end
     end
 
@@ -457,7 +457,7 @@ end
               let(:fog_public) { false }
 
               it "is not accessible" do
-                expect(running{ URI.open(@fog_file.public_url) }).to raise_error OpenURI::HTTPError
+                expect { URI.open(@fog_file.public_url) }.to raise_error OpenURI::HTTPError
               end
             end
           end

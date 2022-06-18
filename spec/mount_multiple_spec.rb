@@ -973,7 +973,7 @@ describe CarrierWave::Mount do
     end
 
     context "when a cached image fails an integrity check" do
-      it { expect(running { instance.images = [test_file_stub] }).to raise_error(CarrierWave::IntegrityError) }
+      it { expect { instance.images = [test_file_stub] }.to raise_error(CarrierWave::IntegrityError) }
     end
 
     context "when a downloaded image fails an integity check" do
@@ -981,7 +981,7 @@ describe CarrierWave::Mount do
         stub_request(:get, "http://www.example.com/#{test_file_name}").to_return(body: test_file_stub)
       end
 
-      it { expect(running {instance.remote_images_urls = ["http://www.example.com/#{test_file_name}"]}).to raise_error(CarrierWave::IntegrityError) }
+      it { expect {instance.remote_images_urls = ["http://www.example.com/#{test_file_name}"]}.to raise_error(CarrierWave::IntegrityError) }
     end
   end
 
@@ -1005,7 +1005,7 @@ describe CarrierWave::Mount do
     end
 
     context "when a cached image fails an integrity check" do
-      it { expect(running { instance.images = [test_file_stub] }).to raise_error(CarrierWave::ProcessingError) }
+      it { expect { instance.images = [test_file_stub] }.to raise_error(CarrierWave::ProcessingError) }
     end
 
     context "when a downloaded image fails an integity check" do
@@ -1013,7 +1013,7 @@ describe CarrierWave::Mount do
         stub_request(:get, "http://www.example.com/#{test_file_name}").to_return(body: test_file_stub)
       end
 
-      it { expect(running {instance.remote_images_urls = ["http://www.example.com/#{test_file_name}"]}).to raise_error(CarrierWave::ProcessingError) }
+      it { expect {instance.remote_images_urls = ["http://www.example.com/#{test_file_name}"]}.to raise_error(CarrierWave::ProcessingError) }
     end
   end
 
@@ -1036,7 +1036,7 @@ describe CarrierWave::Mount do
     end
 
     context "when the image fail to be processed" do
-      it { expect(running {instance.remote_images_urls = ["http://www.example.com/#{test_file_name}"]}).to raise_error(CarrierWave::DownloadError) }
+      it { expect {instance.remote_images_urls = ["http://www.example.com/#{test_file_name}"]}.to raise_error(CarrierWave::DownloadError) }
     end
   end
 

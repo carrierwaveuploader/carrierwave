@@ -83,9 +83,9 @@ describe CarrierWave::Uploader do
         allow(uploader).to receive(:content_type_whitelist).and_return(['image/gif'])
 
         expect(ActiveSupport::Deprecation).to receive(:warn).with('#content_type_whitelist is deprecated, use #content_type_allowlist instead.')
-        expect(running {
+        expect {
           uploader.cache!(bork_file)
-        }).to raise_error(CarrierWave::IntegrityError)
+        }.to raise_error(CarrierWave::IntegrityError)
       end
 
       it "looks for content_type_allowlist first for I18n translation" do
@@ -97,9 +97,9 @@ describe CarrierWave::Uploader do
             :content_type_allowlist_error => "Het is niet toegestaan om %{content_type} bestanden te uploaden"
           }
         }) do
-          expect(running {
+          expect {
             uploader.cache!(bork_file)
-          }).to raise_error(CarrierWave::IntegrityError, 'Het is niet toegestaan om text/plain bestanden te uploaden')
+          }.to raise_error(CarrierWave::IntegrityError, 'Het is niet toegestaan om text/plain bestanden te uploaden')
         end
       end
     end
