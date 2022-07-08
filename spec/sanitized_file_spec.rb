@@ -264,6 +264,16 @@ describe CarrierWave::SanitizedFile do
       expect(sanitized_file.content_type).to eq 'text/plain'
     end
 
+    it "returns valid content type on JSON file (which is a text file in disguise)" do
+      file = File.open(file_path('bork.json'))
+
+      sanitized_file = CarrierWave::SanitizedFile.new(file)
+
+      expect { sanitized_file.content_type }.not_to raise_error
+
+      expect(sanitized_file.content_type).to eq 'application/json'
+    end
+
     it "returns missing content type with unknown extension" do
       file = File.open(file_path('bork.ABCDE'))
 
