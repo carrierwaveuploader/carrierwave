@@ -315,7 +315,7 @@ module CarrierWave
 
       if type.nil?
         type = Marcel::Magic.by_path(path).try(:type)
-        type = 'invalid/invalid' unless type.nil? || type.start_with?('text/')
+        type = 'invalid/invalid' unless type.nil? || type.start_with?('text/') || type.start_with?('application/json')
       end
 
       type
