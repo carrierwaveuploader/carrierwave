@@ -429,6 +429,14 @@ describe CarrierWave::ActiveRecord do
         expect(@event.image_changed?).to be_truthy
         expect(@event.changed_for_autosave?).to be_truthy
       end
+
+      it "should not update image when save with select" do
+        @event.image = stub_file('test.jpeg')
+        @event.save!
+        Event.select(:id).first.save!
+        @event.reload
+        expect(@event.image).to be_present
+      end
     end
 
     describe "image?" do
@@ -1263,6 +1271,14 @@ describe CarrierWave::ActiveRecord do
         @event.images = [stub_file("test.jpg")]
         expect(@event.images_changed?).to be_truthy
         expect(@event.changed_for_autosave?).to be_truthy
+      end
+
+      it "should not update image when save with select" do
+        @event.images = [stub_file('test.jpeg')]
+        @event.save!
+        Event.select(:id).first.save!
+        @event.reload
+        expect(@event.images).to be_present
       end
     end
 
