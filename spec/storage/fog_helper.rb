@@ -609,7 +609,8 @@ end
                                                    { "Content-Type"=>@fog_file.content_type, "x-amz-acl"=>"public-read", 'x-amz-server-side-encryption' => 'AES256' }).and_call_original
           elsif @provider == 'Google'
             expect(@storage.connection).to receive(:copy_object)
-                                             .with(anything, anything, anything, anything, { "Content-Type"=>@fog_file.content_type, destination_predefined_acl: "publicRead" }).and_call_original
+                                             .with(anything, anything, anything, anything,
+                                                   { content_type: @fog_file.content_type, destination_predefined_acl: "publicRead" }).and_call_original
           else
             expect(@storage.connection).to receive(:copy_object)
                                              .with(anything, anything, anything, anything, { "Content-Type"=>@fog_file.content_type }).and_call_original
@@ -626,7 +627,8 @@ end
                                              .with(anything, anything, anything, anything, { "Content-Type"=>@fog_file.content_type, "x-amz-acl"=>"public-read" }).and_call_original
           elsif @provider == 'Google'
             expect(@storage.connection).to receive(:copy_object)
-                                             .with(anything, anything, anything, anything, { "Content-Type"=>@fog_file.content_type, destination_predefined_acl: "publicRead" }).and_call_original
+                                             .with(anything, anything, anything, anything,
+                                                   { content_type: @fog_file.content_type, destination_predefined_acl: "publicRead" }).and_call_original
           else
             expect(@storage.connection).to receive(:copy_object)
                                              .with(anything, anything, anything, anything, { "Content-Type"=>@fog_file.content_type }).and_call_original
