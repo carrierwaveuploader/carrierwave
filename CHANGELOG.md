@@ -121,7 +121,7 @@ _No changes._
 
 ### Security
 * Fix Code Injection vulnerability in CarrierWave::RMagick (@mshibuya [eb9346df](https://github.com/carrierwaveuploader/carrierwave/commit/eb9346df598a758a5f8c4a338852982fd7f8f6b8), [GHSA-cf3w-g86h-35x4](https://github.com/carrierwaveuploader/carrierwave/security/advisories/GHSA-cf3w-g86h-35x4))
-* Fix SSRF vulnerability in the remote file download feature (@mshibuya [91714add](https://github.com/carrierwaveuploader/carrierwave/commit/91714adda998bc9e8decf5b1f5d260d808761304), [GHSA-fwcm-636p-68r5](https://github.com/carrierwaveuploader/carrierwave/security/advisories/GHSA-fwcm-636p-68r5))
+* [BREAKING CHANGE] Fix SSRF vulnerability in the remote file download feature (@mshibuya [91714add](https://github.com/carrierwaveuploader/carrierwave/commit/91714adda998bc9e8decf5b1f5d260d808761304), [GHSA-fwcm-636p-68r5](https://github.com/carrierwaveuploader/carrierwave/security/advisories/GHSA-fwcm-636p-68r5)). It adds a new `skip_ssrf_protection?` config which is false by default. It doesn't allow local requests to be made and breaks tests and requests to private networks ([#2531](https://github.com/carrierwaveuploader/carrierwave/issues/2531))
 
 ## 1.3.1 - 2018-12-29
 ### Fixed
