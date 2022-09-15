@@ -30,8 +30,12 @@ module CarrierWave
             response = OpenURI.open_uri(process_uri(url.to_s), headers)
           else
             request = nil
-            response = SsrfFilter.get(uri, headers: headers) do |req|
-              request = req
+            if ::SsrfFilter::VERSION.to_f < 1.1
+              response = SsrfFilter.get(uri, headers: headers) do |req|
+                request = req
+              end
+            else
+              response = SsrfFilter.get(uri, headers: headers, request_proc: ->(req) { request = req })
             end
             response.uri = request.uri
             response.value
