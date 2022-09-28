@@ -26,6 +26,23 @@ describe CarrierWave::Downloader::RemoteFile do
     end
   end
 
+  { 
+    '204' => Net::HTTPNoContent, 
+    '205' => Net::HTTPResetContent
+  }.each do |response_code, response_class|
+    context "with a #{response_class} instance" do
+      let!(:file) do
+        response_class.new('1.0', response_code, '').tap do |response|
+          response.reading_body(StringIO.new, true) {}
+        end
+      end
+
+      it 'raises CarrierWave::DownloadError' do
+        expect { subject }.to raise_error(CarrierWave::DownloadError, 'could not download file: No Content')
+      end
+    end
+  end
+
   context 'with OpenURI::Meta instance' do
     let(:file) do
       File.open(file_path("test.jpg")).tap { |f| OpenURI::Meta.init(f) }.tap do |file|
