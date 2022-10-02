@@ -80,7 +80,17 @@ module CarrierWave
                 next unless self.send(condition, new_file)
               end
             end
-            self.send(method, *args)
+
+            if args.is_a? Array
+              kwargs, args = args.partition { |arg| arg.is_a? Hash }
+            end
+
+            if kwargs.present?
+              kwargs = kwargs.reduce(:merge)
+              self.send(method, *args, **kwargs)
+            else
+              self.send(method, *args)
+            end
           end
         end
       end
