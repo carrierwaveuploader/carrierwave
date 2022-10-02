@@ -62,7 +62,7 @@ module CarrierWave
             hash.merge!(arg)
           end
 
-          condition_type = new_processors.keys.select { |key| [:if, :unless].include?(key) }[0]
+          condition_type = new_processors.keys.detect { |key| [:if, :unless].include?(key) }
           condition = new_processors.delete(:if) || new_processors.delete(:unless)
           new_processors.each do |processor, processor_args|
             self.processors += [[processor, processor_args, condition, condition_type]]
