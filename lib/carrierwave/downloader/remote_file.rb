@@ -8,7 +8,10 @@ module CarrierWave
         when String
           @file = StringIO.new(file)
         when Net::HTTPResponse
-          @file = StringIO.new(file.body)
+          body = file.body
+          raise CarrierWave::DownloadError, 'could not download file: No Content' if body.nil?
+
+          @file = StringIO.new(body)
           @content_type = file.content_type
           @headers = file
           @uri = file.uri
