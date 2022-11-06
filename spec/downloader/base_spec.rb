@@ -135,6 +135,16 @@ describe CarrierWave::Downloader::Base do
     end
   end
 
+  context 'when actually downloading a file' do
+    let(:uri) { 'https://raw.githubusercontent.com/carrierwaveuploader/carrierwave/master/spec/fixtures/test.jpg' }
+    before { WebMock.disable! }
+    after { WebMock.enable! }
+
+    it 'retrieves the body successfully' do
+      expect(subject.download(uri).file.read).to eq 'this is stuff'
+    end
+  end
+
   describe '#process_uri' do
     it "converts a URL with internationalized domain name to Punycode URI" do
       uri = "http://ドメイン名例.jp/#{CGI.escape(filename)}"
