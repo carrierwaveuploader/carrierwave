@@ -35,7 +35,9 @@ module CarrierWave
                 request = req
               end
             else
-              response = SsrfFilter.get(uri, headers: headers, request_proc: ->(req) { request = req })
+              response = SsrfFilter.get(uri, headers: headers, request_proc: ->(req) { request = req }) do |res|
+                res.body # ensure to read body
+              end
             end
             response.uri = request.uri
             response.value
