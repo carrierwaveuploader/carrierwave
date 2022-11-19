@@ -39,7 +39,12 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rspec-retry"
   s.add_development_dependency "webmock"
   s.add_development_dependency "fog-aws"
-  s.add_development_dependency "fog-google", ["~> 1.7", "!= 1.12.1"]
+  if 2.3 < RUBY_VERSION.to_f && RUBY_VERSION.to_f < 2.7
+    # See https://github.com/fog/fog-google/issues/535 for this restriction.
+    s.add_development_dependency "fog-google", "~> 1.13.0"
+  else
+    s.add_development_dependency "fog-google", ["~> 1.7", "!= 1.12.1"]
+  end
   s.add_development_dependency "fog-local"
   s.add_development_dependency "fog-rackspace"
   s.add_development_dependency "mini_magick", ">= 3.6.0"

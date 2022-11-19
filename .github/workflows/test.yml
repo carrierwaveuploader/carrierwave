@@ -14,10 +14,10 @@ jobs:
         include:
           - ruby: 2.2
             gemfile: gemfiles/rails-5-0.gemfile
-            experimental: false
+            experimental: true
           - ruby: 2.3
             gemfile: gemfiles/rails-5-1.gemfile
-            experimental: false
+            experimental: true
           - ruby: 2.4
             gemfile: gemfiles/rails-5-2.gemfile
             experimental: false
