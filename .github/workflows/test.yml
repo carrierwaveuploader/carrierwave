@@ -21,12 +21,6 @@ jobs:
           - ruby: '3.1'
             gemfile: gemfiles/rails-main.gemfile
             experimental: false
-          - ruby: ruby-head
-            gemfile: gemfiles/rails-7-0.gemfile
-            experimental: false
-          - ruby: jruby-head
-            gemfile: gemfiles/rails-6-1.gemfile
-            experimental: true
     runs-on: ubuntu-20.04
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
