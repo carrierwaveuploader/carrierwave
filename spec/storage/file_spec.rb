@@ -101,5 +101,18 @@ describe CarrierWave::Storage::File do
 
       expect(Dir.glob("#{cache_dir}/*").size).to eq(0)
     end
+
+    context "when a file which does not conform to the cache_id format exists" do
+      before do
+        FileUtils.touch File.expand_path("invalid", cache_dir)
+      end
+
+      it "should just ignore that" do
+        Timecop.freeze(today) { uploader_class.clean_cached_files!(0) }
+
+        expect(Dir.glob("#{cache_dir}/*").size).to eq(1)
+        expect(File).to exist("#{cache_dir}/invalid")
+      end
+    end
   end
 end
