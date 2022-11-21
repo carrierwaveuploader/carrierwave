@@ -46,6 +46,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
       - name: Run RSpec
         run: bundle exec rake spec || [ "$EXPERIMENTAL" == "true" ] && true
       - name: Run Cucumber
