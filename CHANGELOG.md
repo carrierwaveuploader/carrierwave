@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 2.2.3 - 2022-11-21
+### Fixed
+* Add workaround for 'undefined method closed?' error caused by ssrf_filter 1.1 (@mshibuya [c74579d](https://github.com/carrierwaveuploader/carrierwave/commit/c74579d382ad124193e80cc5af71824a23de57e6), [#2628](https://github.com/carrierwaveuploader/carrierwave/issues/2628))
+* Add workaround for the API change in ssrf_filter 1.1 (@BrianHawley [#2629](https://github.com/carrierwaveuploader/carrierwave/pull/2629), [#2625](https://github.com/carrierwaveuploader/carrierwave/issues/2625))
+
 ## 2.2.2 - 2021-05-28
 ### Fixed
 * Fix `no implicit conversion of CSV into String` error when parsing a CSV object (@pjmartorell [#2562](https://github.com/carrierwaveuploader/carrierwave/pull/2562), [#2559](https://github.com/carrierwaveuploader/carrierwave/issues/2559))
