@@ -40,4 +40,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "timecop"
   s.add_development_dependency "generator_spec", ">= 0.9.1"
   s.add_development_dependency "pry"
+  s.add_development_dependency "ssrf_filter", "< 1.1.0"
 end
