@@ -62,6 +62,14 @@ jobs:
         run: sudo apt-get install libvips-dev
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
+        if: ${{ matrix.ruby <= 2.6 }}
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+          bundler: 1.17.3
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        if: ${{ matrix.ruby > 2.6 }}
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true

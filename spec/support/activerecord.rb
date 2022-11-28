@@ -6,7 +6,7 @@ ActiveRecord::Base.establish_connection({ adapter: 'sqlite3', database: ':memory
 
 ActiveRecord::Migration.verbose = false
 
-if ActiveRecord.version < Gem::Version.new("5.2")
+if ActiveRecord.version < Gem::Version.new("5.2") && ActiveRecord.version >= Gem::Version.new("5.0")
   module ActiveRecord
     module Type
       class Json < ActiveModel::Type::Value
@@ -37,4 +37,8 @@ if ActiveRecord.version < Gem::Version.new("5.2")
   end
 
   ActiveRecord::Type.register(:json, ActiveRecord::Type::Json, override: false)
+end
+
+if ActiveRecord::VERSION::STRING >= '4.2' && ActiveRecord::VERSION::STRING < '5.0'
+    ActiveRecord::Base.raise_in_transactional_callbacks = true
 end
