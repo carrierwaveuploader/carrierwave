@@ -116,7 +116,11 @@ describe CarrierWave::Uploader::Base do
     end
 
     it "adds a convenient in-class setter" do
-      expect(uploader_class.foo_bar).to eq('foo')
+      uploader_class.foo_bar('bar')
+      expect(uploader_class.foo_bar).to eq('bar')
+
+      uploader_class.foo_bar(false)
+      expect(uploader_class.foo_bar).to eq(false)
     end
 
     ['foo', :foo, 45, ['foo', :bar]].each do |val|

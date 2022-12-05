@@ -124,7 +124,7 @@ module CarrierWave
             @#{name} = nil
 
             def self.#{name}(value=nil)
-              @#{name} = value if value
+              @#{name} = value unless value.nil?
               return @#{name} if self.object_id == #{self.object_id} || defined?(@#{name})
               name = superclass.#{name}
               return nil if name.nil? && !instance_variable_defined?(:@#{name})
