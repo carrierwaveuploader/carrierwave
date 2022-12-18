@@ -128,14 +128,20 @@ module CarrierWave
     #
     # [String] contents of the file
     #
-    def read
+    def read(*args)
       if @content
-        @content
+        if args.empty?
+          @content
+        else
+          length, outbuf = args
+          raise ArgumentError, "outbuf argument not supported since the content is already loaded" if outbuf
+          @content[0, length]
+        end
       elsif is_path?
-        File.open(@file, "rb") {|file| file.read}
+        File.open(@file, "rb") {|file| file.read(*args)}
       else
         @file.try(:rewind)
-        @content = @file.read
+        @content = @file.read(*args)
         @file.try(:close) unless @file.class.ancestors.include?(::StringIO) || @file.try(:closed?)
         @content
       end
