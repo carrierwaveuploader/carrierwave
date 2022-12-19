@@ -119,6 +119,10 @@ describe CarrierWave::Uploader::Base do
       expect(uploader_class.foo_bar).to eq('foo')
     end
 
+    it "adds a convenient in-class setter which can assign 'false' as a value" do
+      expect { uploader_class.foo_bar(false) }.to change { uploader_class.foo_bar }.from('foo').to(false)
+    end
+
     ['foo', :foo, 45, ['foo', :bar]].each do |val|
       it "'s inheritable for a #{val.class}" do
         uploader_class.singleton_class.send :undef_method, :foo_bar
