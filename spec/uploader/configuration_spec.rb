@@ -116,11 +116,11 @@ describe CarrierWave::Uploader::Base do
     end
 
     it "adds a convenient in-class setter" do
-      uploader_class.foo_bar('bar')
-      expect(uploader_class.foo_bar).to eq('bar')
+      expect(uploader_class.foo_bar).to eq('foo')
+    end
 
-      uploader_class.foo_bar(false)
-      expect(uploader_class.foo_bar).to eq(false)
+    it "adds a convenient in-class setter which can assign 'false' as a value" do
+      expect { uploader_class.foo_bar(false) }.to change { uploader_class.foo_bar }.from('foo').to(false)
     end
 
     ['foo', :foo, 45, ['foo', :bar]].each do |val|
