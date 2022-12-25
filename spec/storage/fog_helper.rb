@@ -103,6 +103,10 @@ end
           expect(@directory.files.head(store_path)).to eq(nil)
         end
 
+        it "should be readable" do
+          expect(@fog_file.read).to eq "this is stuff"
+        end
+
         context "when the file has been deleted" do
           before { @fog_file.delete }
 
@@ -427,6 +431,23 @@ end
         end
       end
 
+      describe "#read" do
+        it "returns the content" do
+          expect(@fog_file.read).to eq 'this is stuff'
+        end
+
+        context "when the local file doesn't exist" do
+          let(:original_path) { @fog_file.send(:file).body.path }
+          let(:temporary_path) { File.join(File.dirname(original_path), 'test.bak') }
+          before { File.rename original_path, temporary_path }
+          after { File.rename temporary_path, original_path }
+
+          it "returns the remote content" do
+            expect(@fog_file.read).to eq 'this is stuff'
+          end
+        end
+      end
+
       describe "#public_url" do
         unless fog_credentials[:provider] == 'Local'
           it "should exist" do
@@ -590,6 +611,18 @@ end
           expect(@fog_file.send(:file)).to receive(:copy).with(anything, 'uploads/new_path.jpg', anything).and_call_original
 
           @fog_file.copy_to('uploads/new_path.jpg')
+        end
+      end
+
+      describe '#to_file' do
+        subject(:localfile) { @fog_file.to_file }
+
+        it "returns a local file" do
+          is_expected.to be_a(File)
+        end
+
+        it "returns a readable" do
+          expect(subject.read).to eq 'this is stuff'
         end
       end
 

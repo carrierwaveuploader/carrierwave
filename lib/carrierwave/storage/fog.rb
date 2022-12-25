@@ -290,8 +290,8 @@ module CarrierWave
           return if file_body.nil?
           return file_body unless file_body.is_a?(::File)
 
-          # Fog::Storage::XXX::File#body could return the source file which was upoloaded to the remote server.
-          read_source_file(file_body) if ::File.exist?(file_body.path)
+          # Fog::Storage::XXX::File#body could return the source file which was uploaded to the remote server.
+          return read_source_file if ::File.exist?(file_body.path)
 
           # If the source file doesn't exist, the remote content is read
           @file = nil # rubocop:disable Gitlab/ModuleWithInstanceVariables
@@ -444,6 +444,25 @@ module CarrierWave
           CarrierWave::Storage::Fog::File.new(@uploader, @base, new_path)
         end
 
+        ##
+        # Return the local file
+        #
+        # === Returns
+        #
+        # [File] The local file as Ruby's File class
+        #   or
+        # [NilClass] When there's no file, or the file is remotely stored
+        #
+        def to_file
+          return nil unless file.body.is_a? ::File
+
+          if file.body.closed?
+            ::File.open(file.body.path)  # Reopen if it's already closed
+          else
+            file.body
+          end
+        end
+
       private
 
         ##
@@ -505,14 +524,14 @@ module CarrierWave
           @uploader.fog_credentials[:provider].to_s
         end
 
-        def read_source_file(file_body)
-          return unless ::File.exist?(file_body.path)
+        def read_source_file
+          source_file = to_file
+          return unless source_file
 
           begin
-            file_body = ::File.open(file_body.path) if file_body.closed? # Reopen if it's already closed
-            file_body.read
+            source_file.read
           ensure
-            file_body.close
+            source_file.close
           end
         end
 
