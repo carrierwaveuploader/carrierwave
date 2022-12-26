@@ -78,18 +78,18 @@ module CarrierWave
 
         with_callbacks(:process, new_file) do
           self.class.processors.each do |method, args, condition, condition_type|
-            if(condition && condition_type == :if)
+            if condition && condition_type == :if
               if condition.respond_to?(:call)
                 next unless condition.call(self, :args => args, :method => method, :file => new_file)
               else
                 next unless self.send(condition, new_file)
               end
-            elsif(condition && condition_type == :unless)
-             if condition.respond_to?(:call)
-               next if condition.call(self, :args => args, :method => method, :file => new_file)
-             else
-               next if self.send(condition, new_file)
-             end
+            elsif condition && condition_type == :unless
+              if condition.respond_to?(:call)
+                next if condition.call(self, :args => args, :method => method, :file => new_file)
+              elsif self.send(condition, new_file)
+                next
+              end
             end
 
             if args.is_a? Array

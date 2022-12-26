@@ -207,9 +207,9 @@ describe CarrierWave::RMagick, :rmagick => true do
       expect_any_instance_of(::Magick::Image::Info).to receive(:size=).with("200x200")
 
       instance.manipulate! :read => {
-          :density => 10,
+        :density => 10,
           :size => "200x200"
-        }
+      }
     end
 
     it 'shows deprecation but still accepts strings enclosed with double quotes' do
@@ -228,18 +228,18 @@ describe CarrierWave::RMagick, :rmagick => true do
       expect_any_instance_of(Kernel).not_to receive(:puts)
       expect do
         instance.manipulate! :read => {
-            :density => "1 }; raise; {"
+          :density => "1 }; raise; {"
         }
       end.to raise_error ArgumentError, /invalid density geometry/
     end
 
     it 'does not allow invocation of non-public methods' do
-      module Kernel
+      Kernel.module_eval do
         private def foo=(value); raise; end
       end
       expect do
         instance.manipulate! :read => {
-            :foo => "1"
+          :foo => "1"
         }
       end.to raise_error NoMethodError, /private method `foo=' called/
     end
@@ -286,8 +286,8 @@ describe CarrierWave::RMagick, :rmagick => true do
     end
 
     context "with a remotely stored file" do
-      class RemoteFile < CarrierWave::SanitizedFile
-        def initialize local_path
+      class RemoteFile < CarrierWave::SanitizedFile # rubocop:disable Lint/ConstantDefinitionInBlock
+        def initialize(local_path)
           @local_path = local_path
         end
 

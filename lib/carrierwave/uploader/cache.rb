@@ -24,7 +24,8 @@ module CarrierWave
   # [String] a cache id in the format TIMEINT-PID-COUNTER-RND
   #
   def self.generate_cache_id
-    [Time.now.utc.to_i,
+    [
+      Time.now.utc.to_i,
       SecureRandom.random_number(1_000_000_000_000_000),
       '%04d' % (CarrierWave::CacheCounter.increment % 10_000),
       '%04d' % SecureRandom.random_number(10_000)

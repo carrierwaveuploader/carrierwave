@@ -63,7 +63,7 @@ describe CarrierWave::Storage::File do
 
     before do
       [five_days_ago, three_days_ago, yesterday, (today - 1.minute)].each do |created_date|
-        Timecop.freeze (created_date) do
+        Timecop.freeze(created_date) do
           FileUtils.mkdir_p File.expand_path(CarrierWave.generate_cache_id, cache_dir)
         end
       end

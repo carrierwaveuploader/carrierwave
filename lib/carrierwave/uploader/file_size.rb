@@ -24,7 +24,7 @@ module CarrierWave
       #
       def size_range; end
 
-      private
+    private
 
       def check_size!(new_file)
         size = new_file.size

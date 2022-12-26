@@ -375,7 +375,7 @@ describe CarrierWave::Uploader do
           expect(@uploader.thumb).to be_present
           expect(@uploader.preview).to be_present
         end
-         
+
         it "should not process conditional versions if the condition method returns false" do
           @uploader_class.version(:preview).version_options[:if] = :false?
           expect(@uploader).to receive(:false?).at_least(:once).and_return(false)
@@ -383,7 +383,7 @@ describe CarrierWave::Uploader do
           expect(@uploader.thumb).to be_present
           expect(@uploader.preview).to be_blank
         end
-         
+
         it "should process conditional version if the condition block returns true" do
           @uploader_class.version(:preview).version_options[:if] = lambda{|record, args| record.true?(args[:file])}
           expect(@uploader).to receive(:true?).at_least(:once).and_return(true)
@@ -400,7 +400,7 @@ describe CarrierWave::Uploader do
           expect(@uploader.preview).to be_blank
         end
       end
-         
+
       context "when there is an 'unless' option" do
         it "should not process conditional versions if the condition method returns true" do
           @uploader_class.version(:preview).version_options[:unless] = :true?
@@ -511,13 +511,13 @@ describe CarrierWave::Uploader do
           @uploader.store!(@file)
 
           expect(@uploader.mini.path).to be_nil
-         
+
           @uploader.recreate_versions!(:mini)
-         
+
           expect(@uploader.mini.path).to be_nil
         end
       end
-         
+
       context "when there is an 'unless' option" do
         it "should not create version if proc returns true" do
           @uploader_class.version(:mini, :unless => Proc.new { |*args| true } )
@@ -662,7 +662,7 @@ describe CarrierWave::Uploader do
           expect(@uploader.preview).to be_blank
         end
       end
-         
+
       context "when there is an 'unless' option" do
         it "should not process conditional versions if the condition method returns true" do
           @uploader_class.version(:preview).version_options[:unless] = :true?

@@ -56,7 +56,7 @@ module CarrierWave
         tempfile = Tempfile.new(filename)
         FileUtils.copy_file(file_path(filename), tempfile.path)
         allow(tempfile).to receive_messages(:original_filename => fake_name || filename,
-                      :content_type => mime_type)
+                                            :content_type => mime_type)
         tempfile
       end
 
@@ -66,15 +66,15 @@ module CarrierWave
         file = IO.read( file_path( filename ) ) if filename
         stringio = StringIO.new(file)
         allow(stringio).to receive_messages(:local_path => "",
-                      :original_filename => filename || fake_name,
-                      :content_type => mime_type)
+                                            :original_filename => filename || fake_name,
+                                            :content_type => mime_type)
         stringio
       end
 
       def stub_file(filename, mime_type=nil, fake_name=nil)
         f = File.open(file_path(filename))
         allow(f).to receive(:content_type) { mime_type } if mime_type
-        return f
+        f
       end
     end
 
@@ -128,7 +128,7 @@ module CarrierWave
           Resolv.getaddresses(@uri.hostname).any? do |address|
             candidate = @uri.dup
             candidate.hostname = address
-            target_uri === WebMock::Util::URI.normalize_uri(candidate)
+            target_uri == WebMock::Util::URI.normalize_uri(candidate)
           end
         end
 

@@ -22,7 +22,7 @@ describe CarrierWave::Downloader::Base do
     end
 
     it "sets the filename to the file's decoded sanitized filename" do
-      expect(remote_file.original_filename).to eq("#{filename}")
+      expect(remote_file.original_filename).to eq(filename)
     end
   end
 

@@ -23,7 +23,7 @@ module CarrierWave
         if file.respond_to?(:path)
           path = encode_path(file.path.sub(File.expand_path(root), ''))
 
-          if host = asset_host
+          if (host = asset_host)
             if host.respond_to? :call
               "#{host.call(file)}#{path}"
             else

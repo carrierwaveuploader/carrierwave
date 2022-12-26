@@ -1,7 +1,6 @@
 require 'spec_helper'
 require 'support/activerecord'
 
-
 def create_table(name)
   ActiveRecord::Base.connection.create_table(name, force: true) do |t|
     t.column :image, :string
@@ -246,7 +245,6 @@ describe CarrierWave::ActiveRecord do
         end
       end
 
-
       context 'when validating allowlist integrity' do
         before do
           @uploader.class_eval do
@@ -267,7 +265,7 @@ describe CarrierWave::ActiveRecord do
             @event.image = stub_file('test.jpg')
             expect(@event).to_not be_valid
             @event.valid?
-            expect(@event.errors[:image]).to eq (['Het opladen van "jpg" bestanden is niet toe gestaan. Geaccepteerde types: txt'])
+            expect(@event.errors[:image]).to eq(['Het opladen van "jpg" bestanden is niet toe gestaan. Geaccepteerde types: txt'])
           end
         end
       end
@@ -297,7 +295,6 @@ describe CarrierWave::ActiveRecord do
           end
         end
       end
-
 
       context 'when validating processing' do
         before do
@@ -509,7 +506,7 @@ describe CarrierWave::ActiveRecord do
         stub_request(:get, "http://www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
       end
 
-      # FIXME ideally image_changed? and remote_image_url_changed? would return true
+      # FIXME: ideally image_changed? and remote_image_url_changed? would return true
       it "should mark image as changed when setting remote_image_url" do
         expect(@event.image_changed?).to be_falsey
         @event.remote_image_url = 'http://www.example.com/test.jpg'
@@ -522,7 +519,7 @@ describe CarrierWave::ActiveRecord do
       context 'when validating download' do
         before do
           @uploader.class_eval do
-            def download! file, headers = {}
+            def download!(file, headers = {})
               raise CarrierWave::DownloadError
             end
           end
@@ -1110,7 +1107,7 @@ describe CarrierWave::ActiveRecord do
             @event.images = [stub_file('test.jpg')]
             expect(@event).to_not be_valid
             @event.valid?
-            expect(@event.errors[:images]).to eq (['Het opladen van "jpg" bestanden is niet toe gestaan. Geaccepteerde types: txt'])
+            expect(@event.errors[:images]).to eq(['Het opladen van "jpg" bestanden is niet toe gestaan. Geaccepteerde types: txt'])
           end
         end
       end
@@ -1140,7 +1137,6 @@ describe CarrierWave::ActiveRecord do
           end
         end
       end
-
 
       context 'when validating processing' do
         before do
@@ -1321,7 +1317,7 @@ describe CarrierWave::ActiveRecord do
         stub_request(:get, "http://www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
       end
 
-      # FIXME ideally images_changed? and remote_images_urls_changed? would return true
+      # FIXME: ideally images_changed? and remote_images_urls_changed? would return true
       it "should mark images as changed when setting remote_images_urls" do
         expect(@event.images_changed?).to be_falsey
         @event.remote_images_urls = ['http://www.example.com/test.jpg']
@@ -1334,7 +1330,7 @@ describe CarrierWave::ActiveRecord do
       context 'when validating download' do
         before do
           @uploader.class_eval do
-            def download! file, headers = {}
+            def download!(file, headers = {})
               raise CarrierWave::DownloadError
             end
           end

@@ -62,10 +62,12 @@ module CarrierWave
       begin
         require "rmagick"
       rescue LoadError
-        require "RMagick"
-      rescue LoadError => e
-        e.message << " (You may need to install the rmagick gem)"
-        raise e
+        begin
+          require "RMagick"
+        rescue LoadError => e
+          e.message << " (You may need to install the rmagick gem)"
+          raise e
+        end
       end
 
       prepend Module.new {
@@ -228,7 +230,7 @@ module CarrierWave
       height = dimension_from height
       manipulate! do |img|
         img.resize_to_fit!(width, height)
-        new_img = ::Magick::Image.new(width, height) { |img| img.background_color = background == :transparent ? 'rgba(255,255,255,0)' : background.to_s }
+        new_img = ::Magick::Image.new(width, height) { |image| image.background_color = background == :transparent ? 'rgba(255,255,255,0)' : background.to_s }
         if background == :transparent
           filled = new_img.matte_floodfill(1, 1)
         else

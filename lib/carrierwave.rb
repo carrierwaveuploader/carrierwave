@@ -75,13 +75,14 @@ elsif defined?(Sinatra)
     CarrierWave.root = File.join(PADRINO_ROOT, "public")
   else
 
-    CarrierWave.root = if Sinatra::Application.respond_to?(:public_folder)
-      # Sinatra >= 1.3
-      Sinatra::Application.public_folder
-    else
-      # Sinatra < 1.3
-      Sinatra::Application.public
-    end
+    CarrierWave.root =
+      if Sinatra::Application.respond_to?(:public_folder)
+        # Sinatra >= 1.3
+        Sinatra::Application.public_folder
+      else
+        # Sinatra < 1.3
+        Sinatra::Application.public
+      end
   end
 end
 

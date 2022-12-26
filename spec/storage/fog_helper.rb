@@ -12,10 +12,10 @@ def fog_tests(fog_credentials)
         config.cache_storage = :fog
       end
 
-      eval <<-RUBY
-class FogSpec#{fog_credentials[:provider]}Uploader < CarrierWave::Uploader::Base
-storage :fog
-end
+      eval <<~RUBY
+        class FogSpec#{fog_credentials[:provider]}Uploader < CarrierWave::Uploader::Base
+          storage :fog
+        end
       RUBY
 
       @provider = fog_credentials[:provider]
@@ -82,7 +82,6 @@ end
         it "should have an extension" do
           expect(@fog_file.extension).to eq("jpg")
         end
-
 
         context "without extension" do
 
@@ -206,8 +205,11 @@ end
     describe "with a CarrierWave::Storage::Fog::File" do
       let(:file) do
         CarrierWave::Storage::Fog::File.new(@uploader, @storage, 'test.jpg').
-          tap{|file| file.store(CarrierWave::SanitizedFile.new(
-            :tempfile => StringIO.new('this is stuff'), :content_type => 'image/jpeg')) }
+          tap{|file|
+          file.store(CarrierWave::SanitizedFile.new(
+                       :tempfile => StringIO.new('this is stuff'), :content_type => 'image/jpeg'
+                     ))
+        }
       end
 
       it_should_behave_like "#{fog_credentials[:provider]} storage accepting files"
@@ -376,9 +378,10 @@ end
         if ['AWS', 'Rackspace', 'Google', 'OpenStack', 'AzureRM'].include?(@provider)
           it "should have an custom authenticated_url" do
             timestamp = ::Fog::Time.now + 999
-            if @provider == "AWS"
+            case @provider
+            when "AWS"
               expect(@fog_file.authenticated_url({expire_at: timestamp })).to include("Expires=999&")
-            elsif @provider == "Google"
+            when "Google"
               expect(@fog_file.authenticated_url({expire_at: timestamp })).to include("Expires=#{timestamp.to_i}")
             end
           end
@@ -396,7 +399,7 @@ end
               Timecop.freeze(Time.at(1477932000)) do |now|
                 expiration = 7 * 24 * 60 * 60 # 1 week
                 allow(@uploader).to receive(:fog_authenticated_url_expiration).and_return(expiration)
-                expect(@fog_file.authenticated_url).to include("X-Amz-Expires=#{expiration.to_s}")
+                expect(@fog_file.authenticated_url).to include("X-Amz-Expires=#{expiration}")
               end
             end
 
@@ -404,7 +407,7 @@ end
               Timecop.freeze(Time.at(1477932000)) do |now|
                 expiration = 1.week
                 allow(@uploader).to receive(:fog_authenticated_url_expiration).and_return(expiration)
-                expect(@fog_file.authenticated_url).to include("X-Amz-Expires=#{expiration.to_s}")
+                expect(@fog_file.authenticated_url).to include("X-Amz-Expires=#{expiration}")
               end
             end
           end
@@ -636,17 +639,18 @@ end
         end
 
         it 'includes custom attributes' do
-          if @provider == 'AWS'
+          case @provider
+          when 'AWS'
             expect(@storage.connection).to receive(:copy_object)
-                                             .with(anything, anything, anything, anything,
-                                                   { "Content-Type"=>@fog_file.content_type, "x-amz-acl"=>"public-read", 'x-amz-server-side-encryption' => 'AES256' }).and_call_original
-          elsif @provider == 'Google'
+              .with(anything, anything, anything, anything,
+                    { "Content-Type"=>@fog_file.content_type, "x-amz-acl"=>"public-read", 'x-amz-server-side-encryption' => 'AES256' }).and_call_original
+          when 'Google'
             expect(@storage.connection).to receive(:copy_object)
-                                             .with(anything, anything, anything, anything,
-                                                   { content_type: @fog_file.content_type, destination_predefined_acl: "publicRead" }).and_call_original
+              .with(anything, anything, anything, anything,
+                    { content_type: @fog_file.content_type, destination_predefined_acl: "publicRead" }).and_call_original
           else
             expect(@storage.connection).to receive(:copy_object)
-                                             .with(anything, anything, anything, anything, { "Content-Type"=>@fog_file.content_type }).and_call_original
+              .with(anything, anything, anything, anything, { "Content-Type"=>@fog_file.content_type }).and_call_original
           end
 
           @fog_file.copy_to('uploads/new_path.jpg')
@@ -655,16 +659,17 @@ end
 
       describe '#acl_header' do
         it 'includes acl_header when necessary' do
-          if @provider == 'AWS'
+          case @provider
+          when 'AWS'
             expect(@storage.connection).to receive(:copy_object)
-                                             .with(anything, anything, anything, anything, { "Content-Type"=>@fog_file.content_type, "x-amz-acl"=>"public-read" }).and_call_original
-          elsif @provider == 'Google'
+              .with(anything, anything, anything, anything, { "Content-Type"=>@fog_file.content_type, "x-amz-acl"=>"public-read" }).and_call_original
+          when 'Google'
             expect(@storage.connection).to receive(:copy_object)
-                                             .with(anything, anything, anything, anything,
-                                                   { content_type: @fog_file.content_type, destination_predefined_acl: "publicRead" }).and_call_original
+              .with(anything, anything, anything, anything,
+                    { content_type: @fog_file.content_type, destination_predefined_acl: "publicRead" }).and_call_original
           else
             expect(@storage.connection).to receive(:copy_object)
-                                             .with(anything, anything, anything, anything, { "Content-Type"=>@fog_file.content_type }).and_call_original
+              .with(anything, anything, anything, anything, { "Content-Type"=>@fog_file.content_type }).and_call_original
           end
 
           @fog_file.copy_to('uploads/new_path.jpg')

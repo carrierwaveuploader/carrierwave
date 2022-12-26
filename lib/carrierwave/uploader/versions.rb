@@ -172,20 +172,19 @@ module CarrierWave
 
         return false unless self.class.versions.has_key?(name)
 
-        condition = self.class.versions[name].version_options[:if]
         if_condition = self.class.versions[name].version_options[:if]
         unless_condition = self.class.versions[name].version_options[:unless]
 
-        if(if_condition)
-          if(if_condition.respond_to?(:call))
+        if if_condition
+          if if_condition.respond_to?(:call)
             if_condition.call(self, :version => name, :file => file)
           else
             send(if_condition, file)
           end
-        elsif(unless_condition)
-          if(unless_condition.respond_to?(:call))
+        elsif unless_condition
+          if unless_condition.respond_to?(:call)
             !unless_condition.call(self, :version => name, :file => file)
-           else
+          else
             !send(unless_condition, file)
           end
         else
@@ -273,7 +272,7 @@ module CarrierWave
       def source_versions_of(requested_names)
         versions.inject([]) do |sources, (name, uploader)|
           next sources unless requested_names.include?(name)
-          next sources unless source_name = uploader.class.version_options[:from_version]
+          next sources unless (source_name = uploader.class.version_options[:from_version])
 
           sources << [source_name, versions[source_name]]
         end.uniq

@@ -3,7 +3,7 @@ require 'generator_spec'
 require 'generators/uploader_generator'
 
 describe UploaderGenerator, :type => :generator do
-  destination(File.expand_path("../../tmp", __FILE__))
+  destination(File.expand_path('../tmp', __dir__))
 
   before { prepare_destination }
 

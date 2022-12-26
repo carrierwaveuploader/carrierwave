@@ -45,11 +45,11 @@ module CarrierWave
         def matches?(actual)
           @actual = actual
           # Satisfy expectation here. Return false or raise an error if it's not met.
-          (File.stat(@actual.path).mode & 0777) == @expected
+          (File.stat(@actual.path).mode & 0o777) == @expected
         end
 
         def failure_message
-          "expected #{@actual.current_path.inspect} to have permissions #{@expected.to_s(8)}, but they were #{(File.stat(@actual.path).mode & 0777).to_s(8)}"
+          "expected #{@actual.current_path.inspect} to have permissions #{@expected.to_s(8)}, but they were #{(File.stat(@actual.path).mode & 0o777).to_s(8)}"
         end
 
         def failure_message_when_negated
@@ -76,11 +76,11 @@ module CarrierWave
         def matches?(actual)
           @actual = actual
           # Satisfy expectation here. Return false or raise an error if it's not met.
-          (File.stat(File.dirname @actual.path).mode & 0777) == @expected
+          (File.stat(File.dirname(@actual.path)).mode & 0o777) == @expected
         end
 
         def failure_message
-          "expected #{File.dirname @actual.current_path.inspect} to have permissions #{@expected.to_s(8)}, but they were #{(File.stat(@actual.path).mode & 0777).to_s(8)}"
+          "expected #{File.dirname @actual.current_path.inspect} to have permissions #{@expected.to_s(8)}, but they were #{(File.stat(@actual.path).mode & 0o777).to_s(8)}"
         end
 
         def failure_message_when_negated
@@ -341,9 +341,11 @@ module CarrierWave
               begin
                 require 'rmagick'
               rescue LoadError
-                require 'RMagick'
-              rescue LoadError
-                puts "WARNING: Failed to require rmagick, image processing may fail!"
+                begin
+                  require 'RMagick'
+                rescue LoadError
+                  puts "WARNING: Failed to require rmagick, image processing may fail!"
+                end
               end
             end
             MagickWrapper.new(filename)
@@ -353,6 +355,7 @@ module CarrierWave
 
       class MagickWrapper # :nodoc:
         attr_reader :image
+
         def width
           image.columns
         end
@@ -372,6 +375,7 @@ module CarrierWave
 
       class MiniMagickWrapper # :nodoc:
         attr_reader :image
+
         def width
           image[:width]
         end

@@ -26,8 +26,8 @@ describe CarrierWave::Downloader::RemoteFile do
     end
   end
 
-  { 
-    '204' => Net::HTTPNoContent, 
+  {
+    '204' => Net::HTTPNoContent,
     '205' => Net::HTTPResetContent
   }.each do |response_code, response_class|
     context "with a #{response_class} instance" do
@@ -63,7 +63,6 @@ describe CarrierWave::Downloader::RemoteFile do
       expect(subject.uri.to_s).to eq 'http://example.com/test'
     end
   end
-
 
   describe '#original_filename' do
     let(:content_disposition){ nil }

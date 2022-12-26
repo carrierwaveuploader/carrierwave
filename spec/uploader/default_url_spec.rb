@@ -70,7 +70,7 @@ describe CarrierWave::Uploader do
       end
 
       it "sets the url" do
-        expect(uploader.url).to eq ("/uploads/tmp/#{cache_id}/#{file_name}")
+        expect(uploader.url).to eq("/uploads/tmp/#{cache_id}/#{file_name}")
       end
     end
   end

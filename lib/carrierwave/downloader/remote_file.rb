@@ -41,11 +41,7 @@ module CarrierWave
         filename
       end
 
-      def respond_to?(*args)
-        super || file.respond_to?(*args)
-      end
-
-      private
+    private
 
       def filename_from_header
         return nil unless headers['content-disposition']
@@ -63,7 +59,10 @@ module CarrierWave
       def method_missing(*args, &block)
         file.send(*args, &block)
       end
+
+      def respond_to_missing?(*args)
+        super || file.respond_to?(*args)
+      end
     end
   end
 end
-

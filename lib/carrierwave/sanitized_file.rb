@@ -39,7 +39,7 @@ module CarrierWave
     #
     def original_filename
       return @original_filename if @original_filename
-      if @file and @file.respond_to?(:original_filename)
+      if @file && @file.respond_to?(:original_filename)
         @file.original_filename
       elsif path
         File.basename(path)
@@ -109,7 +109,7 @@ module CarrierWave
     # [Boolean] whether the file is valid and has a non-zero size
     #
     def empty?
-      @file.nil? || self.size.nil? || (self.size.zero? && ! self.exists?)
+      @file.nil? || self.size.nil? || (self.size.zero? && !self.exists?)
     end
 
     ##
@@ -170,6 +170,7 @@ module CarrierWave
       end
       self
     end
+
     ##
     # Helper to move file to new path.
     #
@@ -300,10 +301,10 @@ module CarrierWave
       name = name.scrub
       name = name.tr("\\", "/") # work-around for IE
       name = File.basename(name)
-      name = name.gsub(sanitize_regexp,"_")
+      name = name.gsub(sanitize_regexp, "_")
       name = "_#{name}" if name =~ /\A\.+\z/
       name = "unnamed" if name.size.zero?
-      return name.mb_chars.to_s
+      name.mb_chars.to_s
     end
 
     def existing_content_type

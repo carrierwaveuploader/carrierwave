@@ -56,10 +56,11 @@ module CarrierWave
         :basename     => lambda{|u, f| u.filename.gsub(/#{File.extname(u.filename)}$/, "") },
         :extension    => lambda{|u, d| File.extname(u.filename).gsub(/^\.+/, "")},
         :class        => lambda{|u, f| u.model.class.name.underscore.pluralize}
-      }
+      }.freeze
 
       included do
         attr_accessor :filename
+
         class_attribute :mappings
         self.mappings ||= DEFAULT_MAPPINGS.dup
       end
@@ -92,7 +93,8 @@ module CarrierWave
         end
       end
 
-      private
+    private
+
       def interpolate_paperclip_path(path)
         mappings.each_pair.inject(path) do |agg, pair|
           agg.gsub(":#{pair[0]}") { pair[1].call(self, self.paperclip_style).to_s }

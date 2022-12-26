@@ -20,7 +20,6 @@ describe CarrierWave::Uploader do
 
     it { expect(uploader_class_1._before_callbacks[:cache]).to eq(default_before_callbacks) }
 
-
     it { expect(uploader_class_2._before_callbacks[:cache]).to eq(default_before_callbacks + [:before_cache_callback]) }
 
     it "doesn't inherit the uploader 2 callback" do

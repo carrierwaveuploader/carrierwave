@@ -78,7 +78,7 @@ module CarrierWave
         def storage(storage = nil)
           case storage
           when Symbol
-            if storage_engine = storage_engines[storage]
+            if (storage_engine = storage_engines[storage])
               self._storage = eval storage_engine
             else
               raise CarrierWave::UnknownStorageError, "Unknown storage: #{storage}"
@@ -180,8 +180,8 @@ module CarrierWave
         #
         def reset_config
           configure do |config|
-            config.permissions = 0644
-            config.directory_permissions = 0755
+            config.permissions = 0o644
+            config.directory_permissions = 0o755
             config.storage_engines = {
               :file => "CarrierWave::Storage::File",
               :fog  => "CarrierWave::Storage::Fog"

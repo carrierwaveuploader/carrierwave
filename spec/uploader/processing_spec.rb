@@ -59,7 +59,7 @@ describe CarrierWave::Uploader do
         expect(uploader).to receive(:fancy)
         uploader.process!("test.jpg")
       end
-       
+
       it "doesn't call the processor if the condition method returns false" do
         uploader_class.process :resize => [200, 300], :if => :false?
         uploader_class.process :fancy, :if => :false?
@@ -68,7 +68,7 @@ describe CarrierWave::Uploader do
         expect(uploader).not_to receive(:fancy)
         uploader.process!("test.jpg")
       end
-       
+
       it "calls the processor if the condition block returns true" do
         uploader_class.process :resize => [200, 300], :if => lambda{|record, args| record.true?(args[:file])}
         uploader_class.process :fancy, :if => :true?
@@ -87,7 +87,7 @@ describe CarrierWave::Uploader do
         uploader.process!("test.jpg")
       end
     end
-       
+
     context "when there is an 'unless' condition" do
       it "doesn't call the processor if the condition method returns true" do
         uploader_class.process :resize => [200, 300], :unless => :true?
@@ -128,7 +128,7 @@ describe CarrierWave::Uploader do
 
     context "when there are additional method key word arguments" do
       it "calls the processor if the condition method returns true" do
-        uploader_class.process :resize => [200, 300, combine_options: { quality: 70 }], :if => :true?
+        uploader_class.process :resize => [200, 300, {combine_options: { quality: 70 }}], :if => :true?
         expect(uploader).to receive(:true?).with("test.jpg").once.and_return(true)
         expect(uploader).to receive(:resize).with(200, 300, combine_options: { quality: 70 })
         uploader.process!("test.jpg")

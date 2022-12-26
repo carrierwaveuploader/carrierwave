@@ -267,18 +267,18 @@ module CarrierWave
       raise CarrierWave::ProcessingError, message
     end
 
-    private
+  private
 
-      def resolve_dimensions(*dimensions)
-        dimensions.map do |value|
-          next value unless value.instance_of?(Proc)
-          value.arity >= 1 ? value.call(self) : value.call
-        end
+    def resolve_dimensions(*dimensions)
+      dimensions.map do |value|
+        next value unless value.instance_of?(Proc)
+        value.arity >= 1 ? value.call(self) : value.call
       end
+    end
 
-      def vips_image
-        ::Vips::Image.new_from_buffer(read, "")
-      end
+    def vips_image
+      ::Vips::Image.new_from_buffer(read, "")
+    end
 
   end # Vips
 end # CarrierWave

@@ -2,10 +2,10 @@ module CarrierWave
 
   # this is an internal class, used by CarrierWave::Mount so that
   # we don't pollute the model with a lot of methods.
-  class Mounter #:nodoc:
+  class Mounter # :nodoc:
     attr_reader :column, :record, :remote_urls, :integrity_errors,
-      :processing_errors, :download_errors
-    attr_accessor :remove, :remote_request_headers
+                :processing_errors, :download_errors
+    attr_accessor :remove, :remote_request_headers, :uploader_options
 
     def initialize(record, column, options={})
       @record = record
@@ -46,7 +46,7 @@ module CarrierWave
       @uploaders = new_files.map do |new_file|
         handle_error do
           if new_file.is_a?(String)
-            if (uploader = old_uploaders.detect { |uploader| uploader.identifier == new_file })
+            if (uploader = old_uploaders.detect { |old_uploader| old_uploader.identifier == new_file })
               uploader.staged = true
               uploader
             else
@@ -76,13 +76,11 @@ module CarrierWave
       return if cache_names.blank?
       clear_unstaged
       cache_names.each do |cache_name|
-        begin
-          uploader = blank_uploader
-          uploader.retrieve_from_cache!(cache_name)
-          @uploaders << uploader
-        rescue CarrierWave::InvalidParameter
-          # ignore
-        end
+        uploader = blank_uploader
+        uploader.retrieve_from_cache!(cache_name)
+        @uploaders << uploader
+      rescue CarrierWave::InvalidParameter
+        # ignore
       end
     end
 
@@ -157,8 +155,6 @@ module CarrierWave
         uploader.remove! if uploader.remove_previously_stored_files_after_update && !after_paths.include?(uploader.path)
       end
     end
-
-    attr_accessor :uploader_options
 
   private
 

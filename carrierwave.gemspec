@@ -1,5 +1,4 @@
-# -*- encoding: utf-8 -*-
-lib = File.expand_path('../lib/', __FILE__)
+lib = File.expand_path('lib', __dir__)
 $:.unshift lib unless $:.include?(lib)
 
 require 'carrierwave/version'
@@ -14,7 +13,7 @@ Gem::Specification.new do |s|
   s.email = ["jonas.nicklas@gmail.com"]
   s.extra_rdoc_files = ["README.md"]
   s.files = Dir["{bin,lib}/**/*", "README.md"]
-  s.homepage = %q{https://github.com/carrierwaveuploader/carrierwave}
+  s.homepage = 'https://github.com/carrierwaveuploader/carrierwave'
   s.rdoc_options = ["--main"]
   s.require_paths = ["lib"]
   s.licenses = ["MIT"]
@@ -31,6 +30,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "cucumber", "~> 2.3"
   s.add_development_dependency "rspec", "~> 3.4"
   s.add_development_dependency "rspec-retry"
+  s.add_development_dependency "rubocop", "~> 1.28"
   s.add_development_dependency "webmock"
   s.add_development_dependency "fog-aws"
   s.add_development_dependency "fog-google", ["~> 1.7", "!= 1.12.1"]

@@ -389,7 +389,7 @@ module CarrierWave
       RUBY
     end
 
-    private
+  private
 
     def mount_base(column, uploader=nil, options={}, &block)
       include CarrierWave::Mount::Extension

@@ -5,7 +5,7 @@ describe CarrierWave::Uploader do
 
   let(:uploader) { MyCoolUploader.new }
 
-  before { class MyCoolUploader < CarrierWave::Uploader::Base; end }
+  before { class MyCoolUploader < CarrierWave::Uploader::Base; end } # rubocop:disable Lint/ConstantDefinitionInBlock
 
   after do
     FileUtils.rm_rf(public_path)

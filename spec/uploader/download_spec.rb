@@ -37,7 +37,7 @@ describe CarrierWave::Uploader::Download do
       end
 
       it "sets the filename to the file's sanitized filename" do
-        expect(uploader.filename).to eq("#{test_file_name}")
+        expect(uploader.filename).to eq(test_file_name)
       end
 
       it "moves it to the tmp dir" do
@@ -55,7 +55,7 @@ describe CarrierWave::Uploader::Download do
     end
 
     context "with directory permissions set" do
-      let(:permissions) { 0777 }
+      let(:permissions) { 0o777 }
 
       it "sets permissions" do
         uploader_class.permissions = permissions

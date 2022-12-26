@@ -58,6 +58,7 @@ module CarrierWave
         def validates_processing_of(*attr_names)
           validates_with ProcessingValidator, _merge_attributes(attr_names)
         end
+
         #
         ##
         # Makes the record invalid if the remote file couldn't be downloaded

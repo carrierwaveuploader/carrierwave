@@ -350,8 +350,8 @@ describe CarrierWave::Uploader do
 
     before do
       @file = File.open(file_path('test.jpg'))
-      @uploader_class.permissions = 0777
-      @uploader_class.directory_permissions = 0777
+      @uploader_class.permissions = 0o777
+      @uploader_class.directory_permissions = 0o777
       allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-1234-2255')
     end
 
@@ -380,7 +380,7 @@ describe CarrierWave::Uploader do
         @uploader.cache!(@file)
         @stored_path = ::File.expand_path(@uploader.store_path, @uploader.root)
 
-        expect(@uploader.file).to receive(:move_to).with(@stored_path, 0777, 0777)
+        expect(@uploader.file).to receive(:move_to).with(@stored_path, 0o777, 0o777)
         expect(@uploader.file).not_to receive(:copy_to)
 
         @uploader.store!
@@ -396,7 +396,7 @@ describe CarrierWave::Uploader do
         @uploader.cache!(@file)
         @stored_path = ::File.expand_path(@uploader.store_path, @uploader.root)
 
-        expect(@uploader.file).to receive(:copy_to).with(@stored_path, 0777, 0777)
+        expect(@uploader.file).to receive(:copy_to).with(@stored_path, 0o777, 0o777)
         expect(@uploader.file).not_to receive(:move_to)
 
         @uploader.store!

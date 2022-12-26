@@ -314,18 +314,18 @@ module CarrierWave
       raise CarrierWave::ProcessingError, message
     end
 
-    private
+  private
 
-      def resolve_dimensions(*dimensions)
-        dimensions.map do |value|
-          next value unless value.instance_of?(Proc)
-          value.arity >= 1 ? value.call(self) : value.call
-        end
+    def resolve_dimensions(*dimensions)
+      dimensions.map do |value|
+        next value unless value.instance_of?(Proc)
+        value.arity >= 1 ? value.call(self) : value.call
       end
+    end
 
-      def mini_magick_image
-        ::MiniMagick::Image.read(read)
-      end
+    def mini_magick_image
+      ::MiniMagick::Image.read(read)
+    end
 
   end # MiniMagick
 end # CarrierWave

@@ -5,13 +5,13 @@ and pull requests are very welcome. Before submitting a pull request, please mak
 
 First, make sure you have `imagemagick` and `ghostscript` installed. You may need `libmagic` as well.
 
-Then, you'll need to install bundler and the gem dependencies:
+Then, you'll need to install the gem dependencies:
 
-  `gem install bundler && bundle install`
+    bundle install
 
 You should now be able to run the local tests:
 
-  `bundle exec rake`
+    bundle exec rake
 
 You can also run the remote specs by creating a ~/.fog file:
 
@@ -29,4 +29,8 @@ You should now be able to run the remote tests:
 
     REMOTE=true bundle exec rake
 
-Please test with the latest Ruby 2.2.x version using RVM if possible.
+Please test with the latest Ruby version using RVM if possible.
+
+Don't forget to run the RuboCop check as well:
+
+    bundle exec rubocop

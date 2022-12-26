@@ -390,15 +390,15 @@ describe CarrierWave::SanitizedFile do
       end
 
       it "should set the right permissions" do
-        sanitized_file.move_to(file_path("gurr.png"), 0755)
+        sanitized_file.move_to(file_path("gurr.png"), 0o755)
 
-        expect(sanitized_file).to have_permissions(0755)
+        expect(sanitized_file).to have_permissions(0o755)
       end
 
       it "should set the right directory permissions" do
-        sanitized_file.move_to(file_path("new_dir","gurr.png"), nil, 0775)
+        sanitized_file.move_to(file_path("new_dir", "gurr.png"), nil, 0o775)
 
-        expect(sanitized_file).to have_directory_permissions(0775)
+        expect(sanitized_file).to have_directory_permissions(0o775)
       end
 
       it "should return itself" do
@@ -407,14 +407,14 @@ describe CarrierWave::SanitizedFile do
 
       it "should preserve the file's content type" do
         sanitized_file.content_type = 'application/octet-stream'
-        sanitized_file.move_to(file_path("new_dir","gurr.png"))
+        sanitized_file.move_to(file_path("new_dir", "gurr.png"))
 
         expect(sanitized_file.content_type).to eq("application/octet-stream")
       end
 
       it "should detect content type correctly using Marcel when content_type is not set" do
         sanitized_file.content_type = nil
-        sanitized_file.move_to(file_path("new_dir","gurr.png"))
+        sanitized_file.move_to(file_path("new_dir", "gurr.png"))
 
         expect(sanitized_file.content_type).to eq("invalid/invalid")
       end
@@ -428,9 +428,9 @@ describe CarrierWave::SanitizedFile do
           expect(upcased_sanitized_file).not_to be_empty
         end
 
-	after(:all) do
-	  FileUtils.rm_f(file_path("upcase.JPG"))
-	  FileUtils.rm_f(file_path("upcase.jpg"))
+        after do
+          FileUtils.rm_f(file_path("upcase.JPG"))
+          FileUtils.rm_f(file_path("upcase.jpg"))
         end
 
         it "should not raise an error when moved" do
@@ -491,15 +491,15 @@ describe CarrierWave::SanitizedFile do
       end
 
       it "should set the right permissions" do
-        new_file = sanitized_file.copy_to(file_path("gurr.png"), 0755)
+        new_file = sanitized_file.copy_to(file_path("gurr.png"), 0o755)
 
-        expect(new_file).to have_permissions(0755)
+        expect(new_file).to have_permissions(0o755)
       end
 
       it "should set the right directory permissions" do
-        new_file = sanitized_file.copy_to(file_path("new_dir", "gurr.png"), nil, 0755)
+        new_file = sanitized_file.copy_to(file_path("new_dir", "gurr.png"), nil, 0o755)
 
-        expect(new_file).to have_directory_permissions(0755)
+        expect(new_file).to have_directory_permissions(0o755)
       end
 
       it "should preserve the file's content type" do

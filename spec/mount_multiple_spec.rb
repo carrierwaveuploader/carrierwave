@@ -286,7 +286,7 @@ describe CarrierWave::Mount do
         it "preserves existing image of given identifier" do
           instance.images = [identifiers[0], old_image_stub]
           instance.store_images!
-          expect(instance.images.map(&:identifier)).to eq ['bork.txt','old.jpeg']
+          expect(instance.images.map(&:identifier)).to eq ['bork.txt', 'old.jpeg']
         end
 
         it "reorders existing image" do
@@ -1029,7 +1029,7 @@ describe CarrierWave::Mount do
 
     before do
       uploader.class_eval do
-        def download! uri, headers = {}
+        def download!(uri, headers = {})
           raise CarrierWave::DownloadError
         end
       end

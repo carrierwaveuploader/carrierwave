@@ -162,7 +162,7 @@ module CarrierWave
       end
 
       class File
-        DEFAULT_S3_REGION = 'us-east-1'
+        DEFAULT_S3_REGION = 'us-east-1'.freeze
 
         include CarrierWave::Utilities::Uri
         include CarrierWave::Utilities::FileName
@@ -204,21 +204,21 @@ module CarrierWave
             local_file = local_directory.files.new(:key => path)
             expire_at = options[:expire_at] || ::Fog::Time.now.since(@uploader.fog_authenticated_url_expiration.to_i)
             case @uploader.fog_credentials[:provider]
-              when 'AWS', 'Google'
-                # Older versions of fog-google do not support options as a parameter
-                if url_options_supported?(local_file)
-                  local_file.url(expire_at, options)
-                else
-                  warn "Options hash not supported in #{local_file.class}. You may need to upgrade your Fog provider."
-                  local_file.url(expire_at)
-                end
-              when 'Rackspace', 'OpenStack'
-                connection.get_object_https_url(@uploader.fog_directory, path, expire_at, options)
-              when 'Aliyun'
-                expire_at = expire_at - Time.now
-                local_file.url(expire_at)
+            when 'AWS', 'Google'
+              # Older versions of fog-google do not support options as a parameter
+              if url_options_supported?(local_file)
+                local_file.url(expire_at, options)
               else
+                warn "Options hash not supported in #{local_file.class}. You may need to upgrade your Fog provider."
                 local_file.url(expire_at)
+              end
+            when 'Rackspace', 'OpenStack'
+              connection.get_object_https_url(@uploader.fog_directory, path, expire_at, options)
+            when 'Aliyun'
+              expire_at -= Time.now
+              local_file.url(expire_at)
+            else
+              local_file.url(expire_at)
             end
           end
         end
@@ -294,7 +294,7 @@ module CarrierWave
           return read_source_file if ::File.exist?(file_body.path)
 
           # If the source file doesn't exist, the remote content is read
-          @file = nil # rubocop:disable Gitlab/ModuleWithInstanceVariables
+          @file = nil
           file.body
         end
 
@@ -332,7 +332,7 @@ module CarrierWave
             fog_file = new_file.to_file
             @content_type ||= new_file.content_type
             @file = directory.files.create({
-              :body         => fog_file ? fog_file : new_file.read,
+              :body         => fog_file || new_file.read,
               :content_type => @content_type,
               :key          => path,
               :public       => @uploader.fog_public
@@ -353,7 +353,7 @@ module CarrierWave
         #
         def public_url
           encoded_path = encode_path(path)
-          if host = @uploader.asset_host
+          if (host = @uploader.asset_host)
             if host.respond_to? :call
               "#{host.call(self)}/#{encoded_path}"
             else
@@ -424,7 +424,7 @@ module CarrierWave
         # [NilClass] no file name available
         #
         def filename(options = {})
-          return unless file_url = url(options)
+          return unless (file_url = url(options))
           CGI.unescape(file_url.split('?').first).gsub(/.*\/(.*?$)/, '\1')
         end
 
@@ -457,7 +457,7 @@ module CarrierWave
           return nil unless file.body.is_a? ::File
 
           if file.body.closed?
-            ::File.open(file.body.path)  # Reopen if it's already closed
+            ::File.open(file.body.path) # Reopen if it's already closed
           else
             file.body
           end
@@ -484,12 +484,10 @@ module CarrierWave
         # [Fog::#{provider}::Directory] containing directory
         #
         def directory
-          @directory ||= begin
-            connection.directories.new(
-              :key    => @uploader.fog_directory,
-              :public => @uploader.fog_public
-            )
-          end
+          @directory ||= connection.directories.new(
+            :key    => @uploader.fog_directory,
+            :public => @uploader.fog_public
+          )
         end
 
         ##
@@ -511,9 +509,10 @@ module CarrierWave
         end
 
         def acl_header
-          if fog_provider == 'AWS'
+          case fog_provider
+          when 'AWS'
             { 'x-amz-acl' => @uploader.fog_public ? 'public-read' : 'private' }
-          elsif fog_provider == "Google"
+          when "Google"
             @uploader.fog_public ? { destination_predefined_acl: "publicRead" } : {}
           else
             {}

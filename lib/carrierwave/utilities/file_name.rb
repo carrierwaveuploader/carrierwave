@@ -25,7 +25,7 @@ module CarrierWave
         split_extension(filename)[1] if filename
       end
 
-      private
+    private
 
       def split_extension(filename)
         # regular expressions to try for identifying extensions
@@ -40,7 +40,7 @@ module CarrierWave
           end
         end
 
-        return filename, "" # In case we weren't able to split the extension
+        [filename, ""] # In case we weren't able to split the extension
       end
     end # FileName
   end # Utilities

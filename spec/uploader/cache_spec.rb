@@ -6,7 +6,7 @@ describe CarrierWave::Uploader do
   let(:test_file_name) { "test.jpg"}
   let(:test_file_path) { file_path(test_file_name) }
   let(:test_file) { File.open(test_file_path) }
-  let(:permission) { 0777 }
+  let(:permission) { 0o777 }
   let(:cache_id) { '1369894322-345-1234-2255' }
 
   before { FileUtils.rm_rf(public_path) }
@@ -243,7 +243,6 @@ describe CarrierWave::Uploader do
     it "sets the url" do
       expect(uploader.url).to eq("/uploads/tmp/#{cache_id}/#{test_file_name}")
     end
-
 
     it "supports old format of cache_id (without counter) for backwards compartibility" do
       expect(uploader.url).to eq("/uploads/tmp/#{cache_id}/#{test_file_name}")

@@ -2,9 +2,9 @@
 # File: script/console
 irb = RUBY_PLATFORM =~ /(:?mswin|mingw)/ ? 'irb.bat' : 'irb'
 
-libs =  " -r irb/completion"
+libs = " -r irb/completion"
 # Perhaps use a console_lib to store any extra methods I may want available in the console
 # libs << " -r #{File.dirname(__FILE__) + '/../lib/console_lib/console_logger.rb'}"
-libs <<  " -r #{File.dirname(__FILE__) + '/../lib/carrierwave.rb'}"
+libs << " -r #{File.dirname(__FILE__) + '/../lib/carrierwave.rb'}"
 puts "Loading carrierwave gem"
 exec "#{irb} #{libs} --simple-prompt"
