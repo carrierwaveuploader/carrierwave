@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: [ '2.2', '2.3', '2.4', '2.5', '2.6' ]
+        ruby: [ '2.2', '2.3', '2.4', '2.5', '2.6', jruby-9.2 ]
         gemfile:
           - gemfiles/rails-4-0.gemfile
           - gemfiles/rails-4-1.gemfile
@@ -45,6 +45,10 @@ jobs:
             gemfile: gemfiles/rails-4-1.gemfile
           - ruby: '2.6'
             gemfile: gemfiles/rails-4-2.gemfile
+          - ruby: jruby-9.2
+            gemfile: gemfiles/rails-4-0.gemfile
+          - ruby: jruby-9.2
+            gemfile: gemfiles/rails-4-1.gemfile
     runs-on: ubuntu-20.04
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
@@ -62,7 +66,7 @@ jobs:
         run: sudo apt-get install libvips-dev
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
-        if: ${{ matrix.ruby <= 2.6 }}
+        if: ${{ matrix.ruby <= 2.6 || startsWith(matrix.ruby, 'jruby') }}
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
