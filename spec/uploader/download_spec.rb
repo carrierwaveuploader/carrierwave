@@ -9,7 +9,7 @@ describe CarrierWave::Uploader::Download do
   let(:test_file) { File.read(file_path(test_file_name)) }
   let(:test_file_name) { "test.jpg" }
   let(:unicode_named_file) { File.read(file_path(unicode_filename)) }
-  let(:unicode_URL) { URI.encode(base_url + "/#{unicode_filename}") }
+  let(:unicode_URL) { URI::DEFAULT_PARSER.escape(base_url + "/#{unicode_filename}") }
   let(:unicode_filename) { "юникод.jpg" }
   let(:authentication_headers) do
     {

@@ -1,0 +1,79 @@
+name: Test
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: RSpec and Cucumber
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby: [ '2.2', '2.3', '2.4', '2.5', '2.6' ]
+        gemfile:
+          - gemfiles/rails-4-0.gemfile
+          - gemfiles/rails-4-1.gemfile
+          - gemfiles/rails-4-2.gemfile
+          - gemfiles/rails-5-0.gemfile
+          - gemfiles/rails-5-1.gemfile
+          - gemfiles/rails-5-2.gemfile
+        experimental: [ false ]
+        include:
+          - ruby: '2.7'
+            gemfile: gemfiles/rails-6-1.gemfile
+            experimental: false
+          - ruby: '3.0'
+            gemfile: gemfiles/rails-6-1.gemfile
+            experimental: false
+          - ruby: '3.0'
+            gemfile: gemfiles/rails-7-0.gemfile
+            experimental: false
+          - ruby: '3.1'
+            gemfile: gemfiles/rails-main.gemfile
+            experimental: false
+        exclude:
+          - ruby: '2.4'
+            gemfile: gemfiles/rails-4-0.gemfile
+          - ruby: '2.4'
+            gemfile: gemfiles/rails-4-1.gemfile
+          - ruby: '2.5'
+            gemfile: gemfiles/rails-4-0.gemfile
+          - ruby: '2.5'
+            gemfile: gemfiles/rails-4-1.gemfile
+          - ruby: '2.6'
+            gemfile: gemfiles/rails-4-0.gemfile
+          - ruby: '2.6'
+            gemfile: gemfiles/rails-4-1.gemfile
+          - ruby: '2.6'
+            gemfile: gemfiles/rails-4-2.gemfile
+    runs-on: ubuntu-20.04
+    env:
+      BUNDLE_GEMFILE: ${{ matrix.gemfile }}
+      EXPERIMENTAL: ${{ matrix.experimental }}
+      JRUBY_OPTS: --debug
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup ImageMagick policy
+        run: sudo sh -c 'echo '\''<policymap><policy domain="coder" rights="read|write" pattern="PDF" /></policymap>'\'' > /etc/ImageMagick-6/policy.xml'
+      - name: Update package list
+        run: sudo apt update
+      - name: Install ghostscript to process PDF
+        run: sudo apt-get -y install ghostscript
+      - name: Install libvips-dev for Carrierwave::Vips
+        run: sudo apt-get install libvips-dev
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        if: ${{ matrix.ruby <= 2.6 }}
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+          bundler: 1.17.3
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        if: ${{ matrix.ruby > 2.6 }}
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Run RSpec
+        run: bundle exec rake spec || [ "$EXPERIMENTAL" == "true" ] && true
+      - name: Run Cucumber
+        run: bundle exec rake features || [ "$EXPERIMENTAL" == "true" ] && true

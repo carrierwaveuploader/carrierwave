@@ -1,6 +1,7 @@
 source "https://rubygems.org"
 
 gem "activemodel-serializers-xml"
-gem 'pg', '~> 0.21.0', platforms: :ruby
+gem 'sqlite3', platforms: :ruby
+gem "activerecord-jdbcsqlite3-adapter", platform: [:jruby, :truffleruby]
 
 gemspec
