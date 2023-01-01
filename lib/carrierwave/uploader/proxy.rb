@@ -30,7 +30,7 @@ module CarrierWave
       # [String] uniquely identifies a file
       #
       def identifier
-        @identifier || storage.try(:identifier)
+        @identifier || (file && storage.try(:identifier))
       end
 
       ##

@@ -29,6 +29,32 @@ describe CarrierWave::Uploader do
     end
   end
 
+  describe '#identifier' do
+    subject { uploader.identifier }
+
+    context "when nothing has been done" do
+      it { is_expected.to be_nil }
+    end
+
+    context "when a file is stored" do
+      before { uploader.store!(test_file) }
+
+      it { is_expected.to eq 'test.jpg' }
+    end
+
+    context "when #filename is set to always return a value" do
+      before do
+        uploader.class_eval do
+          def filename
+            'dummy'
+          end
+        end
+      end
+
+      it { is_expected.to be_nil }
+    end
+  end
+
   describe '#read' do
     subject { uploader.read }
 
