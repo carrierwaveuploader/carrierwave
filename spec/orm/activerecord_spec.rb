@@ -475,6 +475,13 @@ describe CarrierWave::ActiveRecord do
         @event.save!
       end
 
+      it "should remove the file immediately" do
+        file = @event.image.file
+        @event.remove_image!
+
+        expect(file).not_to exist
+      end
+
       it "should clear the serialization column" do
         @event.remove_image!
 
@@ -498,6 +505,16 @@ describe CarrierWave::ActiveRecord do
         expect(@event.remove_image).to be_nil
         @event.remove_image = "1"
         expect(@event.image_changed?).to be_truthy
+      end
+
+      it "resets remove_image? to false on save" do
+        @event.remove_image = true
+
+        expect {
+          @event.save!
+        }.to change {
+          @event.remove_image?
+        }.from(true).to(false)
       end
     end
 
@@ -1282,17 +1299,24 @@ describe CarrierWave::ActiveRecord do
       before do
         @event.images = [stub_file('test.jpeg')]
         @event.save!
-        @event.remove_images!
       end
 
       it "should clear the serialization column" do
+        @event.remove_images!
         expect(@event.attributes['images']).to be_blank
       end
 
-      it "should return to false after being saved" do
-        @event.save!
-        expect(@event.remove_images).to eq(false)
+      it "should return to false" do
+        @event.remove_images!
+        expect(@event.remove_images).to be_falsy
         expect(@event.remove_images?).to eq(false)
+      end
+
+      it "should remove the file immediately" do
+        file = @event.images.first.file
+        @event.remove_images!
+
+        expect(file).not_to exist
       end
     end
 
@@ -1309,6 +1333,16 @@ describe CarrierWave::ActiveRecord do
         expect(@event.images_changed?).to be_falsey
         @event.remove_images = "false"
         expect(@event.images_changed?).to be_falsey
+      end
+
+      it "resets remove_images? to false on save" do
+        @event.remove_images = true
+
+        expect {
+          @event.save!
+        }.to change {
+          @event.remove_images?
+        }.from(true).to(false)
       end
     end
 

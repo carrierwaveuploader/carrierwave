@@ -419,6 +419,8 @@ module CarrierWave
 
         def remove_#{column}!
           _mounter(:#{column}).remove!
+          self.remove_#{column} = true
+          write_#{column}_identifier
         end
 
         def remove_#{column}=(value)

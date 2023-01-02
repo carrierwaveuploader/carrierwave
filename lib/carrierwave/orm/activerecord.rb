@@ -85,13 +85,6 @@ module CarrierWave
           result
         end
 
-        def remove_#{column}!
-          self.remove_#{column} = true
-          write_#{column}_identifier
-          self.remove_#{column} = false
-          super
-        end
-
         # Reset cached mounter on record reload
         def reload(*)
           @_mounters = nil

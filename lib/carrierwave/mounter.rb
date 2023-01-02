@@ -117,10 +117,11 @@ module CarrierWave
 
     def remove!
       uploaders.reject(&:blank?).each(&:remove!)
-      @uploaders = []
+      clear!
     end
 
     def clear!
+      @remove = nil
       @uploaders = []
     end
 
