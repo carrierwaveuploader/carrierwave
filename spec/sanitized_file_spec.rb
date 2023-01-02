@@ -809,6 +809,32 @@ describe CarrierWave::SanitizedFile do
 
   end
 
+  describe "with an uploader instance" do
+    let(:uploader_class) { Class.new(CarrierWave::Uploader::Base) }
+    let(:uploader) do
+      uploader_class.new.tap do |instance|
+        instance.store!(File.open(file_path('llama.jpg')))
+      end
+    end
+
+    let(:sanitized_file) { CarrierWave::SanitizedFile.new(uploader) }
+
+    it_should_behave_like "all valid sanitized files"
+
+    describe "#is_path?" do
+      it "should be false" do
+        expect(sanitized_file.is_path?).to be_falsey
+      end
+    end
+
+    describe "#path" do
+      it "should return the path of the stored file" do
+        expect(sanitized_file.path).not_to be_nil
+        expect(sanitized_file.path).to eq(public_path("uploads/llama.jpg"))
+      end
+    end
+  end
+
   describe "that is empty" do
     let(:empty) { CarrierWave::SanitizedFile.new(nil) }
 

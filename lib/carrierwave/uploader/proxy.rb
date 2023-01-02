@@ -40,8 +40,8 @@ module CarrierWave
       #
       # [String] contents of the file
       #
-      def read
-        file.try(:read)
+      def read(*args)
+        file.try(:read, *args)
       end
 
       ##

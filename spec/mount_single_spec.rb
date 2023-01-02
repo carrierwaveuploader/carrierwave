@@ -175,6 +175,15 @@ describe CarrierWave::Mount do
         @instance.image = stub_file('test.jpg')
       end
 
+      it "should accept another uploader instance" do
+        @instance.image = stub_file('test.jpg')
+        @instance.image.store!
+        another = @class.new
+        another.image = @instance.image
+        expect(another.image).to be_an_instance_of(@uploader)
+        expect(another.image).to be_cached
+      end
+
     end
 
     describe '#image?' do

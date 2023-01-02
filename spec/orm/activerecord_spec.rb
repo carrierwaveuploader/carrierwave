@@ -1726,6 +1726,14 @@ describe CarrierWave::ActiveRecord do
       Event.mount_uploader(:image, @uploader)
     end
 
+    it "caches the existing file into the new model" do
+      @event.image = stub_file('test.jpeg')
+      @event.save
+      new_event = @event.dup
+
+      expect(new_event.image).to be_cached
+    end
+
     it "appropriately removes the model reference from the new models uploader" do
       @event.save
       new_event = @event.dup
@@ -1743,8 +1751,8 @@ describe CarrierWave::ActiveRecord do
         @event.image
       end
 
-      it "clears @_mounters" do
-        expect(@event.dup.instance_variable_get(:@_mounters)).to be_blank
+      it "recreates @_mounters" do
+        expect(@event.dup.image.model).not_to eq @event
       end
     end
   end

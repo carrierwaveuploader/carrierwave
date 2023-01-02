@@ -199,6 +199,15 @@ describe CarrierWave::Mount do
         instance.images = [test_file_stub]
       end
 
+      it "accepts another uploader instances" do
+        instance.images = [test_file_stub, old_image_stub]
+        instance.store_images!
+        another = klass.new
+        another.images = instance.images
+        expect(another.images).to all(be_an_instance_of(uploader))
+        expect(another.images.map(&:cached?)).to all(be true)
+      end
+
       context "if the images fails an allowlist integrity check" do
         before do
           uploader.class_eval do
