@@ -265,5 +265,8 @@ Style/WordArray:
   EnforcedStyle: percent
   MinSize: 8
 
+Style/ZeroLengthPredicate:
+  Enabled: false
+
 Layout/LineLength:
   Max: 256
