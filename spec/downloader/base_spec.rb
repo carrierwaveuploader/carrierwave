@@ -142,14 +142,19 @@ describe CarrierWave::Downloader::Base do
     let(:instance) { described_class.new(uploader) }
     subject { instance.download uri }
     context 'when download_retry_count == 0 ' do
-      before { uploader.download_retry_count = 0 }
+      before do
+        uploader.download_retry_count = 0
+      end
       it 'throws an exception' do
         expect { subject }.to raise_error CarrierWave::DownloadError
       end
     end
 
     context 'when download_retry_count > 0' do
-      before { uploader.download_retry_count = 1 }
+      before do
+        uploader.download_retry_count = 1
+        uploader.download_retry_wait_time = 0.01
+      end
       it 'does not throw an exception' do
         expect { subject }.not_to raise_error
       end

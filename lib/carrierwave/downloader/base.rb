@@ -45,7 +45,7 @@ module CarrierWave
         rescue StandardError => e
           if @current_download_retry_count < @uploader.download_retry_count
             @current_download_retry_count += 1
-            sleep 5
+            sleep @uploader.download_retry_wait_time
             retry
           else
             raise CarrierWave::DownloadError, "could not download file: #{e.message}"
