@@ -1,26 +1,26 @@
 require 'spec_helper'
 require 'support/activerecord'
 
-def create_table(name)
-  ActiveRecord::Base.connection.create_table(name, force: true) do |t|
-    t.column :image, :string
-    t.column :images, :json
-    t.column :textfile, :string
-    t.column :textfiles, :json
-    t.column :foo, :string
-  end
-end
-
-def drop_table(name)
-  ActiveRecord::Base.connection.drop_table(name)
-end
-
-def reset_class(class_name)
-  Object.send(:remove_const, class_name) rescue nil
-  Object.const_set(class_name, Class.new(ActiveRecord::Base))
-end
-
 describe CarrierWave::ActiveRecord do
+  def create_table(name)
+    ActiveRecord::Base.connection.create_table(name, force: true) do |t|
+      t.column :image, :string
+      t.column :images, :json
+      t.column :textfile, :string
+      t.column :textfiles, :json
+      t.column :foo, :string
+    end
+  end
+
+  def drop_table(name)
+    ActiveRecord::Base.connection.drop_table(name)
+  end
+
+  def reset_class(class_name)
+    Object.send(:remove_const, class_name) rescue nil
+    Object.const_set(class_name, Class.new(ActiveRecord::Base))
+  end
+
   before(:all) { create_table("events") }
   after(:all) { drop_table("events") }
 
@@ -1731,14 +1731,56 @@ describe CarrierWave::ActiveRecord do
       @event.save
       new_event = @event.dup
 
-      expect(new_event.image).to be_cached
+      expect(new_event.image).to be_a(@uploader) & be_cached
+      expect(new_event.image.filename).to eq("test.jpeg")
     end
 
     it "appropriately removes the model reference from the new models uploader" do
       @event.save
       new_event = @event.dup
 
-      expect(new_event.image.model).not_to eq @event
+      expect(new_event).not_to be @event
+      expect(new_event.image.model).to be new_event
+    end
+
+    it "works when the mounters haven't been initialized" do
+      expect(@event.instance_variable_defined?(:@_mounters)).to eq false
+      expect(@event.dup).to be_a Event
+    end
+
+    context "with more than one mount" do
+      before do
+        @uploader1 = Class.new(CarrierWave::Uploader::Base)
+        Event.mount_uploaders(:images, @uploader1)
+      end
+
+      it "caches the existing files into the new model" do
+        @event.image = stub_file('test.jpeg')
+        @event.images = [stub_file('test.jpg')]
+        @event.save
+        new_event = @event.dup
+
+        expect(new_event.image).to be_cached & be_a(@uploader)
+        expect(new_event.image.filename).to eq("test.jpeg")
+        expect(new_event.images).to all(be_cached & be_a(@uploader1))
+        expect(new_event.images.map(&:filename)).to eq ["test.jpg"]
+      end
+
+      it "appropriately removes the model references from the new models uploaders" do
+        @event.save
+        new_event = @event.dup
+
+        expect(new_event).not_to be @event
+        expect(new_event.image.model).to be new_event
+      end
+
+      it "works when the mounters haven't been initialized" do
+        expect(@event.instance_variable_defined?(:@_mounters)).to eq false
+        new_event = @event.dup
+
+        expect(new_event).to be_a Event
+        expect(new_event).not_to be @event
+      end
     end
 
     context 'when #initialize_dup is overridden in the model' do
