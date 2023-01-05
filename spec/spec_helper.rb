@@ -94,7 +94,7 @@ module CarrierWave
         end
       end
 
-      def change_and_enforece_available_locales(locale, available_locales, &block)
+      def change_and_enforce_available_locales(locale, available_locales, &block)
         current_available_locales = I18n.available_locales
         current_enforce_available_locales_value = I18n.enforce_available_locales
         current_locale = I18n.locale
