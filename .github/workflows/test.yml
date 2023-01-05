@@ -19,6 +19,9 @@ jobs:
             gemfile: gemfiles/rails-7-0.gemfile
             experimental: false
           - ruby: '3.2'
+            gemfile: gemfiles/rails-7-0.gemfile
+            experimental: false
+          - ruby: '3.2'
             gemfile: gemfiles/rails-main.gemfile
             experimental: false
           - ruby: ruby-head
