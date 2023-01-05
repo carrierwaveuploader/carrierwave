@@ -244,7 +244,7 @@ describe CarrierWave::Uploader do
       expect(uploader.url).to eq("/uploads/tmp/#{cache_id}/#{test_file_name}")
     end
 
-    it "supports old format of cache_id (without counter) for backwards compartibility" do
+    it "supports old format of cache_id (without counter) for backwards compatibility" do
       expect(uploader.url).to eq("/uploads/tmp/#{cache_id}/#{test_file_name}")
     end
 
