@@ -9,7 +9,7 @@ describe CarrierWave::Downloader::Base do
 
   subject { CarrierWave::Downloader::Base.new(uploader) }
 
-  context "with unicode sybmols in URL" do
+  context "with unicode symbols in URL" do
     let(:filename) { "юникод.jpg" }
     before do
       stub_request(:get, uri).to_return(body: file)
