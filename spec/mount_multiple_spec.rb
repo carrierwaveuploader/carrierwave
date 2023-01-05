@@ -753,7 +753,7 @@ describe CarrierWave::Mount do
           end
         end
 
-        context "when file is assigned and remote_iamges_url is blank" do
+        context "when file is assigned and remote_images_url is blank" do
           before do
             instance.images = [test_file_stub]
             instance.remote_images_urls = ""
