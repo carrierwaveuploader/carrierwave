@@ -565,7 +565,7 @@ describe CarrierWave::SanitizedFile do
         expect(sanitized_file.to_file.path).to eq(sanitized_file.path)
       end
 
-      it "should have the same contents as the SantizedFile" do
+      it "should have the same contents as the SanitizedFile" do
         expect(sanitized_file.to_file.read).to eq(sanitized_file.read)
       end
     end
