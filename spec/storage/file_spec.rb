@@ -20,7 +20,7 @@ describe CarrierWave::Storage::File do
     context "when the directory is not empty" do
       let(:cache_id_dir) { File.dirname(cache_path) }
       let(:cache_path) { File.expand_path(File.join(uploader.cache_dir, uploader.cache_name), uploader.root) }
-      let(:existing_file) { File.join(cache_id_dir, "exsting_file.txt") }
+      let(:existing_file) { File.join(cache_id_dir, "existing_file.txt") }
 
       before do
         uploader.cache!(file)
