@@ -753,7 +753,7 @@ describe CarrierWave::Mount do
           end
         end
 
-        context "when file is assigned and remote_iamges_url is blank" do
+        context "when file is assigned and remote_images_url is blank" do
           before do
             instance.images = [test_file_stub]
             instance.remote_images_urls = ""
@@ -985,7 +985,7 @@ describe CarrierWave::Mount do
       it { expect { instance.images = [test_file_stub] }.to raise_error(CarrierWave::IntegrityError) }
     end
 
-    context "when a downloaded image fails an integity check" do
+    context "when a downloaded image fails an integrity check" do
       before do
         stub_request(:get, "http://www.example.com/#{test_file_name}").to_return(body: test_file_stub)
       end
@@ -1017,7 +1017,7 @@ describe CarrierWave::Mount do
       it { expect { instance.images = [test_file_stub] }.to raise_error(CarrierWave::ProcessingError) }
     end
 
-    context "when a downloaded image fails an integity check" do
+    context "when a downloaded image fails an integrity check" do
       before do
         stub_request(:get, "http://www.example.com/#{test_file_name}").to_return(body: test_file_stub)
       end
