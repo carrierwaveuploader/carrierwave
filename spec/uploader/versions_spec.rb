@@ -718,6 +718,13 @@ describe CarrierWave::Uploader do
       let(:thumb_contents) { File.read(public_path(@uploader.thumb.to_s)) }
       let(:small_thumb_contents) { File.read(public_path(@uploader.small_thumb.to_s)) }
 
+      context "when the file is not stored" do
+        it "should not break" do
+          @uploader.recreate_versions!
+          @uploader.recreate_versions!(:small_thumb)
+        end
+      end
+
       context "when no versions are given" do
         it "should process file based on the version" do
           @uploader.store!(bork_file)
