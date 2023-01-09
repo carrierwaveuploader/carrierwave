@@ -10,7 +10,7 @@ It works well with Rack based web applications, such as Ruby on Rails.
 
 ## Information
 
-* RDoc documentation [available on RubyDoc.info](http://rubydoc.info/gems/carrierwave/frames)
+* RDoc documentation [available on RubyDoc.info](https://rubydoc.info/gems/carrierwave)
 * Source code [available on GitHub](http://github.com/carrierwaveuploader/carrierwave)
 * More information, known limitations, and how-tos [available on the wiki](https://github.com/carrierwaveuploader/carrierwave/wiki)
 
