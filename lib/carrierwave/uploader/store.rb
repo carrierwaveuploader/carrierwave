@@ -60,7 +60,7 @@ module CarrierWave
       # [new_file (File, IOString, Tempfile)] any kind of file object
       #
       def store!(new_file=nil)
-        cache!(new_file) if new_file && ((@cache_id != parent_cache_id) || @cache_id.nil?)
+        cache!(new_file) if new_file && !cached?
         if !cache_only && @file && @cache_id
           with_callbacks(:store, new_file) do
             new_file = storage.store!(@file)

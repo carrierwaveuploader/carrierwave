@@ -185,13 +185,17 @@ module CarrierWave
         File.join(*[cache_dir, @cache_id, for_file].compact)
       end
 
+    protected
+
+      attr_reader :cache_id
+
     private
 
       def workfile_path(for_file=original_filename)
         File.join(CarrierWave.tmp_path, @cache_id, version_name.to_s, for_file)
       end
 
-      attr_reader :cache_id, :original_filename
+      attr_reader :original_filename
 
       # We can override the full_original_filename method in other modules
       alias_method :full_original_filename, :original_filename

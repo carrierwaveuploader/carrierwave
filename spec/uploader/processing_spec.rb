@@ -193,16 +193,4 @@ describe CarrierWave::Uploader do
       uploader.cache!(File.open(file_path('test.jpg')))
     end
   end
-
-  describe '#recreate_versions!' do
-    before do
-      allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-1234-2255')
-    end
-
-    it "triggers a process!" do
-      uploader.store!(File.open(file_path('test.jpg')))
-      expect(uploader).to receive(:process!)
-      uploader.recreate_versions!
-    end
-  end
 end

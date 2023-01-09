@@ -505,6 +505,23 @@ describe CarrierWave::Uploader do
         expect(File.exist?(@uploader.mini.path)).to eq(false)
       end
 
+      it "should not process the file multiple times" do
+        file_size = @file.read.size
+        @uploader_class.class_eval do
+          process :shorten
+
+          def shorten
+            File.write(file.path, file.read[0...-1])
+          end
+        end
+
+        @uploader.store!(@file)
+        @uploader.recreate_versions!
+        expect(@uploader.read.size + 1).to eq(file_size)
+        @uploader.recreate_versions!(:thumb)
+        expect(@uploader.read.size + 1).to eq(file_size)
+      end
+
       context "when there is an 'if' option" do
         it "should not create version if proc returns false" do
           @uploader_class.version(:mini, :if => Proc.new { |*args| false } )
@@ -769,6 +786,18 @@ describe CarrierWave::Uploader do
           FileUtils.rm(@uploader.another.path)
           @uploader.recreate_versions!(:small_thumb)
           expect(File.exist?(public_path(@uploader.another.to_s))).to be false
+        end
+      end
+
+      context "with a grandchild version" do
+        it "should process all the files needed for recreation" do
+          @uploader_class.version(:grandchild, from_version: :small_thumb)
+          @uploader.store!(bork_file)
+          FileUtils.rm([@uploader.small_thumb.path, @uploader.thumb.path])
+          @uploader.recreate_versions!(:grandchild)
+          expect(File.exist?(public_path(@uploader.thumb.to_s))).to be true
+          expect(File.exist?(public_path(@uploader.small_thumb.to_s))).to be true
+          expect(File.exist?(public_path(@uploader.grandchild.to_s))).to be true
         end
       end
     end
