@@ -727,6 +727,16 @@ describe CarrierWave::Uploader do
         expect(File.read(public_path(@uploader.to_s))).not_to eq(File.read(public_path(@uploader.thumb.to_s)))
         expect(File.read(public_path(@uploader.thumb.to_s))).to eq(File.read(public_path(@uploader.small_thumb.to_s)))
       end
+
+      it "should not cache an inactive version" do
+        @uploader_class.class_eval do
+          def condition(_); false; end
+        end
+        @uploader_class.version(:conditional_thumb, :from_version => :thumb, :if => :condition)
+
+        @uploader.cache!(File.open(file_path('bork.txt')))
+        expect(@uploader.conditional_thumb.cached?).to be false
+      end
     end
 
     describe "#recreate_versions!" do
