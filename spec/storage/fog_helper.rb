@@ -494,42 +494,61 @@ def fog_tests(fog_credentials)
             expect(@fog_file.public_url).to include("https://#{CARRIERWAVE_DIRECTORY}.s3-accelerate.amazonaws.com")
           end
 
-          it "should not use a subdomain URL for AWS if the directory is not a valid subdomain" do
-            allow(@uploader).to receive(:fog_directory).and_return('SiteAssets')
-            expect(@fog_file.public_url).to include('https://s3.amazonaws.com/SiteAssets')
-          end
+          context 'when the directory is not a valid subdomain' do
+            it "should not use a subdomain URL for AWS" do
+              allow(@uploader).to receive(:fog_directory).and_return('SiteAssets')
+              expect(@fog_file.public_url).to include('https://s3.amazonaws.com/SiteAssets')
+            end
 
-          it "should not use a subdomain URL for AWS if https && the directory is not accessible over https as a virtual hosted bucket" do
-            allow(@uploader).to receive(:fog_use_ssl_for_aws).and_return(true)
-            allow(@uploader).to receive(:fog_directory).and_return('foo.bar')
-            expect(@fog_file.public_url).to include('https://s3.amazonaws.com/foo.bar')
-          end
+            it "should not use a subdomain URL for AWS if https" do
+              allow(@uploader).to receive(:fog_use_ssl_for_aws).and_return(true)
+              allow(@uploader).to receive(:fog_directory).and_return('foo.bar')
+              expect(@fog_file.public_url).to include('https://s3.amazonaws.com/foo.bar')
+            end
 
-          it "should use a subdomain URL for AWS if http && the directory is not accessible over https as a virtual hosted bucket" do
-            if @provider == 'AWS'
+            it "should use a subdomain URL for AWS if http && the directory is not accessible over https as a virtual hosted bucket" do
               allow(@uploader).to receive(:fog_use_ssl_for_aws).and_return(false)
               allow(@uploader).to receive(:fog_directory).and_return('foo.bar')
               expect(@fog_file.public_url).to include('http://foo.bar.s3.amazonaws.com/')
             end
+
+            {
+              nil            => 's3.amazonaws.com',
+              'us-east-1'    => 's3.amazonaws.com',
+              'us-east-2'    => 's3.us-east-2.amazonaws.com',
+              'eu-central-1' => 's3.eu-central-1.amazonaws.com'
+            }.each do |region, expected_host|
+              it "should use a #{expected_host} hostname when using path style for access #{region} region" do
+                allow(@uploader).to receive(:fog_use_ssl_for_aws).and_return(true)
+                allow(@uploader).to receive(:fog_directory).and_return('foo.bar')
+
+                allow(@uploader).to receive(:fog_credentials).and_return(@uploader.fog_credentials.merge(region: region))
+
+                expect(@fog_file.public_url).to include("https://#{expected_host}/foo.bar")
+              end
+            end
           end
 
-          {
-            nil            => 's3.amazonaws.com',
-            'us-east-1'    => 's3.amazonaws.com',
-            'us-east-2'    => 's3.us-east-2.amazonaws.com',
-            'eu-central-1' => 's3.eu-central-1.amazonaws.com'
-          }.each do |region, expected_host|
-            it "should use a #{expected_host} hostname when using path style for access #{region} region" do
-              allow(@uploader).to receive(:fog_use_ssl_for_aws).and_return(true)
-              allow(@uploader).to receive(:fog_directory).and_return('foo.bar')
+          context 'when the directory is a valid subdomain' do
+            {
+              nil            => 'foobar.s3.amazonaws.com',
+              'us-east-1'    => 'foobar.s3.amazonaws.com',
+              'us-east-2'    => 'foobar.s3.us-east-2.amazonaws.com',
+              'eu-central-1' => 'foobar.s3.eu-central-1.amazonaws.com'
+            }.each do |region, expected_host|
+              it "should use a #{expected_host} hostname when using path style for access #{region} region" do
+                allow(@uploader).to receive(:fog_use_ssl_for_aws).and_return(true)
+                allow(@uploader).to receive(:fog_directory).and_return('foobar')
 
-              allow(@uploader).to receive(:fog_credentials).and_return(@uploader.fog_credentials.merge(region: region))
+                allow(@uploader).to receive(:fog_credentials).and_return(@uploader.fog_credentials.merge(region: region))
 
-              expect(@fog_file.public_url).to include("https://#{expected_host}/foo.bar")
+                expect(@fog_file.public_url).to include("https://#{expected_host}/")
+              end
             end
           end
 
           it "should use https as a default protocol" do
+            expect(@uploader.fog_use_ssl_for_aws).to be true
             expect(@fog_file.public_url).to start_with 'https://'
           end
 

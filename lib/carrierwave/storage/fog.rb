@@ -370,21 +370,22 @@ module CarrierWave
                 protocol = @uploader.fog_use_ssl_for_aws ? "https" : "http"
 
                 subdomain_regex = /^(?:[a-z]|\d(?!\d{0,2}(?:\d{1,3}){3}$))(?:[a-z0-9\.]|(?![\-])|\-(?![\.])){1,61}[a-z0-9]$/
-                valid_subdomain = @uploader.fog_directory.to_s =~ subdomain_regex && !(protocol == 'https' && @uploader.fog_directory =~ /\./)
+                # To use the virtual-hosted style, the bucket name needs to be representable as a subdomain
+                use_virtual_hosted_style = @uploader.fog_directory.to_s =~ subdomain_regex && !(protocol == 'https' && @uploader.fog_directory =~ /\./)
 
-                # if directory is a valid subdomain, use that style for access
-                if valid_subdomain
-                  s3_subdomain = @uploader.fog_aws_accelerate ? "s3-accelerate" : "s3"
-                  "#{protocol}://#{@uploader.fog_directory}.#{s3_subdomain}.amazonaws.com/#{encoded_path}"
+                region = @uploader.fog_credentials[:region].to_s
+                regional_host = case region
+                                when DEFAULT_S3_REGION, ''
+                                  's3.amazonaws.com'
+                                else
+                                  "s3.#{region}.amazonaws.com"
+                                end
+
+                if use_virtual_hosted_style
+                  regional_host = 's3-accelerate.amazonaws.com' if @uploader.fog_aws_accelerate
+                  "#{protocol}://#{@uploader.fog_directory}.#{regional_host}/#{encoded_path}"
                 else # directory is not a valid subdomain, so use path style for access
-                  region = @uploader.fog_credentials[:region].to_s
-                  host   = case region
-                           when DEFAULT_S3_REGION, ''
-                             's3.amazonaws.com'
-                           else
-                             "s3.#{region}.amazonaws.com"
-                           end
-                  "#{protocol}://#{host}/#{@uploader.fog_directory}/#{encoded_path}"
+                  "#{protocol}://#{regional_host}/#{@uploader.fog_directory}/#{encoded_path}"
                 end
               end
             when 'Google'
