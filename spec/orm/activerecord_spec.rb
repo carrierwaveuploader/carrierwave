@@ -1756,4 +1756,40 @@ describe CarrierWave::ActiveRecord do
       end
     end
   end
+
+  describe 'when set as a nested attribute' do
+    before(:all) do
+      ActiveRecord::Base.connection.create_table('tickets', force: true) do |t|
+        t.column :event_id, :integer
+        t.column :image, :string
+      end
+    end
+    after(:all) { drop_table("tickets") }
+
+    before do
+      Event.class_eval do
+        has_many :tickets
+        accepts_nested_attributes_for :tickets
+      end
+      reset_class("Ticket")
+      Ticket.class_eval do
+        mount_uploader(:image, @uploader)
+        belongs_to :event
+      end
+      @ticket = Ticket.new
+    end
+    after do
+      Ticket.delete_all
+      FileUtils.rm_rf(public_path("uploads"))
+    end
+
+    describe '#cache_name=' do
+      it "should allow the image to be stored" do
+        cache_id = Ticket.new(image: stub_file('new.jpeg')).image_cache
+        @event = Event.create(tickets: [Ticket.new])
+        @event.update! tickets_attributes: {id: @event.tickets.first.id, image_cache: cache_id}
+        expect(@event.tickets.first.image.to_s).to eq '/uploads/new.jpeg'
+      end
+    end
+  end
 end

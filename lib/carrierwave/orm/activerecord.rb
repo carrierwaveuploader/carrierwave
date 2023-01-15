@@ -78,6 +78,12 @@ module CarrierWave
           super
         end
 
+        def #{column}_cache=(cache_name)
+          column = _mounter(:#{column}).serialization_column
+          __send__(:"\#{column}_will_change!") if cache_name.present?
+          super
+        end
+
         def remove_#{column}=(value)
           column = _mounter(:#{column}).serialization_column
           result = super
