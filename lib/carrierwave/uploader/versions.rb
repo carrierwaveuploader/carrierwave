@@ -74,9 +74,11 @@ module CarrierWave
       private
 
         def build_version(name, options)
+          class_name = "#{name.to_s.camelize}VersionUploader"
+
           if !versions.has_key?(name)
             uploader = Class.new(self)
-            const_set("Uploader#{uploader.object_id}".tr('-', '_'), uploader)
+            const_set(class_name, uploader)
             uploader.version_names += [name]
             uploader.versions = {}
             uploader.processors = []
@@ -118,8 +120,9 @@ module CarrierWave
               end
             RUBY
           else
-            uploader = Class.new(versions[name])
-            const_set("Uploader#{uploader.object_id}".tr('-', '_'), uploader)
+            parent = versions[name]
+            uploader = Class.new(parent)
+            parent.const_set(class_name, uploader)
             uploader.processors = []
             uploader.version_options = uploader.version_options.merge(options)
           end

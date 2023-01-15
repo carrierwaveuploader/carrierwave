@@ -8,6 +8,9 @@ describe CarrierWave::Uploader do
   end
 
   after do
+    @uploader_class.constants
+      .select { |const| const.to_s =~ /Uploader$/ }
+      .each { |const| @uploader_class.send(:remove_const, const)}
     FileUtils.rm_rf(public_path)
   end
 
@@ -54,6 +57,11 @@ describe CarrierWave::Uploader do
       @uploader_class.version :thumb
       expect(@uploader.class.version_names).to eq([])
       expect(@uploader.thumb.class.version_names).to eq([:thumb])
+    end
+
+    it "should set the class name" do
+      @uploader_class.version :thumb
+      expect(@uploader.thumb.class).to eq @uploader_class.const_get :ThumbVersionUploader
     end
 
     it "should remember mount options" do
