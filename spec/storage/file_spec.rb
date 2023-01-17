@@ -59,7 +59,7 @@ describe CarrierWave::Storage::File do
     let(:five_days_ago) { today.ago(5.days) }
     let(:three_days_ago) { today.ago(3.days) }
     let(:yesterday) { today.yesterday }
-    let(:cache_dir) { File.expand_path(uploader_class.cache_dir, CarrierWave.root) }
+    let(:cache_dir) { File.expand_path(uploader_class.cache_dir, uploader.root) }
 
     before do
       [five_days_ago, three_days_ago, yesterday, (today - 1.minute)].each do |created_date|
@@ -72,19 +72,19 @@ describe CarrierWave::Storage::File do
     after { FileUtils.rm_rf(cache_dir) }
 
     it "clears all files older than now in the default cache directory" do
-      Timecop.freeze(today) { uploader_class.clean_cached_files!(0) }
+      Timecop.freeze(today) { storage.clean_cache!(0) }
 
       expect(Dir.glob("#{cache_dir}/*").size).to eq(0)
     end
 
     it "clears all files older than, by default, 24 hours in the default cache directory" do
-      Timecop.freeze(today) { uploader_class.clean_cached_files! }
+      Timecop.freeze(today) { storage.clean_cache!(1.day) }
 
       expect(Dir.glob("#{cache_dir}/*").size).to eq(2)
     end
 
     it "allows to set since how many seconds delete the cached files" do
-      Timecop.freeze(today) { uploader_class.clean_cached_files!(4.days) }
+      Timecop.freeze(today) { storage.clean_cache!(4.days) }
 
       expect(Dir.glob("#{cache_dir}/*").size).to eq(3)
     end
@@ -97,9 +97,18 @@ describe CarrierWave::Storage::File do
 
     it "cleans a directory named using old format of cache id" do
       FileUtils.mkdir_p File.expand_path("#{yesterday.utc.to_i}-100-1234", cache_dir)
-      Timecop.freeze(today) { uploader_class.clean_cached_files!(0) }
+      Timecop.freeze(today) { storage.clean_cache!(0) }
 
       expect(Dir.glob("#{cache_dir}/*").size).to eq(0)
+    end
+
+    it "clears all files older than now in the new cache directory" do
+      uploader.root = File.expand_path("new", CarrierWave.root)
+      new_cache_dir = File.expand_path(uploader_class.cache_dir, uploader.root)
+      Timecop.freeze(today - 1.minute) { FileUtils.mkdir_p File.expand_path(CarrierWave.generate_cache_id, new_cache_dir) }
+
+      Timecop.freeze(today) { storage.clean_cache!(0) }
+      expect(Dir.glob("#{new_cache_dir}/*").size).to eq(0)
     end
 
     context "when a file which does not conform to the cache_id format exists" do
@@ -108,7 +117,7 @@ describe CarrierWave::Storage::File do
       end
 
       it "should just ignore that" do
-        Timecop.freeze(today) { uploader_class.clean_cached_files!(0) }
+        Timecop.freeze(today) { storage.clean_cache!(0) }
 
         expect(Dir.glob("#{cache_dir}/*").size).to eq(1)
         expect(File).to exist("#{cache_dir}/invalid")
