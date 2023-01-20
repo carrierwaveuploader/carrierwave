@@ -99,12 +99,10 @@ module CarrierWave
 
         # Reset cached mounter on record dup
         def initialize_dup(other)
-          old_mounters = @_mounters
-          @_mounters = nil
+          old_uploaders = _mounter(:"#{column}").uploaders
+          @_mounters[:"#{column}"] = nil
           super
-          old_mounters.each do |column, mounter|
-            _mounter(:#{column}).cache(mounter.uploaders)
-          end
+          _mounter(:"#{column}").cache(old_uploaders)
         end
       RUBY
     end

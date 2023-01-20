@@ -235,7 +235,9 @@ describe CarrierWave::RMagick, :rmagick => true do
 
     it 'does not allow invocation of non-public methods' do
       Kernel.module_eval do
-        private def foo=(value); raise; end
+      private
+
+        def foo=(value); raise; end
       end
       expect do
         instance.manipulate! :read => {
