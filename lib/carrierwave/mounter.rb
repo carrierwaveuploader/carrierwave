@@ -85,12 +85,16 @@ module CarrierWave
     end
 
     def remote_urls=(urls)
-      return if urls.blank? || urls.all?(&:blank?)
-
+      if urls.nil?
+        urls = []
+      else
+        urls = Array.wrap(urls).reject(&:blank?)
+        return if urls.blank?
+      end
       @remote_urls = urls
 
       clear_unstaged
-      urls.zip(remote_request_headers || []) do |url, header|
+      @remote_urls.zip(remote_request_headers || []) do |url, header|
         handle_error do
           uploader = blank_uploader
           uploader.download!(url, header || {})

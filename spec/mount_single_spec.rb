@@ -377,6 +377,13 @@ describe CarrierWave::Mount do
         @instance.remote_image_url = ""
         expect(@instance.image.current_path).to match(/test.jpg$/)
       end
+
+      it "clears the unsaved remote url when nil is assigned" do
+        @instance.remote_image_url = 'invalid'
+        @instance.remote_image_url = nil
+
+        expect(@instance.remote_image_url).to be_nil
+      end
     end
 
     describe '#store_image!' do

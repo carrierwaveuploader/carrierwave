@@ -609,6 +609,17 @@ describe CarrierWave::Mount do
           expect(instance.images.map(&:identifier)).to eq ['test.jpg']
         end
       end
+
+      context "clears the unsaved remote urls when nil is assigned" do
+        subject { instance.remote_images_urls }
+        let(:remote_images_url) { ['invalid'] }
+
+        before do
+          instance.remote_images_urls = nil
+        end
+
+        it { is_expected.to be_empty }
+      end
     end
 
     describe '#store_images!' do

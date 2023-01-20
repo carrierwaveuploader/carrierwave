@@ -163,7 +163,7 @@ module CarrierWave
         end
 
         def remote_#{column}_url=(url)
-          _mounter(:#{column}).remote_urls = [url]
+          _mounter(:#{column}).remote_urls = url
         end
 
         def remote_#{column}_request_header=(header)
