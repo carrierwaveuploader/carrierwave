@@ -12,8 +12,7 @@ module CarrierWave
 
         def validate_each(record, attribute, value)
           record.__send__("#{attribute}_processing_errors").each do |e|
-            message = (e.message == e.class.to_s) ? :carrierwave_processing_error : e.message
-            record.errors.add(attribute, message)
+            record.errors.add(attribute, :carrierwave_processing_error, message: (e.message != e.class.to_s) && e.message)
           end
         end
       end
@@ -22,8 +21,7 @@ module CarrierWave
 
         def validate_each(record, attribute, value)
           record.__send__("#{attribute}_integrity_errors").each do |e|
-            message = (e.message == e.class.to_s) ? :carrierwave_integrity_error : e.message
-            record.errors.add(attribute, message)
+            record.errors.add(attribute, :carrierwave_integrity_error, message: (e.message != e.class.to_s) && e.message)
           end
         end
       end
@@ -32,8 +30,7 @@ module CarrierWave
 
         def validate_each(record, attribute, value)
           record.__send__("#{attribute}_download_errors").each do |e|
-            message = (e.message == e.class.to_s) ? :carrierwave_download_error : e.message
-            record.errors.add(attribute, message)
+            record.errors.add(attribute, :carrierwave_download_error, message: (e.message != e.class.to_s) && e.message)
           end
         end
       end

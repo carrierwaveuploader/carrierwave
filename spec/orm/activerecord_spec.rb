@@ -268,6 +268,12 @@ describe CarrierWave::ActiveRecord do
             expect(@event.errors[:image]).to eq(['Het opladen van "jpg" bestanden is niet toe gestaan. Geaccepteerde types: txt'])
           end
         end
+
+        it "should set the error details" do
+          @event.image = stub_file('test.jpg')
+          expect(@event).to_not be_valid
+          expect(@event.errors.details).to eq({image: [{error: :carrierwave_integrity_error}]})
+        end
       end
 
       context 'when validating denylist integrity' do
@@ -325,6 +331,11 @@ describe CarrierWave::ActiveRecord do
             expect(@event).to_not be_valid
             expect(@event.errors[:image]).to eq(['falha ao processar imagem.'])
           end
+        end
+
+        it "should set the error details" do
+          @event.valid?
+          expect(@event.errors.details).to eq({image: [{error: :carrierwave_processing_error}]})
         end
       end
 
@@ -561,6 +572,11 @@ describe CarrierWave::ActiveRecord do
             expect(@event).to_not be_valid
             expect(@event.errors[:image]).to eq(['não pode ser descarregado'])
           end
+        end
+
+        it "should set the error details" do
+          @event.valid?
+          expect(@event.errors.details).to eq({image: [{error: :carrierwave_download_error}]})
         end
       end
 
