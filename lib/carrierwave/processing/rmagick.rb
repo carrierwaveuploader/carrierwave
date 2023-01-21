@@ -230,13 +230,7 @@ module CarrierWave
       height = dimension_from height
       manipulate! do |img|
         img.resize_to_fit!(width, height)
-        new_img = ::Magick::Image.new(width, height) { |image| image.background_color = background == :transparent ? 'rgba(255,255,255,0)' : background.to_s }
-        if background == :transparent
-          filled = new_img.matte_floodfill(1, 1)
-        else
-          filled = new_img.color_floodfill(1, 1, ::Magick::Pixel.from_color(background))
-        end
-        destroy_image(new_img)
+        filled = ::Magick::Image.new(width, height) { |image| image.background_color = background == :transparent ? 'rgba(255,255,255,0)' : background.to_s }
         filled.composite!(img, gravity, ::Magick::OverCompositeOp)
         destroy_image(img)
         filled = yield(filled) if block_given?
