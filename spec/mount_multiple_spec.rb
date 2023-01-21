@@ -971,6 +971,10 @@ describe CarrierWave::Mount do
       it "applies any custom modifications to the uploader class" do
         expect(uploader.new).not_to respond_to(:fish)
       end
+
+      it "should give the generated class a stable name" do
+        expect(first_image.class).to eq klass.const_get :CarrierWaveImagesUploader
+      end
     end
   end
 

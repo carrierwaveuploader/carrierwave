@@ -394,7 +394,7 @@ module CarrierWave
     def mount_base(column, uploader=nil, options={}, &block)
       include CarrierWave::Mount::Extension
 
-      uploader = build_uploader(uploader, &block)
+      uploader = build_uploader(uploader, column, &block)
       uploaders[column.to_sym] = uploader
       uploader_options[column.to_sym] = options
 
@@ -453,16 +453,15 @@ module CarrierWave
       RUBY
     end
 
-    def build_uploader(uploader, &block)
-      return uploader if uploader && !block_given?
+    def build_uploader(uploader, column, &block)
+      uploader ||= CarrierWave::Uploader::Base
+      return uploader unless block_given?
 
-      uploader = Class.new(uploader || CarrierWave::Uploader::Base)
-      const_set("Uploader#{uploader.object_id}".tr('-', '_'), uploader)
+      uploader = Class.new(uploader)
+      const_set("CarrierWave#{column.to_s.camelize}Uploader", uploader)
 
-      if block_given?
-        uploader.class_eval(&block)
-        uploader.recursively_apply_block_to_versions(&block)
-      end
+      uploader.class_eval(&block)
+      uploader.recursively_apply_block_to_versions(&block)
 
       uploader
     end
