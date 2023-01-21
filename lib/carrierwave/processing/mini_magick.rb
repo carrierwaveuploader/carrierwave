@@ -263,7 +263,8 @@ module CarrierWave
       FileUtils.mv image.path, current_path
 
       image.run_command("identify", current_path)
-    rescue ::MiniMagick::Error, ::MiniMagick::Invalid
+    rescue ::MiniMagick::Error, ::MiniMagick::Invalid => e
+      raise e if e.message =~ /(You must have .+ installed|is not installed|executable not found)/
       message = I18n.translate(:"errors.messages.processing_error")
       raise CarrierWave::ProcessingError, message
     ensure
@@ -309,7 +310,8 @@ module CarrierWave
         file.content_type = Marcel::Magic.by_path(move_to).try(:type)
         file.move_to(move_to, permissions, directory_permissions)
       end
-    rescue ::MiniMagick::Error, ::MiniMagick::Invalid
+    rescue ::MiniMagick::Error, ::MiniMagick::Invalid => e
+      raise e if e.message =~ /(You must have .+ installed|is not installed|executable not found)/
       message = I18n.translate(:"errors.messages.processing_error")
       raise CarrierWave::ProcessingError, message
     end

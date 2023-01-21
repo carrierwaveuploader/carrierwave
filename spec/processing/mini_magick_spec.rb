@@ -255,5 +255,69 @@ describe CarrierWave::MiniMagick do
         end
       end
     end
+
+    context "of failing to find ImageMagick/GraphicsMagick" do
+      before do
+        MiniMagick.remove_instance_variable(:@processor) if MiniMagick.instance_variable_defined?(:@processor)
+        MiniMagick.remove_instance_variable(:@cli) if MiniMagick.instance_variable_defined?(:@cli)
+        allow(MiniMagick::Utilities).to receive(:which).and_return(nil)
+      end
+
+      it "raises MiniMagick::Error" do
+        expect { instance.resize_to_limit(200, 200) }.to raise_exception(MiniMagick::Error)
+      end
+    end
+
+    context "of being configured to use ImageMagick but failing to execute" do
+      before do
+        allow(MiniMagick).to receive(:processor).and_return(:magick)
+        allow_any_instance_of(MiniMagick::Shell).to receive(:execute_open3).and_raise(Errno::ENOENT)
+      end
+
+      it "raises MiniMagick::Error" do
+        expect { instance.resize_to_limit(200, 200) }.to raise_exception(MiniMagick::Error)
+      end
+    end
+  end
+
+  describe "#manipulate!" do
+    it "performs manipulation using the given block" do
+      instance.manipulate! do |image|
+        image.format('png')
+      end
+      expect(instance).to be_format('png')
+    end
+
+    context "on failing to find ImageMagick/GraphicsMagick" do
+      before do
+        MiniMagick.remove_instance_variable(:@processor) if MiniMagick.instance_variable_defined?(:@processor)
+        MiniMagick.remove_instance_variable(:@cli) if MiniMagick.instance_variable_defined?(:@cli)
+        allow(MiniMagick::Utilities).to receive(:which).and_return(nil)
+      end
+
+      it "raises MiniMagick::Invalid" do
+        expect do
+          instance.manipulate! do |image|
+            image.format('png')
+          end
+        end.to raise_exception(MiniMagick::Invalid)
+      end
+    end
+
+    context "on being configured to use ImageMagick but failing to execute" do
+      before do
+        allow(MiniMagick).to receive(:processor).and_return(:magick)
+        allow_any_instance_of(MiniMagick::Shell).to receive(:execute_open3).and_raise(Errno::ENOENT)
+      end
+      after { MiniMagick.remove_instance_variable(:@processor) }
+
+      it "raises MiniMagick::Invalid" do
+        expect do
+          instance.manipulate! do |image|
+            image.format('png')
+          end
+        end.to raise_exception(MiniMagick::Invalid)
+      end
+    end
   end
 end
