@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 1.3.3 - 2023-02-02
+### Fixed
+* Fix Ruby 2.7 deprecation warning on Mounter#remove? (@kaoru [#2644](https://github.com/carrierwaveuploader/carrierwave/pull/2644))
+* Limit ssrf_filter to < 1.1.0 due to the breaking changes at 1.1.0 (@marcogregorius [#2640](https://github.com/carrierwaveuploader/carrierwave/pull/2640))
+
 ## 1.3.2 - 2021-02-08
 ### Fixed
 * Fix Ruby 2.7 deprecations(@aubinlrx [#2462](https://github.com/carrierwaveuploader/carrierwave/pull/2462))
