@@ -91,6 +91,11 @@ module CarrierWave
           result
         end
 
+        def write_#{column}_identifier
+          return unless has_attribute?(_mounter(:#{column}).serialization_column)
+          super
+        end
+
         # Reset cached mounter on record reload
         def reload(*)
           @_mounters = nil

@@ -681,6 +681,21 @@ describe CarrierWave::ActiveRecord do
       end
 
     end
+
+    describe 'calling #update! on the instance' do
+      before do
+        @event.image = stub_file('test.jpeg')
+        @event.save!
+        @event.reload
+      end
+
+      it "allows clearing the stored image" do
+        @event.update!(image: nil)
+        expect(@event.image.file).to be_nil
+        expect(File.exist?(public_path('uploads/test.jpeg'))).to be_falsy
+        expect(@event[:image]).to be_nil
+      end
+    end
   end
 
   describe '#mount_uploader with mount_on' do
@@ -1508,6 +1523,21 @@ describe CarrierWave::ActiveRecord do
         expect(@event).to_not be_valid
       end
 
+    end
+
+    describe 'calling #update! on the instance' do
+      before do
+        @event.images = [stub_file('test.jpeg')]
+        @event.save!
+        @event.reload
+      end
+
+      it "allows clearing the stored images" do
+        @event.update!(images: [])
+        expect(@event.images).to be_empty
+        expect(File.exist?(public_path('uploads/test.jpeg'))).to be_falsy
+        expect(@event[:images]).to be nil
+      end
     end
   end
 
