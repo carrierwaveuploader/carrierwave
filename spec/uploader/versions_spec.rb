@@ -530,6 +530,12 @@ describe CarrierWave::Uploader do
         expect(@uploader.read.size + 1).to eq(file_size)
       end
 
+      it "should not leave the cache_id set" do
+        @uploader.store!(@file)
+        @uploader.recreate_versions!
+        expect(@uploader).not_to be_cached
+      end
+
       context "when there is an 'if' option" do
         it "should not create version if proc returns false" do
           @uploader_class.version(:mini, :if => Proc.new { |*args| false } )

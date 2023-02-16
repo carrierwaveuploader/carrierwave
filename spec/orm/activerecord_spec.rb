@@ -1880,4 +1880,18 @@ describe CarrierWave::ActiveRecord do
       end
     end
   end
+
+  context "after recreating versions" do
+    before do
+      Event.mount_uploader(:image, @uploader)
+      @event.update!(image: stub_file('test.jpeg'))
+      @event.reload
+      @event.image.recreate_versions!
+    end
+
+    it "should not break" do
+      @event.save!
+      expect(@event.image.file).to exist
+    end
+  end
 end

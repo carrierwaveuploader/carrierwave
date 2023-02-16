@@ -256,6 +256,8 @@ module CarrierWave
         active_versions.each do |name, v|
           v.store! if names.empty? || names.include?(name)
         end
+      ensure
+        @cache_id = nil
       end
 
     protected
