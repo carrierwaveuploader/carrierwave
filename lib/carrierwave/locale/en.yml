@@ -9,5 +9,6 @@ en:
       content_type_allowlist_error: "You are not allowed to upload %{content_type} files, allowed types: %{allowed_types}"
       content_type_denylist_error: "You are not allowed to upload %{content_type} files"
       processing_error: "Failed to manipulate, maybe it is not an image?"
+      rmagick_error_security_policy: "Failed to manipulate due to imagemagick's security policy for this filetype"
       min_size_error: "File size should be greater than %{min_size}"
       max_size_error: "File size should be less than %{max_size}"

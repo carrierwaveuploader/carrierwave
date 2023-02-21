@@ -366,8 +366,12 @@ module CarrierWave
       end
 
       destroy_image(frames)
-    rescue ::Magick::ImageMagickError
-      raise CarrierWave::ProcessingError, I18n.translate(:"errors.messages.processing_error")
+    rescue ::Magick::ImageMagickError => e
+      if e.message.match?(/attempt to perform an operation not allowed by the security policy|error\/constitute.c\/IsCoderAuthorized\/408/)
+        raise CarrierWave::ProcessingError, I18n.translate(:"errors.messages.rmagick_error_security_policy")
+      else
+        raise CarrierWave::ProcessingError, I18n.translate(:"errors.messages.processing_error")
+      end
     end
 
   private

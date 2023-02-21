@@ -333,6 +333,15 @@ describe CarrierWave::RMagick, :rmagick => true do
         end
       end
 
+      context "Imagemagick security policy" do
+        before do
+          allow(::Magick::Image).to receive(:read).and_raise(Magick::ImageMagickError, message: "attempt to perform an operation not allowed by the security policy `PDF' @ error/constitute.c/IsCoderAuthorized/408")
+        end
+        it "catches error message" do
+          expect {instance.manipulate!{|f, i| nil } }.to raise_exception(CarrierWave::ProcessingError, /^Failed to manipulate due to imagemagick's security policy for this filetype/)
+        end
+      end
+
       it "doesn't suppress errors when translation is unavailable" do
         change_locale_and_store_translations(:foo, {}) do
           expect { instance.resize_to_limit(200, 200) }.to raise_exception( CarrierWave::ProcessingError )
