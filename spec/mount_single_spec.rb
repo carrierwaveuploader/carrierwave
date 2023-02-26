@@ -135,14 +135,14 @@ describe CarrierWave::Mount do
         expect(@instance.image.current_path).to match(/^#{public_path('uploads/tmp')}/)
       end
 
-      it "should do nothing when nil is assigned" do
-        expect(@instance).not_to receive(:write_uploader)
+      it "should not change the attribute when nil is assigned" do
+        expect(@instance).to receive(:write_uploader).with(:image, nil)
         @instance.image = nil
       end
 
-      it "should do nothing when an empty string is assigned" do
-        expect(@instance).not_to receive(:write_uploader)
-        @instance.image = stub_file('test.jpg')
+      it "should not change the attribute when an empty string is assigned" do
+        expect(@instance).to receive(:write_uploader).with(:image, nil)
+        @instance.image = ''
       end
 
       it "should fail silently if the image fails an allowlist integrity check" do
@@ -589,8 +589,8 @@ describe CarrierWave::Mount do
 
     describe '#write_image_identifier' do
       it "should write to the column" do
-        expect(@instance).to receive(:write_uploader).with(:image, "test.jpg")
         @instance.image = stub_file('test.jpg')
+        expect(@instance).to receive(:write_uploader).with(:image, "test.jpg")
         @instance.write_image_identifier
       end
 
@@ -819,8 +819,8 @@ describe CarrierWave::Mount do
 
     describe '#write_image_identifier' do
       it "should write to the given column" do
-        expect(@instance).to receive(:write_uploader).with(:monkey, "test.jpg")
         @instance.image = stub_file('test.jpg')
+        expect(@instance).to receive(:write_uploader).with(:monkey, "test.jpg")
         @instance.write_image_identifier
       end
 

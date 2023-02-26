@@ -34,6 +34,19 @@ module CarrierWave
       end
 
       ##
+      # Returns a String which is to be used as a temporary value which gets assigned to the column.
+      # The purpose is to mark the column that it will be updated. Finally before the save it will be
+      # overwritten by the #identifier value, which is usually #filename.
+      #
+      # === Returns
+      #
+      # [String] a temporary_identifier, by default @original_filename is used
+      #
+      def temporary_identifier
+        @original_filename || @identifier
+      end
+
+      ##
       # Read the contents of the file
       #
       # === Returns

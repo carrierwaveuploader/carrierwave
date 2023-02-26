@@ -195,8 +195,7 @@ describe CarrierWave::Mount do
 
       it "does nothing when an empty string is assigned" do
         expect(instance).not_to receive(:write_uploader)
-
-        instance.images = [test_file_stub]
+        instance.images = ''
       end
 
       it "accepts another uploader instances" do
@@ -1086,8 +1085,8 @@ describe CarrierWave::Mount do
 
     describe '#write_images_identifier' do
       it "writes to the given column" do
-        expect(instance).to receive(:write_uploader).with(:monkey, [test_file_name])
         instance.images = [test_file_stub]
+        expect(instance).to receive(:write_uploader).with(:monkey, [test_file_name])
         instance.write_images_identifier
       end
 

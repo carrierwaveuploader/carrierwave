@@ -6,40 +6,6 @@ module CarrierWave
 
     include CarrierWave::Mount
 
-    ##
-    # See +CarrierWave::Mount#mount_uploader+ for documentation
-    #
-    def mount_uploader(column, uploader=nil, options={}, &block)
-      super
-
-      mod = Module.new
-      prepend mod
-      mod.class_eval <<-RUBY, __FILE__, __LINE__+1
-        def remote_#{column}_url=(url)
-          column = _mounter(:#{column}).serialization_column
-          __send__(:"\#{column}_will_change!")
-          super
-        end
-      RUBY
-    end
-
-    ##
-    # See +CarrierWave::Mount#mount_uploaders+ for documentation
-    #
-    def mount_uploaders(column, uploader=nil, options={}, &block)
-      super
-
-      mod = Module.new
-      prepend mod
-      mod.class_eval <<-RUBY, __FILE__, __LINE__+1
-        def remote_#{column}_urls=(url)
-          column = _mounter(:#{column}).serialization_column
-          __send__(:"\#{column}_will_change!")
-          super
-        end
-      RUBY
-    end
-
   private
 
     def mount_base(column, uploader=nil, options={}, &block)
@@ -69,33 +35,6 @@ module CarrierWave
       mod = Module.new
       prepend mod
       mod.class_eval <<-RUBY, __FILE__, __LINE__+1
-        def #{column}=(new_file)
-          column = _mounter(:#{column}).serialization_column
-          if !(new_file.blank? && __send__(:#{column}).blank?)
-            __send__(:"\#{column}_will_change!")
-          end
-
-          super
-        end
-
-        def #{column}_cache=(cache_name)
-          column = _mounter(:#{column}).serialization_column
-          __send__(:"\#{column}_will_change!") if cache_name.present?
-          super
-        end
-
-        def remove_#{column}=(value)
-          column = _mounter(:#{column}).serialization_column
-          result = super
-          __send__(:"\#{column}_will_change!") if _mounter(:#{column}).remove?
-          result
-        end
-
-        def write_#{column}_identifier
-          return unless has_attribute?(_mounter(:#{column}).serialization_column)
-          super
-        end
-
         # Reset cached mounter on record reload
         def reload(*)
           @_mounters = nil
@@ -108,6 +47,11 @@ module CarrierWave
           @_mounters[:"#{column}"] = nil
           super
           _mounter(:"#{column}").cache(old_uploaders)
+        end
+
+        def write_#{column}_identifier
+          return unless has_attribute?(_mounter(:#{column}).serialization_column)
+          super
         end
       RUBY
     end

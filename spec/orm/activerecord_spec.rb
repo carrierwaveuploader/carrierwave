@@ -511,6 +511,11 @@ describe CarrierWave::ActiveRecord do
     end
 
     describe "remove_image=" do
+      before do
+        @event.image = stub_file('test.jpeg')
+        @event.save!
+      end
+
       it "should mark the image as changed if changed" do
         expect(@event.image_changed?).to be_falsey
         expect(@event.remove_image).to be_nil
@@ -612,6 +617,22 @@ describe CarrierWave::ActiveRecord do
         expect(File.exist?(public_path('uploads/test.jpeg'))).to be_falsey
       end
 
+    end
+
+    describe '#changes' do
+      it "should be generated" do
+        @event.image = stub_file('test.jpeg')
+        expect(@event.changes).to eq({'image' => [nil, 'test.jpeg']})
+      end
+
+      it "shouldn't be generated when the attribute value is unchanged" do
+        @event.image = stub_file('test.jpeg')
+        @event.save!
+        @event.image = @event[:image]
+        expect(@event).not_to be_changed
+        @event.remote_image_url = ""
+        expect(@event).not_to be_changed
+      end
     end
 
     describe 'with overriddent filename' do
@@ -1352,6 +1373,11 @@ describe CarrierWave::ActiveRecord do
     end
 
     describe "remove_images=" do
+      before do
+        @event.images = [stub_file('test.jpeg')]
+        @event.save!
+      end
+
       it "should mark the images as changed if changed" do
         expect(@event.images_changed?).to be_falsey
         expect(@event.remove_images).to be_nil
@@ -1455,6 +1481,22 @@ describe CarrierWave::ActiveRecord do
         expect(File.exist?(public_path('uploads/test.jpeg'))).to be_falsey
       end
 
+    end
+
+    describe '#changes' do
+      it "should be generated" do
+        @event.images = [stub_file('test.jpeg')]
+        expect(@event.changes).to eq({'images' => [nil, ['test.jpeg']]})
+      end
+
+      it "shouldn't be generated when the attribute value is unchanged" do
+        @event.images = [stub_file('test.jpeg')]
+        @event.save!
+        @event.images = @event[:images]
+        expect(@event).not_to be_changed
+        @event.remote_images_urls = [""]
+        expect(@event).not_to be_changed
+      end
     end
 
     describe 'with overriddent filename' do

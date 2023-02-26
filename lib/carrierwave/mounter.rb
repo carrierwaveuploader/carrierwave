@@ -3,11 +3,39 @@ module CarrierWave
   # this is an internal class, used by CarrierWave::Mount so that
   # we don't pollute the model with a lot of methods.
   class Mounter # :nodoc:
-    attr_reader :column, :record, :remote_urls, :integrity_errors,
-                :processing_errors, :download_errors
-    attr_accessor :remove, :remote_request_headers, :uploader_options
+    class Single < Mounter # :nodoc
+      def identifier
+        uploaders.first&.identifier
+      end
 
-    def initialize(record, column, options={})
+      def temporary_identifier
+        temporary_identifiers.first
+      end
+    end
+
+    class Multiple < Mounter # :nodoc
+      def identifier
+        uploaders.map(&:identifier).presence
+      end
+
+      def temporary_identifier
+        temporary_identifiers.presence
+      end
+    end
+
+    def self.build(record, column)
+      if record.class.uploader_options[column][:multiple]
+        Multiple.new(record, column)
+      else
+        Single.new(record, column)
+      end
+    end
+
+    attr_reader :column, :record, :remote_urls, :remove,
+                :integrity_errors, :processing_errors, :download_errors
+    attr_accessor :remote_request_headers, :uploader_options
+
+    def initialize(record, column)
       @record = record
       @column = column
       @options = record.class.uploader_options[column]
@@ -65,6 +93,7 @@ module CarrierWave
           end
         end
       end.compact
+      write_temporary_identifier
     end
 
     def cache_names
@@ -82,6 +111,7 @@ module CarrierWave
       rescue CarrierWave::InvalidParameter
         # ignore
       end
+      write_temporary_identifier
     end
 
     def remote_urls=(urls)
@@ -101,10 +131,18 @@ module CarrierWave
           @uploaders << uploader
         end
       end
+      write_temporary_identifier
     end
 
     def store!
       uploaders.reject(&:blank?).each(&:store!)
+    end
+
+    def write_identifier
+      return if record.frozen?
+
+      clear! if remove?
+      record.write_uploader(serialization_column, identifier)
     end
 
     def urls(*args)
@@ -113,6 +151,11 @@ module CarrierWave
 
     def blank?
       uploaders.none?(&:present?)
+    end
+
+    def remove=(value)
+      @remove = value
+      write_temporary_identifier
     end
 
     def remove?
@@ -184,6 +227,20 @@ module CarrierWave
     rescue CarrierWave::IntegrityError => e
       @integrity_errors << e
       raise e unless option(:ignore_integrity_errors)
+    end
+
+    def write_temporary_identifier
+      return if record.frozen?
+
+      record.write_uploader(serialization_column, temporary_identifier)
+    end
+
+    def temporary_identifiers
+      if remove?
+        []
+      else
+        uploaders.map { |uploader| uploader.temporary_identifier }
+      end
     end
   end # Mounter
 end # CarrierWave
