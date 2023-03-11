@@ -35,6 +35,15 @@ gem 'carrierwave', '>= 3.0.0.beta', '< 4.0'
 
 Finally, restart the server to apply the changes.
 
+## Upgrading from 2.x or earlier
+
+CarrierWave 3.0 comes with a change in the way of handling the file extension on conversion. This results in following issues if you use `process convert: :format` to change the file format:
+
+- If you have it on the uploader itself (not within a version), the file extension of the cached file will change. That means if you serve both CarrierWave 2.x and 3.x simultaneously on the same workload (e.g. using blue-green deployment), a cache file stored by 2.x can't be retrieved by 3.x and vice versa.
+- If you have it within a version, the file extension of the stored file will change. You need to perform `#recreate_versions!` to make it usable again.
+
+To preserve the 2.x behavior, you can set `force_extension false` right after calling `process convert: :format`. See [#2659](https://github.com/carrierwaveuploader/carrierwave/pull/2659) for the detail.
+
 ## Getting Started
 
 Start off by generating an uploader:
@@ -224,6 +233,20 @@ class MyUploader < CarrierWave::Uploader::Base
 end
 ```
 
+## Changing the filename
+
+To change the filename of uploaded files, you can override `#filename` method in the uploader.
+
+```ruby
+class MyUploader < CarrierWave::Uploader::Base
+  def filename
+    "image.#{file.extension}" # If you upload 'file.jpg', you'll get 'image.jpg'
+  end
+end
+```
+
+Some old documentations (like [this](https://stackoverflow.com/a/5865117)) may instruct you to safeguard the filename value with `if original_filename`, but it's no longer necessary with CarrierWave 3.0 or later.
+
 ## Securing uploads
 
 Certain files might be dangerous if uploaded to the wrong location, such as PHP
@@ -302,17 +325,8 @@ You no longer need to do this manually.
 
 ## Adding versions
 
-Often you'll want to add different versions of the same file. The classic example is image thumbnails. There is built in support for this*:
-
-*Note:* You must have Imagemagick installed to do image resizing.
-
-Some documentation refers to RMagick instead of MiniMagick but MiniMagick is recommended.
-
-To install Imagemagick on OSX with homebrew type the following:
-
-```
-$ brew install imagemagick
-```
+Often you'll want to add different versions of the same file. The classic example is generating image thumbnails while preserving the original file to be used for high-quality representation.
+In this section we'll explore how CarrierWave supports working with multiple versions. The image manipulation itself is covered in [another section](#manipulating-images).
 
 ```ruby
 class MyUploader < CarrierWave::Uploader::Base
@@ -348,17 +362,7 @@ uploader.thumb.url # => '/url/to/thumb_my_file.png'   # size: 200x200
 One important thing to remember is that process is called *before* versions are
 created. This can cut down on processing cost.
 
-### Processing Methods: mini_magick
-
-- `convert` - Changes the image encoding format to the given format, eg. jpg
-- `resize_to_limit` - Resize the image to fit within the specified dimensions while retaining the original aspect ratio. Will only resize the image if it is larger than the specified dimensions. The resulting image may be shorter or narrower than specified in the smaller dimension but will not be larger than the specified values.
-- `resize_to_fit` - Resize the image to fit within the specified dimensions while retaining the original aspect ratio. The image may be shorter or narrower than specified in the smaller dimension but will not be larger than the specified values.
-- `resize_to_fill` - Resize the image to fit within the specified dimensions while retaining the aspect ratio of the original image. If necessary, crop the image in the larger dimension. Optionally, a "gravity" may be specified, for example "Center", or "NorthEast".
-- `resize_and_pad` - Resize the image to fit within the specified dimensions while retaining the original aspect ratio. If necessary, will pad the remaining area with the given color, which defaults to transparent (for gif and png, white for jpeg). Optionally, a "gravity" may be specified, as above.
-
-See `carrierwave/processing/mini_magick.rb` for details.
-
-### conditional process
+### Conditional processing
 
 If you want to use conditional process, you can only use `if` statement.
 
@@ -442,8 +446,27 @@ class MyUploader < CarrierWave::Uploader::Base
 end
 ```
 
-The option `:from_version` uses the file cached in the `:thumb` version instead
-of the original version, potentially resulting in faster processing.
+### Customizing version filenames
+
+CarrierWave supports [customization of filename](#changing-the-filename) by overriding an uploader's
+#filename method, but this doesn't work for versions because of the limitation on how CarrierWave
+re-constructs the filename on retrieval of the stored file.
+Instead, you can override `#full_filename` with providing a version-aware name.
+
+```ruby
+class MyUploader < CarrierWave::Uploader::Base
+  version :thumb do
+    def full_filename(for_file)
+      'thumb.png'
+    end
+    process convert: 'png'
+  end
+end
+```
+
+Please note that `#full_filename` mustn't be constructed based on a dynamic value
+that can change from the time of store and time of retrieval, since it will result in
+being unable to retrieve a file previously stored.
 
 ## Making uploads work across form redisplays
 
@@ -913,51 +936,26 @@ CarrierWave.configure do |config|
 end
 ```
 
-## Using RMagick
+## Manipulating images
 
 If you're uploading images, you'll probably want to manipulate them in some way,
-you might want to create thumbnail images for example. CarrierWave comes with a
-small library to make manipulating images with RMagick easier, you'll need to
-include it in your Uploader:
+you might want to create thumbnail images for example.
 
-```ruby
-class AvatarUploader < CarrierWave::Uploader::Base
-  include CarrierWave::RMagick
-end
-```
+### Using MiniMagick
 
-The RMagick module gives you a few methods, like
-`CarrierWave::RMagick#resize_to_fill` which manipulate the image file in some
-way. You can set a `process` callback, which will call that method any time a
-file is uploaded.
-There is a demonstration of convert here.
-Convert will only work if the file has the same file extension, thus the use of the filename method.
-
-```ruby
-class AvatarUploader < CarrierWave::Uploader::Base
-  include CarrierWave::RMagick
-
-  process resize_to_fill: [200, 200]
-  process convert: 'png'
-
-  def filename
-    super.chomp(File.extname(super)) + '.png' if original_filename.present?
-  end
-end
-```
-
-Check out the manipulate! method, which makes it easy for you to write your own
-manipulation methods.
-
-## Using MiniMagick
-
-MiniMagick is similar to RMagick but performs all the operations using the 'convert'
-CLI which is part of the standard ImageMagick kit. This allows you to have the power
-of ImageMagick without having to worry about installing all the RMagick libraries.
+MiniMagick performs all the operations using the 'convert' CLI which is part of the standard ImageMagick kit.
+This allows you to have the power of ImageMagick without having to worry about installing
+all the RMagick libraries, it often results in higher memory footprint.
 
 See the MiniMagick site for more details:
 
 https://github.com/minimagick/minimagick
+
+To install Imagemagick on OSX with homebrew type the following:
+
+```
+$ brew install imagemagick
+```
 
 And the ImageMagick command line options for more for what's on offer:
 
@@ -973,6 +971,45 @@ class AvatarUploader < CarrierWave::Uploader::Base
   process resize_to_fill: [200, 200]
 end
 ```
+
+#### List of available processing methods:
+
+- `convert` - Changes the image encoding format to the given format(eg. jpg). This operation is treated specially to trigger the change of the file extension, so it matches with the format of the resulting file.
+- `resize_to_limit` - Resize the image to fit within the specified dimensions while retaining the original aspect ratio. Will only resize the image if it is larger than the specified dimensions. The resulting image may be shorter or narrower than specified in the smaller dimension but will not be larger than the specified values.
+- `resize_to_fit` - Resize the image to fit within the specified dimensions while retaining the original aspect ratio. The image may be shorter or narrower than specified in the smaller dimension but will not be larger than the specified values.
+- `resize_to_fill` - Resize the image to fit within the specified dimensions while retaining the aspect ratio of the original image. If necessary, crop the image in the larger dimension. Optionally, a "gravity" may be specified, for example "Center", or "NorthEast".
+- `resize_and_pad` - Resize the image to fit within the specified dimensions while retaining the original aspect ratio. If necessary, will pad the remaining area with the given color, which defaults to transparent (for gif and png, white for jpeg). Optionally, a "gravity" may be specified, as above.
+
+See `carrierwave/processing/mini_magick.rb` for details.
+
+### Using RMagick
+
+CarrierWave also comes with support for RMagick, a well-known image processing library.
+To use it, you'll need to include this in your Uploader:
+
+```ruby
+class AvatarUploader < CarrierWave::Uploader::Base
+  include CarrierWave::RMagick
+end
+```
+
+The RMagick module gives you a few methods, like
+`CarrierWave::RMagick#resize_to_fill` which manipulate the image file in some
+way. You can set a `process` callback, which will call that method any time a
+file is uploaded.
+There is a demonstration of convert here.
+
+```ruby
+class AvatarUploader < CarrierWave::Uploader::Base
+  include CarrierWave::RMagick
+
+  process resize_to_fill: [200, 200]
+  process convert: 'png'
+end
+```
+
+Check out the manipulate! method, which makes it easy for you to write your own
+manipulation methods.
 
 ## Migrating from Paperclip
 

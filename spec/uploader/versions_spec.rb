@@ -826,4 +826,128 @@ describe CarrierWave::Uploader do
       end
     end
   end
+
+  describe 'with a version using #convert' do
+    before do
+      @uploader_class.class_eval do
+        include CarrierWave::MiniMagick
+      end
+
+      @uploader_class.version(:thumb) do
+        process convert: :png
+      end
+
+      @another_uploader = @uploader_class.new
+    end
+
+    it 'caches the file with given extension' do
+      @uploader.cache!(File.open(file_path('landscape.jpg')))
+      expect(File.basename(@uploader.thumb.cache_path)).to eq 'thumb_landscape.png'
+      expect(File.basename(@uploader.thumb.url)).to eq 'thumb_landscape.png'
+      expect(@uploader.thumb).to be_format('png')
+    end
+
+    it 'retrieves the cached file' do
+      @uploader.cache!(File.open(file_path('landscape.jpg')))
+      @another_uploader.retrieve_from_cache!(@uploader.cache_name)
+      expect(@another_uploader.url).to eq @uploader.url
+      expect(@another_uploader.thumb.url).to eq @uploader.thumb.url
+    end
+
+    it 'stores the file with given extension' do
+      @uploader.store!(File.open(file_path('landscape.jpg')))
+      expect(File.basename(@uploader.thumb.store_path)).to eq 'thumb_landscape.png'
+      expect(File.basename(@uploader.thumb.url)).to eq 'thumb_landscape.png'
+      expect(@uploader.thumb).to be_format('png')
+    end
+
+    it 'retrieves the stored file' do
+      @uploader.store!(File.open(file_path('landscape.jpg')))
+      @another_uploader.retrieve_from_store!(@uploader.identifier)
+      expect(@another_uploader.identifier).to eq @uploader.identifier
+      expect(@another_uploader.url).to eq @uploader.url
+      expect(@another_uploader.thumb.url).to eq @uploader.thumb.url
+    end
+
+    context 'with base filename overridden' do
+      before do
+        @uploader_class.class_eval do
+          def filename
+            "image.#{file.extension}"
+          end
+        end
+      end
+
+      it "stores the file" do
+        @uploader.store!(File.open(file_path('landscape.jpg')))
+        expect(File.basename(@uploader.thumb.url)).to eq 'thumb_image.png'
+      end
+
+      it "retrieves the file without inconsistency" do
+        @uploader.store!(File.open(file_path('landscape.jpg')))
+        @another_uploader.retrieve_from_store!(@uploader.identifier)
+        expect(@another_uploader.identifier).to eq @uploader.identifier
+        expect(@another_uploader.url).to eq @uploader.url
+        expect(@another_uploader.thumb.url).to eq @uploader.thumb.url
+      end
+    end
+
+    context 'with version full_filename overridden' do
+      before do
+        @uploader_class.version(:thumb) do
+          def full_filename(for_file)
+            'thumb_image.png'
+          end
+        end
+      end
+
+      it "stores the file" do
+        @uploader.store!(File.open(file_path('landscape.jpg')))
+        expect(File.basename(@uploader.thumb.url)).to eq 'thumb_image.png'
+      end
+
+      it "retrieves the file without inconsistency" do
+        @uploader.store!(File.open(file_path('landscape.jpg')))
+        @another_uploader.retrieve_from_store!(@uploader.identifier)
+        expect(@another_uploader.identifier).to eq @uploader.identifier
+        expect(@another_uploader.url).to eq @uploader.url
+        expect(@another_uploader.thumb.url).to eq @uploader.thumb.url
+      end
+    end
+  end
+
+  describe 'with a version with file extension change' do
+    before do
+      @uploader_class.class_eval do
+        def rename_to_bin
+          file.move_to("#{File.basename(file.filename, '.*')}.bin")
+        end
+      end
+
+      @uploader_class.version(:thumb) do
+        process :rename_to_bin
+      end
+    end
+
+    it "does not change the version's #filename" do
+      @uploader.cache!(File.open(file_path('landscape.jpg')))
+      expect(@uploader.thumb.file.filename).to eq 'landscape.bin'
+      expect(@uploader.thumb.filename).to eq 'landscape.jpg'
+      expect(File.basename(@uploader.thumb.store_path)).to eq 'thumb_landscape.jpg'
+    end
+
+    context "but applying #force_extension" do
+      before do
+        @uploader_class.version(:thumb) do
+          force_extension '.bin'
+        end
+      end
+
+      it "changes #filename to have the extension" do
+        @uploader.store!(File.open(file_path('landscape.jpg')))
+        expect(@uploader.thumb.identifier).to eq 'landscape.jpg'
+        expect(File.basename(@uploader.thumb.store_path)).to eq 'thumb_landscape.bin'
+      end
+    end
+  end
 end
