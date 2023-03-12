@@ -132,7 +132,7 @@ module CarrierWave
     #     end
     #
     def mount_uploader(column, uploader=nil, options={}, &block)
-      mount_base(column, uploader, options, &block)
+      mount_base(column, uploader, options.merge(multiple: false), &block)
 
       mod = Module.new
       include mod
@@ -168,14 +168,6 @@ module CarrierWave
 
         def remote_#{column}_request_header=(header)
           _mounter(:#{column}).remote_request_headers = [header]
-        end
-
-        def write_#{column}_identifier
-          return if frozen?
-          mounter = _mounter(:#{column})
-
-          mounter.clear! if mounter.remove?
-          write_uploader(mounter.serialization_column, mounter.identifiers.first)
         end
 
         def #{column}_identifier
@@ -306,7 +298,7 @@ module CarrierWave
     #     end
     #
     def mount_uploaders(column, uploader=nil, options={}, &block)
-      mount_base(column, uploader, options, &block)
+      mount_base(column, uploader, options.merge(multiple: true), &block)
 
       mod = Module.new
       include mod
@@ -343,14 +335,6 @@ module CarrierWave
 
         def remote_#{column}_request_headers=(headers)
           _mounter(:#{column}).remote_request_headers = headers
-        end
-
-        def write_#{column}_identifier
-          return if frozen?
-          mounter = _mounter(:#{column})
-
-          mounter.clear! if mounter.remove?
-          write_uploader(mounter.serialization_column, mounter.identifiers.presence)
         end
 
         def #{column}_identifiers
@@ -439,6 +423,10 @@ module CarrierWave
           _mounter(:#{column}).download_errors
         end
 
+        def write_#{column}_identifier
+          _mounter(:#{column}).write_identifier
+        end
+
         def mark_remove_#{column}_false
           _mounter(:#{column}).remove = false
         end
@@ -474,9 +462,9 @@ module CarrierWave
 
       def _mounter(column)
         # We cannot memoize in frozen objects :(
-        return Mounter.new(self, column) if frozen?
+        return Mounter.build(self, column) if frozen?
         @_mounters ||= {}
-        @_mounters[column] ||= Mounter.new(self, column)
+        @_mounters[column] ||= Mounter.build(self, column)
       end
 
     end # Extension
