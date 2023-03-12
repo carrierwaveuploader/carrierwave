@@ -23,7 +23,7 @@ jobs:
             experimental: false
           - ruby: '3.2'
             gemfile: gemfiles/rails-main.gemfile
-            experimental: false
+            experimental: true
           - ruby: ruby-head
             gemfile: gemfiles/rails-7-0.gemfile
             experimental: false
