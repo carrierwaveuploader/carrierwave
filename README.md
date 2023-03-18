@@ -1015,7 +1015,6 @@ errors:
     max_width_error: "Image width should be less than %{max_width}px"
     min_height_error: "Image height should be greater than %{min_height}px"
     max_height_error: "Image height should be less than %{max_height}px"
-    no_processing_module_error: You need to include one of CarrierWave::MiniMagick, CarrierWave::RMagick, or CarrierWave::Vips
 ```
 
 The [`carrierwave-i18n`](https://github.com/carrierwaveuploader/carrierwave-i18n)
