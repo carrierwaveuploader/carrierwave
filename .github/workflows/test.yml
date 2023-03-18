@@ -31,9 +31,9 @@ jobs:
             gemfile: gemfiles/rails-6-1.gemfile
             experimental: true
     runs-on: ubuntu-20.04
+    continue-on-error: ${{ matrix.experimental }}
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
-      EXPERIMENTAL: ${{ matrix.experimental }}
       JRUBY_OPTS: --debug
     steps:
     - uses: actions/checkout@v3
@@ -51,9 +51,9 @@ jobs:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
     - name: Run RSpec
-      run: bundle exec rake spec || [ "$EXPERIMENTAL" == "true" ] && true
+      run: bundle exec rake spec
     - name: Run Cucumber
-      run: bundle exec rake features || [ "$EXPERIMENTAL" == "true" ] && true
+      run: bundle exec rake features
 
   rubocop:
     name: RuboCop
