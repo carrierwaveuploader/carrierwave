@@ -705,14 +705,20 @@ describe CarrierWave::Mount do
         it { is_expected.to be_falsey }
       end
 
-      context "when value is 0" do
+      context "when value is '0'" do
         let(:remove_images) { "0" }
 
         it { is_expected.to be_falsey }
       end
 
-      context "when value is false" do
+      context "when value is 'false'" do
         let(:remove_images) { 'false' }
+
+        it { is_expected.to be_falsey }
+      end
+
+      context "when value is 0" do
+        let(:remove_images) { 0 }
 
         it { is_expected.to be_falsey }
       end

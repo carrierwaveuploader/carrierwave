@@ -462,6 +462,11 @@ describe CarrierWave::Mount do
         expect(@instance.remove_image?).to be_falsey
       end
 
+      it "should be false when the value is 0" do
+        @instance.remove_image = 0
+        expect(@instance.remove_image?).to be_falsey
+      end
+
     end
 
     describe '#image_integrity_error' do
