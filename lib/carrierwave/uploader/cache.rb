@@ -65,7 +65,7 @@ module CarrierWave
         # It's recommended that you keep cache files in one place only.
         #
         def clean_cached_files!(seconds=60*60*24)
-          (cache_storage || storage).new(CarrierWave::Uploader::Base.new).clean_cache!(seconds)
+          (cache_storage || storage).new(new).clean_cache!(seconds)
         end
       end
 
