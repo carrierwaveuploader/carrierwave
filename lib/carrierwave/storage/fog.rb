@@ -198,12 +198,12 @@ module CarrierWave
         # [NilClass] no authenticated url available
         #
         def authenticated_url(options = {})
-          if ['AWS', 'Google', 'Rackspace', 'OpenStack', 'AzureRM', 'Aliyun', 'backblaze'].include?(@uploader.fog_credentials[:provider])
+          if ['AWS', 'Google', 'Rackspace', 'OpenStack', 'AzureRM', 'Aliyun', 'backblaze'].include?(fog_provider)
             # avoid a get by using local references
             local_directory = connection.directories.new(:key => @uploader.fog_directory)
             local_file = local_directory.files.new(:key => path)
             expire_at = options[:expire_at] || ::Fog::Time.now.since(@uploader.fog_authenticated_url_expiration.to_i)
-            case @uploader.fog_credentials[:provider]
+            case fog_provider
             when 'AWS', 'Google'
               # Older versions of fog-google do not support options as a parameter
               if url_options_supported?(local_file)
