@@ -9,6 +9,7 @@ describe CarrierWave::Uploader do
         :check_content_type_allowlist!,
         :check_content_type_denylist!,
         :check_size!,
+        :check_dimensions!,
         :process!
       ]
     end

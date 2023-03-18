@@ -1011,6 +1011,11 @@ errors:
     processing_error: "Failed to manipulate, maybe it is not an image?"
     min_size_error: "File size should be greater than %{min_size}"
     max_size_error: "File size should be less than %{max_size}"
+    min_width_error: "Image width should be greater than %{min_width}px"
+    max_width_error: "Image width should be less than %{max_width}px"
+    min_height_error: "Image height should be greater than %{min_height}px"
+    max_height_error: "Image height should be less than %{max_height}px"
+    no_processing_module_error: You need to include one of CarrierWave::MiniMagick, CarrierWave::RMagick, or CarrierWave::Vips
 ```
 
 The [`carrierwave-i18n`](https://github.com/carrierwaveuploader/carrierwave-i18n)

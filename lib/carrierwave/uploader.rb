@@ -12,6 +12,7 @@ require "carrierwave/uploader/extension_denylist"
 require "carrierwave/uploader/content_type_allowlist"
 require "carrierwave/uploader/content_type_denylist"
 require "carrierwave/uploader/file_size"
+require "carrierwave/uploader/dimension"
 require "carrierwave/uploader/processing"
 require "carrierwave/uploader/versions"
 require "carrierwave/uploader/default_url"
@@ -57,6 +58,7 @@ module CarrierWave
       include CarrierWave::Uploader::ContentTypeAllowlist
       include CarrierWave::Uploader::ContentTypeDenylist
       include CarrierWave::Uploader::FileSize
+      include CarrierWave::Uploader::Dimension
       include CarrierWave::Uploader::Processing
       include CarrierWave::Uploader::Versions
       include CarrierWave::Uploader::DefaultUrl
