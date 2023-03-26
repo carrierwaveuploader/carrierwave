@@ -840,7 +840,6 @@ Please read the [fog-google README](https://github.com/fog/fog-google/blob/maste
 For Google Storage JSON API (recommended):
 ```ruby
 CarrierWave.configure do |config|
-    config.fog_provider = 'fog/google'
     config.fog_credentials = {
         provider:               'Google',
         google_project:         'my-project',
@@ -854,7 +853,6 @@ end
 For Google Storage XML API:
 ```ruby
 CarrierWave.configure do |config|
-    config.fog_provider = 'fog/google'
     config.fog_credentials = {
         provider:                         'Google',
         google_storage_access_key_id:     'xxxxxx',
