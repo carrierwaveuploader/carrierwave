@@ -100,7 +100,7 @@ describe CarrierWave::Uploader do
     context "when the file is empty" do
       before { uploader.retrieve_from_cache!(path) }
 
-      it { is_expected.to eq('image/jpeg') }
+      it { is_expected.to eq('application/octet-stream') }
     end
   end
 end

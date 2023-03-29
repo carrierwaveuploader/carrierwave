@@ -220,10 +220,10 @@ describe CarrierWave::SanitizedFile do
       expect(sanitized_file.content_type).to eq("application/vnd.openxmlformats-officedocument.presentationml.presentation")
     end
 
-    it "reads content type from path if missing" do
+    it "does not raise an error if missing" do
       sanitized_file = CarrierWave::SanitizedFile.new("llama.jpg")
 
-      expect(sanitized_file.content_type).to eq("image/jpeg")
+      expect(sanitized_file.content_type).to eq("application/octet-stream")
     end
 
     it "reads content type of a CSV linked to a file" do
@@ -234,7 +234,24 @@ describe CarrierWave::SanitizedFile do
       expect(sanitized_file.content_type).to eq("text/csv")
     end
 
-    it "does not allow spoofing of the mime type" do
+    it "does not allow spoofing of the mime type passed by Hash" do
+      file = File.open(file_path("landscape.jpg"))
+
+      sanitized_file = CarrierWave::SanitizedFile.new(tempfile: file, content_type: 'image/png')
+
+      expect(sanitized_file.content_type).to eq("image/jpeg")
+    end
+
+    it "does not allow spoofing of the mime type by setting file's content type" do
+      file = File.open(file_path("landscape.jpg"))
+      allow(file).to receive(:content_type) { 'image/png' }
+
+      sanitized_file = CarrierWave::SanitizedFile.new(file)
+
+      expect(sanitized_file.content_type).to eq("image/jpeg")
+    end
+
+    it "does not allow spoofing of the mime type by file extension" do
       file = File.open(file_path("zip.png"))
 
       sanitized_file = CarrierWave::SanitizedFile.new(file)
@@ -251,7 +268,7 @@ describe CarrierWave::SanitizedFile do
       expect { sanitized_file.content_type }.not_to raise_error
 
       expect(sanitized_file.content_type).to_not eq 'image/png'
-      expect(sanitized_file.content_type).to eq 'invalid/invalid'
+      expect(sanitized_file.content_type).to eq 'application/octet-stream'
     end
 
     it "returns valid content type on text file" do
@@ -274,14 +291,14 @@ describe CarrierWave::SanitizedFile do
       expect(sanitized_file.content_type).to eq 'application/json'
     end
 
-    it "returns missing content type with unknown extension" do
+    it "returns binary content type with unknown extension" do
       file = File.open(file_path('bork.ABCDE'))
 
       sanitized_file = CarrierWave::SanitizedFile.new(file)
 
       expect { sanitized_file.content_type }.not_to raise_error
 
-      expect(sanitized_file.content_type).to eq ""
+      expect(sanitized_file.content_type).to eq "application/octet-stream"
     end
 
     it "does not raise an error if the path is not present" do
@@ -406,17 +423,18 @@ describe CarrierWave::SanitizedFile do
       end
 
       it "should preserve the file's content type" do
-        sanitized_file.content_type = 'application/octet-stream'
+        sanitized_file.content_type = 'application/x-something'
         sanitized_file.move_to(file_path("new_dir", "gurr.png"))
 
-        expect(sanitized_file.content_type).to eq("application/octet-stream")
+        expect(sanitized_file.content_type).to eq("application/x-something")
       end
 
-      it "should detect content type correctly using Marcel when content_type is not set" do
+      it "should detect content type using Magic when content_type is reset" do
         sanitized_file.content_type = nil
         sanitized_file.move_to(file_path("new_dir", "gurr.png"))
 
-        expect(sanitized_file.content_type).to eq("invalid/invalid")
+        expect(sanitized_file).to receive(:identified_content_type)
+        sanitized_file.content_type
       end
 
       context 'target path only differs by case' do
@@ -508,6 +526,14 @@ describe CarrierWave::SanitizedFile do
         expect(new_file.content_type).to eq(sanitized_file.content_type)
       end
     end
+
+    describe "#with_io" do
+      it "should yield an IO object" do
+        sanitized_file.send(:with_io) do |io|
+          expect(io).to respond_to(:read)
+        end
+      end
+    end
   end
 
   shared_examples_for "all valid sanitized files that are stored on disk" do
@@ -575,6 +601,15 @@ describe CarrierWave::SanitizedFile do
     describe "#read" do
       it "should have an open IO object" do
         expect(sanitized_file.instance_variable_get(:@file).closed?).to be_falsey
+      end
+    end
+
+    describe "#with_io" do
+      it "should try to rewind the IO object on finish" do
+        sanitized_file.send(:with_io) do |io|
+          io.read
+        end
+        expect(sanitized_file.file.pos).to eq 0
       end
     end
   end

@@ -27,7 +27,7 @@ module CarrierWave
 
     def initialize(file)
       self.file = file
-      @content = nil
+      @content = @content_type = nil
     end
 
     ##
@@ -163,11 +163,7 @@ module CarrierWave
       mkdir!(new_path, directory_permissions)
       move!(new_path)
       chmod!(new_path, permissions)
-      if keep_filename
-        self.file = {:tempfile => new_path, :filename => original_filename, :content_type => @content_type}
-      else
-        self.file = {:tempfile => new_path, :content_type => @content_type}
-      end
+      self.file = {tempfile: new_path, filename: keep_filename ? original_filename : nil, content_type: declared_content_type}
       self
     end
 
@@ -244,9 +240,10 @@ module CarrierWave
     #
     def content_type
       @content_type ||=
-        existing_content_type ||
-        marcel_magic_by_mime_type ||
-        marcel_magic_by_path
+        identified_content_type ||
+        declared_content_type ||
+        guessed_safe_content_type ||
+        Marcel::MimeType::BINARY
     end
 
     ##
@@ -277,11 +274,11 @@ module CarrierWave
       if file.is_a?(Hash)
         @file = file["tempfile"] || file[:tempfile]
         @original_filename = file["filename"] || file[:filename]
-        @content_type = file["content_type"] || file[:content_type] || file["type"] || file[:type]
+        @declared_content_type = file["content_type"] || file[:content_type] || file["type"] || file[:type]
       else
         @file = file
         @original_filename = nil
-        @content_type = nil
+        @declared_content_type = nil
       end
     end
 
@@ -307,33 +304,39 @@ module CarrierWave
       name.mb_chars.to_s
     end
 
-    def existing_content_type
-      if @file.respond_to?(:content_type) && @file.content_type
-        @file.content_type.to_s.chomp
-      end
+    def declared_content_type
+      @declared_content_type ||
+        if @file.respond_to?(:content_type) && @file.content_type
+          @file.content_type.to_s.chomp
+        end
     end
 
-    def marcel_magic_by_mime_type
+    # Guess content type from its file extension. Limit what to be returned to prevent spoofing.
+    def guessed_safe_content_type
       return unless path
 
-      type = File.open(path) do |file|
-        Marcel::Magic.by_magic(file).try(:type)
-      end
+      type = Marcel::Magic.by_path(original_filename).to_s
+      type if type.start_with?('text/') || type.start_with?('application/json')
+    end
 
-      if type.nil?
-        type = Marcel::Magic.by_path(path).try(:type)
-        type = 'invalid/invalid' unless type.nil? || type.start_with?('text/') || type.start_with?('application/json')
+    def identified_content_type
+      with_io do |io|
+        Marcel::Magic.by_magic(io).try(:type)
       end
-
-      type
     rescue Errno::ENOENT
       nil
     end
 
-    def marcel_magic_by_path
-      return unless path
-
-      Marcel::Magic.by_path(path).to_s
+    def with_io(&block)
+      if file.is_a?(IO)
+        begin
+          yield file
+        ensure
+          file.try(:rewind)
+        end
+      elsif path
+        File.open(path, &block)
+      end
     end
   end # SanitizedFile
 end # CarrierWave

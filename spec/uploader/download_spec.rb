@@ -50,7 +50,7 @@ describe CarrierWave::Uploader::Download do
       end
 
       it "sets the content type" do
-        expect(uploader.content_type).to eq("image/jpeg")
+        expect(uploader.file.send(:declared_content_type)).to eq("image/jpeg")
       end
     end
 
