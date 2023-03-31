@@ -437,6 +437,13 @@ describe CarrierWave::SanitizedFile do
         sanitized_file.content_type
       end
 
+      it "should not try to identify content type if unnecessary" do
+        expect(sanitized_file).not_to receive(:identified_content_type)
+        sanitized_file.move_to(file_path("new_dir", "gurr.png"))
+
+        expect(sanitized_file.instance_variable_get(:@content_type)).to be nil
+      end
+
       context 'target path only differs by case' do
         let(:upcased_sanitized_file) { CarrierWave::SanitizedFile.new(stub_file("upcase.JPG", "image/jpeg")) }
 
@@ -524,6 +531,13 @@ describe CarrierWave::SanitizedFile do
         new_file = sanitized_file.copy_to(file_path("gurr.png"))
 
         expect(new_file.content_type).to eq(sanitized_file.content_type)
+      end
+
+      it "should not try to identify content type if unnecessary" do
+        expect(sanitized_file).not_to receive(:identified_content_type)
+        new_file = sanitized_file.copy_to(file_path("new_dir", "gurr.png"))
+
+        expect(new_file.instance_variable_get(:@content_type)).to be nil
       end
     end
 

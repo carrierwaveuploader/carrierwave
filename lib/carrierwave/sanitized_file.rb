@@ -198,7 +198,7 @@ module CarrierWave
       mkdir!(new_path, directory_permissions)
       copy!(new_path)
       chmod!(new_path, permissions)
-      self.class.new({:tempfile => new_path, :content_type => content_type})
+      self.class.new({tempfile: new_path, content_type: declared_content_type})
     end
 
     ##
