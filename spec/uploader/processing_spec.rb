@@ -135,41 +135,6 @@ describe CarrierWave::Uploader do
       end
     end
 
-    context "when using RMagick", :rmagick => true do
-      before do
-        def uploader.cover
-          manipulate! { |frame, index| frame if index.zero? }
-        end
-
-        uploader_class.send :include, CarrierWave::RMagick
-      end
-
-      after { uploader.instance_eval { undef cover } }
-
-      context "with a multi-page PDF" do
-        before { uploader.cache! File.open(file_path("multi_page.pdf")) }
-
-        it "successfully processes" do
-          uploader_class.process :convert => 'jpg'
-          uploader.process!
-        end
-
-        it "supports page specific transformations" do
-          uploader_class.process :cover
-          uploader.process!
-        end
-      end
-
-      context "with a simple image" do
-        before { uploader.cache! File.open(file_path("portrait.jpg")) }
-
-        it "allows page specific transformations" do
-          uploader_class.process :cover
-          uploader.process!
-        end
-      end
-    end
-
     context "with 'enable_processing' set to false" do
       before { uploader_class.enable_processing = false }
 
@@ -191,6 +156,162 @@ describe CarrierWave::Uploader do
     it "triggers a process!" do
       expect(uploader).to receive(:process!)
       uploader.cache!(File.open(file_path('test.jpg')))
+    end
+  end
+
+  describe '#forcing_extension' do
+    it "works with a symbol" do
+      uploader.force_extension = :png
+      expect(uploader.send(:forcing_extension, 'test.jpg')).to eq 'test.png'
+    end
+
+    it "works with a string without dot" do
+      uploader.force_extension = 'png'
+      expect(uploader.send(:forcing_extension, 'test.jpg')).to eq 'test.png'
+    end
+
+    it "works with a string with dot" do
+      uploader.force_extension = '.png'
+      expect(uploader.send(:forcing_extension, 'test.jpg')).to eq 'test.png'
+    end
+
+    it "does nothing when force_extension is false" do
+      uploader.force_extension = false
+      expect(uploader.send(:forcing_extension, 'test.jpg')).to eq 'test.jpg'
+    end
+  end
+
+  context "when using #convert" do
+    let(:another_uploader) { uploader_class.new }
+    before do
+      uploader_class.class_eval do
+        include CarrierWave::MiniMagick
+        process convert: :png
+      end
+    end
+
+    it "performs the processing" do
+      uploader.cache!(File.open(file_path('landscape.jpg')))
+      expect(uploader).to be_format('png')
+      expect(uploader.file.filename).to eq 'landscape.png'
+    end
+
+    it "does not change #original_filename but changes #cache_path and #url to have new extension" do
+      uploader.cache!(File.open(file_path('landscape.jpg')))
+      expect(uploader.send(:original_filename)).to eq 'landscape.jpg'
+      expect(uploader.cache_name.split('/').last).to eq 'landscape.jpg'
+      expect(File.basename(uploader.cache_path)).to eq 'landscape.png'
+      expect(File.basename(uploader.url)).to eq 'landscape.png'
+    end
+
+    it "changes #filename to have new extension" do
+      uploader.store!(File.open(file_path('landscape.jpg')))
+      expect(uploader.identifier).to eq 'landscape.jpg'
+      expect(File.basename(uploader.store_path)).to eq 'landscape.png'
+      expect(File.basename(uploader.url)).to eq 'landscape.png'
+    end
+
+    it "allows the cached file to be retrieved" do
+      uploader.cache!(File.open(file_path('landscape.jpg')))
+      another_uploader.retrieve_from_cache!(uploader.cache_name)
+      expect(another_uploader.cache_path).to eq uploader.cache_path
+      expect(another_uploader.url).to eq uploader.url
+    end
+
+    it "allows the stored file to be retrieved" do
+      uploader.store!(File.open(file_path('landscape.jpg')))
+      another_uploader.retrieve_from_store!(uploader.identifier)
+      expect(another_uploader.identifier).to eq uploader.identifier
+      expect(another_uploader.url).to eq uploader.url
+    end
+
+    context "with #filename overridden" do
+      let(:changed_extension) { '.png' }
+
+      before do
+        uploader_class.class_eval <<-RUBY, __FILE__, __LINE__+1
+          def filename
+            super.chomp(File.extname(super)) + '#{changed_extension}'
+          end
+        RUBY
+      end
+
+      it "stores the file" do
+        uploader.store!(File.open(file_path('landscape.jpg')))
+        expect(uploader.filename).to eq 'landscape.png'
+      end
+
+      it "retrieves the file" do
+        uploader.store!(File.open(file_path('landscape.jpg')))
+        another_uploader.retrieve_from_store!(uploader.identifier)
+        expect(another_uploader.identifier).to eq uploader.identifier
+        expect(another_uploader.url).to eq uploader.url
+      end
+
+      context "to have a wrong extension" do
+        let(:changed_extension) { '.gif' }
+
+        it "uses the wrong one" do
+          uploader.store!(File.open(file_path('landscape.jpg')))
+          expect(uploader.filename).to eq 'landscape.gif'
+          expect(uploader).to be_format('png')
+        end
+      end
+    end
+  end
+
+  context "when file extension changes not using #convert" do
+    let(:another_uploader) { uploader_class.new }
+    before do
+      uploader_class.class_eval do
+        def rename
+          file.move_to 'landscape.bin'
+        end
+        process :rename
+      end
+    end
+
+    it "performs the processing without changing #idenfitier" do
+      uploader.cache!(File.open(file_path('landscape.jpg')))
+      expect(uploader.file.filename).to eq 'landscape.bin'
+      expect(uploader.identifier).to eq 'landscape.jpg'
+    end
+
+    context "but applying #force_extension" do
+      before do
+        uploader_class.class_eval do
+          force_extension '.bin'
+        end
+      end
+
+      it "changes #filename to have the extension" do
+        uploader.store!(File.open(file_path('landscape.jpg')))
+        expect(uploader.identifier).to eq 'landscape.jpg'
+        expect(File.basename(uploader.store_path)).to eq 'landscape.bin'
+      end
+    end
+
+    context "but overriding #filename" do
+      before do
+        uploader_class.class_eval <<-RUBY, __FILE__, __LINE__+1
+          def filename
+            super.chomp(File.extname(super)) + '.bin'
+          end
+        RUBY
+      end
+
+      it "changes #filename to have the extension" do
+        uploader.store!(File.open(file_path('landscape.jpg')))
+        expect(uploader.identifier).to eq 'landscape.bin'
+        expect(File.basename(uploader.store_path)).to eq 'landscape.bin'
+      end
+
+      it "retrieves the file by using the overridden name" do
+        uploader.store!(File.open(file_path('landscape.jpg')))
+        another_uploader.retrieve_from_store!(uploader.identifier)
+        expect(another_uploader.identifier).to eq uploader.identifier
+        expect(another_uploader.url).to eq uploader.url
+      end
     end
   end
 end

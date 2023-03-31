@@ -348,4 +348,39 @@ describe CarrierWave::RMagick, :rmagick => true do
       end
     end
   end
+
+  describe "when working with frames" do
+    before do
+      def instance.cover
+        manipulate! { |frame, index| frame if index.zero? }
+      end
+
+      klass.send :include, CarrierWave::RMagick
+    end
+
+    after { instance.instance_eval { undef cover } }
+
+    context "with a multi-page PDF" do
+      before { instance.cache! File.open(file_path("multi_page.pdf")) }
+
+      it "successfully processes" do
+        klass.process :convert => 'jpg'
+        instance.process!
+      end
+
+      it "supports page specific transformations" do
+        klass.process :cover
+        instance.process!
+      end
+    end
+
+    context "with a simple image" do
+      before { instance.cache! File.open(file_path("portrait.jpg")) }
+
+      it "allows page specific transformations" do
+        klass.process :cover
+        instance.process!
+      end
+    end
+  end
 end

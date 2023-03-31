@@ -92,7 +92,7 @@ module CarrierWave
     private
 
       def full_filename(for_file)
-        for_file
+        forcing_extension(for_file)
       end
 
       def storage

@@ -103,7 +103,7 @@ module CarrierWave
       # [String] a cache name, in the format TIMEINT-PID-COUNTER-RND/filename.txt
       #
       def cache_name
-        File.join(cache_id, full_original_filename) if cache_id && original_filename
+        File.join(cache_id, original_filename) if cache_id && original_filename
       end
 
       ##
@@ -166,7 +166,7 @@ module CarrierWave
           self.cache_id, self.original_filename = cache_name.to_s.split('/', 2)
           @staged = true
           @filename = original_filename
-          @file = cache_storage.retrieve_from_cache!(full_filename(original_filename))
+          @file = cache_storage.retrieve_from_cache!(full_original_filename)
         end
       end
 
@@ -181,7 +181,7 @@ module CarrierWave
       #
       # [String] the cache path
       #
-      def cache_path(for_file=full_filename(original_filename))
+      def cache_path(for_file=full_original_filename)
         File.join(*[cache_dir, @cache_id, for_file].compact)
       end
 
@@ -197,9 +197,6 @@ module CarrierWave
 
       attr_reader :original_filename
 
-      # We can override the full_original_filename method in other modules
-      alias_method :full_original_filename, :original_filename
-
       def cache_id=(cache_id)
         # Earlier version used 3 part cache_id. Thus we should allow for
         # the cache_id to have both 3 part and 4 part formats.
@@ -214,6 +211,11 @@ module CarrierWave
 
       def cache_storage
         @cache_storage ||= (self.class.cache_storage || self.class.storage).new(self)
+      end
+
+      # We can override the full_original_filename method in other modules
+      def full_original_filename
+        forcing_extension(original_filename)
       end
     end # Cache
   end # Uploader
