@@ -5,7 +5,7 @@ describe CarrierWave::Downloader::Base do
   let(:uploader) { uploader_class.new }
   let(:file) { File.read(file_path("test.jpg")) }
   let(:filename) { "test.jpg" }
-  let(:uri) { "http://www.example.com/#{CGI.escape(filename)}" }
+  let(:uri) { "http://www.example.com/#{URI::DEFAULT_PARSER.escape(filename)}" }
 
   subject { CarrierWave::Downloader::Base.new(uploader) }
 
@@ -35,6 +35,29 @@ describe CarrierWave::Downloader::Base do
 
     it "leaves colon in resulting URI" do
       expect(subject.process_uri(uri).query).to eq query
+    end
+
+    it "downloads a file" do
+      expect(subject.download(uri).file.read).to eq file
+    end
+  end
+
+  context "with internationalized domain name" do
+    let(:uri) { "https://ドメイン名例.jp/test.jpg" }
+    before do
+      stub_request(:get, 'https://xn--eckwd4c7cu47r2wf.jp/test.jpg').to_return(body: file)
+      allow(Resolv).to receive(:getaddresses).with('xn--eckwd4c7cu47r2wf.jp').and_return(['1.2.3.4'])
+    end
+
+    it "downloads a file" do
+      expect(subject.download(uri).file.read).to eq file
+    end
+  end
+
+  context "with non-ascii characters in the query and the fragment" do
+    let(:uri) { "http://example.com/test.jpg?q=А#あああ" }
+    before do
+      stub_request(:get, "http://example.com/test.jpg?q=%D0%90").to_return(body: file)
     end
 
     it "downloads a file" do
@@ -172,60 +195,69 @@ describe CarrierWave::Downloader::Base do
   end
 
   describe '#process_uri' do
+    it "returns an URI instance" do
+      uri = "http://example.com/"
+      expect(subject.process_uri(uri)).to be_an_instance_of(URI::HTTP)
+    end
+
     it "converts a URL with internationalized domain name to Punycode URI" do
       uri = "http://ドメイン名例.jp/#{CGI.escape(filename)}"
       processed = subject.process_uri(uri)
-      expect(processed.class).to eq(URI::HTTP)
       expect(processed.to_s).to eq 'http://xn--eckwd4c7cu47r2wf.jp/test.jpg'
     end
 
     it "parses but not escape already escaped uris" do
       uri = 'http://example.com/%5B.jpg'
       processed = subject.process_uri(uri)
-      expect(processed.class).to eq(URI::HTTP)
+      expect(processed.to_s).to eq(uri)
+    end
+
+    it "does not perform normalization on path when not necessary" do
+      uri = 'http://example.com/o%CC%88.png'
+      processed = subject.process_uri(uri)
       expect(processed.to_s).to eq(uri)
     end
 
     it "parses but not escape uris with query-string-only characters not needing escaping" do
       uri = 'http://example.com/?foo[]=bar'
       processed = subject.process_uri(uri)
-      expect(processed.class).to eq(URI::HTTP)
       expect(processed.to_s).to eq(uri)
     end
 
     it "escapes and parse unescaped uris" do
       uri = 'http://example.com/ %[].jpg'
       processed = subject.process_uri(uri)
-      expect(processed.class).to eq(URI::HTTP)
       expect(processed.to_s).to eq('http://example.com/%20%25%5B%5D.jpg')
     end
 
     it "parses but not escape uris with query-string characters representing urls not needing escaping " do
       uri = 'http://example.com/?src0=https%3A%2F%2Fi.vimeocdn.com%2Fvideo%2F1234_1280x720.jpg'
       processed = subject.process_uri(uri)
-      expect(processed.class).to eq(URI::HTTP)
       expect(processed.to_s).to eq(uri)
     end
 
     it "escapes and parse brackets in uri paths without harming the query string" do
       uri = 'http://example.com/].jpg?test[]'
       processed = subject.process_uri(uri)
-      expect(processed.class).to eq(URI::HTTP)
       expect(processed.to_s).to eq('http://example.com/%5D.jpg?test[]')
     end
 
     it "escapes and parse unescaped characters in path" do
       uri = 'http://example.com/あああ.jpg'
       processed = subject.process_uri(uri)
-      expect(processed.class).to eq(URI::HTTP)
       expect(processed.to_s).to eq('http://example.com/%E3%81%82%E3%81%82%E3%81%82.jpg')
     end
 
     it "escapes and parse unescaped characters in query string" do
       uri = 'http://example.com/?q=あああ'
       processed = subject.process_uri(uri)
-      expect(processed.class).to eq(URI::HTTP)
       expect(processed.to_s).to eq('http://example.com/?q=%E3%81%82%E3%81%82%E3%81%82')
+    end
+
+    it "escapes and parse unescaped characters in the fragment" do
+      uri = 'http://example.com/#あああ'
+      processed = subject.process_uri(uri)
+      expect(processed.to_s).to eq('http://example.com/#%E3%81%82%E3%81%82%E3%81%82')
     end
 
     it "throws an exception on bad uris" do

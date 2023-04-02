@@ -6,6 +6,8 @@ require 'carrierwave/downloader/remote_file'
 module CarrierWave
   module Downloader
     class Base
+      include CarrierWave::Utilities::Uri
+
       attr_reader :uploader
 
       def initialize(uploader)
@@ -61,17 +63,16 @@ module CarrierWave
       #
       # [url (String)] The URL where the remote file is stored
       #
-      def process_uri(uri)
-        uri_parts = uri.split('?')
-        encoded_uri = Addressable::URI.parse(uri_parts.shift).normalize.to_s
-        query = uri_parts.any? ? "?#{uri_parts.join('?')}" : ''
-        begin
-          URI.parse("#{encoded_uri}#{query}")
-        rescue URI::InvalidURIError
-          URI.parse("#{encoded_uri}#{URI::DEFAULT_PARSER.escape(query)}")
-        end
+      def process_uri(source)
+        uri = Addressable::URI.parse(source)
+        uri.host = uri.normalized_host
+        # Perform decode first, as the path is likely to be already encoded
+        uri.path = encode_path(decode_uri(uri.path)) if uri.path =~ CarrierWave::Utilities::Uri::PATH_UNSAFE
+        uri.query = encode_non_ascii(uri.query) if uri.query
+        uri.fragment = encode_non_ascii(uri.fragment) if uri.fragment
+        URI.parse(uri.to_s)
       rescue URI::InvalidURIError, Addressable::URI::InvalidURIError
-        raise CarrierWave::DownloadError, "couldn't parse URL: #{uri}"
+        raise CarrierWave::DownloadError, "couldn't parse URL: #{source}"
       end
 
       ##

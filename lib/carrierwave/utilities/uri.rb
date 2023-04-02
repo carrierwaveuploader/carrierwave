@@ -4,20 +4,22 @@ module CarrierWave
   module Utilities
     module Uri
       # based on Ruby < 2.0's URI.encode
-      SAFE_STRING = URI::REGEXP::PATTERN::UNRESERVED + '\/'
-      UNSAFE = Regexp.new("[^#{SAFE_STRING}]", false)
+      PATH_SAFE = URI::REGEXP::PATTERN::UNRESERVED + '\/'
+      PATH_UNSAFE = Regexp.new("[^#{PATH_SAFE}]", false)
+      NON_ASCII = /[^[:ascii:]]/.freeze
 
     private
 
       def encode_path(path)
-        path.to_s.gsub(UNSAFE) do
-          us = $&
-          tmp = ''
-          us.each_byte do |uc|
-            tmp << sprintf('%%%02X', uc)
-          end
-          tmp
-        end
+        URI::DEFAULT_PARSER.escape(path, PATH_UNSAFE)
+      end
+
+      def encode_non_ascii(str)
+        URI::DEFAULT_PARSER.escape(str, NON_ASCII)
+      end
+
+      def decode_uri(str)
+        URI::DEFAULT_PARSER.unescape(str)
       end
     end # Uri
   end # Utilities
