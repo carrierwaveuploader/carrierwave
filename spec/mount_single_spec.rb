@@ -86,9 +86,9 @@ describe CarrierWave::Mount do
       it "should inherit defined processors properly" do
         expect(@uploader1.processors).to eq([[:rotate, [], nil, nil]])
         expect(@uploader2.processors).to eq([[:rotate, [], nil, nil], [:shrink, [], nil, nil]])
-        expect(@uploader1.versions[:thumb].processors).to eq([[:compress, [], nil, nil]])
-        expect(@uploader2.versions[:thumb].processors).to eq([[:compress, [], nil, nil]])
-        expect(@uploader2.versions[:secret].processors).to eq([[:encrypt, [], nil, nil]])
+        expect(@uploader1.new.versions[:thumb].processors).to eq([[:compress, [], nil, nil]])
+        expect(@uploader2.new.versions[:thumb].processors).to eq([[:compress, [], nil, nil]])
+        expect(@uploader2.new.versions[:secret].processors).to eq([[:encrypt, [], nil, nil]])
       end
     end
 

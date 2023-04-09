@@ -441,7 +441,6 @@ module CarrierWave
       const_set("CarrierWave#{column.to_s.camelize}Uploader", uploader)
 
       uploader.class_eval(&block)
-      uploader.recursively_apply_block_to_versions(&block)
 
       uploader
     end

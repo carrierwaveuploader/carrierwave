@@ -1,6 +1,71 @@
 module CarrierWave
   module Uploader
     module Versions
+      class Builder
+        def initialize(name)
+          @name = name
+          @options = {}
+          @blocks = []
+          @klass = nil
+        end
+
+        def configure(options, &block)
+          @options.merge!(options)
+          @blocks << block if block
+          @klass = nil
+        end
+
+        def build(superclass)
+          return @klass if @klass
+          @klass = Class.new(superclass)
+          superclass.const_set("#{@name.to_s.camelize}VersionUploader", @klass)
+
+          @klass.version_names += [@name]
+          @klass.versions = {}
+          @klass.processors = []
+          @klass.version_options = @options
+          @klass.class_eval <<-RUBY, __FILE__, __LINE__ + 1
+            # Regardless of what is set in the parent uploader, do not enforce the
+            # move_to_cache config option on versions because it moves the original
+            # file to the version's target file.
+            #
+            # If you want to enforce this setting on versions, override this method
+            # in each version:
+            #
+            # version :thumb do
+            #   def move_to_cache
+            #     true
+            #   end
+            # end
+            #
+            def move_to_cache
+              false
+            end
+          RUBY
+          @blocks.each { |block| @klass.class_eval(&block) }
+          @klass
+        end
+
+        def deep_dup
+          other = dup
+          other.instance_variable_set(:@blocks, @blocks.dup)
+          other
+        end
+
+        def method_missing(name, *args)
+          super
+        rescue NoMethodError => e
+          raise e.exception <<~ERROR
+            #{e.message}
+            If you're trying to configure a version, do it inside a block like `version(:thumb) { self.#{name} #{args.map(&:inspect).join(', ')} }`.
+          ERROR
+        end
+
+        def respond_to_missing?(*)
+          super
+        end
+      end
+
       extend ActiveSupport::Concern
 
       include CarrierWave::Uploader::Callbacks
@@ -58,79 +123,25 @@ module CarrierWave
         #
         def version(name, options = {}, &block)
           name = name.to_sym
-          build_version(name, options)
+          versions[name] ||= Builder.new(name)
+          versions[name].configure(options, &block)
 
-          versions[name].class_eval(&block) if block
+          class_eval <<-RUBY, __FILE__, __LINE__ + 1
+            def #{name}
+              versions[:#{name}]
+            end
+          RUBY
+
           versions[name]
-        end
-
-        def recursively_apply_block_to_versions(&block)
-          versions.each do |name, version|
-            version.class_eval(&block)
-            version.recursively_apply_block_to_versions(&block)
-          end
         end
 
       private
 
-        def build_version(name, options)
-          class_name = "#{name.to_s.camelize}VersionUploader"
-
-          if !versions.has_key?(name)
-            uploader = Class.new(self)
-            const_set(class_name, uploader)
-            uploader.version_names += [name]
-            uploader.versions = {}
-            uploader.processors = []
-            uploader.version_options = options
-
-            uploader.class_eval <<-RUBY, __FILE__, __LINE__ + 1
-              # Define the enable_processing method for versions so they get the
-              # value from the parent class unless explicitly overwritten
-              def self.enable_processing(value=nil)
-                self.enable_processing = value if value
-                if defined?(@enable_processing) && !@enable_processing.nil?
-                  @enable_processing
-                else
-                  superclass.enable_processing
-                end
-              end
-
-              # Regardless of what is set in the parent uploader, do not enforce the
-              # move_to_cache config option on versions because it moves the original
-              # file to the version's target file.
-              #
-              # If you want to enforce this setting on versions, override this method
-              # in each version:
-              #
-              # version :thumb do
-              #   def move_to_cache
-              #     true
-              #   end
-              # end
-              #
-              def move_to_cache
-                false
-              end
-            RUBY
-
-            class_eval <<-RUBY, __FILE__, __LINE__ + 1
-              def #{name}
-                versions[:#{name}]
-              end
-            RUBY
-          else
-            parent = versions[name]
-            uploader = Class.new(parent)
-            parent.const_set(class_name, uploader)
-            uploader.processors = []
-            uploader.version_options = uploader.version_options.merge(options)
-          end
-
-          # Add the current version hash to class attribute :versions
-          self.versions = versions.merge(name => uploader)
+        def inherited(subclass)
+          # To prevent subclass version changes affecting superclass versions
+          subclass.versions = versions.deep_dup
+          super
         end
-
       end # ClassMethods
 
       ##
@@ -144,7 +155,7 @@ module CarrierWave
         return @versions if @versions
         @versions = {}
         self.class.versions.each do |name, version|
-          @versions[name] = version.new(model, mounted_as)
+          @versions[name] = version.build(self.class).new(model, mounted_as)
           @versions[name].parent_version = self
         end
         @versions
@@ -172,10 +183,10 @@ module CarrierWave
       def version_exists?(name)
         name = name.to_sym
 
-        return false unless self.class.versions.has_key?(name)
+        return false unless versions.has_key?(name)
 
-        if_condition = self.class.versions[name].version_options[:if]
-        unless_condition = self.class.versions[name].version_options[:unless]
+        if_condition = versions[name].class.version_options[:if]
+        unless_condition = versions[name].class.version_options[:unless]
 
         if if_condition
           if if_condition.respond_to?(:call)

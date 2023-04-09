@@ -15,10 +15,21 @@ describe CarrierWave::Uploader do
   end
 
   describe '.version' do
-    it "should add it to .versions" do
+    it "should add the builder to .versions" do
       @uploader_class.version :thumb
-      expect(@uploader_class.versions[:thumb]).to be_a(Class)
-      expect(@uploader_class.versions[:thumb].ancestors).to include(@uploader_class)
+      expect(@uploader_class.versions[:thumb]).to be_a(CarrierWave::Uploader::Versions::Builder)
+    end
+
+    it "should raise an error when a user tries to use a Builder for configuration" do
+      @uploader_class.version :thumb
+      expect { @uploader_class.versions[:thumb].storage = :file }.to raise_error NoMethodError, /{ self.storage= :file }/
+      expect { @uploader_class.versions[:thumb].process convert: :png }.to raise_error NoMethodError, /{ self.process {:convert=>:png} }/
+    end
+
+    it "should add an version instance to #versions" do
+      @uploader_class.version :thumb
+      expect(@uploader.versions[:thumb]).to be_a(CarrierWave::Uploader::Base)
+      expect(@uploader.versions[:thumb].class.ancestors).to include(@uploader_class)
     end
 
     it "should only assign versions to parent" do
@@ -84,21 +95,20 @@ describe CarrierWave::Uploader do
     end
 
     it "should not initially have a value for enable processing" do
-      thumb = (@uploader_class.version :thumb)
-      expect(thumb.instance_variable_get('@enable_processing')).to be_nil
+      @uploader_class.version :thumb
+      expect(@uploader.thumb.class.instance_variable_get('@enable_processing')).to be_nil
     end
 
     it "should return the enable processing value of the parent" do
+      @uploader_class.version :thumb
       @uploader_class.enable_processing = false
-      thumb = (@uploader_class.version :thumb)
-      expect(thumb.enable_processing).to be_falsey
+      expect(@uploader.thumb.class.enable_processing).to be_falsey
     end
 
     it "should return its own value for enable processing if set" do
       @uploader_class.enable_processing = false
-      thumb = @uploader_class.version :thumb
-      thumb.enable_processing = true
-      expect(thumb.enable_processing).to be_truthy
+      @uploader_class.version(:thumb) { self.enable_processing = true }
+      expect(@uploader.thumb.enable_processing).to be_truthy
     end
 
     it "should reopen the same class when called multiple times" do
@@ -112,8 +122,8 @@ describe CarrierWave::Uploader do
           "llama"
         end
       end
-      expect(@uploader_class.version(:thumb).monkey).to eq("monkey")
-      expect(@uploader_class.version(:thumb).llama).to eq("llama")
+      expect(@uploader.thumb.class.monkey).to eq("monkey")
+      expect(@uploader.thumb.class.llama).to eq("llama")
     end
 
     it "should reopen the same instance when called multiple times" do
@@ -133,7 +143,7 @@ describe CarrierWave::Uploader do
 
     it "should accept option :from_version" do
       @uploader_class.version :small_thumb, :from_version => :thumb
-      expect(@uploader_class.version(:small_thumb).version_options[:from_version]).to eq(:thumb)
+      expect(@uploader.small_thumb.class.version_options[:from_version]).to eq(:thumb)
     end
 
     describe 'with nested versions' do
@@ -195,11 +205,17 @@ describe CarrierWave::Uploader do
     describe 'with inheritance' do
 
       before do
+        @uploader_class.class_eval do
+          def store_dir
+            public_path('monkey')
+          end
+        end
         @uploader_class.version :thumb do
           def store_dir
             public_path('monkey/apache')
           end
         end
+        @uploader_class.version :preview
 
         @child_uploader_class = Class.new(@uploader_class)
         @child_uploader = @child_uploader_class.new
@@ -223,6 +239,27 @@ describe CarrierWave::Uploader do
         end
 
         expect(@uploader.thumb.store_dir).to eq(public_path('monkey/apache'))
+      end
+
+      it "should respect store_dir in the subclass" do
+        @child_uploader_class.class_eval do
+          def store_dir
+            public_path('gorilla')
+          end
+        end
+
+        expect(@uploader.preview.store_dir).to eq(public_path('monkey'))
+        expect(@child_uploader.preview.store_dir).to eq(public_path('gorilla'))
+      end
+
+      it "should respect default_url in the subclass" do
+        @child_uploader_class.class_eval do
+          def default_url
+            "/#{version_name}.png"
+          end
+        end
+
+        expect(@child_uploader.preview.default_url).to eq('/preview.png')
       end
     end
   end
@@ -318,8 +355,10 @@ describe CarrierWave::Uploader do
       before do
         @uploader_class.cache_storage = :file
         @uploader_class.storage = mock_storage('base')
-        @uploader_class.version(:thumb).storage = mock_storage('thumb')
-        @uploader_class.version(:preview).storage = mock_storage('preview')
+        mock_thumb_storage = mock_storage('thumb')
+        @uploader_class.version(:thumb) { self.storage = mock_thumb_storage }
+        mock_preview_storage = mock_storage('preview')
+        @uploader_class.version(:preview) { self.storage = mock_preview_storage }
 
         @file = File.open(file_path('test.jpg'))
 
@@ -335,18 +374,18 @@ describe CarrierWave::Uploader do
         allow(@preview_stored_file).to receive(:path).and_return('/path/to/somewhere/preview')
         allow(@preview_stored_file).to receive(:url).and_return('http://www.example.com/preview')
 
-        @storage = double('a storage engine')
+        @storage = double('a storage instance')
         allow(@storage).to receive(:store!).and_return(@base_stored_file)
 
-        @thumb_storage = double('a storage engine for thumbnails')
+        @thumb_storage = double('a storage instance for thumbnails')
         allow(@thumb_storage).to receive(:store!).and_return(@thumb_stored_file)
 
-        @preview_storage = double('a storage engine for previews')
+        @preview_storage = double('a storage instance for previews')
         allow(@preview_storage).to receive(:store!).and_return(@preview_stored_file)
 
         allow(@uploader_class.storage).to receive(:new).with(@uploader).and_return(@storage)
-        allow(@uploader_class.version(:thumb).storage).to receive(:new).and_return(@thumb_storage)
-        allow(@uploader_class.version(:preview).storage).to receive(:new).and_return(@preview_storage)
+        allow(@uploader.thumb.class.storage).to receive(:new).and_return(@thumb_storage)
+        allow(@uploader.preview.class.storage).to receive(:new).and_return(@preview_storage)
       end
 
       it "should set the current path for the version" do
@@ -377,7 +416,7 @@ describe CarrierWave::Uploader do
 
       context "when there is an 'if' option" do
         it "should process conditional versions if the condition method returns true" do
-          @uploader_class.version(:preview).version_options[:if] = :true?
+          @uploader_class.version(:preview, if: :true?)
           expect(@uploader).to receive(:true?).at_least(:once).and_return(true)
           @uploader.store!(@file)
           expect(@uploader.thumb).to be_present
@@ -385,7 +424,7 @@ describe CarrierWave::Uploader do
         end
 
         it "should not process conditional versions if the condition method returns false" do
-          @uploader_class.version(:preview).version_options[:if] = :false?
+          @uploader_class.version(:preview, if: :false?)
           expect(@uploader).to receive(:false?).at_least(:once).and_return(false)
           @uploader.store!(@file)
           expect(@uploader.thumb).to be_present
@@ -393,7 +432,7 @@ describe CarrierWave::Uploader do
         end
 
         it "should process conditional version if the condition block returns true" do
-          @uploader_class.version(:preview).version_options[:if] = lambda{|record, args| record.true?(args[:file])}
+          @uploader_class.version(:preview, if: lambda{|record, args| record.true?(args[:file])})
           expect(@uploader).to receive(:true?).at_least(:once).and_return(true)
           @uploader.store!(@file)
           expect(@uploader.thumb).to be_present
@@ -401,7 +440,7 @@ describe CarrierWave::Uploader do
         end
 
         it "should not process conditional versions if the condition block returns false" do
-          @uploader_class.version(:preview).version_options[:if] = lambda{|record, args| record.false?(args[:file])}
+          @uploader_class.version(:preview, if: lambda{|record, args| record.false?(args[:file])})
           expect(@uploader).to receive(:false?).at_least(:once).and_return(false)
           @uploader.store!(@file)
           expect(@uploader.thumb).to be_present
@@ -411,7 +450,7 @@ describe CarrierWave::Uploader do
 
       context "when there is an 'unless' option" do
         it "should not process conditional versions if the condition method returns true" do
-          @uploader_class.version(:preview).version_options[:unless] = :true?
+          @uploader_class.version(:preview, unless: :true?)
           expect(@uploader).to receive(:true?).at_least(:once).and_return(true)
           @uploader.store!(@file)
           expect(@uploader.thumb).to be_present
@@ -419,7 +458,7 @@ describe CarrierWave::Uploader do
         end
 
         it "should process conditional versions if the condition method returns false" do
-          @uploader_class.version(:preview).version_options[:unless] = :false?
+          @uploader_class.version(:preview, unless: :false?)
           expect(@uploader).to receive(:false?).at_least(:once).and_return(false)
           @uploader.store!(@file)
           expect(@uploader.thumb).to be_present
@@ -427,7 +466,7 @@ describe CarrierWave::Uploader do
         end
 
         it "should not process conditional version if the condition block returns true" do
-          @uploader_class.version(:preview).version_options[:unless] = lambda{|record, args| record.true?(args[:file])}
+          @uploader_class.version(:preview, unless: lambda{|record, args| record.true?(args[:file])})
           expect(@uploader).to receive(:true?).at_least(:once).and_return(true)
           @uploader.store!(@file)
           expect(@uploader.thumb).to be_present
@@ -435,7 +474,7 @@ describe CarrierWave::Uploader do
         end
 
         it "should process conditional versions if the condition block returns false" do
-          @uploader_class.version(:preview).version_options[:unless] = lambda{|record, args| record.false?(args[:file])}
+          @uploader_class.version(:preview, unless: lambda{|record, args| record.false?(args[:file])})
           expect(@uploader).to receive(:false?).at_least(:once).and_return(false)
           @uploader.store!(@file)
           expect(@uploader.thumb).to be_present
@@ -575,7 +614,8 @@ describe CarrierWave::Uploader do
       before do
         @uploader_class.cache_storage = :file
         @uploader_class.storage = mock_storage('base')
-        @uploader_class.version(:thumb).storage = mock_storage('thumb')
+        mock_thumb_storage = mock_storage('thumb')
+        @uploader_class.version(:thumb) { self.storage = mock_thumb_storage }
 
         @file = File.open(file_path('test.jpg'))
 
@@ -589,7 +629,7 @@ describe CarrierWave::Uploader do
         allow(@thumb_storage).to receive(:store!).and_return(@thumb_stored_file)
 
         allow(@uploader_class.storage).to receive(:new).with(@uploader).and_return(@storage)
-        allow(@uploader_class.version(:thumb).storage).to receive(:new).with(@uploader.thumb).and_return(@thumb_storage)
+        allow(@uploader.thumb.class.storage).to receive(:new).with(@uploader.thumb).and_return(@thumb_storage)
 
         allow(@base_stored_file).to receive(:delete)
         allow(@thumb_stored_file).to receive(:delete)
@@ -620,8 +660,10 @@ describe CarrierWave::Uploader do
     describe '#retrieve_from_store!' do
       before do
         @uploader_class.storage = mock_storage('base')
-        @uploader_class.version(:thumb).storage = mock_storage('thumb')
-        @uploader_class.version(:preview).storage = mock_storage('preview')
+        mock_thumb_storage = mock_storage('thumb')
+        @uploader_class.version(:thumb) { self.storage = mock_thumb_storage }
+        mock_preview_storage = mock_storage('preview')
+        @uploader_class.version(:preview) { self.storage = mock_preview_storage }
 
         @file = File.open(file_path('test.jpg'))
 
@@ -647,8 +689,8 @@ describe CarrierWave::Uploader do
         allow(@preview_storage).to receive(:retrieve!).and_return(@preview_stored_file)
 
         allow(@uploader_class.storage).to receive(:new).with(@uploader).and_return(@storage)
-        allow(@uploader_class.version(:thumb).storage).to receive(:new).with(@uploader.thumb).and_return(@thumb_storage)
-        allow(@uploader_class.version(:preview).storage).to receive(:new).with(@uploader.preview).and_return(@preview_storage)
+        allow(@uploader.thumb.class.storage).to receive(:new).with(@uploader.thumb).and_return(@thumb_storage)
+        allow(@uploader.preview.class.storage).to receive(:new).with(@uploader.preview).and_return(@preview_storage)
       end
 
       it "should set the current path" do
@@ -678,7 +720,7 @@ describe CarrierWave::Uploader do
 
       context "when there is an 'if' option" do
         it "should process conditional versions if the condition method returns true" do
-          @uploader_class.version(:preview).version_options[:if] = :true?
+          @uploader_class.version(:preview, if: :true?)
           expect(@uploader).to receive(:true?).at_least(:once).and_return(true)
           @uploader.retrieve_from_store!('monkey.txt')
           expect(@uploader.thumb).to be_present
@@ -686,7 +728,7 @@ describe CarrierWave::Uploader do
         end
 
         it "should not process conditional versions if the condition method returns false" do
-          @uploader_class.version(:preview).version_options[:if] = :false?
+          @uploader_class.version(:preview, if: :false?)
           expect(@uploader).to receive(:false?).at_least(:once).and_return(false)
           @uploader.retrieve_from_store!('monkey.txt')
           expect(@uploader.thumb).to be_present
@@ -696,7 +738,7 @@ describe CarrierWave::Uploader do
 
       context "when there is an 'unless' option" do
         it "should not process conditional versions if the condition method returns true" do
-          @uploader_class.version(:preview).version_options[:unless] = :true?
+          @uploader_class.version(:preview, unless: :true?)
           expect(@uploader).to receive(:true?).at_least(:once).and_return(true)
           @uploader.retrieve_from_store!('monkey.txt')
           expect(@uploader.thumb).to be_present
@@ -704,7 +746,7 @@ describe CarrierWave::Uploader do
         end
 
         it "should process conditional versions if the condition method returns false" do
-          @uploader_class.version(:preview).version_options[:unless] = :false?
+          @uploader_class.version(:preview, unless: :false?)
           expect(@uploader).to receive(:false?).at_least(:once).and_return(false)
           @uploader.retrieve_from_store!('monkey.txt')
           expect(@uploader.thumb).to be_present

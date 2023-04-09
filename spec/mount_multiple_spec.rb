@@ -118,11 +118,11 @@ describe CarrierWave::Mount do
 
         it { expect(uploader_2.processors).to eq([[:rotate, [], nil, nil], [:shrink, [], nil, nil]]) }
 
-        it { expect(uploader_1.versions[:thumb].processors).to eq([[:compress, [], nil, nil]]) }
+        it { expect(uploader_1.new.versions[:thumb].processors).to eq([[:compress, [], nil, nil]]) }
 
-        it { expect(uploader_2.versions[:thumb].processors).to eq([[:compress, [], nil, nil]]) }
+        it { expect(uploader_2.new.versions[:thumb].processors).to eq([[:compress, [], nil, nil]]) }
 
-        it { expect(uploader_2.versions[:secret].processors).to eq([[:encrypt, [], nil, nil]]) }
+        it { expect(uploader_2.new.versions[:secret].processors).to eq([[:encrypt, [], nil, nil]]) }
       end
     end
 
