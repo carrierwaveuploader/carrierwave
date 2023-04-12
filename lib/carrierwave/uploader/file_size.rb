@@ -14,7 +14,7 @@ module CarrierWave
       # are allowed to be uploaded.
       # === Returns
       #
-      # [NilClass, Range] a size range which are permitted to be uploaded
+      # [NilClass, Range] a size range (in bytes) which are permitted to be uploaded
       #
       # === Examples
       #
