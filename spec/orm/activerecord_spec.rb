@@ -939,6 +939,29 @@ describe CarrierWave::ActiveRecord do
       expect(File.exist?(public_path('uploads/new.jpeg'))).to be_falsey
       expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
     end
+
+    it "should clear @added_uploaders on commit" do
+      # Simulate the commit behavior, since we're using the transactional fixture
+      @event.run_callbacks(:commit) do
+        @event.image = stub_file('test.jpeg')
+        @event.save!
+      end
+      expect(@event.send(:_mounter, :image).instance_variable_get(:@added_uploaders)).to be_blank
+    end
+
+    it "should remove all the previous images when saved multiple times" do
+      # Simulate the commit behavior, since we're using the transactional fixture
+      @event.run_callbacks(:commit) do
+        @event.image = stub_file('test.jpeg')
+        @event.save!
+        @event.image = stub_file('bork.txt')
+        @event.save!
+        @event.image = stub_file('new.jpeg')
+        @event.save!
+      end
+      expect(File.exist?(public_path('uploads/test.jpeg'))).to be false
+      expect(File.exist?(public_path('uploads/bork.txt'))).to be false
+    end
   end
 
   describe '#mount_uploader removing old files with multiple uploaders' do
@@ -1704,6 +1727,43 @@ describe CarrierWave::ActiveRecord do
       expect(@event.save).to be_truthy
       expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
       expect(File.exist?(public_path('uploads/thumb_old.jpeg'))).to be_truthy
+    end
+  end
+
+  describe "#mount_uploaders into transaction" do
+    before do
+      @uploader.version :thumb
+      reset_class("Event")
+      Event.mount_uploaders(:images, @uploader)
+      @event = Event.new
+    end
+
+    after do
+      FileUtils.rm_rf(public_path("uploads"))
+    end
+
+    it "should clear @added_uploaders on commit" do
+      # Simulate the commit behavior, since we're using the transactional fixture
+      @event.run_callbacks(:commit) do
+        @event.images = [stub_file('test.jpeg'), stub_file('bork.txt')]
+        @event.save!
+      end
+      expect(@event.send(:_mounter, :images).instance_variable_get(:@added_uploaders)).to be_blank
+    end
+
+    it "should remove all the images when trying to remove them one by one" do
+      # Simulate the commit behavior, since we're using the transactional fixture
+      @event.run_callbacks(:commit) do
+        @event.images = [stub_file('test.jpeg'), stub_file('bork.txt')]
+        @event.save!
+        @event.images = ['test.jpeg']
+        @event.save!
+        @event.images = []
+        @event.save!
+      end
+      expect(@event.images).to be_empty
+      expect(File.exist?(public_path('uploads/test.jpeg'))).to be false
+      expect(File.exist?(public_path('uploads/bork.txt'))).to be false
     end
   end
 

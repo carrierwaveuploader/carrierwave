@@ -27,7 +27,6 @@ module CarrierWave
       after_commit :"remove_#{column}!", :on => :destroy
       after_commit :"mark_remove_#{column}_false", :on => :update
 
-      after_save :"store_previous_changes_for_#{column}"
       after_commit :"reset_previous_changes_for_#{column}"
       after_commit :"remove_previously_stored_#{column}", :on => :update
       after_rollback :"remove_rolled_back_#{column}"

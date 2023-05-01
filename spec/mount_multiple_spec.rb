@@ -319,7 +319,7 @@ describe CarrierWave::Mount do
           @image_paths = instance.images.map(&:current_path)
           instance.images = [identifiers[0]]
           instance.store_images!
-          instance.send(:_mounter, :images).remove_previous(identifiers, identifiers[0..0])
+          instance.send(:_mounter, :images).remove_previous
           expect(instance.images.map(&:identifier)).to eq ['bork.txt']
           expect(File.exist?(@image_paths[0])).to be_truthy
           expect(File.exist?(@image_paths[1])).to be_falsey

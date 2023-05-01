@@ -185,27 +185,6 @@ module CarrierWave
         def #{column}_download_error
           #{column}_download_errors.last
         end
-
-        def store_previous_changes_for_#{column}
-          @_previous_changes_for_#{column} = saved_changes[_mounter(:#{column}).serialization_column]
-        end
-
-        def reset_previous_changes_for_#{column}
-          # We use this variable to pass information from save time to commit time.
-          # Make sure this doesn't persist across multiple transactions
-          @_previous_changes_for_#{column} = nil
-        end
-
-        def remove_previously_stored_#{column}
-          before, after = @_previous_changes_for_#{column}
-          _mounter(:#{column}).remove_previous([before], [after])
-        end
-
-        def remove_rolled_back_#{column}
-          before, after = @_previous_changes_for_#{column}
-          _mounter(:#{column}).remove_previous([after], [before])
-          @_previous_changes_for_#{column} = nil
-        end
       RUBY
     end
 
@@ -340,28 +319,6 @@ module CarrierWave
         def #{column}_identifiers
           _mounter(:#{column}).read_identifiers
         end
-
-        def store_previous_changes_for_#{column}
-          @_previous_changes_for_#{column} = saved_changes[_mounter(:#{column}).serialization_column]
-        end
-
-        def reset_previous_changes_for_#{column}
-          # We use this variable to pass information from save time to commit time.
-          # Make sure this doesn't persist across multiple transactions
-          @_previous_changes_for_#{column} = nil
-        end
-
-        def remove_previously_stored_#{column}
-          return unless @_previous_changes_for_#{column}
-          _mounter(:#{column}).remove_previous(*@_previous_changes_for_#{column})
-        end
-
-        def remove_rolled_back_#{column}
-          return unless @_previous_changes_for_#{column}
-          before, after = @_previous_changes_for_#{column}
-          _mounter(:#{column}).remove_previous(after, before)
-          @_previous_changes_for_#{column} = nil
-        end
       RUBY
     end
 
@@ -429,6 +386,18 @@ module CarrierWave
 
         def mark_remove_#{column}_false
           _mounter(:#{column}).remove = false
+        end
+
+        def reset_previous_changes_for_#{column}
+          _mounter(:#{column}).reset_changes!
+        end
+
+        def remove_previously_stored_#{column}
+          _mounter(:#{column}).remove_previous
+        end
+
+        def remove_rolled_back_#{column}
+          _mounter(:#{column}).remove_added
         end
       RUBY
     end

@@ -42,6 +42,9 @@ module CarrierWave
       @download_errors = []
       @processing_errors = []
       @integrity_errors = []
+
+      @removed_uploaders = []
+      @added_uploaders = []
     end
 
     def uploader_class
@@ -63,7 +66,7 @@ module CarrierWave
     def uploaders
       @uploaders ||= read_identifiers.map do |identifier|
         uploader = blank_uploader
-        uploader.retrieve_from_store!(identifier) if identifier.present?
+        uploader.retrieve_from_store!(identifier)
         uploader
       end
     end
@@ -92,7 +95,8 @@ module CarrierWave
             uploader
           end
         end
-      end.compact
+      end.reject(&:blank?)
+      @removed_uploaders += (old_uploaders - @uploaders)
       write_temporary_identifier
     end
 
@@ -135,7 +139,8 @@ module CarrierWave
     end
 
     def store!
-      uploaders.reject(&:blank?).each(&:store!)
+      uploaders.each(&:store!)
+      @added_uploaders += uploaders.reject(&:staged)
     end
 
     def write_identifier
@@ -163,45 +168,39 @@ module CarrierWave
     end
 
     def remove!
-      uploaders.reject(&:blank?).each(&:remove!)
+      uploaders.each(&:remove!)
       clear!
     end
 
     def clear!
+      @removed_uploaders += uploaders
       @remove = nil
       @uploaders = []
+    end
+
+    def reset_changes!
+      @removed_uploaders = []
+      @added_uploaders = []
     end
 
     def serialization_column
       option(:mount_on) || column
     end
 
-    def remove_previous(before=nil, after=nil)
-      after ||= []
-      return unless before
+    def remove_previous
+      current_paths = uploaders.map(&:path)
+      @removed_uploaders
+        .reject {|uploader| current_paths.include?(uploader.path) }
+        .each { |uploader| uploader.remove! if uploader.remove_previously_stored_files_after_update }
+      reset_changes!
+    end
 
-      # both 'before' and 'after' can be string when 'mount_on' option is set
-      before = before.reject(&:blank?).map do |value|
-        if value.is_a?(String)
-          uploader = blank_uploader
-          uploader.retrieve_from_store!(value)
-          uploader
-        else
-          value
-        end
-      end
-      after_paths = after.reject(&:blank?).map do |value|
-        if value.is_a?(String)
-          uploader = blank_uploader
-          uploader.retrieve_from_store!(value)
-          uploader
-        else
-          value
-        end.path
-      end
-      before.each do |uploader|
-        uploader.remove! if uploader.remove_previously_stored_files_after_update && !after_paths.include?(uploader.path)
-      end
+    def remove_added
+      current_paths = (@removed_uploaders + @uploaders.select(&:staged)).map(&:path)
+      @added_uploaders
+        .reject {|uploader| current_paths.include?(uploader.path) }
+        .each { |uploader| uploader.remove! }
+      reset_changes!
     end
 
   private
@@ -213,7 +212,9 @@ module CarrierWave
 
     def clear_unstaged
       @uploaders ||= []
-      @uploaders.keep_if(&:staged)
+      staged, unstaged = @uploaders.partition(&:staged)
+      @uploaders = staged
+      @removed_uploaders += unstaged
     end
 
     def handle_error
