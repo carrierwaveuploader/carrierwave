@@ -40,7 +40,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "net-ssh", "~> 2.9.0"
   s.add_development_dependency "mini_magick", ">= 3.6.0"
   s.add_development_dependency "rmagick", "< 3"
-  s.add_development_dependency "nokogiri", "~> 1.5.10" # 1.6 requires ruby > 1.8.7
+  s.add_development_dependency "nokogiri", ">= 1.5.10" # 1.6 requires ruby > 1.8.7
   s.add_development_dependency "timecop", "0.6.1" # 0.6.2 requires ruby > 1.8.7
   s.add_development_dependency "generator_spec"
 end
