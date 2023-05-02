@@ -24,6 +24,8 @@ Gem::Specification.new do |s|
   s.specification_version = 3
   s.licenses = ["MIT"]
 
+  s.required_ruby_version = ">= 2.5.0"
+
   s.add_dependency "activesupport", ">= 6.0.0"
   s.add_dependency "activemodel", ">= 6.0.0"
   s.add_dependency "json", ">= 1.7"
@@ -40,7 +42,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "net-ssh", "~> 2.9.0"
   s.add_development_dependency "mini_magick", ">= 3.6.0"
   s.add_development_dependency "rmagick", "< 3"
-  s.add_development_dependency "nokogiri", ">= 1.5.10"
   s.add_development_dependency "timecop"
   s.add_development_dependency "generator_spec"
 end
