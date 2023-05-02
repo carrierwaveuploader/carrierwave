@@ -10,7 +10,7 @@ describe CarrierWave::SanitizedFile do
   end
 
   after(:all) do
-    if File.exists?(file_path('llama.jpg'))
+    if File.exist?(file_path('llama.jpg'))
       FileUtils.rm(file_path('llama.jpg'))
     end
     FileUtils.rm_rf(public_path)
@@ -286,7 +286,7 @@ describe CarrierWave::SanitizedFile do
       it "should be moved to the correct location" do
         @sanitized_file.move_to(file_path('gurr.png'))
 
-        File.exists?( file_path('gurr.png') ).should be_true
+        File.exist?( file_path('gurr.png') ).should be_true
       end
 
       it "should have changed its path when moved" do
@@ -335,7 +335,7 @@ describe CarrierWave::SanitizedFile do
       it "should be copied to the correct location" do
         @sanitized_file.copy_to(file_path('gurr.png'))
 
-        File.exists?( file_path('gurr.png') ).should be_true
+        File.exist?( file_path('gurr.png') ).should be_true
 
         file_path('gurr.png').should be_identical_to(file_path('llama.jpg'))
       end
@@ -429,9 +429,9 @@ describe CarrierWave::SanitizedFile do
 
     describe '#delete' do
       it "should remove it from the filesystem" do
-        File.exists?(@sanitized_file.path).should be_true
+        File.exist?(@sanitized_file.path).should be_true
         @sanitized_file.delete
-        File.exists?(@sanitized_file.path).should be_false
+        File.exist?(@sanitized_file.path).should be_false
       end
     end
 

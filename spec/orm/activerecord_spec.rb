@@ -622,7 +622,7 @@ describe CarrierWave::ActiveRecord do
       @event = @class.new
       @event.image = stub_file('old.jpeg')
       expect(@event.save).to be_true
-      expect(File.exists?(public_path('uploads/old.jpeg'))).to be_true
+      expect(File.exist?(public_path('uploads/old.jpeg'))).to be_true
     end
 
     after do
@@ -633,29 +633,29 @@ describe CarrierWave::ActiveRecord do
       it "should remove old file if old file had a different path" do
         @event.image = stub_file('new.jpeg')
         expect(@event.save).to be_true
-        expect(File.exists?(public_path('uploads/new.jpeg'))).to be_true
-        expect(File.exists?(public_path('uploads/old.jpeg'))).to be_false
+        expect(File.exist?(public_path('uploads/new.jpeg'))).to be_true
+        expect(File.exist?(public_path('uploads/old.jpeg'))).to be_false
       end
 
       it "should not remove old file if old file had a different path but config is false" do
         @uploader.stub!(:remove_previously_stored_files_after_update).and_return(false)
         @event.image = stub_file('new.jpeg')
         expect(@event.save).to be_true
-        expect(File.exists?(public_path('uploads/new.jpeg'))).to be_true
-        expect(File.exists?(public_path('uploads/old.jpeg'))).to be_true
+        expect(File.exist?(public_path('uploads/new.jpeg'))).to be_true
+        expect(File.exist?(public_path('uploads/old.jpeg'))).to be_true
       end
 
       it "should not remove file if old file had the same path" do
         @event.image = stub_file('old.jpeg')
         expect(@event.save).to be_true
-        expect(File.exists?(public_path('uploads/old.jpeg'))).to be_true
+        expect(File.exist?(public_path('uploads/old.jpeg'))).to be_true
       end
 
       it "should not remove file if validations fail on save" do
         @class.validate { |r| r.errors.add :textfile, "FAIL!" }
         @event.image = stub_file('new.jpeg')
         expect(@event.save).to be_false
-        expect(File.exists?(public_path('uploads/old.jpeg'))).to be_true
+        expect(File.exist?(public_path('uploads/old.jpeg'))).to be_true
       end
     end
 
@@ -670,22 +670,22 @@ describe CarrierWave::ActiveRecord do
         @event.image = stub_file('old.jpeg')
         @event.foo = 'test'
         expect(@event.save).to be_true
-        expect(File.exists?(public_path('uploads/test.jpeg'))).to be_true
+        expect(File.exist?(public_path('uploads/test.jpeg'))).to be_true
         expect(@event.image.read).to eq('this is stuff')
       end
 
       it "should not remove file if old file had the same dynamic path" do
         @event.image = stub_file('test.jpeg')
         expect(@event.save).to be_true
-        expect(File.exists?(public_path('uploads/test.jpeg'))).to be_true
+        expect(File.exist?(public_path('uploads/test.jpeg'))).to be_true
       end
 
       it "should remove old file if old file had a different dynamic path" do
         @event.foo = "new"
         @event.image = stub_file('test.jpeg')
         expect(@event.save).to be_true
-        expect(File.exists?(public_path('uploads/new.jpeg'))).to be_true
-        expect(File.exists?(public_path('uploads/test.jpeg'))).to be_false
+        expect(File.exist?(public_path('uploads/new.jpeg'))).to be_true
+        expect(File.exist?(public_path('uploads/test.jpeg'))).to be_false
       end
     end
   end
@@ -704,8 +704,8 @@ describe CarrierWave::ActiveRecord do
       @event = @class.new
       @event.image = stub_file('old.jpeg')
       expect(@event.save).to be_true
-      expect(File.exists?(public_path('uploads/old.jpeg'))).to be_true
-      expect(File.exists?(public_path('uploads/thumb_old.jpeg'))).to be_true
+      expect(File.exist?(public_path('uploads/old.jpeg'))).to be_true
+      expect(File.exist?(public_path('uploads/thumb_old.jpeg'))).to be_true
     end
 
     after do
@@ -715,17 +715,17 @@ describe CarrierWave::ActiveRecord do
     it "should remove old file if old file had a different path" do
       @event.image = stub_file('new.jpeg')
       expect(@event.save).to be_true
-      expect(File.exists?(public_path('uploads/new.jpeg'))).to be_true
-      expect(File.exists?(public_path('uploads/thumb_new.jpeg'))).to be_true
-      expect(File.exists?(public_path('uploads/old.jpeg'))).to be_false
-      expect(File.exists?(public_path('uploads/thumb_old.jpeg'))).to be_false
+      expect(File.exist?(public_path('uploads/new.jpeg'))).to be_true
+      expect(File.exist?(public_path('uploads/thumb_new.jpeg'))).to be_true
+      expect(File.exist?(public_path('uploads/old.jpeg'))).to be_false
+      expect(File.exist?(public_path('uploads/thumb_old.jpeg'))).to be_false
     end
 
     it "should not remove file if old file had the same path" do
       @event.image = stub_file('old.jpeg')
       expect(@event.save).to be_true
-      expect(File.exists?(public_path('uploads/old.jpeg'))).to be_true
-      expect(File.exists?(public_path('uploads/thumb_old.jpeg'))).to be_true
+      expect(File.exist?(public_path('uploads/old.jpeg'))).to be_true
+      expect(File.exist?(public_path('uploads/thumb_old.jpeg'))).to be_true
     end
   end
 
@@ -745,8 +745,8 @@ describe CarrierWave::ActiveRecord do
       @event.image = stub_file('old.jpeg')
       @event.textfile = stub_file('old.txt')
       expect(@event.save).to be_true
-      expect(File.exists?(public_path('uploads/old.jpeg'))).to be_true
-      expect(File.exists?(public_path('uploads/old.txt'))).to be_true
+      expect(File.exist?(public_path('uploads/old.jpeg'))).to be_true
+      expect(File.exist?(public_path('uploads/old.txt'))).to be_true
     end
 
     after do
@@ -757,27 +757,27 @@ describe CarrierWave::ActiveRecord do
       @event.image = stub_file('new.jpeg')
       @event.textfile = stub_file('new.txt')
       expect(@event.save).to be_true
-      expect(File.exists?(public_path('uploads/new.jpeg'))).to be_true
-      expect(File.exists?(public_path('uploads/old.jpeg'))).to be_false
-      expect(File.exists?(public_path('uploads/new.txt'))).to be_true
-      expect(File.exists?(public_path('uploads/old.txt'))).to be_false
+      expect(File.exist?(public_path('uploads/new.jpeg'))).to be_true
+      expect(File.exist?(public_path('uploads/old.jpeg'))).to be_false
+      expect(File.exist?(public_path('uploads/new.txt'))).to be_true
+      expect(File.exist?(public_path('uploads/old.txt'))).to be_false
     end
 
     it "should remove old file1 but not file2 if old file1 had a different path but old file2 has the same path" do
       @event.image = stub_file('new.jpeg')
       @event.textfile = stub_file('old.txt')
       expect(@event.save).to be_true
-      expect(File.exists?(public_path('uploads/new.jpeg'))).to be_true
-      expect(File.exists?(public_path('uploads/old.jpeg'))).to be_false
-      expect(File.exists?(public_path('uploads/old.txt'))).to be_true
+      expect(File.exist?(public_path('uploads/new.jpeg'))).to be_true
+      expect(File.exist?(public_path('uploads/old.jpeg'))).to be_false
+      expect(File.exist?(public_path('uploads/old.txt'))).to be_true
     end
 
     it "should not remove file1 or file2 if file1 and file2 have the same paths" do
       @event.image = stub_file('old.jpeg')
       @event.textfile = stub_file('old.txt')
       expect(@event.save).to be_true
-      expect(File.exists?(public_path('uploads/old.jpeg'))).to be_true
-      expect(File.exists?(public_path('uploads/old.txt'))).to be_true
+      expect(File.exist?(public_path('uploads/old.jpeg'))).to be_true
+      expect(File.exist?(public_path('uploads/old.txt'))).to be_true
     end
   end
 
@@ -794,7 +794,7 @@ describe CarrierWave::ActiveRecord do
       @event = @class.new
       @event.avatar = stub_file('old.jpeg')
       expect(@event.save).to be_true
-      expect(File.exists?(public_path('uploads/old.jpeg'))).to be_true
+      expect(File.exist?(public_path('uploads/old.jpeg'))).to be_true
     end
 
     after do
@@ -804,14 +804,14 @@ describe CarrierWave::ActiveRecord do
     it "should remove old file if old file had a different path" do
       @event.avatar = stub_file('new.jpeg')
       expect(@event.save).to be_true
-      expect(File.exists?(public_path('uploads/new.jpeg'))).to be_true
-      expect(File.exists?(public_path('uploads/old.jpeg'))).to be_false
+      expect(File.exist?(public_path('uploads/new.jpeg'))).to be_true
+      expect(File.exist?(public_path('uploads/old.jpeg'))).to be_false
     end
 
     it "should not remove file if old file had the same path" do
       @event.avatar = stub_file('old.jpeg')
       expect(@event.save).to be_true
-      expect(File.exists?(public_path('uploads/old.jpeg'))).to be_true
+      expect(File.exist?(public_path('uploads/old.jpeg'))).to be_true
     end
   end
 end

@@ -348,13 +348,13 @@ describe CarrierWave::Uploader do
         @stored_path = ::File.expand_path(@uploader.store_path, @uploader.root)
 
         @cached_path.should == public_path('uploads/tmp/1369894322-345-2255/test.jpg')
-        File.exists?(@cached_path).should be_true
-        File.exists?(@stored_path).should be_false
+        File.exist?(@cached_path).should be_true
+        File.exist?(@stored_path).should be_false
 
         @uploader.store!
 
-        File.exists?(@cached_path).should be_false
-        File.exists?(@stored_path).should be_true
+        File.exist?(@cached_path).should be_false
+        File.exist?(@stored_path).should be_true
       end
 
       it "should use move_to() during store!()" do
