@@ -14,7 +14,7 @@ module CarrierWave
       end
 
       def identifier
-        uploader.filename
+        uploader.deduplicated_filename
       end
 
       def store!(file)

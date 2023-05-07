@@ -130,6 +130,7 @@ module CarrierWave
 
         self.cache_id = CarrierWave.generate_cache_id unless cache_id
 
+        @identifier = nil
         @staged = true
         @filename = new_file.filename
         self.original_filename = new_file.filename

@@ -403,6 +403,22 @@ describe CarrierWave::Mount do
         @instance.store_image!
         expect(@instance.image.current_path).to eq(public_path('uploads/test.jpg'))
       end
+
+      context "when adding a file which has the same filename with the exsting one" do
+        before { FileUtils.cp(file_path('bork.txt'), tmp_path('test.jpg')) }
+        after { FileUtils.rm(tmp_path('test.jpg')) }
+
+        it "renames the latter file to avoid overwriting the old one" do
+          @instance.image = stub_file('test.jpg')
+          @instance.store_image!
+          old_uploader = @instance.image
+
+          @instance.image = File.open(tmp_path('test.jpg'))
+          @instance.store_image!
+          expect(@instance.image.identifier).to eq 'test(2).jpg'
+          expect(old_uploader.read).to eq 'this is stuff'
+        end
+      end
     end
 
     describe '#remove_image!' do

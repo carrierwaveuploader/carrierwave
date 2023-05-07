@@ -41,6 +41,11 @@ module CarrierWave
             def move_to_cache
               false
             end
+
+            # Need to rely on the parent version's identifier, as versions don't have its own one.
+            def identifier
+              parent_version.identifier
+            end
           RUBY
           @blocks.each { |block| @klass.class_eval(&block) }
           @klass

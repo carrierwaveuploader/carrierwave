@@ -265,16 +265,37 @@ describe CarrierWave::Mount do
         end
       end
 
+      describe "when caching files of the same filename" do
+        before { FileUtils.cp(file_path('bork.json'), tmp_path('bork.txt')) }
+        after { FileUtils.rm(tmp_path('bork.txt')) }
+
+        it "accepts them without confusion" do
+          instance.images = [text_file_stub, File.open(tmp_path('bork.txt'))]
+          expect(instance.images[0].cache_path).not_to eq instance.images[1].cache_path
+          expect(instance.images[0].read).not_to eq instance.images[1].read
+        end
+      end
+
       describe "with cached files" do
         before do
           instance.images = [text_file_stub, test_file_stub]
         end
         let(:cache_names) { instance.images.map(&:cache_name) }
-        let(:identifiers) { instance.images.map(&:identifier) }
 
         it "accepts cache name and retrieves from cache" do
           instance.images = [cache_names[1]]
           expect(instance.images.map { |u| u.file.filename }).to eq ['test.jpg']
+        end
+
+        context "when adding a file which has the same filename with the exsting one" do
+          before { FileUtils.cp(file_path('bork.json'), tmp_path('bork.txt')) }
+          after { FileUtils.rm(tmp_path('bork.txt')) }
+
+          it "accepts it without confusion" do
+            instance.images = [instance.images[0].cache_name, File.open(tmp_path('bork.txt'))]
+            expect(instance.images[0].cache_path).not_to eq instance.images[1].cache_path
+            expect(instance.images[0].read).not_to eq instance.images[1].read
+          end
         end
       end
 
@@ -339,6 +360,18 @@ describe CarrierWave::Mount do
         it "allows assignment of uploader instances" do
           instance.images = [instance.images[0]]
           expect(instance.images.map(&:identifier)).to eq ['bork.txt']
+        end
+
+        context "when adding a file which has the same filename with the exsting one" do
+          before { FileUtils.cp(file_path('bork.json'), tmp_path('bork.txt')) }
+          after { FileUtils.rm(tmp_path('bork.txt')) }
+
+          it "renames the latter file to avoid filename duplication" do
+            instance.images = ['bork.txt', File.open(tmp_path('bork.txt'))]
+            instance.store_images!
+            expect(instance.images.map(&:identifier)).to eq ['bork.txt', 'bork(2).txt']
+            expect(instance.images[0].read).not_to eq instance.images[1].read
+          end
         end
       end
     end

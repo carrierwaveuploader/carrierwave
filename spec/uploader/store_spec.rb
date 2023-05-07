@@ -289,6 +289,7 @@ describe CarrierWave::Uploader do
         allow(@storage).to receive(:cache!).and_return(@cached_file)
         allow(@storage).to receive(:store!).and_return(@stored_file)
         allow(@storage).to receive(:delete_dir!).with("uploads/tmp/#{CarrierWave.generate_cache_id}")
+        allow(@storage).to receive(:identifier).and_return(@uploader.deduplicated_filename)
 
         allow(@uploader_class.storage).to receive(:new).with(@uploader).and_return(@storage)
       end
@@ -404,4 +405,65 @@ describe CarrierWave::Uploader do
     end
   end
 
+  describe "#deduplicate" do
+    let(:file) { stub_file('test.jpg') }
+
+    before do
+      @uploader.cache!(file)
+    end
+
+    it "tries to find a non-duplicate filename" do
+      @uploader.deduplicate(['uploads/test.jpg'])
+      expect(@uploader.deduplicated_filename).to eq('test(2).jpg')
+    end
+
+    it "does nothing when filename doesn't collide" do
+      @uploader.deduplicate(['uploads/file.jpg'])
+      expect(@uploader.deduplicated_filename).to eq('test.jpg')
+    end
+
+    it "chooses the first non-colliding name" do
+      @uploader.deduplicate(['uploads/test.jpg', 'uploads/test(2).jpg', 'uploads/test(4).jpg'])
+      expect(@uploader.deduplicated_filename).to eq('test(3).jpg')
+    end
+
+    it "resets the deduplication index value from the previous attempt" do
+      @uploader.deduplicate(['uploads/test.jpg'])
+      @uploader.deduplicate(['uploads/test.png'])
+      expect(@uploader.deduplicated_filename).to eq('test.jpg')
+    end
+  end
+
+  describe "#deduplicated_filename" do
+    subject { @uploader.deduplicated_filename }
+
+    it "returns the filename as it is when deduplication index is not set" do
+      allow(@uploader).to receive(:filename).and_return('filename.jpg')
+      is_expected.to eq('filename.jpg')
+    end
+
+    it "appends the deduplication index as suffix" do
+      allow(@uploader).to receive(:filename).and_return('filename.jpg')
+      @uploader.instance_variable_set :@deduplication_index, 1
+      is_expected.to eq('filename(1).jpg')
+    end
+
+    it "reuses the parentheses" do
+      allow(@uploader).to receive(:filename).and_return('filename(42).jpg')
+      @uploader.instance_variable_set :@deduplication_index, 269
+      is_expected.to eq('filename(269).jpg')
+    end
+
+    it "reuses the parentheses when there's a space before that" do
+      allow(@uploader).to receive(:filename).and_return('filename (1).jpg')
+      @uploader.instance_variable_set :@deduplication_index, 2
+      is_expected.to eq('filename(2).jpg')
+    end
+
+    it "does not reuse the parentheses when non-numbers are enclosed" do
+      allow(@uploader).to receive(:filename).and_return('filename(A).jpg')
+      @uploader.instance_variable_set :@deduplication_index, 2
+      is_expected.to eq('filename(A)(2).jpg')
+    end
+  end
 end

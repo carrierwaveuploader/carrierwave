@@ -11,7 +11,7 @@ module CarrierWave
         prepend Module.new {
           def initialize(*)
             super
-            @file, @filename, @cache_id, @identifier = nil
+            @file, @filename, @cache_id, @identifier, @deduplication_index = nil
           end
         }
       end
@@ -35,8 +35,24 @@ module CarrierWave
       end
 
       ##
+      # Returns a filename which doesn't conflict with already-stored files.
+      #
+      # === Returns
+      #
+      # [String] the filename with suffix added for deduplication
+      #
+      def deduplicated_filename
+        return unless filename
+
+        parts = filename.split('.')
+        basename = parts.shift
+        basename.sub!(/ ?\(\d+\)\z/, '')
+        ([basename.to_s + (@deduplication_index ? "(#{@deduplication_index})" : '')] + parts).join('.')
+      end
+
+      ##
       # Calculates the path where the file should be stored. If +for_file+ is given, it will be
-      # used as the filename, otherwise +CarrierWave::Uploader#filename+ is assumed.
+      # used as the identifier, otherwise +CarrierWave::Uploader#identifier+ is assumed.
       #
       # === Parameters
       #
@@ -46,7 +62,7 @@ module CarrierWave
       #
       # [String] the store path
       #
-      def store_path(for_file=filename)
+      def store_path(for_file=identifier)
         File.join([store_dir, full_filename(for_file)].compact)
       end
 
@@ -69,7 +85,8 @@ module CarrierWave
               cache_storage.delete_dir!(cache_path(nil))
             end
             @file = new_file
-            @cache_id = @identifier = nil
+            @identifier = storage.identifier
+            @cache_id = @deduplication_index = nil
             @staged = false
           end
         end
@@ -86,6 +103,26 @@ module CarrierWave
         with_callbacks(:retrieve_from_store, identifier) do
           @file = storage.retrieve!(identifier)
           @identifier = identifier
+        end
+      end
+
+      ##
+      # Look for a store path which doesn't collide with the given already-stored paths.
+      # It is done by adding a index number as the suffix.
+      # For example, if there's 'image.jpg' and the @deduplication_index is set to 2,
+      # The stored file will be named as 'image(2).jpg'.
+      #
+      # === Parameters
+      #
+      # [current_paths (Array[String])] List of paths for already-stored files
+      #
+      def deduplicate(current_paths)
+        @deduplication_index = nil
+        return unless current_paths.include?(store_path)
+
+        (2..current_paths.size + 1).each do |i|
+          @deduplication_index = i
+          break unless current_paths.include?(store_path)
         end
       end
 

@@ -26,6 +26,7 @@ describe CarrierWave::Uploader do
       allow(storage).to receive(:store!).and_return(stored_file)
       allow(storage).to receive(:cache!).and_return(cached_file)
       allow(storage).to receive(:delete_dir!).with("uploads/tmp/#{CarrierWave.generate_cache_id}")
+      allow(storage).to receive(:identifier).and_return(uploader.deduplicated_filename)
 
       allow(uploader_class.storage).to receive(:new).and_return(storage)
       uploader.store!(file)

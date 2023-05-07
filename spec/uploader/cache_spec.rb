@@ -202,6 +202,17 @@ describe CarrierWave::Uploader do
       end
     end
 
+    context "when successively calling #store! and #cache!" do
+      before do
+        uploader.store!(File.open(file_path('old.txt')))
+        uploader.cache!(test_file)
+      end
+
+      it "doesn not have the previous identifier" do
+        expect(uploader.identifier).to eq 'test.jpg'
+      end
+    end
+
     it "uses different workfiles for different versions" do
       uploader_class.version(:small)
       uploader_class.version(:large)

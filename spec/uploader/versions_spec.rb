@@ -376,12 +376,15 @@ describe CarrierWave::Uploader do
 
         @storage = double('a storage instance')
         allow(@storage).to receive(:store!).and_return(@base_stored_file)
+        allow(@storage).to receive(:identifier).and_return('test.jpg')
 
         @thumb_storage = double('a storage instance for thumbnails')
         allow(@thumb_storage).to receive(:store!).and_return(@thumb_stored_file)
+        allow(@thumb_storage).to receive(:identifier).and_return('test.jpg')
 
         @preview_storage = double('a storage instance for previews')
         allow(@preview_storage).to receive(:store!).and_return(@preview_stored_file)
+        allow(@preview_storage).to receive(:identifier).and_return('test.jpg')
 
         allow(@uploader_class.storage).to receive(:new).with(@uploader).and_return(@storage)
         allow(@uploader.thumb.class.storage).to receive(:new).and_return(@thumb_storage)
@@ -624,9 +627,11 @@ describe CarrierWave::Uploader do
 
         @storage = double('a storage engine')
         allow(@storage).to receive(:store!).and_return(@base_stored_file)
+        allow(@storage).to receive(:identifier).and_return('test.jpg')
 
         @thumb_storage = double('a storage engine for thumbnails')
         allow(@thumb_storage).to receive(:store!).and_return(@thumb_stored_file)
+        allow(@thumb_storage).to receive(:identifier).and_return('test.jpg')
 
         allow(@uploader_class.storage).to receive(:new).with(@uploader).and_return(@storage)
         allow(@uploader.thumb.class.storage).to receive(:new).with(@uploader.thumb).and_return(@thumb_storage)
