@@ -449,6 +449,16 @@ def fog_tests(fog_credentials)
             expect(@fog_file.read).to eq 'this is stuff'
           end
         end
+
+        context "when the remote file doesn't exist" do
+          before do
+            @fog_file.delete
+          end
+
+          it "returns nil" do
+            expect(@fog_file.read).to be nil
+          end
+        end
       end
 
       describe "#public_url" do

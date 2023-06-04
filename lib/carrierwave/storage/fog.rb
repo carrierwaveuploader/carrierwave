@@ -285,7 +285,7 @@ module CarrierWave
         #
         # [String] contents of file
         def read
-          file_body = file.body
+          file_body = file&.body
 
           return if file_body.nil?
           return file_body unless file_body.is_a?(::File)
