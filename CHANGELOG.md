@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 2.2.4 - 2023-06-10
+### Fixed
+* Fix Ruby 2.7 keyword argument warning in uploader process (@SuperTux88 [#2665](https://github.com/carrierwaveuploader/carrierwave/pull/2665), [#2636](https://github.com/carrierwaveuploader/carrierwave/pull/2636), [#2635](https://github.com/carrierwaveuploader/carrierwave/issues/2635))
+
 ## 2.2.3 - 2022-11-21
 ### Fixed
 * Add workaround for 'undefined method closed?' error caused by ssrf_filter 1.1 (@mshibuya [c74579d](https://github.com/carrierwaveuploader/carrierwave/commit/c74579d382ad124193e80cc5af71824a23de57e6), [#2628](https://github.com/carrierwaveuploader/carrierwave/issues/2628))
