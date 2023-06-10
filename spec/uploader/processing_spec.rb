@@ -86,6 +86,15 @@ describe CarrierWave::Uploader do
       uploader.process!("test.jpg")
     end
 
+    context "when there are additional method key word arguments" do
+      it "calls the processor if the condition method returns true" do
+        uploader_class.process :resize => [200, 300, combine_options: { quality: 70 }], :if => :true?
+        expect(uploader).to receive(:true?).with("test.jpg").once.and_return(true)
+        expect(uploader).to receive(:resize).with(200, 300, combine_options: { quality: 70 })
+        uploader.process!("test.jpg")
+      end
+    end
+
     context "when using RMagick", :rmagick => true do
       before do
         def uploader.cover
