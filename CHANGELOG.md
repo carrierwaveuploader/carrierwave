@@ -5,6 +5,45 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 3.0.0.rc - 2023-06-11
+### Added
+* Support adding suffix to filename on store when path collides with the existing ones (@mshibuya [07a5632](https://github.com/carrierwaveuploader/carrierwave/commit/07a5632a3f30ddcb21b10a75f003a7eaeaa072ad), [#1855](https://github.com/carrierwaveuploader/carrierwave/issues/1855))
+* Add image dimension validation (@TsubasaYoshida [#2592](https://github.com/carrierwaveuploader/carrierwave/pull/2592), [3b1f8b4](https://github.com/carrierwaveuploader/carrierwave/commit/3b1f8b41f8c0896aa6ebe64bac23622c14a8b8d9))
+* Provide validation error details via ActiveModel::Errors#details (@mshibuya [9013999](https://github.com/carrierwaveuploader/carrierwave/commit/90139995fc11978da909db71b1d43c0690c7c9d2), [#2150](https://github.com/carrierwaveuploader/carrierwave/issues/2150))
+* Support clearing #remote_urls by assigning nil (@mshibuya [8307f93](https://github.com/carrierwaveuploader/carrierwave/commit/8307f93c29b833d34efaae63c33d36e737d94715), [#2067](https://github.com/carrierwaveuploader/carrierwave/issues/2067))
+* Support configuration of download retry wait time (@tricknotes [#2646](https://github.com/carrierwaveuploader/carrierwave/pull/2646))
+* Support for ActiveRecord::Base#dup (@mshibuya, @BrianHawley [19b33b8](https://github.com/carrierwaveuploader/carrierwave/commit/19b33b876cd58e7af28dc718fd4f47bb539b78f9), [#2645](https://github.com/carrierwaveuploader/carrierwave/pull/2645), [#1962](https://github.com/carrierwaveuploader/carrierwave/issues/1962))
+* Add CarrierWave::Storage::Fog::File#to_file for interface consistency with SanitizedFile (@mshibuya [68ce83a](https://github.com/carrierwaveuploader/carrierwave/commit/68ce83a7b105d52c6af1b410727dd590c3960f7d), [#1960](https://github.com/carrierwaveuploader/carrierwave/issues/1960))
+* Allow SanitizedFile to accept read with an optional length and output_buffer arguments (@mshibuya [9096459](https://github.com/carrierwaveuploader/carrierwave/commit/90964596aa3d0b7acea584012f0f5888d622ea1b), [#1959](https://github.com/carrierwaveuploader/carrierwave/issues/1959))
+
+### Changed
+* Stop relying on ActiveModel::Dirty change tracking for removal of unnecessary files (@mshibuya [aac25c1](https://github.com/carrierwaveuploader/carrierwave/commit/aac25c10af4218d6e1e70f90154b847b54ce0334))
+* Create versions lazily to reflect subclass configurations properly (@mshibuya [1531a67](https://github.com/carrierwaveuploader/carrierwave/commit/1531a67366f0e25e3d298133a72c81b6c9c0dc83), [#1957](https://github.com/carrierwaveuploader/carrierwave/issues/1957), [#2619](https://github.com/carrierwaveuploader/carrierwave/issues/2619))
+* [BREAKING CHANGE] Use the resulting file extension on changing format by :convert (@mshibuya [#2659](https://github.com/carrierwaveuploader/carrierwave/pull/2659), [#2125](https://github.com/carrierwaveuploader/carrierwave/issues/2125), [#2126](https://github.com/carrierwaveuploader/carrierwave/issues/2126), [#2254](https://github.com/carrierwaveuploader/carrierwave/issues/2254))
+* Prioritize Magic-detected content type for spoof-tolerance (@mshibuya [a2ca59c](https://github.com/carrierwaveuploader/carrierwave/commit/a2ca59cbe67046ba7818c64849a9a4ffa90306db), [#2570](https://github.com/carrierwaveuploader/carrierwave/issues/2570))
+* Handle assignments in an ActiveModel::Dirty-friendly way (@mshibuya [#2658](https://github.com/carrierwaveuploader/carrierwave/pull/2658), [#2404](https://github.com/carrierwaveuploader/carrierwave/issues/2404), [#2409](https://github.com/carrierwaveuploader/carrierwave/issues/2409), [#2468](https://github.com/carrierwaveuploader/carrierwave/issues/2468))
+* Give a stable name to classes created by the mount_uploader block (@mshibuya [f5b09b8](https://github.com/carrierwaveuploader/carrierwave/commit/f5b09b844d99245a3b4d0ba01efd4972be4ee5be), [#2407](https://github.com/carrierwaveuploader/carrierwave/issues/2407), [#2471](https://github.com/carrierwaveuploader/carrierwave/issues/2471))
+* Give a stable name to version classes (@mshibuya [a9de756](https://github.com/carrierwaveuploader/carrierwave/commit/a9de7565eabb4cdca05bb090cdf797eb1720c09c), [#2407](https://github.com/carrierwaveuploader/carrierwave/issues/2407), [#2471](https://github.com/carrierwaveuploader/carrierwave/issues/2471))
+
+### Fixed
+* Fix CarrierWave::Storage::Fog::File#read breaking when the file doesn't exist (@mshibuya [246eb01](https://github.com/carrierwaveuploader/carrierwave/commit/246eb012e15a75f7621bf9933f90a0f4742bd6e8), [#2524](https://github.com/carrierwaveuploader/carrierwave/issues/2524))
+* Fix to preserve the original URI as much as possible on download (@mshibuya [2f3afaf](https://github.com/carrierwaveuploader/carrierwave/commit/2f3afafb738ae848a8a2d164780571cf9a7eb6ce), [#2631](https://github.com/carrierwaveuploader/carrierwave/issues/2631))
+* Fix not to invoke content type detection on #copy_to as it's costly (@mshibuya [6c6e2dc](https://github.com/carrierwaveuploader/carrierwave/commit/6c6e2dc9cf7747c0c1571d315473b246ef582e1f), [#2465](https://github.com/carrierwaveuploader/carrierwave/issues/2465))
+* Fix calling #=~ on non-String breaking in Ruby 3.2 (@aubinlrx [#2653](https://github.com/carrierwaveuploader/carrierwave/pull/2653), [fd03ddd](https://github.com/carrierwaveuploader/carrierwave/commit/fd03dddef55025cab83936fc2957e3c8c58772ae))
+* Fix #clean_cache! to respect the uploader's root, not the global one (@sawasaki-narumi [#2652](https://github.com/carrierwaveuploader/carrierwave/pull/2652), [3cb9992](https://github.com/carrierwaveuploader/carrierwave/commit/3cb9992cc5fb8b113fe5b050651361f35d94adb4), [#2113](https://github.com/carrierwaveuploader/carrierwave/issues/2113))
+* Fix to use helper method #fog_provider instead of checking #fog_credentials (@joshuamsager [#2660](https://github.com/carrierwaveuploader/carrierwave/pull/2660))
+* Fix being unable to delete a file by assigning nil (@mshibuya [f8ea354](https://github.com/carrierwaveuploader/carrierwave/commit/f8ea35445e51c438b8cc8baf3e50079b5d423e34), [#2654](https://github.com/carrierwaveuploader/carrierwave/issues/2654), [#2613](https://github.com/carrierwaveuploader/carrierwave/pull/2613))
+* Fix to raise exception when ImageMagick is not installed (@mshibuya [d90c399](https://github.com/carrierwaveuploader/carrierwave/commit/d90c399a6d2338203b1382f4ac4269863444d60d), [#2060](https://github.com/carrierwaveuploader/carrierwave/issues/2060))
+* Fix to remove unnecessary floodfill in CarrierWave::RMagick#resize_and_pad (@mshibuya [f34a9bd](https://github.com/carrierwaveuploader/carrierwave/commit/f34a9bd26ed3e1006033a783c2ae8d86369993f6))
+* Fix `#{column}_cache=` fails to be stored when set as a nested attribute (@mshibuya [e84d11e](https://github.com/carrierwaveuploader/carrierwave/commit/e84d11ec508d286ebab28195da815816abc62e41), [#2206](https://github.com/carrierwaveuploader/carrierwave/issues/2206))
+* Fix to use AWS S3 regional endpoints when using virtual-hosted style (@mshibuya [8dace34](https://github.com/carrierwaveuploader/carrierwave/commit/8dace3456b5d1e0c3212ed1dc6c8b47dfd63b8ff), [#2523](https://github.com/carrierwaveuploader/carrierwave/issues/2523))
+* Fix to respect condition on processing a derived version (@mshibuya [1fecddc](https://github.com/carrierwaveuploader/carrierwave/commit/1fecddc8ffe43426e9b5044dedfa7ac0b091cad8), [#2516](https://github.com/carrierwaveuploader/carrierwave/issues/2516))
+* Fix #recreate_versions! affecting the original file (@mshibuya [a67bfb6](https://github.com/carrierwaveuploader/carrierwave/commit/a67bfb696dcba14c7cdfa2c1b5481f04d3ef8dae), [5f00715](https://github.com/carrierwaveuploader/carrierwave/commit/5f00715747d44dd7f57ee990a6b471ed786ac764), [#2480](https://github.com/carrierwaveuploader/carrierwave/issues/2480), [#2655](https://github.com/carrierwaveuploader/carrierwave/issues/2655))
+* Fix `remove_#{column}!` doesn't remove the file immediately (@mshibuya [b719fb3](https://github.com/carrierwaveuploader/carrierwave/commit/b719fb373c48f23e874dfa1a333a954c01967fc1), [#2540](https://github.com/carrierwaveuploader/carrierwave/issues/2540))
+* Fix column value populated without a file when using filename override (@mshibuya [f1eff6e](https://github.com/carrierwaveuploader/carrierwave/commit/f1eff6e212fb0c374c9235968bfc4e7580bf1e2a), [#2284](https://github.com/carrierwaveuploader/carrierwave/issues/2284))
+* Fix boolean configurations couldn't be set to false on a per-uploader basis (@megane42 [#2642](https://github.com/carrierwaveuploader/carrierwave/pull/2642))
+* Fix #clean_cache! breaking with directories that doesn't conform to CarrierWave's cache_id format (@BrianHawley [#2641](https://github.com/carrierwaveuploader/carrierwave/pull/2641))
+
 ## 3.0.0.beta - 2022-11-19
 ### Added
 * Add basename and fix extension value for fog file (@leductienttkt [#2587](https://github.com/carrierwaveuploader/carrierwave/pull/2587))
@@ -18,6 +57,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Completely migrate to allowlist/denylist terminology (@mshibuya [7a40ef7](https://github.com/carrierwaveuploader/carrierwave/commit/7a40ef7c4d5f3033f0f8401323f80bde14ca72b9), [#2536](https://github.com/carrierwaveuploader/carrierwave/issues/2536))
 * Remove implementation-dependent information from an error message (@akihikodaki [#2499](https://github.com/carrierwaveuploader/carrierwave/pull/2499))
 * Replace mini_mime with marcel (@pjmartorell [#2552](https://github.com/carrierwaveuploader/carrierwave/pull/2552))
+* [BREAKING CHANGE] Change to store files on after_save hook instead of after_commit, with performing cleanup when transaction is rolled back (@fsateler [#2546](https://github.com/carrierwaveuploader/carrierwave/pull/2546))
 
 ### Removed
 * Drop support for Ruby < 2.5 and Rails 5.x (@mshibuya [229594f](https://github.com/carrierwaveuploader/carrierwave/commit/229594fb2ac7cfa59586162c0b3fc3d0b5bab978))
@@ -34,6 +74,5 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Remove invalid byte sequences from the sanitized filename (@alexdunae [#2606](https://github.com/carrierwaveuploader/carrierwave/pull/2606))
 * Fix issue with copying a fog file larger than 5GB (@slonopotamus [#2583](https://github.com/carrierwaveuploader/carrierwave/pull/2583))
 * Stop closing StringIO-based file after CarrierWave::SanitizedFile#read (@aleksandrs-ledovskis [#2571](https://github.com/carrierwaveuploader/carrierwave/pull/2571))
-* Remove uploaded files when transaction is rolled back (@fsateler [#2546](https://github.com/carrierwaveuploader/carrierwave/pull/2546))
 
 Please check [2.x-stable](https://github.com/carrierwaveuploader/carrierwave/blob/2.x-stable/CHANGELOG.md) for previous changes.
