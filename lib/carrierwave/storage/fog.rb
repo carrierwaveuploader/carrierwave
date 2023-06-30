@@ -510,6 +510,8 @@ module CarrierWave
         end
 
         def acl_header
+          return {} unless @uploader.fog_acl
+
           case fog_provider
           when 'AWS'
             { 'x-amz-acl' => @uploader.fog_public ? 'public-read' : 'private' }
