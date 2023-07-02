@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 3.0.0 - 2023-07-02
+
+_No changes._
+
 ## 3.0.0.rc - 2023-06-11
 ### Added
 * Support adding suffix to filename on store when path collides with the existing ones (@mshibuya [07a5632](https://github.com/carrierwaveuploader/carrierwave/commit/07a5632a3f30ddcb21b10a75f003a7eaeaa072ad), [#1855](https://github.com/carrierwaveuploader/carrierwave/issues/1855))
