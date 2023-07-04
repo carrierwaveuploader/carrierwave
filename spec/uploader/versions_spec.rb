@@ -449,6 +449,13 @@ describe CarrierWave::Uploader do
           expect(@uploader.thumb).to be_present
           expect(@uploader.preview).to be_blank
         end
+
+        it "should evaluate the condition even the version is not called" do
+          @uploader_class.version(:preview, if: lambda{|record, args| record.false?(args[:file])})
+          expect(@uploader).to receive(:false?).at_least(:once).and_return(false)
+          @uploader.store!(@file)
+          expect(@uploader.thumb).to be_present
+        end
       end
 
       context "when there is an 'unless' option" do
@@ -482,6 +489,13 @@ describe CarrierWave::Uploader do
           @uploader.store!(@file)
           expect(@uploader.thumb).to be_present
           expect(@uploader.preview).to be_present
+        end
+
+        it "should evaluate the condition even the version is not called" do
+          @uploader_class.version(:preview, unless: lambda{|record, args| record.false?(args[:file])})
+          expect(@uploader).to receive(:false?).at_least(:once).and_return(false)
+          @uploader.store!(@file)
+          expect(@uploader.thumb).to be_present
         end
       end
 
@@ -739,6 +753,13 @@ describe CarrierWave::Uploader do
           expect(@uploader.thumb).to be_present
           expect(@uploader.preview).to be_blank
         end
+
+        it "should not evaluate the condition until version is called" do
+          @uploader_class.version(:preview, if: :false?)
+          expect(@uploader).not_to receive(:false?)
+          @uploader.retrieve_from_store!(@file)
+          expect(@uploader.thumb).to be_present
+        end
       end
 
       context "when there is an 'unless' option" do
@@ -756,6 +777,13 @@ describe CarrierWave::Uploader do
           @uploader.retrieve_from_store!('monkey.txt')
           expect(@uploader.thumb).to be_present
           expect(@uploader.preview).to be_present
+        end
+
+        it "should not evaluate the condition until version is called" do
+          @uploader_class.version(:preview, unless: :false?)
+          expect(@uploader).not_to receive(:false?)
+          @uploader.retrieve_from_store!(@file)
+          expect(@uploader.thumb).to be_present
         end
       end
     end

@@ -133,7 +133,7 @@ module CarrierWave
 
           class_eval <<-RUBY, __FILE__, __LINE__ + 1
             def #{name}
-              versions[:#{name}]
+              version_exists?(:#{name}) ? versions[:#{name}] : versions[:#{name}].class.new(model, mounted_as)
             end
           RUBY
 
@@ -325,11 +325,11 @@ module CarrierWave
       end
 
       def retrieve_versions_from_cache!(cache_name)
-        active_versions.each { |name, v| v.retrieve_from_cache!(cache_name) }
+        versions.each { |name, v| v.retrieve_from_cache!(cache_name) }
       end
 
       def retrieve_versions_from_store!(identifier)
-        active_versions.each { |name, v| v.retrieve_from_store!(identifier) }
+        versions.each { |name, v| v.retrieve_from_store!(identifier) }
       end
 
     end # Versions
