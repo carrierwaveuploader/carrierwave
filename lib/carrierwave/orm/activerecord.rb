@@ -35,8 +35,10 @@ module CarrierWave
       prepend mod
       mod.class_eval <<-RUBY, __FILE__, __LINE__+1
         # Reset cached mounter on record reload
-        def reload(*)
-          @_mounters = nil
+        def reload(*args)
+          if args.size == 0
+            @_mounters = nil
+          end
           super
         end
 
