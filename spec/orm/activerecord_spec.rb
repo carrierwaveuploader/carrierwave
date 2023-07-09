@@ -1915,6 +1915,15 @@ describe CarrierWave::ActiveRecord do
       expect(@event.dup).to be_a Event
     end
 
+    it "clears previous attribute value to prevent unintended deduplication" do
+      @event.image = stub_file('test.jpeg')
+      @event.save
+      new_event = @event.dup
+      new_event.save
+
+      expect(new_event.image.url).to eq '/uploads/test.jpeg'
+    end
+
     context "with more than one mount" do
       before do
         @uploader1 = Class.new(CarrierWave::Uploader::Base)
