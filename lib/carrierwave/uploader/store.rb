@@ -43,11 +43,12 @@ module CarrierWave
       #
       def deduplicated_filename
         return unless filename
+        return filename unless @deduplication_index
 
         parts = filename.split('.')
         basename = parts.shift
         basename.sub!(/ ?\(\d+\)\z/, '')
-        ([basename.to_s + (@deduplication_index ? "(#{@deduplication_index})" : '')] + parts).join('.')
+        ([basename.to_s + (@deduplication_index > 1 ? "(#{@deduplication_index})" : '')] + parts).join('.')
       end
 
       ##
@@ -120,7 +121,7 @@ module CarrierWave
         @deduplication_index = nil
         return unless current_paths.include?(store_path)
 
-        (2..current_paths.size + 1).each do |i|
+        (1..current_paths.size + 1).each do |i|
           @deduplication_index = i
           break unless current_paths.include?(store_path)
         end

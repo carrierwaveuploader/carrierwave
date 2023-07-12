@@ -409,6 +409,8 @@ describe CarrierWave::Uploader do
     let(:file) { stub_file('test.jpg') }
 
     before do
+      allow(CarrierWave::SanitizedFile).to receive(:sanitize_regexp).and_return(/[^A-z0-9\.\(\)]/)
+
       @uploader.cache!(file)
     end
 
@@ -432,20 +434,40 @@ describe CarrierWave::Uploader do
       @uploader.deduplicate(['uploads/test.png'])
       expect(@uploader.deduplicated_filename).to eq('test.jpg')
     end
+
+    context "when deduplication is unnecessary" do
+      let(:file) { stub_tempfile('test.jpg', nil, 'test(2).jpg') }
+
+      it "does not change the suffix" do
+        @uploader.deduplicate([])
+        expect(@uploader.deduplicated_filename).to eq('test(2).jpg')
+      end
+    end
   end
 
   describe "#deduplicated_filename" do
     subject { @uploader.deduplicated_filename }
 
-    it "returns the filename as it is when deduplication index is not set" do
+    it "returns the filename when deduplication index is not set" do
       allow(@uploader).to receive(:filename).and_return('filename.jpg')
+      is_expected.to eq('filename.jpg')
+    end
+
+    it "returns the filename with its suffix unchanged when deduplication index is not set" do
+      allow(@uploader).to receive(:filename).and_return('filename(2).jpg')
+      is_expected.to eq('filename(2).jpg')
+    end
+
+    it "returns the filename without appending the suffix when deduplication index is 1" do
+      allow(@uploader).to receive(:filename).and_return('filename(2).jpg')
+      @uploader.instance_variable_set :@deduplication_index, 1
       is_expected.to eq('filename.jpg')
     end
 
     it "appends the deduplication index as suffix" do
       allow(@uploader).to receive(:filename).and_return('filename.jpg')
-      @uploader.instance_variable_set :@deduplication_index, 1
-      is_expected.to eq('filename(1).jpg')
+      @uploader.instance_variable_set :@deduplication_index, 5
+      is_expected.to eq('filename(5).jpg')
     end
 
     it "reuses the parentheses" do
