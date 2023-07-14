@@ -947,6 +947,18 @@ describe CarrierWave::ActiveRecord do
       expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
     end
 
+    it 'should not remove a file if transaction is rollback' do
+      @event.image = stub_file('new.jpeg')
+      @event.save
+
+      Event.transaction do
+        @event.destroy
+        raise ActiveRecord::Rollback
+      end
+
+      expect(File.exist?(public_path('uploads/new.jpeg'))).to be_truthy
+    end
+
     it "should clear @added_uploaders on commit" do
       # Simulate the commit behavior, since we're using the transactional fixture
       @event.run_callbacks(:commit) do
