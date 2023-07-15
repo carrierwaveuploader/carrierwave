@@ -202,7 +202,7 @@ module CarrierWave
     end
 
     def remove_added
-      current_paths = (@removed_uploaders + @uploaders.select(&:staged)).map(&:path)
+      current_paths = (@removed_uploaders + uploaders.select(&:staged)).map(&:path)
       @added_uploaders
         .reject {|uploader| current_paths.include?(uploader.path) }
         .each { |uploader| uploader.remove! }
