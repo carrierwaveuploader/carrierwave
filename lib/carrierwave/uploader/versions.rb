@@ -27,6 +27,17 @@ module CarrierWave
           @klass.processors = []
           @klass.version_options = @options
           @klass.class_eval <<-RUBY, __FILE__, __LINE__ + 1
+            # Define the enable_processing method for versions so they get the
+            # value from the parent class unless explicitly overwritten
+            def self.enable_processing(value=nil)
+              self.enable_processing = value if value
+              if defined?(@enable_processing) && !@enable_processing.nil?
+                @enable_processing
+              else
+                superclass.enable_processing
+              end
+            end
+
             # Regardless of what is set in the parent uploader, do not enforce the
             # move_to_cache config option on versions because it moves the original
             # file to the version's target file.
