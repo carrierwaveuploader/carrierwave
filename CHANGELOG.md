@@ -5,6 +5,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 3.0.1 - 2023-07-22
+
+### Fixed
+* Fix not respecting the parent's #enable_processing value after reading its own (@mshibuya [2df0f53](https://github.com/carrierwaveuploader/carrierwave/commit/2df0f53f1d5fa30a198aa148ef33f1ab924404e4), [#2676](https://github.com/carrierwaveuploader/carrierwave/issues/2676))
+* Fix NoMethodError when a record is rolled back (@y-yagi [#2674](https://github.com/carrierwaveuploader/carrierwave/pull/2674), [#2675](https://github.com/carrierwaveuploader/carrierwave/issues/2675))
+* Fix filename suffix being removed due to unnecessary deduplication (@mshibuya [d68a111](https://github.com/carrierwaveuploader/carrierwave/commit/d68a1111cfae4309d703caa19d9c19226bc01686), [#2672](https://github.com/carrierwaveuploader/carrierwave/issues/2672))
+* Fix #dup causing unintended name deduplication of copied files (@mshibuya [b732acd](https://github.com/carrierwaveuploader/carrierwave/commit/b732acd63209897e6375a3706330df2c38e3f327), [#2670](https://github.com/carrierwaveuploader/carrierwave/issues/2670))
+* Fix initialization failing when active_support/core_ext is not loaded yet (@mshibuya [875d972](https://github.com/carrierwaveuploader/carrierwave/commit/875d972dc78b8416de7768457793baa4d6220a4f))
+
 ## 3.0.0 - 2023-07-02
 
 _No changes._
