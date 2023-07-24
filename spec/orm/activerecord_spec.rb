@@ -775,6 +775,8 @@ describe CarrierWave::ActiveRecord do
         expect(@event.save).to be_truthy
         expect(@event.image.current_path).to eq public_path('uploads/old(2).jpeg')
         expect(File.exist?(public_path('uploads/old.jpeg'))).to be_falsey
+        @event.reload
+        expect(@event.image.current_path).to eq public_path('uploads/old(2).jpeg')
       end
 
       it "should not remove file if validations fail on save" do
