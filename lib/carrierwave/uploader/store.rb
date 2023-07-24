@@ -125,6 +125,8 @@ module CarrierWave
           @deduplication_index = i
           break unless current_paths.include?(store_path)
         end
+
+        true
       end
 
     private

@@ -426,6 +426,11 @@ module CarrierWave
       #
       def write_uploader(column, identifier); end
 
+      ##
+      # overwrite this to persist a serialized attribute
+      #
+      def persist_uploader(column, identifier); end
+
     private
 
       def _mounter(column)

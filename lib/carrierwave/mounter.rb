@@ -142,7 +142,10 @@ module CarrierWave
       additions, remains = uploaders.partition(&:cached?)
       existing_paths = (@removed_uploaders + remains).map(&:store_path)
       additions.each do |uploader|
-        uploader.deduplicate(existing_paths)
+        if uploader.deduplicate(existing_paths)
+          persist_identifier
+        end
+
         uploader.store!
         existing_paths << uploader.store_path
       end
@@ -154,6 +157,10 @@ module CarrierWave
 
       clear! if remove?
       record.write_uploader(serialization_column, identifier)
+    end
+
+    def persist_identifier
+      record.persist_uploader(serialization_column, identifier)
     end
 
     def urls(*args)

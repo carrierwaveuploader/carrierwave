@@ -13,8 +13,10 @@ module CarrierWave
 
       alias_method :read_uploader, :read_attribute
       alias_method :write_uploader, :write_attribute
+      alias_method :persist_uploader, :update_column
       public :read_uploader
       public :write_uploader
+      public :persist_uploader
 
       include CarrierWave::Validations::ActiveModel
 
@@ -22,7 +24,7 @@ module CarrierWave
       validates_processing_of column if uploader_option(column.to_sym, :validate_processing)
       validates_download_of column if uploader_option(column.to_sym, :validate_download)
 
-      before_save :"store_#{column}!"
+      after_save :"store_#{column}!"
       before_save :"write_#{column}_identifier"
       after_commit :"remove_#{column}!", :on => :destroy
       after_commit :"mark_remove_#{column}_false", :on => :update
