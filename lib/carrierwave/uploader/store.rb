@@ -108,22 +108,22 @@ module CarrierWave
       end
 
       ##
-      # Look for a store path which doesn't collide with the given already-stored paths.
+      # Look for an identifier which doesn't collide with the given already-stored identifiers.
       # It is done by adding a index number as the suffix.
       # For example, if there's 'image.jpg' and the @deduplication_index is set to 2,
       # The stored file will be named as 'image(2).jpg'.
       #
       # === Parameters
       #
-      # [current_paths (Array[String])] List of paths for already-stored files
+      # [current_identifiers (Array[String])] List of identifiers for already-stored files
       #
-      def deduplicate(current_paths)
+      def deduplicate(current_identifiers)
         @deduplication_index = nil
-        return unless current_paths.include?(store_path)
+        return unless current_identifiers.include?(identifier)
 
-        (1..current_paths.size + 1).each do |i|
+        (1..current_identifiers.size + 1).each do |i|
           @deduplication_index = i
-          break unless current_paths.include?(store_path)
+          break unless current_identifiers.include?(identifier)
         end
       end
 

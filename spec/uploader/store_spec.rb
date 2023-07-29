@@ -415,23 +415,23 @@ describe CarrierWave::Uploader do
     end
 
     it "tries to find a non-duplicate filename" do
-      @uploader.deduplicate(['uploads/test.jpg'])
+      @uploader.deduplicate(['test.jpg'])
       expect(@uploader.deduplicated_filename).to eq('test(2).jpg')
     end
 
     it "does nothing when filename doesn't collide" do
-      @uploader.deduplicate(['uploads/file.jpg'])
+      @uploader.deduplicate(['file.jpg'])
       expect(@uploader.deduplicated_filename).to eq('test.jpg')
     end
 
     it "chooses the first non-colliding name" do
-      @uploader.deduplicate(['uploads/test.jpg', 'uploads/test(2).jpg', 'uploads/test(4).jpg'])
+      @uploader.deduplicate(['test.jpg', 'test(2).jpg', 'test(4).jpg'])
       expect(@uploader.deduplicated_filename).to eq('test(3).jpg')
     end
 
     it "resets the deduplication index value from the previous attempt" do
-      @uploader.deduplicate(['uploads/test.jpg'])
-      @uploader.deduplicate(['uploads/test.png'])
+      @uploader.deduplicate(['test.jpg'])
+      @uploader.deduplicate(['test.png'])
       expect(@uploader.deduplicated_filename).to eq('test.jpg')
     end
 

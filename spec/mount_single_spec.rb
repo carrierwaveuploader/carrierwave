@@ -404,7 +404,7 @@ describe CarrierWave::Mount do
         expect(@instance.image.current_path).to eq(public_path('uploads/test.jpg'))
       end
 
-      context "when adding a file which has the same filename with the exsting one" do
+      context "when adding a file which has the same filename with the existing one" do
         before { FileUtils.cp(file_path('bork.txt'), tmp_path('test.jpg')) }
         after { FileUtils.rm(tmp_path('test.jpg')) }
 
@@ -414,6 +414,7 @@ describe CarrierWave::Mount do
           old_uploader = @instance.image
 
           @instance.image = File.open(tmp_path('test.jpg'))
+          @instance.write_image_identifier
           @instance.store_image!
           expect(@instance.image.identifier).to eq 'test(2).jpg'
           expect(old_uploader.read).to eq 'this is stuff'
