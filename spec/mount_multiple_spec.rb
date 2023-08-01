@@ -368,6 +368,7 @@ describe CarrierWave::Mount do
 
           it "renames the latter file to avoid filename duplication" do
             instance.images = ['bork.txt', File.open(tmp_path('bork.txt'))]
+            instance.write_images_identifier
             instance.store_images!
             expect(instance.images.map(&:identifier)).to eq ['bork.txt', 'bork(2).txt']
             expect(instance.images[0].read).not_to eq instance.images[1].read

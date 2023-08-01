@@ -777,6 +777,13 @@ describe CarrierWave::ActiveRecord do
         expect(File.exist?(public_path('uploads/old.jpeg'))).to be_falsey
       end
 
+      it "should persist the deduplicated filename" do
+        @event.image = stub_file('old.jpeg')
+        expect(@event.save).to be_truthy
+        @event.reload
+        expect(@event.image.current_path).to eq public_path('uploads/old(2).jpeg')
+      end
+
       it "should not remove file if validations fail on save" do
         Event.validate { |r| r.errors.add :textfile, "FAIL!" }
         @event.image = stub_file('new.jpeg')
@@ -1679,6 +1686,13 @@ describe CarrierWave::ActiveRecord do
         @event.images = [stub_file('old.jpeg')]
         expect(@event.save).to be_truthy
         expect(File.exist?(public_path('uploads/old.jpeg'))).to be_falsey
+        expect(@event.images[0].current_path).to eq public_path('uploads/old(2).jpeg')
+      end
+
+      it "should persist the deduplicated filename" do
+        @event.images = [stub_file('old.jpeg')]
+        expect(@event.save).to be_truthy
+        @event.reload
         expect(@event.images[0].current_path).to eq public_path('uploads/old(2).jpeg')
       end
 
