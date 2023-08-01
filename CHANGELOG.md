@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 3.0.2 - 2023-08-01
+
+### Fixed
+* Fix deduplicated filename not being persisted (@mshibuya [#2679](https://github.com/carrierwaveuploader/carrierwave/pull/2679), [#2678](https://github.com/carrierwaveuploader/carrierwave/issues/2678), [#2677](https://github.com/carrierwaveuploader/carrierwave/pull/2677))
+
 ## 3.0.1 - 2023-07-22
 
 ### Fixed
