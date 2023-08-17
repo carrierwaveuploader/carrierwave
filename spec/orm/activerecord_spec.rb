@@ -886,6 +886,16 @@ describe CarrierWave::ActiveRecord do
       expect(File.exist?(public_path('uploads/new.jpeg'))).to be_falsey
     end
 
+    it 'should not remove old file on rollback if file is not changed' do
+      Event.transaction do
+        @event.foo = 'test'
+        @event.save
+        expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
+        raise ActiveRecord::Rollback
+      end
+      expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
+    end
+
     it 'should give correct url during transaction' do
       Event.transaction do
         @event.image = stub_file('new.jpeg')
