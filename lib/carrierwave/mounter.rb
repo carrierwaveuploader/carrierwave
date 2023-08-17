@@ -140,7 +140,6 @@ module CarrierWave
 
     def store!
       uploaders.each(&:store!)
-      @added_uploaders += uploaders.reject(&:staged)
     end
 
     def write_identifier
@@ -154,6 +153,7 @@ module CarrierWave
         uploader.deduplicate(existing_identifiers)
         existing_identifiers << uploader.identifier
       end
+      @added_uploaders += additions
 
       record.write_uploader(serialization_column, identifier)
     end
