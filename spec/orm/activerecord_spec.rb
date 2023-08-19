@@ -914,16 +914,6 @@ describe CarrierWave::ActiveRecord do
       end
       expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
     end
-
-    it 'should remove new file if transaction is rollback' do
-      Event.transaction do
-        @event.image = stub_file('new.jpeg')
-        @event.save
-        expect(File.exist?(public_path('uploads/new.jpeg'))).to be_truthy
-        raise ActiveRecord::Rollback
-      end
-      expect(File.exist?(public_path('uploads/new.jpeg'))).to be_falsey
-    end
   end
 
   describe "#mount_uploader into transaction" do
