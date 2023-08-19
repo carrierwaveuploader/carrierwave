@@ -44,9 +44,9 @@ module CarrierWave
         def initialize_dup(other)
           old_uploaders = _mounter(:"#{column}").uploaders
           @_mounters[:"#{column}"] = nil
+          super
           # The attribute needs to be cleared to prevent it from picked up as identifier
           write_attribute(:"#{column}", nil)
-          super
           _mounter(:"#{column}").cache(old_uploaders)
         end
 

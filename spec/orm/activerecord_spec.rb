@@ -1960,6 +1960,12 @@ describe CarrierWave::ActiveRecord do
       expect(new_event.image.url).to eq '/uploads/test.jpeg'
     end
 
+    it "does not modify the original object" do
+      @event.image = stub_file('test.jpeg')
+      @event.save
+      expect { @event.dup }.not_to change { @event[:image] }
+    end
+
     context "with more than one mount" do
       before do
         @uploader1 = Class.new(CarrierWave::Uploader::Base)
