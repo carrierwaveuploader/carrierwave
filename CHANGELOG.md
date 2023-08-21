@@ -5,6 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 3.0.3 - 2023-08-21
+
+### Fixed
+* Fix #dup modifying the original object (@mshibuya [37f36f7](https://github.com/carrierwaveuploader/carrierwave/commit/37f36f7ccf035ffb19cbd3964928b3abf2d5e1b1), [#2687](https://github.com/carrierwaveuploader/carrierwave/issues/2687))
+* Fix wrongly removing files on transaction rollback (@mshibuya, @rajyan [eb03fe1](https://github.com/carrierwaveuploader/carrierwave/commit/eb03fe124c3a7acf3ffc913c7d432208ba3aa7ca), [#2686](https://github.com/carrierwaveuploader/carrierwave/pull/2686), [#2685](https://github.com/carrierwaveuploader/carrierwave/issues/2685))
+
 ## 3.0.2 - 2023-08-01
 
 ### Fixed
