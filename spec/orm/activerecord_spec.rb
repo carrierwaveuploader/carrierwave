@@ -2004,10 +2004,12 @@ describe CarrierWave::ActiveRecord do
         @event.image = stub_file('test.jpeg')
         expect(@event.save).to be_truthy
         expect(@event.image.current_path).to eq public_path("uploads/event/image/#{@event.id}/test.jpeg")
-        new_event = @event.dup
 
+        new_event = @event.dup
         expect(new_event).not_to be @event
         expect(new_event.image.model).to be new_event
+        expect(@event.image.current_path).to eq public_path("uploads/event/image/#{@event.id}/test.jpeg")
+
         expect(@event.save).to be_truthy
         expect(@event.image.current_path).to eq public_path("uploads/event/image/#{@event.id}/test.jpeg")
       end
