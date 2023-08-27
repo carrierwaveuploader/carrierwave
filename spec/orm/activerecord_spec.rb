@@ -2005,6 +2005,17 @@ describe CarrierWave::ActiveRecord do
         expect(@event.dup.image.model).not_to eq @event
       end
     end
+
+    context ':mount_on in options' do
+      before { Event.mount_uploader(:image_v2, @uploader, mount_on: :image) }
+      it do
+        @event.image_v2 = stub_file('test.jpeg')
+        @event.save
+        new_event = @event.dup
+        expect(new_event).not_to be @event
+        expect(new_event.image_v2.model).to be new_event
+      end
+    end
   end
 
   describe 'when set as a nested attribute' do

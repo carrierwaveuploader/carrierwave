@@ -46,7 +46,7 @@ module CarrierWave
           @_mounters[:"#{column}"] = nil
           super
           # The attribute needs to be cleared to prevent it from picked up as identifier
-          write_attribute(:"#{column}", nil)
+          write_attribute(_mounter(:#{column}).serialization_column, nil)
           _mounter(:"#{column}").cache(old_uploaders)
         end
 
