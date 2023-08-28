@@ -1991,6 +1991,30 @@ describe CarrierWave::ActiveRecord do
       end
     end
 
+    context 'with store_dir using model attributes' do
+      before do
+        @uploader.class_eval do
+          def store_dir
+            "uploads/#{model.class.name.downcase}/#{mounted_as}/#{model.id}"
+          end
+        end
+      end
+
+      it "wont affect the duplicated object's saved path" do
+        @event.image = stub_file('test.jpeg')
+        expect(@event.save).to be_truthy
+        expect(@event.image.current_path).to eq public_path("uploads/event/image/#{@event.id}/test.jpeg")
+
+        new_event = @event.dup
+        expect(new_event).not_to be @event
+        expect(new_event.image.model).to be new_event
+        expect(@event.image.current_path).to eq public_path("uploads/event/image/#{@event.id}/test.jpeg")
+
+        expect(@event.save).to be_truthy
+        expect(@event.image.current_path).to eq public_path("uploads/event/image/#{@event.id}/test.jpeg")
+      end
+    end
+
     context 'when #initialize_dup is overridden in the model' do
       before do
         Event.class_eval do
