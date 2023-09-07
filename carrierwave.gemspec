@@ -40,7 +40,11 @@ Gem::Specification.new do |s|
   s.add_development_dependency "fog-rackspace"
   s.add_development_dependency "mini_magick", ">= 3.6.0"
   if RUBY_ENGINE != 'jruby'
-    s.add_development_dependency "rmagick", "~> 2.16"
+    if RUBY_VERSION < '3.2'
+      s.add_development_dependency "rmagick", "~> 2.16"
+    else
+      s.add_development_dependency "rmagick", ">= 2.16"
+    end
   end
   s.add_development_dependency "timecop"
   s.add_development_dependency "generator_spec", ">= 0.9.1"
