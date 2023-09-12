@@ -321,7 +321,16 @@ module CarrierWave
 
     def identified_content_type
       with_io do |io|
-        Marcel::Magic.by_magic(io).try(:type)
+        mimetype_by_magic = Marcel::Magic.by_magic(io)
+        mimetype_by_path = Marcel::Magic.by_path(path)
+
+        return nil if mimetype_by_magic.nil?
+
+        if mimetype_by_path&.child_of?(mimetype_by_magic.type)
+          mimetype_by_path.type
+        else
+          mimetype_by_magic.type
+        end
       end
     rescue Errno::ENOENT
       nil
