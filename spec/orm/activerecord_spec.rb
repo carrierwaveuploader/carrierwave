@@ -1919,6 +1919,10 @@ describe CarrierWave::ActiveRecord do
       Event.mount_uploader(:image, @uploader)
     end
 
+    after do
+      FileUtils.rm_rf(public_path("uploads"))
+    end
+
     it "caches the existing file into the new model" do
       @event.image = stub_file('test.jpeg')
       @event.save
@@ -1954,6 +1958,15 @@ describe CarrierWave::ActiveRecord do
       @event.image = stub_file('test.jpeg')
       @event.save
       expect { @event.dup }.not_to change { @event[:image] }
+    end
+
+    it "can upload a file" do
+      @event.image = stub_file('test.jpeg')
+      @event.dup
+
+      expect(@event.save).to be_truthy
+      expect(@event.image.path).to eq public_path('uploads/test.jpeg')
+      expect(File.exist?(@event.image.path)).to be_truthy
     end
 
     context "with more than one mount" do
@@ -2012,6 +2025,20 @@ describe CarrierWave::ActiveRecord do
 
         expect(@event.save).to be_truthy
         expect(@event.image.current_path).to eq public_path("uploads/event/image/#{@event.id}/test.jpeg")
+      end
+
+      it "upload files to appropriate paths" do
+        @event.image = stub_file('test.jpeg')
+        new_event = @event.dup
+        expect(new_event).not_to be @event
+
+        expect(@event.save).to be_truthy
+        expect(@event.image.path).to eq public_path("uploads/event/image/#{@event.id}/test.jpeg")
+        expect(File.exist?(@event.image.path)).to be_truthy
+
+        expect(new_event.save).to be_truthy
+        expect(new_event.image.path).to eq public_path("uploads/event/image/#{new_event.id}/test.jpeg")
+        expect(File.exist?(new_event.image.path)).to be_truthy
       end
     end
 
