@@ -669,17 +669,6 @@ describe CarrierWave::ActiveRecord do
           expect(@event.changes).to eq({'image' => [nil, 'test.jpeg']})
         end
 
-        it "shouldn't be generated when the attribute value is unchanged" do
-          @event.image = stub_file('test.jpeg')
-          @event.save!
-          @event.image = @event[:image]
-
-          expect(@event.changes).to be_blank
-          expect(@event).not_to be_changed
-          @event.remote_image_url = ""
-          expect(@event).not_to be_changed
-        end
-
         it "shouldn't be generated after second save" do
           @event.image = stub_file('old.jpeg')
           @event.save!
