@@ -635,18 +635,17 @@ describe CarrierWave::ActiveRecord do
       end
     end
 
-    describe 'with overriddent filename' do
+    describe 'with overridden filename' do
+      before do
+        @uploader.class_eval do
+          def filename
+            model.name + File.extname(super)
+          end
+        end
+        allow(@event).to receive(:name).and_return('jonas')
+      end
 
       describe '#save' do
-
-        before do
-          @uploader.class_eval do
-            def filename
-              model.name + File.extname(super)
-            end
-          end
-          allow(@event).to receive(:name).and_return('jonas')
-        end
 
         it "should copy the file to the upload directory when a file has been assigned" do
           @event.image = stub_file('test.jpeg')
@@ -664,6 +663,33 @@ describe CarrierWave::ActiveRecord do
 
       end
 
+      describe '#changes' do
+        it "should be generated" do
+          @event.image = stub_file('test.jpeg')
+          expect(@event.changes).to eq({'image' => [nil, 'test.jpeg']})
+        end
+
+        it "shouldn't be generated when the attribute value is unchanged" do
+          @event.image = stub_file('test.jpeg')
+          @event.save!
+          @event.image = @event[:image]
+
+          expect(@event.changes).to be_blank
+          expect(@event).not_to be_changed
+          @event.remote_image_url = ""
+          expect(@event).not_to be_changed
+        end
+
+        it "shouldn't be generated after second save" do
+          @event.image = stub_file('old.jpeg')
+          @event.save!
+          @event.image = stub_file('new.jpeg')
+          @event.save!
+
+          expect(@event.changes).to be_blank
+          expect(@event).not_to be_changed
+        end
+      end
     end
 
     describe 'with validates_presence_of' do
@@ -1552,7 +1578,7 @@ describe CarrierWave::ActiveRecord do
       end
     end
 
-    describe 'with overriddent filename' do
+    describe 'with overridden filename' do
 
       describe '#save' do
 
