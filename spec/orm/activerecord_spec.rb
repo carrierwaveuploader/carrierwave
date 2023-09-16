@@ -1960,7 +1960,7 @@ describe CarrierWave::ActiveRecord do
       expect { @event.dup }.not_to change { @event[:image] }
     end
 
-    it "can upload a file" do
+    it "allows the original object to store a file" do
       @event.image = stub_file('test.jpeg')
       @event.dup
 
