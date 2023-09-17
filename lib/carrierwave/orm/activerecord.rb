@@ -43,8 +43,8 @@ module CarrierWave
         # Reset cached mounter on record dup
         def initialize_dup(other)
           old_uploaders = _mounter(:"#{column}").uploaders
-          @_mounters[:"#{column}"] = nil
           super
+          @_mounters[:"#{column}"] = nil
           # The attribute needs to be cleared to prevent it from picked up as identifier
           write_attribute(_mounter(:#{column}).serialization_column, nil)
           _mounter(:"#{column}").cache(old_uploaders)
