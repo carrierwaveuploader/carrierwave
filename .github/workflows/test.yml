@@ -36,7 +36,7 @@ jobs:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
       JRUBY_OPTS: --debug
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Setup ImageMagick policy
       run: sudo sh -c 'echo '\''<policymap><policy domain="coder" rights="read|write" pattern="PDF" /></policymap>'\'' > /etc/ImageMagick-6/policy.xml'
     - name: Update package list
@@ -59,7 +59,7 @@ jobs:
     name: RuboCop
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
