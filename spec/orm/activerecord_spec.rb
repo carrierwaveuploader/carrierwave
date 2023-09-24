@@ -426,6 +426,17 @@ describe CarrierWave::ActiveRecord do
         expect(@event.image_identifier).to eq(nil)
       end
 
+      it "should cancel removing image if remove_image is switched to false" do
+        @event.image = stub_file('test.jpeg')
+        @event.save!
+        @event.remove_image = true
+        @event.remove_image = false
+        @event.save!
+        @event.reload
+        expect(@event[:image]).to eq('test.jpeg')
+        expect(@event.image_identifier).to eq('test.jpeg')
+      end
+
       it "should mark image as changed when saving a new image" do
         expect(@event.image_changed?).to be_falsey
         @event.image = stub_file("test.jpeg")
@@ -635,18 +646,17 @@ describe CarrierWave::ActiveRecord do
       end
     end
 
-    describe 'with overriddent filename' do
+    describe 'with overridden filename' do
+      before do
+        @uploader.class_eval do
+          def filename
+            model.name + File.extname(super)
+          end
+        end
+        allow(@event).to receive(:name).and_return('jonas')
+      end
 
       describe '#save' do
-
-        before do
-          @uploader.class_eval do
-            def filename
-              model.name + File.extname(super)
-            end
-          end
-          allow(@event).to receive(:name).and_return('jonas')
-        end
 
         it "should copy the file to the upload directory when a file has been assigned" do
           @event.image = stub_file('test.jpeg')
@@ -664,6 +674,32 @@ describe CarrierWave::ActiveRecord do
 
       end
 
+      describe '#changes' do
+        it "should be generated" do
+          @event.image = stub_file('test.jpeg')
+          expect(@event.changes).to eq({'image' => [nil, 'test.jpeg']})
+        end
+
+        it "shouldn't be generated after second save" do
+          @event.image = stub_file('old.jpeg')
+          @event.save!
+          @event.image = stub_file('new.jpeg')
+          @event.save!
+
+          expect(@event.changes).to be_blank
+          expect(@event).not_to be_changed
+        end
+
+        it "shouldn't be generated when remove_image is canceled" do
+          @event.image = stub_file('test.jpeg')
+          @event.save!
+          @event.remove_image = true
+          @event.remove_image = false
+
+          expect(@event.changes).to be_blank
+          expect(@event).not_to be_changed
+        end
+      end
     end
 
     describe 'with validates_presence_of' do
@@ -1379,6 +1415,17 @@ describe CarrierWave::ActiveRecord do
         expect(@event.images_identifiers[0]).to eq(nil)
       end
 
+      it "should cancel removing images if remove_images is switched to false" do
+        @event.images = [stub_file('test.jpeg')]
+        @event.save!
+        @event.remove_images = true
+        @event.remove_images = false
+        @event.save!
+        @event.reload
+        expect(@event[:images]).to eq(['test.jpeg'])
+        expect(@event.images_identifiers[0]).to eq('test.jpeg')
+      end
+
       it "should mark images as changed when saving a new images" do
         expect(@event.images_changed?).to be_falsey
         @event.images = [stub_file("test.jpeg")]
@@ -1552,7 +1599,7 @@ describe CarrierWave::ActiveRecord do
       end
     end
 
-    describe 'with overriddent filename' do
+    describe 'with overridden filename' do
 
       describe '#save' do
 

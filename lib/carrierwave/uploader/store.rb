@@ -87,7 +87,7 @@ module CarrierWave
             end
             @file = new_file
             @identifier = storage.identifier
-            @cache_id = @deduplication_index = nil
+            @original_filename = @cache_id = @deduplication_index = nil
             @staged = false
           end
         end
