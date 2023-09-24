@@ -168,7 +168,7 @@ module CarrierWave
 
     def remove=(value)
       @remove = value
-      write_temporary_identifier if remove?
+      write_temporary_identifier
     end
 
     def remove?

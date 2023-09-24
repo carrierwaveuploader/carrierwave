@@ -426,6 +426,17 @@ describe CarrierWave::ActiveRecord do
         expect(@event.image_identifier).to eq(nil)
       end
 
+      it "should cancel removing image if remove_image is switched to false" do
+        @event.image = stub_file('test.jpeg')
+        @event.save!
+        @event.remove_image = true
+        @event.remove_image = false
+        @event.save!
+        @event.reload
+        expect(@event[:image]).to eq('test.jpeg')
+        expect(@event.image_identifier).to eq('test.jpeg')
+      end
+
       it "should mark image as changed when saving a new image" do
         expect(@event.image_changed?).to be_falsey
         @event.image = stub_file("test.jpeg")
@@ -1392,6 +1403,17 @@ describe CarrierWave::ActiveRecord do
         expect(@event.images).to be_empty
         expect(@event[:images]).to eq(nil)
         expect(@event.images_identifiers[0]).to eq(nil)
+      end
+
+      it "should cancel removing images if remove_images is switched to false" do
+        @event.images = [stub_file('test.jpeg')]
+        @event.save!
+        @event.remove_images = true
+        @event.remove_images = false
+        @event.save!
+        @event.reload
+        expect(@event[:images]).to eq(['test.jpeg'])
+        expect(@event.images_identifiers[0]).to eq('test.jpeg')
       end
 
       it "should mark images as changed when saving a new images" do
