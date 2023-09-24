@@ -689,6 +689,16 @@ describe CarrierWave::ActiveRecord do
           expect(@event.changes).to be_blank
           expect(@event).not_to be_changed
         end
+
+        it "shouldn't be generated when remove_image is canceled" do
+          @event.image = stub_file('test.jpeg')
+          @event.save!
+          @event.remove_image = true
+          @event.remove_image = false
+
+          expect(@event.changes).to be_blank
+          expect(@event).not_to be_changed
+        end
       end
     end
 
