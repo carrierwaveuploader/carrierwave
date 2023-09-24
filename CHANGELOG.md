@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 1.3.4 - 2023-09-24
+### Fixed
+* Fix incompatibility with RMagick > 3 (@marcogregorius [#2699](https://github.com/carrierwaveuploader/carrierwave/pull/2699))
+
 ## 1.3.3 - 2023-02-02
 ### Fixed
 * Fix Ruby 2.7 deprecation warning on Mounter#remove? (@kaoru [#2644](https://github.com/carrierwaveuploader/carrierwave/pull/2644))
