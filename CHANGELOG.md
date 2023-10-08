@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 3.0.4 - 2023-10-08
+
+### Fixed
+* Fix model's dirty state remaining after update (@rajyan [#2707](https://github.com/carrierwaveuploader/carrierwave/pull/2707), [#2702](https://github.com/carrierwaveuploader/carrierwave/issues/2702))
+* Fix #dup modifying the original object (@rajyan [#2690](https://github.com/carrierwaveuploader/carrierwave/pull/2690), [#2706](https://github.com/carrierwaveuploader/carrierwave/pull/2706), [#2689](https://github.com/carrierwaveuploader/carrierwave/issues/2689), [#2700](https://github.com/carrierwaveuploader/carrierwave/issues/2700))
+* Fix #dup not respecting the :mount_on option, causing MissingAttributeError (@marsz [#2691](https://github.com/carrierwaveuploader/carrierwave/pull/2691))
+
 ## 3.0.3 - 2023-08-21
 
 ### Fixed
