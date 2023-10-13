@@ -331,12 +331,15 @@ module CarrierWave
           else
             fog_file = new_file.to_file
             @content_type ||= new_file.content_type
-            @file = directory.files.create({
+
+            fog_create_file_params = {
               :body         => fog_file || new_file.read,
               :content_type => @content_type,
               :key          => path,
-              :public       => @uploader.fog_public
-            }.merge(@uploader.fog_attributes))
+            }.merge(@uploader.fog_attributes)
+            fog_create_file_params[:public] = @uploader.fog_public if @uploader.fog_acl
+
+            @file = directory.files.create(fog_create_file_params)
             fog_file.close if fog_file && !fog_file.closed?
           end
           true
@@ -510,6 +513,8 @@ module CarrierWave
         end
 
         def acl_header
+          return {} unless @uploader.fog_acl
+
           case fog_provider
           when 'AWS'
             { 'x-amz-acl' => @uploader.fog_public ? 'public-read' : 'private' }

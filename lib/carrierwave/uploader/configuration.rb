@@ -25,6 +25,7 @@ module CarrierWave
         add_config :remove_previously_stored_files_after_update
         add_config :downloader
         add_config :force_extension
+        add_config :fog_acl
 
         # fog
         add_deprecated_config :fog_provider
@@ -193,6 +194,7 @@ module CarrierWave
             config.fog_attributes = {}
             config.fog_credentials = {}
             config.fog_public = true
+            config.fog_acl = true
             config.fog_authenticated_url_expiration = 600
             config.fog_use_ssl_for_aws = true
             config.fog_aws_accelerate = false
