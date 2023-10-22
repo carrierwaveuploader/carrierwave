@@ -86,8 +86,8 @@ module CarrierWave
               cache_storage.delete_dir!(cache_path(nil))
             end
             @file = new_file
-            @identifier = storage.identifier
-            @original_filename = @cache_id = @deduplication_index = nil
+            @original_filename = @identifier = storage.identifier
+            @cache_id = @deduplication_index = nil
             @staged = false
           end
         end
