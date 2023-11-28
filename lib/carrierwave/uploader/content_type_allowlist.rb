@@ -53,7 +53,7 @@ module CarrierWave
       def allowlisted_content_type?(allowlist, content_type)
         Array(allowlist).any? do |item|
           item = Regexp.quote(item) if item.class != Regexp
-          content_type =~ /#{item}/
+          content_type =~ /\A#{item}/
         end
       end
 
