@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 3.0.5 - 2023-11-29
+
+### Fixed
+* Remove unnecessary if clause within #filename left in the uploader template (@rajyan, [#2711](https://github.com/carrierwaveuploader/carrierwave/pull/2711))
+
+### Security
+* Fix Content-Type allowlist bypass vulnerability, possibly leading to XSS (@mshibuya, [863d425](https://github.com/carrierwaveuploader/carrierwave/commit/863d425c76eba12c3294227b39018f6b2dccbbf3), [GHSA-gxhx-g4fq-49hj](https://github.com/carrierwaveuploader/carrierwave/security/advisories/GHSA-gxhx-g4fq-49hj))
+
 ## 3.0.4 - 2023-10-08
 
 ### Fixed
