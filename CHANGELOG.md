@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 2.2.5 - 2023-11-29
+### Security
+* Fix Content-Type allowlist bypass vulnerability, possibly leading to XSS (@mshibuya, [39b282d](https://github.com/carrierwaveuploader/carrierwave/commit/39b282db5c1303899b3d3381ce8a837840f983b5), [GHSA-gxhx-g4fq-49hj](https://github.com/carrierwaveuploader/carrierwave/security/advisories/GHSA-gxhx-g4fq-49hj))
+
 ## 2.2.4 - 2023-06-10
 ### Fixed
 * Fix Ruby 2.7 keyword argument warning in uploader process (@SuperTux88 [#2665](https://github.com/carrierwaveuploader/carrierwave/pull/2665), [#2636](https://github.com/carrierwaveuploader/carrierwave/pull/2636), [#2635](https://github.com/carrierwaveuploader/carrierwave/issues/2635))
