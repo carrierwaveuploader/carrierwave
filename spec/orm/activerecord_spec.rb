@@ -775,8 +775,6 @@ describe CarrierWave::ActiveRecord do
   describe '#mount_uploader removing old files' do
     before do
       reset_class("Event")
-      Event.mount_uploader(:image, @uploader)
-      @event = Event.new
     end
 
     after do
@@ -785,6 +783,8 @@ describe CarrierWave::ActiveRecord do
 
     describe 'normally' do
       before do
+        Event.mount_uploader(:image, @uploader)
+        @event = Event.new
         @event.image = stub_file('old.jpeg')
 
         expect(@event.save).to be_truthy
@@ -837,6 +837,8 @@ describe CarrierWave::ActiveRecord do
 
     describe 'with an overridden filename' do
       before do
+        Event.mount_uploader(:image, @uploader)
+        @event = Event.new
         @uploader.class_eval do
           def filename
             model.foo + File.extname(super)
@@ -863,6 +865,48 @@ describe CarrierWave::ActiveRecord do
         expect(@event.save).to be_truthy
         expect(File.exist?(public_path('uploads/new.jpeg'))).to be_truthy
         expect(File.exist?(public_path('uploads/test.jpeg'))).to be_falsey
+      end
+    end
+
+    describe 'with after_commit callbacks invoked by defined order' do
+      before do
+        ActiveRecord.run_after_transaction_callbacks_in_order_defined = true if ActiveRecord.respond_to?(:run_after_transaction_callbacks_in_order_defined=)
+        Event.mount_uploader(:image, @uploader)
+        @event = Event.new
+        @event.image = stub_file('old.jpeg')
+
+        expect(@event.save).to be_truthy
+        expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
+      end
+
+      after do
+        ActiveRecord.run_after_transaction_callbacks_in_order_defined = false if ActiveRecord.respond_to?(:run_after_transaction_callbacks_in_order_defined=)
+      end
+
+      it "should invoke the callbacks in correct order" do
+        @event.image = stub_file('new.jpeg')
+        expect(@event).to receive(:remove_previously_stored_image).ordered.and_call_original
+        expect(@event).to receive(:reset_previous_changes_for_image).ordered.and_call_original
+        expect(@event).to receive(:mark_remove_image_false).ordered.and_call_original
+        @event.save
+      end
+
+      it "should remove old file on replace" do
+        @event.image = stub_file('new.jpeg')
+        expect(@event.save).to be_truthy
+        expect(File.exist?(public_path('uploads/new.jpeg'))).to be_truthy
+        expect(File.exist?(public_path('uploads/old.jpeg'))).to be_falsey
+      end
+
+      it "should remove the file when remove_image is set to true" do
+        @event.remove_image = true
+        expect(@event.save).to be_truthy
+        expect(File.exist?(public_path('uploads/old.jpeg'))).to be_falsey
+      end
+
+      it "should remove old file on destroy" do
+        expect(@event.destroy).to be_truthy
+        expect(File.exist?(public_path('uploads/old.jpeg'))).to be_falsey
       end
     end
   end

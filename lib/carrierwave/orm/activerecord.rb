@@ -24,11 +24,16 @@ module CarrierWave
 
       after_save :"store_#{column}!"
       before_save :"write_#{column}_identifier"
+      if ::ActiveRecord.try(:run_after_transaction_callbacks_in_order_defined)
+        after_commit :"remove_previously_stored_#{column}", :on => :update
+        after_commit :"reset_previous_changes_for_#{column}"
+        after_commit :"mark_remove_#{column}_false", :on => :update
+      else
+        after_commit :"mark_remove_#{column}_false", :on => :update
+        after_commit :"reset_previous_changes_for_#{column}"
+        after_commit :"remove_previously_stored_#{column}", :on => :update
+      end
       after_commit :"remove_#{column}!", :on => :destroy
-      after_commit :"mark_remove_#{column}_false", :on => :update
-
-      after_commit :"reset_previous_changes_for_#{column}"
-      after_commit :"remove_previously_stored_#{column}", :on => :update
       after_rollback :"remove_rolled_back_#{column}"
 
       mod = Module.new
