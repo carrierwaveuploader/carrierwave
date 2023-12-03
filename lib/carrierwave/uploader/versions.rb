@@ -279,7 +279,7 @@ module CarrierWave
         # that are the source of another version.
 
         self.cache_id = CarrierWave.generate_cache_id
-        derived_versions.each do |name, v|
+        derived_versions.each_value do |v|
           v.cache!(file) if names.empty? || !(v.descendant_version_names & names).empty?
         end
         active_versions.each do |name, v|
@@ -308,13 +308,13 @@ module CarrierWave
       def derived_versions
         active_versions.reject do |name, v|
           v.class.version_options[:from_version]
-        end.to_a + active_sibling_versions.select do |name, v|
+        end.merge(active_sibling_versions.select do |name, v|
           v.class.version_options[:from_version] == self.class.version_names.last
-        end.to_a
+        end)
       end
 
       def active_sibling_versions
-        parent_version&.active_versions || []
+        parent_version&.active_versions || {}
       end
 
       def full_filename(for_file)
@@ -326,23 +326,23 @@ module CarrierWave
       end
 
       def cache_versions!(new_file)
-        derived_versions.each { |name, v| v.cache!(new_file) }
+        derived_versions.each_value { |v| v.cache!(new_file) }
       end
 
       def store_versions!(new_file)
-        active_versions.each { |name, v| v.store!(new_file) }
+        active_versions.each_value { |v| v.store!(new_file) }
       end
 
       def remove_versions!
-        versions.each { |name, v| v.remove! }
+        versions.each_value { |v| v.remove! }
       end
 
       def retrieve_versions_from_cache!(cache_name)
-        active_versions.each { |name, v| v.retrieve_from_cache!(cache_name) }
+        active_versions.each_value { |v| v.retrieve_from_cache!(cache_name) }
       end
 
       def retrieve_versions_from_store!(identifier)
-        active_versions.each { |name, v| v.retrieve_from_store!(identifier) }
+        active_versions.each_value { |v| v.retrieve_from_store!(identifier) }
       end
 
     end # Versions
