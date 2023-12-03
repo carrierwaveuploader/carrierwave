@@ -659,7 +659,11 @@ end
 ## Testing with CarrierWave
 
 It's a good idea to test your uploaders in isolation. In order to speed up your
-tests, it's recommended to switch off processing in your tests, and to use the
+tests, it's recommended to switch off processing in your tests, and to use the file storage.
+Also, you can disable SSRF protection at your own risk using the `skip_ssrf_protection` configuration.
+
+In Rails you could do that by adding an initializer with:
+
 file storage. In Rails you could do that by adding an initializer with:
 
 ```ruby
@@ -667,6 +671,7 @@ if Rails.env.test? or Rails.env.cucumber?
   CarrierWave.configure do |config|
     config.storage = :file
     config.enable_processing = false
+    config.skip_ssrf_protection = true
   end
 end
 ```

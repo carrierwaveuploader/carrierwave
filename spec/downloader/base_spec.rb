@@ -267,14 +267,27 @@ describe CarrierWave::Downloader::Base do
   end
 
   describe "#skip_ssrf_protection?" do
-    let(:uri) { 'http://localhost/test.jpg' }
-    before do
-      WebMock.stub_request(:get, uri).to_return(body: file)
-      allow(subject).to receive(:skip_ssrf_protection?).and_return(true)
+    context "when ssrf_protection is skipped" do
+      let(:uri) { 'http://localhost/test.jpg' }
+      before do
+        WebMock.stub_request(:get, uri).to_return(body: file)
+        allow(subject).to receive(:skip_ssrf_protection?).and_return(true)
+      end
+
+      it "allows local request to be made" do
+        expect(subject.download(uri).read).to eq 'this is stuff'
+      end
     end
 
-    it "allows local request to be made" do
-      expect(subject.download(uri).read).to eq 'this is stuff'
+    context 'skip_ssrf_protection configuration' do
+      it 'defaults to false' do
+        expect(subject.skip_ssrf_protection?(uri)).to be_falsey
+      end
+
+      it 'can be configured by skip_ssrf_protection config' do
+        uploader.skip_ssrf_protection = true
+        expect(subject.skip_ssrf_protection?(uri)).to be_truthy
+      end
     end
   end
 end
