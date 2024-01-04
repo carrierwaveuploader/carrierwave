@@ -1138,6 +1138,7 @@ cache
 process
 remove
 retrieve_from_cache
+retrieve_from_store
 store
 ```
 
