@@ -247,6 +247,24 @@ describe CarrierWave::Uploader do
     end
   end
 
+  context "with a filename safeguarded by 'if original_filename'" do
+    before do
+      @uploader_class.class_eval do
+        def filename
+          "foo.jpg" if original_filename
+        end
+      end
+    end
+
+    it "shows warning on store only once" do
+      expect(@uploader).to receive(:warn).with(/Your uploader's #filename method .+ didn't return value/).once
+      @file = File.open(file_path('test.jpg'))
+      @uploader.store!(@file)
+      @file = File.open(file_path('bork.txt'))
+      @uploader.store!(@file)
+    end
+  end
+
   describe 'without a store dir' do
     before do
       @uploader_class.class_eval do
