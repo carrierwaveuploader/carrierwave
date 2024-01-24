@@ -79,10 +79,6 @@ module CarrierWave
         process :resize_and_pad => [width, height, background, gravity, alpha]
       end
 
-      def resize_to_fit(width, height)
-        process :resize_to_fit => [width, height]
-      end
-
       def crop(left, top, width, height)
         process :crop => [left, top, width, height]
       end
@@ -218,7 +214,7 @@ module CarrierWave
 
     ##
     # Crop the image to the contents of a box positioned at [left] and [top], with the dimensions given
-    # by [width] and [height]. 
+    # by [width] and [height].
     # 
     #
     # === Parameters
