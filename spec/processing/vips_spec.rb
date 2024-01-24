@@ -188,6 +188,15 @@ describe CarrierWave::Vips do
     end
   end
 
+  describe '#crop' do
+    it 'extracts an area defined from the left and top positions, with the given width and height' do
+      instance.crop(70, 40, 500, 400)
+
+      expect(instance).to have_dimensions(500, 400)
+      expect(::Vips::Image.new_from_file(instance.current_path).get("vips-loader")).to match(/jpeg/)
+    end
+  end
+
   describe "#width and #height" do
     it "returns the width and height of the image" do
       instance.resize_to_fill(200, 300)
