@@ -215,7 +215,7 @@ module CarrierWave
     ##
     # Crop the image to the contents of a box positioned at [left] and [top], with the dimensions given
     # by [width] and [height].
-    # 
+    #
     #
     # === Parameters
     #

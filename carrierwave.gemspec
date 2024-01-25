@@ -45,4 +45,5 @@ Gem::Specification.new do |s|
   if RUBY_ENGINE != 'jruby'
     s.add_development_dependency "pry-byebug"
   end
+  s.add_dependency("csv", "~> 3.0")
 end
