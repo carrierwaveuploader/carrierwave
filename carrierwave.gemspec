@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
   s.add_dependency "marcel", "~> 1.0.0"
   s.add_dependency "addressable", "~> 2.6"
   s.add_dependency "ssrf_filter", "~> 1.0"
+  s.add_development_dependency "csv", "~> 3.0"
   s.add_development_dependency "cucumber", "~> 2.3"
   s.add_development_dependency "rspec", "~> 3.4"
   s.add_development_dependency "rspec-retry"
