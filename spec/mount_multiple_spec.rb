@@ -887,8 +887,8 @@ describe CarrierWave::Mount do
       after { instance.write_images_identifier }
 
       it "writes to the column" do
-        expect(instance).to receive(:write_uploader).with(:images, [test_file_name]).at_least(:once)
         instance.images = [test_file_stub]
+        expect(instance).to receive(:write_uploader).with(:images, [test_file_name]).at_least(:once)
         instance.write_images_identifier
       end
 
