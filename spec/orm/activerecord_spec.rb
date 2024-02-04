@@ -449,6 +449,15 @@ describe CarrierWave::ActiveRecord do
         expect(@event.changed_for_autosave?).to be_truthy
       end
 
+      it "should mark image as changed when saving a new image with same file name" do
+        @event.image = stub_file("test.jpeg")
+        @event.save
+        @event.image = stub_tempfile("bork.txt", nil, "test.jpeg")
+        expect(@event.image_changed?).to be_truthy
+        @event.save
+        expect(@event.reload.image.read).to match /^bork/
+      end
+
       it "should not update image when save with select" do
         @event.image = stub_file('test.jpeg')
         @event.save!
@@ -632,8 +641,9 @@ describe CarrierWave::ActiveRecord do
 
     describe '#changes' do
       it "should be generated" do
+        allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-1234-2255')
         @event.image = stub_file('test.jpeg')
-        expect(@event.changes).to eq({'image' => [nil, 'test.jpeg']})
+        expect(@event.changes).to eq({'image' => [nil, '1369894322-345-1234-2255/test.jpeg']})
       end
 
       it "shouldn't be generated when the attribute value is unchanged" do
@@ -676,8 +686,9 @@ describe CarrierWave::ActiveRecord do
 
       describe '#changes' do
         it "should be generated" do
+          allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-1234-2255')
           @event.image = stub_file('test.jpeg')
-          expect(@event.changes).to eq({'image' => [nil, 'test.jpeg']})
+          expect(@event.changes).to eq({'image' => [nil, '1369894322-345-1234-2255/test.jpeg']})
         end
 
         it "shouldn't be generated after second save" do
@@ -1470,7 +1481,7 @@ describe CarrierWave::ActiveRecord do
         expect(@event.images_identifiers[0]).to eq('test.jpeg')
       end
 
-      it "should mark images as changed when saving a new images" do
+      it "should mark images as changed when saving new images" do
         expect(@event.images_changed?).to be_falsey
         @event.images = [stub_file("test.jpeg")]
         expect(@event.images_changed?).to be_truthy
@@ -1480,6 +1491,15 @@ describe CarrierWave::ActiveRecord do
         @event.images = [stub_file("test.jpg")]
         expect(@event.images_changed?).to be_truthy
         expect(@event.changed_for_autosave?).to be_truthy
+      end
+
+      it "should mark images as changed when saving new images with same file name" do
+        @event.images = [stub_file("test.jpeg")]
+        @event.save
+        @event.images = [stub_tempfile("bork.txt", nil, "test.jpeg")]
+        expect(@event.images_changed?).to be_truthy
+        @event.save
+        expect(@event.reload.images[0].read).to match /^bork/
       end
 
       it "should not update image when save with select" do
@@ -1629,8 +1649,9 @@ describe CarrierWave::ActiveRecord do
 
     describe '#changes' do
       it "should be generated" do
+        allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-1234-2255')
         @event.images = [stub_file('test.jpeg')]
-        expect(@event.changes).to eq({'images' => [nil, ['test.jpeg']]})
+        expect(@event.changes).to eq({'images' => [nil, ['1369894322-345-1234-2255/test.jpeg']]})
       end
 
       it "shouldn't be generated when the attribute value is unchanged" do
