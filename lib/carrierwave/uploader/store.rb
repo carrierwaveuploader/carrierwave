@@ -14,6 +14,20 @@ module CarrierWave
             @file, @filename, @cache_id, @identifier, @deduplication_index = nil
           end
         }
+
+        after :store, :show_warning_when_filename_is_unavailable
+
+        class_attribute :filename_safeguard_checked
+      end
+
+      module ClassMethods
+      private
+
+        def inherited(subclass)
+          # To perform the filename safeguard check once per a class
+          self.filename_safeguard_checked = false
+          super
+        end
       end
 
       ##
@@ -131,6 +145,18 @@ module CarrierWave
 
       def full_filename(for_file)
         forcing_extension(for_file)
+      end
+
+      def show_warning_when_filename_is_unavailable(_)
+        return if self.class.filename_safeguard_checked
+        self.class.filename_safeguard_checked = true
+        return if filename
+
+        warn <<~MESSAGE
+          [WARNING] Your uploader's #filename method defined at #{method(:filename).source_location.join(':')} didn't return value after storing the file.
+          It's likely that the method is safeguarded with `if original_filename`, which were necessary for pre-3.x CarrierWave but is no longer needed.
+          Removing it is recommended, as it is known to cause issues depending on the use case: https://github.com/carrierwaveuploader/carrierwave/issues/2708
+        MESSAGE
       end
 
       def storage
