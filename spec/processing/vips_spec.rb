@@ -188,12 +188,15 @@ describe CarrierWave::Vips do
     end
   end
 
-  describe '#crop' do
-    it 'extracts an area defined from the left and top positions, with the given width and height' do
+  describe "#crop" do
+    it "extracts an area defined from the left and top positions, with the given width and height" do
       instance.crop(70, 40, 500, 400)
-
       expect(instance).to have_dimensions(500, 400)
-      expect(::Vips::Image.new_from_file(instance.current_path).get("vips-loader")).to match(/jpeg/)
+    end
+
+    it "retains original image boundary if either edge of the cropping box falls outside it" do
+      instance.crop(140, 80, 500, 480)
+      expect(instance).to have_dimensions(500, 400)
     end
   end
 

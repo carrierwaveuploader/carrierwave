@@ -214,8 +214,8 @@ module CarrierWave
 
     ##
     # Crop the image to the contents of a box positioned at [left] and [top], with the dimensions given
-    # by [width] and [height].
-    #
+    # by [width] and [height]. The original image bottom/right edge is preserved if the cropping box falls
+    # outside the image bounds.
     #
     # === Parameters
     #
@@ -230,6 +230,8 @@ module CarrierWave
     #
     def crop(left, top, width, height, combine_options: {})
       width, height = resolve_dimensions(width, height)
+      width = vips_image.width - left if width + left > vips_image.width
+      height = vips_image.height - top if height + top > vips_image.height
 
       vips! do |builder|
         builder.crop(left, top, width, height)
