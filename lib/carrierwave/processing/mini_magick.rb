@@ -219,7 +219,6 @@ module CarrierWave
     # by [width] and [height]. The original image bottom/right edge is preserved if the cropping box falls
     # outside the image bounds.
     #
-    #
     # === Parameters
     #
     # [left (integer)] left edge of area to extract
@@ -229,13 +228,14 @@ module CarrierWave
     #
     # === Yields
     #
-    # [Magick::Image] additional manipulations to perform
+    # [MiniMagick::Image] additional manipulations to perform
     #
     def crop(left, top, width, height, combine_options: {}, &block)
       width, height = resolve_dimensions(width, height)
 
       minimagick!(block) do |builder|
         builder.crop(left, top, width, height)
+          .apply(combine_options)
       end
     end
 

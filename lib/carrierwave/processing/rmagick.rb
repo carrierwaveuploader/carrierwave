@@ -269,7 +269,6 @@ module CarrierWave
     # by [width] and [height]. The original image bottom/right edge is preserved if the cropping box falls
     # outside the image bounds.
     #
-    #
     # === Parameters
     #
     # [left (integer)] left edge of area to extract
@@ -286,7 +285,9 @@ module CarrierWave
       height = dimension_from height
 
       manipulate! do |img|
-        img.crop(left, top, width, height)
+        img.crop!(left, top, width, height)
+        img = yield(img) if block_given?
+        img
       end
     end
 
