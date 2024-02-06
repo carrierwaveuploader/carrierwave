@@ -979,14 +979,6 @@ class AvatarUploader < CarrierWave::Uploader::Base
 end
 ```
 
-#### List of available processing methods:
-
-- `convert` - Changes the image encoding format to the given format(eg. jpg). This operation is treated specially to trigger the change of the file extension, so it matches with the format of the resulting file.
-- `resize_to_limit` - Resize the image to fit within the specified dimensions while retaining the original aspect ratio. Will only resize the image if it is larger than the specified dimensions. The resulting image may be shorter or narrower than specified in the smaller dimension but will not be larger than the specified values.
-- `resize_to_fit` - Resize the image to fit within the specified dimensions while retaining the original aspect ratio. The image may be shorter or narrower than specified in the smaller dimension but will not be larger than the specified values.
-- `resize_to_fill` - Resize the image to fit within the specified dimensions while retaining the aspect ratio of the original image. If necessary, crop the image in the larger dimension. Optionally, a "gravity" may be specified, for example "Center", or "NorthEast".
-- `resize_and_pad` - Resize the image to fit within the specified dimensions while retaining the original aspect ratio. If necessary, will pad the remaining area with the given color, which defaults to transparent (for gif and png, white for jpeg). Optionally, a "gravity" may be specified, as above.
-
 See `carrierwave/processing/mini_magick.rb` for details.
 
 ### Using RMagick
@@ -1017,6 +1009,54 @@ end
 
 Check out the manipulate! method, which makes it easy for you to write your own
 manipulation methods.
+
+### Using Vips
+
+CarrierWave version 2.2.0 added support for the `libvips` image processing library, through [ImageProcessing::Vips](https://github.com/janko/image_processing/blob/master/doc/vips.md). Its functionality matches that of the RMagic and MiniMagic processors, but it uses less memory and offers [faster processing](https://github.com/libvips/libvips/wiki/Speed-and-memory-use). To use the Vips processing module you must first install `libvips`, for example: 
+
+````bash
+$ sudo apt install libvips
+````
+
+You also need to tell your uploader to use Vips:
+
+````ruby
+class ImageFileUploader < CarrierWave::Uploader::Base
+  include CarrierWave::Vips
+end
+````
+
+### List of available processing methods:
+
+> [!NOTE]
+> While the intetion is to provide uniform interfaces to al three processing libraries the availability and implementation of processing methods can <a href="supported-processing-methods">vary slightly between them</a>.
+
+- `convert` - Changes the image encoding format to the given format (eg. jpg). This operation is treated specially to trigger the change of the file extension, so it matches with the format of the resulting file.
+- `resize_to_limit` - Resize the image to fit within the specified dimensions while retaining the original aspect ratio. Will only resize the image if it is larger than the specified dimensions. The resulting image may be shorter or narrower than specified in the smaller dimension but will not be larger than the specified values.
+- `resize_to_fit` - Resize the image to fit within the specified dimensions while retaining the original aspect ratio. The image may be shorter or narrower than specified in the smaller dimension but will not be larger than the specified values.
+- `resize_to_fill` - Resize the image to fit within the specified dimensions while retaining the aspect ratio of the original image. If necessary, crop the image in the larger dimension. Optionally, a "gravity" may be specified, for example "Center", or "NorthEast".
+- `resize_and_pad` - Resize the image to fit within the specified dimensions while retaining the original aspect ratio. If necessary, will pad the remaining area with the given color, which defaults to transparent (for gif and png, white for jpeg). Optionally, a "gravity" may be specified, as above.
+- `crop` - Crop the image to the contents of a box with the specified height and width, positioned a given number of pixels from the top and left. The original image edge will be retained should the bottom and/or right edge of the box fall outside the image bounds. 
+
+#### Supported processing methods
+
+The following table shows which processing methods are supported by each processing library, and which parameters they accept: 
+
+Method|RMagick|MiniMagick|Vips
+------|-----------------|-----------------|-----------------|
+`convert`|`format`|`format`, `page`<sup>1</sup>|`format`, `page`<sup>1</sup>
+`resize_to_limit`|`width`, `height`|`width`, `height`|`width`, `height`
+`resize_to_fit`|`width`, `height`|`width`, `height`|`width`, `height`
+`resize_to_fill`|`width`, `height`, `gravity`<sup>2</sup>|`width`, `height`, `gravity`<sup>2</sup>|`width`, `height`
+`resize_and_pad`|`width`, `height`, `background`, `gravity`<sup>2</sup>|`width`, `height`, `background`, `gravity`<sup>2</sup>|`width`, `height`, `background`, `gravity`<sup>2</sup>
+`resize_to_geometry_string`|`geometry_string`<sup>3</sup>|*not implemented*|*not implemented*
+`crop`|`left`, `top`, `width`, `height`|`left`, `top`, `width`, `height`|`left`, `top`, `width`, `height`
+
+<sup>1</sup>`page` refers to the page number when converting from PDF, frame number when converting from GIF, and layer number when converting from PSD.
+
+<sup>2</sup>`gravity` refers to an image position given as one of `Center`, `North`, `NorthWest`, `West`, `SouthWest`, `South`, `SouthEast`, `East`, or `NorthEast`.
+
+<sup>3</sup>`geometry_string` is an [ImageMagick geometry string](https://rmagick.github.io/imusage.html#geometry).
 
 ## Migrating from Paperclip
 
