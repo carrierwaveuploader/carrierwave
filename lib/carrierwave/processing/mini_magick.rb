@@ -79,6 +79,10 @@ module CarrierWave
       def resize_and_pad(width, height, background=:transparent, gravity='Center')
         process :resize_and_pad => [width, height, background, gravity]
       end
+
+      def crop(left, top, width, height)
+        process :crop => [left, top, width, height]
+      end
     end
 
     ##
@@ -206,6 +210,31 @@ module CarrierWave
 
       minimagick!(block) do |builder|
         builder.resize_and_pad(width, height, background: background, gravity: gravity)
+          .apply(combine_options)
+      end
+    end
+
+    ##
+    # Crop the image to the contents of a box positioned at [left] and [top], with the dimensions given
+    # by [width] and [height]. The original image bottom/right edge is preserved if the cropping box falls
+    # outside the image bounds.
+    #
+    # === Parameters
+    #
+    # [left (integer)] left edge of area to extract
+    # [top (integer)] top edge of area to extract
+    # [width (Integer)] width of area to extract
+    # [height (Integer)] height of area to extract
+    #
+    # === Yields
+    #
+    # [MiniMagick::Image] additional manipulations to perform
+    #
+    def crop(left, top, width, height, combine_options: {}, &block)
+      width, height = resolve_dimensions(width, height)
+
+      minimagick!(block) do |builder|
+        builder.crop(left, top, width, height)
           .apply(combine_options)
       end
     end

@@ -185,6 +185,18 @@ describe CarrierWave::RMagick, :rmagick => true do
     end
   end
 
+  describe "#crop" do
+    it "extracts an area defined from the left and top positions, with the given width and height" do
+      instance.crop(70, 40, 500, 400)
+      expect(instance).to have_dimensions(500, 400)
+    end
+
+    it "retains original image boundary if either edge of the cropping box falls outside it" do
+      instance.crop(140, 80, 500, 480)
+      expect(instance).to have_dimensions(500, 400)
+    end
+  end
+
   describe "#manipulate!" do
     let(:image) { ::Magick::Image.read(landscape_file_path) }
 
