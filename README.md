@@ -1012,7 +1012,7 @@ manipulation methods.
 
 ### Using Vips
 
-CarrierWave version 2.2.0 added support for the `libvips` image processing library, through [ImageProcessing::Vips](https://github.com/janko/image_processing/blob/master/doc/vips.md). Its functionality matches that of the RMagic and MiniMagic processors, but it uses less memory and offers [faster processing](https://github.com/libvips/libvips/wiki/Speed-and-memory-use). To use the Vips processing module you must first install `libvips`, for example: 
+CarrierWave version 2.2.0 added support for the `libvips` image processing library, through [ImageProcessing::Vips](https://github.com/janko/image_processing/blob/master/doc/vips.md). Its functionality matches that of the RMagick and MiniMagick processors, but it uses less memory and offers [faster processing](https://github.com/libvips/libvips/wiki/Speed-and-memory-use). To use the Vips processing module you must first install `libvips`, for example: 
 
 ````bash
 $ sudo apt install libvips
