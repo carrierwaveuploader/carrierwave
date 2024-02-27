@@ -428,6 +428,11 @@ module CarrierWave
 
     private
 
+      def initialize_dup(other)
+        @_mounters = @_mounters.dup
+        super
+      end
+
       def _mounter(column)
         # We cannot memoize in frozen objects :(
         return Mounter.build(self, column) if frozen?

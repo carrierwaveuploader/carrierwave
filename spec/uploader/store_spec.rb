@@ -247,6 +247,24 @@ describe CarrierWave::Uploader do
     end
   end
 
+  context "with a filename safeguarded by 'if original_filename'" do
+    before do
+      @uploader_class.class_eval do
+        def filename
+          "foo.jpg" if original_filename
+        end
+      end
+    end
+
+    it "shows warning on store only once" do
+      expect(@uploader).to receive(:warn).with(/Your uploader's #filename method .+ didn't return value/).once
+      @file = File.open(file_path('test.jpg'))
+      @uploader.store!(@file)
+      @file = File.open(file_path('bork.txt'))
+      @uploader.store!(@file)
+    end
+  end
+
   describe 'without a store dir' do
     before do
       @uploader_class.class_eval do
@@ -409,43 +427,65 @@ describe CarrierWave::Uploader do
     let(:file) { stub_file('test.jpg') }
 
     before do
+      allow(CarrierWave::SanitizedFile).to receive(:sanitize_regexp).and_return(/[^A-z0-9\.\(\)]/)
+
       @uploader.cache!(file)
     end
 
     it "tries to find a non-duplicate filename" do
-      @uploader.deduplicate(['uploads/test.jpg'])
+      @uploader.deduplicate(['test.jpg'])
       expect(@uploader.deduplicated_filename).to eq('test(2).jpg')
     end
 
     it "does nothing when filename doesn't collide" do
-      @uploader.deduplicate(['uploads/file.jpg'])
+      @uploader.deduplicate(['file.jpg'])
       expect(@uploader.deduplicated_filename).to eq('test.jpg')
     end
 
     it "chooses the first non-colliding name" do
-      @uploader.deduplicate(['uploads/test.jpg', 'uploads/test(2).jpg', 'uploads/test(4).jpg'])
+      @uploader.deduplicate(['test.jpg', 'test(2).jpg', 'test(4).jpg'])
       expect(@uploader.deduplicated_filename).to eq('test(3).jpg')
     end
 
     it "resets the deduplication index value from the previous attempt" do
-      @uploader.deduplicate(['uploads/test.jpg'])
-      @uploader.deduplicate(['uploads/test.png'])
+      @uploader.deduplicate(['test.jpg'])
+      @uploader.deduplicate(['test.png'])
       expect(@uploader.deduplicated_filename).to eq('test.jpg')
+    end
+
+    context "when deduplication is unnecessary" do
+      let(:file) { stub_tempfile('test.jpg', nil, 'test(2).jpg') }
+
+      it "does not change the suffix" do
+        @uploader.deduplicate([])
+        expect(@uploader.deduplicated_filename).to eq('test(2).jpg')
+      end
     end
   end
 
   describe "#deduplicated_filename" do
     subject { @uploader.deduplicated_filename }
 
-    it "returns the filename as it is when deduplication index is not set" do
+    it "returns the filename when deduplication index is not set" do
       allow(@uploader).to receive(:filename).and_return('filename.jpg')
+      is_expected.to eq('filename.jpg')
+    end
+
+    it "returns the filename with its suffix unchanged when deduplication index is not set" do
+      allow(@uploader).to receive(:filename).and_return('filename(2).jpg')
+      is_expected.to eq('filename(2).jpg')
+    end
+
+    it "returns the filename without appending the suffix when deduplication index is 1" do
+      allow(@uploader).to receive(:filename).and_return('filename(2).jpg')
+      @uploader.instance_variable_set :@deduplication_index, 1
       is_expected.to eq('filename.jpg')
     end
 
     it "appends the deduplication index as suffix" do
       allow(@uploader).to receive(:filename).and_return('filename.jpg')
-      @uploader.instance_variable_set :@deduplication_index, 1
-      is_expected.to eq('filename(1).jpg')
+      @uploader.instance_variable_set :@deduplication_index, 5
+      is_expected.to eq('filename(5).jpg')
     end
 
     it "reuses the parentheses" do

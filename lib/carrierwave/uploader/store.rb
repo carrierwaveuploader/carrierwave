@@ -14,6 +14,20 @@ module CarrierWave
             @file, @filename, @cache_id, @identifier, @deduplication_index = nil
           end
         }
+
+        after :store, :show_warning_when_filename_is_unavailable
+
+        class_attribute :filename_safeguard_checked
+      end
+
+      module ClassMethods
+      private
+
+        def inherited(subclass)
+          # To perform the filename safeguard check once per a class
+          self.filename_safeguard_checked = false
+          super
+        end
       end
 
       ##
@@ -43,11 +57,12 @@ module CarrierWave
       #
       def deduplicated_filename
         return unless filename
+        return filename unless @deduplication_index
 
         parts = filename.split('.')
         basename = parts.shift
         basename.sub!(/ ?\(\d+\)\z/, '')
-        ([basename.to_s + (@deduplication_index ? "(#{@deduplication_index})" : '')] + parts).join('.')
+        ([basename.to_s + (@deduplication_index > 1 ? "(#{@deduplication_index})" : '')] + parts).join('.')
       end
 
       ##
@@ -86,7 +101,7 @@ module CarrierWave
             end
             @file = new_file
             @identifier = storage.identifier
-            @cache_id = @deduplication_index = nil
+            @original_filename = @cache_id = @deduplication_index = nil
             @staged = false
           end
         end
@@ -107,22 +122,22 @@ module CarrierWave
       end
 
       ##
-      # Look for a store path which doesn't collide with the given already-stored paths.
+      # Look for an identifier which doesn't collide with the given already-stored identifiers.
       # It is done by adding a index number as the suffix.
       # For example, if there's 'image.jpg' and the @deduplication_index is set to 2,
       # The stored file will be named as 'image(2).jpg'.
       #
       # === Parameters
       #
-      # [current_paths (Array[String])] List of paths for already-stored files
+      # [current_identifiers (Array[String])] List of identifiers for already-stored files
       #
-      def deduplicate(current_paths)
+      def deduplicate(current_identifiers)
         @deduplication_index = nil
-        return unless current_paths.include?(store_path)
+        return unless current_identifiers.include?(identifier)
 
-        (2..current_paths.size + 1).each do |i|
+        (1..current_identifiers.size + 1).each do |i|
           @deduplication_index = i
-          break unless current_paths.include?(store_path)
+          break unless current_identifiers.include?(identifier)
         end
       end
 
@@ -130,6 +145,18 @@ module CarrierWave
 
       def full_filename(for_file)
         forcing_extension(for_file)
+      end
+
+      def show_warning_when_filename_is_unavailable(_)
+        return if self.class.filename_safeguard_checked
+        self.class.filename_safeguard_checked = true
+        return if filename
+
+        warn <<~MESSAGE
+          [WARNING] Your uploader's #filename method defined at #{method(:filename).source_location.join(':')} didn't return value after storing the file.
+          It's likely that the method is safeguarded with `if original_filename`, which were necessary for pre-3.x CarrierWave but is no longer needed.
+          Removing it is recommended, as it is known to cause issues depending on the use case: https://github.com/carrierwaveuploader/carrierwave/issues/2708
+        MESSAGE
       end
 
       def storage

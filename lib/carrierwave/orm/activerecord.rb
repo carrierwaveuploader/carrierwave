@@ -24,11 +24,16 @@ module CarrierWave
 
       after_save :"store_#{column}!"
       before_save :"write_#{column}_identifier"
+      if ::ActiveRecord.try(:run_after_transaction_callbacks_in_order_defined)
+        after_commit :"remove_previously_stored_#{column}", :on => :update
+        after_commit :"reset_previous_changes_for_#{column}"
+        after_commit :"mark_remove_#{column}_false", :on => :update
+      else
+        after_commit :"mark_remove_#{column}_false", :on => :update
+        after_commit :"reset_previous_changes_for_#{column}"
+        after_commit :"remove_previously_stored_#{column}", :on => :update
+      end
       after_commit :"remove_#{column}!", :on => :destroy
-      after_commit :"mark_remove_#{column}_false", :on => :update
-
-      after_commit :"reset_previous_changes_for_#{column}"
-      after_commit :"remove_previously_stored_#{column}", :on => :update
       after_rollback :"remove_rolled_back_#{column}"
 
       mod = Module.new
@@ -45,8 +50,10 @@ module CarrierWave
         # Reset cached mounter on record dup
         def initialize_dup(other)
           old_uploaders = _mounter(:"#{column}").uploaders
-          @_mounters[:"#{column}"] = nil
           super
+          @_mounters[:"#{column}"] = nil
+          # The attribute needs to be cleared to prevent it from picked up as identifier
+          write_attribute(_mounter(:#{column}).serialization_column, nil)
           _mounter(:"#{column}").cache(old_uploaders)
         end
 

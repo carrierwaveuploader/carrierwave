@@ -5,6 +5,41 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 3.0.5 - 2023-11-29
+
+### Fixed
+* Remove unnecessary if clause within #filename left in the uploader template (@rajyan, [#2711](https://github.com/carrierwaveuploader/carrierwave/pull/2711))
+
+### Security
+* Fix Content-Type allowlist bypass vulnerability, possibly leading to XSS (@mshibuya, [863d425](https://github.com/carrierwaveuploader/carrierwave/commit/863d425c76eba12c3294227b39018f6b2dccbbf3), [GHSA-gxhx-g4fq-49hj](https://github.com/carrierwaveuploader/carrierwave/security/advisories/GHSA-gxhx-g4fq-49hj))
+
+## 3.0.4 - 2023-10-08
+
+### Fixed
+* Fix model's dirty state remaining after update (@rajyan [#2707](https://github.com/carrierwaveuploader/carrierwave/pull/2707), [#2702](https://github.com/carrierwaveuploader/carrierwave/issues/2702))
+* Fix #dup modifying the original object (@rajyan [#2690](https://github.com/carrierwaveuploader/carrierwave/pull/2690), [#2706](https://github.com/carrierwaveuploader/carrierwave/pull/2706), [#2689](https://github.com/carrierwaveuploader/carrierwave/issues/2689), [#2700](https://github.com/carrierwaveuploader/carrierwave/issues/2700))
+* Fix #dup not respecting the :mount_on option, causing MissingAttributeError (@marsz [#2691](https://github.com/carrierwaveuploader/carrierwave/pull/2691))
+
+## 3.0.3 - 2023-08-21
+
+### Fixed
+* Fix #dup modifying the original object (@mshibuya [37f36f7](https://github.com/carrierwaveuploader/carrierwave/commit/37f36f7ccf035ffb19cbd3964928b3abf2d5e1b1), [#2687](https://github.com/carrierwaveuploader/carrierwave/issues/2687))
+* Fix wrongly removing files on transaction rollback (@mshibuya, @rajyan [eb03fe1](https://github.com/carrierwaveuploader/carrierwave/commit/eb03fe124c3a7acf3ffc913c7d432208ba3aa7ca), [#2686](https://github.com/carrierwaveuploader/carrierwave/pull/2686), [#2685](https://github.com/carrierwaveuploader/carrierwave/issues/2685))
+
+## 3.0.2 - 2023-08-01
+
+### Fixed
+* Fix deduplicated filename not being persisted (@mshibuya [#2679](https://github.com/carrierwaveuploader/carrierwave/pull/2679), [#2678](https://github.com/carrierwaveuploader/carrierwave/issues/2678), [#2677](https://github.com/carrierwaveuploader/carrierwave/pull/2677))
+
+## 3.0.1 - 2023-07-22
+
+### Fixed
+* Fix not respecting the parent's #enable_processing value after reading its own (@mshibuya [2df0f53](https://github.com/carrierwaveuploader/carrierwave/commit/2df0f53f1d5fa30a198aa148ef33f1ab924404e4), [#2676](https://github.com/carrierwaveuploader/carrierwave/issues/2676))
+* Fix NoMethodError when a record is rolled back (@y-yagi [#2674](https://github.com/carrierwaveuploader/carrierwave/pull/2674), [#2675](https://github.com/carrierwaveuploader/carrierwave/issues/2675))
+* Fix filename suffix being removed due to unnecessary deduplication (@mshibuya [d68a111](https://github.com/carrierwaveuploader/carrierwave/commit/d68a1111cfae4309d703caa19d9c19226bc01686), [#2672](https://github.com/carrierwaveuploader/carrierwave/issues/2672))
+* Fix #dup causing unintended name deduplication of copied files (@mshibuya [b732acd](https://github.com/carrierwaveuploader/carrierwave/commit/b732acd63209897e6375a3706330df2c38e3f327), [#2670](https://github.com/carrierwaveuploader/carrierwave/issues/2670))
+* Fix initialization failing when active_support/core_ext is not loaded yet (@mshibuya [875d972](https://github.com/carrierwaveuploader/carrierwave/commit/875d972dc78b8416de7768457793baa4d6220a4f))
+
 ## 3.0.0 - 2023-07-02
 
 _No changes._

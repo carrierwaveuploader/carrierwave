@@ -40,10 +40,10 @@ module CarrierWave
       #
       # === Returns
       #
-      # [String] a temporary_identifier, by default @original_filename is used
+      # [String] a temporary_identifier, by default the value of #cache_name is used
       #
       def temporary_identifier
-        @original_filename || @identifier
+        cache_name || @identifier
       end
 
       ##

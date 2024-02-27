@@ -188,6 +188,18 @@ describe CarrierWave::MiniMagick do
     end
   end
 
+  describe "#crop" do
+    it "extracts an area defined from the left and top positions, with the given width and height" do
+      instance.crop(70, 40, 500, 400)
+      expect(instance).to have_dimensions(500, 400)
+    end
+
+    it "retains original image boundary if either edge of the cropping box falls outside it" do
+      instance.crop(140, 80, 500, 480)
+      expect(instance).to have_dimensions(500, 400)
+    end
+  end
+
   describe "#width and #height" do
     it "returns the width and height of the image" do
       instance.resize_to_fill(200, 300)

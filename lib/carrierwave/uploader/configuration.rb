@@ -47,6 +47,7 @@ module CarrierWave
         add_config :cache_only
         add_config :download_retry_count
         add_config :download_retry_wait_time
+        add_config :skip_ssrf_protection
 
         # set default values
         reset_config
@@ -216,6 +217,7 @@ module CarrierWave
             config.ensure_multipart_form = true
             config.download_retry_count = 0
             config.download_retry_wait_time = 5
+            config.skip_ssrf_protection = false
           end
         end
       end

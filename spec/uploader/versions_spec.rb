@@ -111,6 +111,13 @@ describe CarrierWave::Uploader do
       expect(@uploader.thumb.enable_processing).to be_truthy
     end
 
+    it "should use the enable processing value of the parent after reading its own value" do
+      @uploader_class.version :thumb
+      @uploader.cache!(File.open(file_path('test.jpg')))
+      @uploader_class.enable_processing = false
+      expect(@uploader.thumb.class.enable_processing).to be_falsey
+    end
+
     it "should reopen the same class when called multiple times" do
       @uploader_class.version :thumb do
         def self.monkey

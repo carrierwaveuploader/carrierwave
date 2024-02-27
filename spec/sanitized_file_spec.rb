@@ -291,6 +291,26 @@ describe CarrierWave::SanitizedFile do
       expect(sanitized_file.content_type).to eq 'application/json'
     end
 
+    it "returns valid content type on DOTX file" do
+      file = File.open(file_path('sample.dotx'))
+
+      sanitized_file = CarrierWave::SanitizedFile.new(file)
+
+      expect { sanitized_file.content_type }.not_to raise_error
+
+      expect(sanitized_file.content_type).to eq 'application/vnd.openxmlformats-officedocument.wordprocessingml.template'
+    end
+
+    it "returns valid content type on AI file" do
+      file = File.open(file_path('sample.ai'))
+
+      sanitized_file = CarrierWave::SanitizedFile.new(file)
+
+      expect { sanitized_file.content_type }.not_to raise_error
+
+      expect(sanitized_file.content_type).to eq 'application/illustrator'
+    end
+
     it "returns binary content type with unknown extension" do
       file = File.open(file_path('bork.ABCDE'))
 

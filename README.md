@@ -659,7 +659,11 @@ end
 ## Testing with CarrierWave
 
 It's a good idea to test your uploaders in isolation. In order to speed up your
-tests, it's recommended to switch off processing in your tests, and to use the
+tests, it's recommended to switch off processing in your tests, and to use the file storage.
+Also, you can disable SSRF protection at your own risk using the `skip_ssrf_protection` configuration.
+
+In Rails you could do that by adding an initializer with:
+
 file storage. In Rails you could do that by adding an initializer with:
 
 ```ruby
@@ -667,6 +671,7 @@ if Rails.env.test? or Rails.env.cucumber?
   CarrierWave.configure do |config|
     config.storage = :file
     config.enable_processing = false
+    config.skip_ssrf_protection = true
   end
 end
 ```
@@ -764,6 +769,10 @@ CarrierWave.configure do |config|
   config.fog_directory  = 'name_of_bucket'                                      # required
   config.fog_public     = false                                                 # optional, defaults to true
   config.fog_attributes = { cache_control: "public, max-age=#{365.days.to_i}" } # optional, defaults to {}
+  # Use this if you have AWS S3 ACLs disabled.
+  # config.fog_attributes = { 'x-amz-acl' => 'bucket-owner-full-control' }
+  # Use this if you have Google Cloud Storage uniform bucket-level access enabled.
+  # config.fog_attributes = { uniform: true }
   # For an application which utilizes multiple servers but does not need caches persisted across requests,
   # uncomment the line :file instead of the default :storage.  Otherwise, it will use AWS as the temp cache store.
   # config.cache_storage = :file
@@ -970,14 +979,6 @@ class AvatarUploader < CarrierWave::Uploader::Base
 end
 ```
 
-#### List of available processing methods:
-
-- `convert` - Changes the image encoding format to the given format(eg. jpg). This operation is treated specially to trigger the change of the file extension, so it matches with the format of the resulting file.
-- `resize_to_limit` - Resize the image to fit within the specified dimensions while retaining the original aspect ratio. Will only resize the image if it is larger than the specified dimensions. The resulting image may be shorter or narrower than specified in the smaller dimension but will not be larger than the specified values.
-- `resize_to_fit` - Resize the image to fit within the specified dimensions while retaining the original aspect ratio. The image may be shorter or narrower than specified in the smaller dimension but will not be larger than the specified values.
-- `resize_to_fill` - Resize the image to fit within the specified dimensions while retaining the aspect ratio of the original image. If necessary, crop the image in the larger dimension. Optionally, a "gravity" may be specified, for example "Center", or "NorthEast".
-- `resize_and_pad` - Resize the image to fit within the specified dimensions while retaining the original aspect ratio. If necessary, will pad the remaining area with the given color, which defaults to transparent (for gif and png, white for jpeg). Optionally, a "gravity" may be specified, as above.
-
 See `carrierwave/processing/mini_magick.rb` for details.
 
 ### Using RMagick
@@ -1008,6 +1009,54 @@ end
 
 Check out the manipulate! method, which makes it easy for you to write your own
 manipulation methods.
+
+### Using Vips
+
+CarrierWave version 2.2.0 added support for the `libvips` image processing library, through [ImageProcessing::Vips](https://github.com/janko/image_processing/blob/master/doc/vips.md). Its functionality matches that of the RMagick and MiniMagick processors, but it uses less memory and offers [faster processing](https://github.com/libvips/libvips/wiki/Speed-and-memory-use). To use the Vips processing module you must first install `libvips`, for example: 
+
+````bash
+$ sudo apt install libvips
+````
+
+You also need to tell your uploader to use Vips:
+
+````ruby
+class ImageFileUploader < CarrierWave::Uploader::Base
+  include CarrierWave::Vips
+end
+````
+
+### List of available processing methods:
+
+> [!NOTE]
+> While the intetion is to provide uniform interfaces to al three processing libraries the availability and implementation of processing methods can <a href="supported-processing-methods">vary slightly between them</a>.
+
+- `convert` - Changes the image encoding format to the given format (eg. jpg). This operation is treated specially to trigger the change of the file extension, so it matches with the format of the resulting file.
+- `resize_to_limit` - Resize the image to fit within the specified dimensions while retaining the original aspect ratio. Will only resize the image if it is larger than the specified dimensions. The resulting image may be shorter or narrower than specified in the smaller dimension but will not be larger than the specified values.
+- `resize_to_fit` - Resize the image to fit within the specified dimensions while retaining the original aspect ratio. The image may be shorter or narrower than specified in the smaller dimension but will not be larger than the specified values.
+- `resize_to_fill` - Resize the image to fit within the specified dimensions while retaining the aspect ratio of the original image. If necessary, crop the image in the larger dimension. Optionally, a "gravity" may be specified, for example "Center", or "NorthEast".
+- `resize_and_pad` - Resize the image to fit within the specified dimensions while retaining the original aspect ratio. If necessary, will pad the remaining area with the given color, which defaults to transparent (for gif and png, white for jpeg). Optionally, a "gravity" may be specified, as above.
+- `crop` - Crop the image to the contents of a box with the specified height and width, positioned a given number of pixels from the top and left. The original image edge will be retained should the bottom and/or right edge of the box fall outside the image bounds. 
+
+#### Supported processing methods
+
+The following table shows which processing methods are supported by each processing library, and which parameters they accept: 
+
+Method|RMagick|MiniMagick|Vips
+------|-----------------|-----------------|-----------------|
+`convert`|`format`|`format`, `page`<sup>1</sup>|`format`, `page`<sup>1</sup>
+`resize_to_limit`|`width`, `height`|`width`, `height`|`width`, `height`
+`resize_to_fit`|`width`, `height`|`width`, `height`|`width`, `height`
+`resize_to_fill`|`width`, `height`, `gravity`<sup>2</sup>|`width`, `height`, `gravity`<sup>2</sup>|`width`, `height`
+`resize_and_pad`|`width`, `height`, `background`, `gravity`<sup>2</sup>|`width`, `height`, `background`, `gravity`<sup>2</sup>|`width`, `height`, `background`, `gravity`<sup>2</sup>
+`resize_to_geometry_string`|`geometry_string`<sup>3</sup>|*not implemented*|*not implemented*
+`crop`|`left`, `top`, `width`, `height`|`left`, `top`, `width`, `height`|`left`, `top`, `width`, `height`
+
+<sup>1</sup>`page` refers to the page number when converting from PDF, frame number when converting from GIF, and layer number when converting from PSD.
+
+<sup>2</sup>`gravity` refers to an image position given as one of `Center`, `North`, `NorthWest`, `West`, `SouthWest`, `South`, `SouthEast`, `East`, or `NorthEast`.
+
+<sup>3</sup>`geometry_string` is an [ImageMagick geometry string](https://rmagick.github.io/imusage.html#geometry).
 
 ## Migrating from Paperclip
 
@@ -1133,6 +1182,7 @@ cache
 process
 remove
 retrieve_from_cache
+retrieve_from_store
 store
 ```
 

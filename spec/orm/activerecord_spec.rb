@@ -426,6 +426,17 @@ describe CarrierWave::ActiveRecord do
         expect(@event.image_identifier).to eq(nil)
       end
 
+      it "should cancel removing image if remove_image is switched to false" do
+        @event.image = stub_file('test.jpeg')
+        @event.save!
+        @event.remove_image = true
+        @event.remove_image = false
+        @event.save!
+        @event.reload
+        expect(@event[:image]).to eq('test.jpeg')
+        expect(@event.image_identifier).to eq('test.jpeg')
+      end
+
       it "should mark image as changed when saving a new image" do
         expect(@event.image_changed?).to be_falsey
         @event.image = stub_file("test.jpeg")
@@ -436,6 +447,15 @@ describe CarrierWave::ActiveRecord do
         @event.image = stub_file("test.jpg")
         expect(@event.image_changed?).to be_truthy
         expect(@event.changed_for_autosave?).to be_truthy
+      end
+
+      it "should mark image as changed when saving a new image with same file name" do
+        @event.image = stub_file("test.jpeg")
+        @event.save
+        @event.image = stub_tempfile("bork.txt", nil, "test.jpeg")
+        expect(@event.image_changed?).to be_truthy
+        @event.save
+        expect(@event.reload.image.read).to match /^bork/
       end
 
       it "should not update image when save with select" do
@@ -621,8 +641,9 @@ describe CarrierWave::ActiveRecord do
 
     describe '#changes' do
       it "should be generated" do
+        allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-1234-2255')
         @event.image = stub_file('test.jpeg')
-        expect(@event.changes).to eq({'image' => [nil, 'test.jpeg']})
+        expect(@event.changes).to eq({'image' => [nil, '1369894322-345-1234-2255/test.jpeg']})
       end
 
       it "shouldn't be generated when the attribute value is unchanged" do
@@ -635,18 +656,17 @@ describe CarrierWave::ActiveRecord do
       end
     end
 
-    describe 'with overriddent filename' do
+    describe 'with overridden filename' do
+      before do
+        @uploader.class_eval do
+          def filename
+            model.name + File.extname(super)
+          end
+        end
+        allow(@event).to receive(:name).and_return('jonas')
+      end
 
       describe '#save' do
-
-        before do
-          @uploader.class_eval do
-            def filename
-              model.name + File.extname(super)
-            end
-          end
-          allow(@event).to receive(:name).and_return('jonas')
-        end
 
         it "should copy the file to the upload directory when a file has been assigned" do
           @event.image = stub_file('test.jpeg')
@@ -664,6 +684,33 @@ describe CarrierWave::ActiveRecord do
 
       end
 
+      describe '#changes' do
+        it "should be generated" do
+          allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-1234-2255')
+          @event.image = stub_file('test.jpeg')
+          expect(@event.changes).to eq({'image' => [nil, '1369894322-345-1234-2255/test.jpeg']})
+        end
+
+        it "shouldn't be generated after second save" do
+          @event.image = stub_file('old.jpeg')
+          @event.save!
+          @event.image = stub_file('new.jpeg')
+          @event.save!
+
+          expect(@event.changes).to be_blank
+          expect(@event).not_to be_changed
+        end
+
+        it "shouldn't be generated when remove_image is canceled" do
+          @event.image = stub_file('test.jpeg')
+          @event.save!
+          @event.remove_image = true
+          @event.remove_image = false
+
+          expect(@event.changes).to be_blank
+          expect(@event).not_to be_changed
+        end
+      end
     end
 
     describe 'with validates_presence_of' do
@@ -739,8 +786,6 @@ describe CarrierWave::ActiveRecord do
   describe '#mount_uploader removing old files' do
     before do
       reset_class("Event")
-      Event.mount_uploader(:image, @uploader)
-      @event = Event.new
     end
 
     after do
@@ -749,6 +794,8 @@ describe CarrierWave::ActiveRecord do
 
     describe 'normally' do
       before do
+        Event.mount_uploader(:image, @uploader)
+        @event = Event.new
         @event.image = stub_file('old.jpeg')
 
         expect(@event.save).to be_truthy
@@ -777,6 +824,13 @@ describe CarrierWave::ActiveRecord do
         expect(File.exist?(public_path('uploads/old.jpeg'))).to be_falsey
       end
 
+      it "should persist the deduplicated filename" do
+        @event.image = stub_file('old.jpeg')
+        expect(@event.save).to be_truthy
+        @event.reload
+        expect(@event.image.current_path).to eq public_path('uploads/old(2).jpeg')
+      end
+
       it "should not remove file if validations fail on save" do
         Event.validate { |r| r.errors.add :textfile, "FAIL!" }
         @event.image = stub_file('new.jpeg')
@@ -794,6 +848,8 @@ describe CarrierWave::ActiveRecord do
 
     describe 'with an overridden filename' do
       before do
+        Event.mount_uploader(:image, @uploader)
+        @event = Event.new
         @uploader.class_eval do
           def filename
             model.foo + File.extname(super)
@@ -820,6 +876,48 @@ describe CarrierWave::ActiveRecord do
         expect(@event.save).to be_truthy
         expect(File.exist?(public_path('uploads/new.jpeg'))).to be_truthy
         expect(File.exist?(public_path('uploads/test.jpeg'))).to be_falsey
+      end
+    end
+
+    describe 'with after_commit callbacks invoked by defined order' do
+      before do
+        ActiveRecord.run_after_transaction_callbacks_in_order_defined = true if ActiveRecord.respond_to?(:run_after_transaction_callbacks_in_order_defined=)
+        Event.mount_uploader(:image, @uploader)
+        @event = Event.new
+        @event.image = stub_file('old.jpeg')
+
+        expect(@event.save).to be_truthy
+        expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
+      end
+
+      after do
+        ActiveRecord.run_after_transaction_callbacks_in_order_defined = false if ActiveRecord.respond_to?(:run_after_transaction_callbacks_in_order_defined=)
+      end
+
+      it "should invoke the callbacks in correct order" do
+        @event.image = stub_file('new.jpeg')
+        expect(@event).to receive(:remove_previously_stored_image).ordered.and_call_original
+        expect(@event).to receive(:reset_previous_changes_for_image).ordered.and_call_original
+        expect(@event).to receive(:mark_remove_image_false).ordered.and_call_original
+        @event.save
+      end
+
+      it "should remove old file on replace" do
+        @event.image = stub_file('new.jpeg')
+        expect(@event.save).to be_truthy
+        expect(File.exist?(public_path('uploads/new.jpeg'))).to be_truthy
+        expect(File.exist?(public_path('uploads/old.jpeg'))).to be_falsey
+      end
+
+      it "should remove the file when remove_image is set to true" do
+        @event.remove_image = true
+        expect(@event.save).to be_truthy
+        expect(File.exist?(public_path('uploads/old.jpeg'))).to be_falsey
+      end
+
+      it "should remove old file on destroy" do
+        expect(@event.destroy).to be_truthy
+        expect(File.exist?(public_path('uploads/old.jpeg'))).to be_falsey
       end
     end
   end
@@ -879,6 +977,16 @@ describe CarrierWave::ActiveRecord do
       expect(File.exist?(public_path('uploads/new.jpeg'))).to be_falsey
     end
 
+    it 'should not remove old file on rollback if file is not changed' do
+      Event.transaction do
+        @event.foo = 'test'
+        @event.save
+        expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
+        raise ActiveRecord::Rollback
+      end
+      expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
+    end
+
     it 'should give correct url during transaction' do
       Event.transaction do
         @event.image = stub_file('new.jpeg')
@@ -896,16 +1004,6 @@ describe CarrierWave::ActiveRecord do
         raise ActiveRecord::Rollback
       end
       expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
-    end
-
-    it 'should remove new file if transaction is rollback' do
-      Event.transaction do
-        @event.image = stub_file('new.jpeg')
-        @event.save
-        expect(File.exist?(public_path('uploads/new.jpeg'))).to be_truthy
-        raise ActiveRecord::Rollback
-      end
-      expect(File.exist?(public_path('uploads/new.jpeg'))).to be_falsey
     end
   end
 
@@ -945,6 +1043,18 @@ describe CarrierWave::ActiveRecord do
 
       expect(File.exist?(public_path('uploads/new.jpeg'))).to be_falsey
       expect(File.exist?(public_path('uploads/old.jpeg'))).to be_truthy
+    end
+
+    it 'should not remove a file if transaction is rollback' do
+      @event.image = stub_file('new.jpeg')
+      @event.save
+
+      Event.transaction do
+        @event.destroy
+        raise ActiveRecord::Rollback
+      end
+
+      expect(File.exist?(public_path('uploads/new.jpeg'))).to be_truthy
     end
 
     it "should clear @added_uploaders on commit" do
@@ -1360,7 +1470,18 @@ describe CarrierWave::ActiveRecord do
         expect(@event.images_identifiers[0]).to eq(nil)
       end
 
-      it "should mark images as changed when saving a new images" do
+      it "should cancel removing images if remove_images is switched to false" do
+        @event.images = [stub_file('test.jpeg')]
+        @event.save!
+        @event.remove_images = true
+        @event.remove_images = false
+        @event.save!
+        @event.reload
+        expect(@event[:images]).to eq(['test.jpeg'])
+        expect(@event.images_identifiers[0]).to eq('test.jpeg')
+      end
+
+      it "should mark images as changed when saving new images" do
         expect(@event.images_changed?).to be_falsey
         @event.images = [stub_file("test.jpeg")]
         expect(@event.images_changed?).to be_truthy
@@ -1370,6 +1491,15 @@ describe CarrierWave::ActiveRecord do
         @event.images = [stub_file("test.jpg")]
         expect(@event.images_changed?).to be_truthy
         expect(@event.changed_for_autosave?).to be_truthy
+      end
+
+      it "should mark images as changed when saving new images with same file name" do
+        @event.images = [stub_file("test.jpeg")]
+        @event.save
+        @event.images = [stub_tempfile("bork.txt", nil, "test.jpeg")]
+        expect(@event.images_changed?).to be_truthy
+        @event.save
+        expect(@event.reload.images[0].read).to match /^bork/
       end
 
       it "should not update image when save with select" do
@@ -1519,8 +1649,9 @@ describe CarrierWave::ActiveRecord do
 
     describe '#changes' do
       it "should be generated" do
+        allow(CarrierWave).to receive(:generate_cache_id).and_return('1369894322-345-1234-2255')
         @event.images = [stub_file('test.jpeg')]
-        expect(@event.changes).to eq({'images' => [nil, ['test.jpeg']]})
+        expect(@event.changes).to eq({'images' => [nil, ['1369894322-345-1234-2255/test.jpeg']]})
       end
 
       it "shouldn't be generated when the attribute value is unchanged" do
@@ -1533,7 +1664,7 @@ describe CarrierWave::ActiveRecord do
       end
     end
 
-    describe 'with overriddent filename' do
+    describe 'with overridden filename' do
 
       describe '#save' do
 
@@ -1667,6 +1798,13 @@ describe CarrierWave::ActiveRecord do
         @event.images = [stub_file('old.jpeg')]
         expect(@event.save).to be_truthy
         expect(File.exist?(public_path('uploads/old.jpeg'))).to be_falsey
+        expect(@event.images[0].current_path).to eq public_path('uploads/old(2).jpeg')
+      end
+
+      it "should persist the deduplicated filename" do
+        @event.images = [stub_file('old.jpeg')]
+        expect(@event.save).to be_truthy
+        @event.reload
         expect(@event.images[0].current_path).to eq public_path('uploads/old(2).jpeg')
       end
 
@@ -1893,6 +2031,10 @@ describe CarrierWave::ActiveRecord do
       Event.mount_uploader(:image, @uploader)
     end
 
+    after do
+      FileUtils.rm_rf(public_path("uploads"))
+    end
+
     it "caches the existing file into the new model" do
       @event.image = stub_file('test.jpeg')
       @event.save
@@ -1913,6 +2055,30 @@ describe CarrierWave::ActiveRecord do
     it "works when the mounters haven't been initialized" do
       expect(@event.instance_variable_defined?(:@_mounters)).to eq false
       expect(@event.dup).to be_a Event
+    end
+
+    it "clears previous attribute value to prevent unintended deduplication" do
+      @event.image = stub_file('test.jpeg')
+      @event.save
+      new_event = @event.dup
+      new_event.save
+
+      expect(new_event.image.url).to eq '/uploads/test.jpeg'
+    end
+
+    it "does not modify the original object" do
+      @event.image = stub_file('test.jpeg')
+      @event.save
+      expect { @event.dup }.not_to change { @event[:image] }
+    end
+
+    it "allows the original object to store a file" do
+      @event.image = stub_file('test.jpeg')
+      @event.dup
+
+      expect(@event.save).to be_truthy
+      expect(@event.image.path).to eq public_path('uploads/test.jpeg')
+      expect(File.exist?(@event.image.path)).to be_truthy
     end
 
     context "with more than one mount" do
@@ -1950,6 +2116,44 @@ describe CarrierWave::ActiveRecord do
       end
     end
 
+    context 'with store_dir using model attributes' do
+      before do
+        @uploader.class_eval do
+          def store_dir
+            "uploads/#{model.class.name.downcase}/#{mounted_as}/#{model.id}"
+          end
+        end
+      end
+
+      it "wont affect the duplicated object's saved path" do
+        @event.image = stub_file('test.jpeg')
+        expect(@event.save).to be_truthy
+        expect(@event.image.current_path).to eq public_path("uploads/event/image/#{@event.id}/test.jpeg")
+
+        new_event = @event.dup
+        expect(new_event).not_to be @event
+        expect(new_event.image.model).to be new_event
+        expect(@event.image.current_path).to eq public_path("uploads/event/image/#{@event.id}/test.jpeg")
+
+        expect(@event.save).to be_truthy
+        expect(@event.image.current_path).to eq public_path("uploads/event/image/#{@event.id}/test.jpeg")
+      end
+
+      it "upload files to appropriate paths" do
+        @event.image = stub_file('test.jpeg')
+        new_event = @event.dup
+        expect(new_event).not_to be @event
+
+        expect(@event.save).to be_truthy
+        expect(@event.image.path).to eq public_path("uploads/event/image/#{@event.id}/test.jpeg")
+        expect(File.exist?(@event.image.path)).to be_truthy
+
+        expect(new_event.save).to be_truthy
+        expect(new_event.image.path).to eq public_path("uploads/event/image/#{new_event.id}/test.jpeg")
+        expect(File.exist?(new_event.image.path)).to be_truthy
+      end
+    end
+
     context 'when #initialize_dup is overridden in the model' do
       before do
         Event.class_eval do
@@ -1962,6 +2166,17 @@ describe CarrierWave::ActiveRecord do
 
       it "recreates @_mounters" do
         expect(@event.dup.image.model).not_to eq @event
+      end
+    end
+
+    context ':mount_on in options' do
+      before { Event.mount_uploader(:image_v2, @uploader, mount_on: :image) }
+      it do
+        @event.image_v2 = stub_file('test.jpeg')
+        @event.save
+        new_event = @event.dup
+        expect(new_event).not_to be @event
+        expect(new_event.image_v2.model).to be new_event
       end
     end
   end

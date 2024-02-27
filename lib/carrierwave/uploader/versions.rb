@@ -1,3 +1,5 @@
+require "active_support/core_ext/object/deep_dup"
+
 module CarrierWave
   module Uploader
     module Versions
@@ -25,6 +27,17 @@ module CarrierWave
           @klass.processors = []
           @klass.version_options = @options
           @klass.class_eval <<-RUBY, __FILE__, __LINE__ + 1
+            # Define the enable_processing method for versions so they get the
+            # value from the parent class unless explicitly overwritten
+            def self.enable_processing(value=nil)
+              self.enable_processing = value if value
+              if defined?(@enable_processing) && !@enable_processing.nil?
+                @enable_processing
+              else
+                superclass.enable_processing
+              end
+            end
+
             # Regardless of what is set in the parent uploader, do not enforce the
             # move_to_cache config option on versions because it moves the original
             # file to the version's target file.
@@ -266,7 +279,7 @@ module CarrierWave
         # that are the source of another version.
 
         self.cache_id = CarrierWave.generate_cache_id
-        derived_versions.each do |name, v|
+        derived_versions.each_value do |v|
           v.cache!(file) if names.empty? || !(v.descendant_version_names & names).empty?
         end
         active_versions.each do |name, v|
@@ -295,13 +308,13 @@ module CarrierWave
       def derived_versions
         active_versions.reject do |name, v|
           v.class.version_options[:from_version]
-        end.to_a + active_sibling_versions.select do |name, v|
+        end.merge(active_sibling_versions.select do |name, v|
           v.class.version_options[:from_version] == self.class.version_names.last
-        end.to_a
+        end)
       end
 
       def active_sibling_versions
-        parent_version&.active_versions || []
+        parent_version&.active_versions || {}
       end
 
       def full_filename(for_file)
@@ -313,23 +326,23 @@ module CarrierWave
       end
 
       def cache_versions!(new_file)
-        derived_versions.each { |name, v| v.cache!(new_file) }
+        derived_versions.each_value { |v| v.cache!(new_file) }
       end
 
       def store_versions!(new_file)
-        active_versions.each { |name, v| v.store!(new_file) }
+        active_versions.each_value { |v| v.store!(new_file) }
       end
 
       def remove_versions!
-        versions.each { |name, v| v.remove! }
+        versions.each_value { |v| v.remove! }
       end
 
       def retrieve_versions_from_cache!(cache_name)
-        active_versions.each { |name, v| v.retrieve_from_cache!(cache_name) }
+        active_versions.each_value { |v| v.retrieve_from_cache!(cache_name) }
       end
 
       def retrieve_versions_from_store!(identifier)
-        active_versions.each { |name, v| v.retrieve_from_store!(identifier) }
+        active_versions.each_value { |v| v.retrieve_from_store!(identifier) }
       end
 
     end # Versions

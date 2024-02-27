@@ -139,20 +139,22 @@ module CarrierWave
     end
 
     def store!
-      additions, remains = uploaders.partition(&:cached?)
-      existing_paths = (@removed_uploaders + remains).map(&:store_path)
-      additions.each do |uploader|
-        uploader.deduplicate(existing_paths)
-        uploader.store!
-        existing_paths << uploader.store_path
-      end
-      @added_uploaders += additions
+      uploaders.each(&:store!)
     end
 
     def write_identifier
       return if record.frozen?
 
       clear! if remove?
+
+      additions, remains = uploaders.partition(&:cached?)
+      existing_identifiers = (@removed_uploaders + remains).map(&:identifier)
+      additions.each do |uploader|
+        uploader.deduplicate(existing_identifiers)
+        existing_identifiers << uploader.identifier
+      end
+      @added_uploaders += additions
+
       record.write_uploader(serialization_column, identifier)
     end
 
@@ -202,7 +204,7 @@ module CarrierWave
     end
 
     def remove_added
-      current_paths = (@removed_uploaders + @uploaders.select(&:staged)).map(&:path)
+      current_paths = (@removed_uploaders + uploaders.select(&:staged)).map(&:path)
       @added_uploaders
         .reject {|uploader| current_paths.include?(uploader.path) }
         .each { |uploader| uploader.remove! }

@@ -76,6 +76,33 @@ describe CarrierWave::Uploader do
           expect { uploader.cache!(ruby_file) }.not_to raise_error
         end
       end
+
+      context "with a crafted content type" do
+        before do
+          allow(bork_file).to receive(:content_type).and_return('text/plain; image/png')
+          allow(uploader).to receive(:content_type_allowlist).and_return('image/png')
+        end
+
+        it "does not allow spoofing" do
+          expect { uploader.cache!(bork_file) }.to raise_error(CarrierWave::IntegrityError)
+        end
+      end
+
+      context "when the allowlist contains charset" do
+        before do
+          allow(uploader).to receive(:content_type_allowlist).and_return(%r{text/plain;\s*charset=utf-8})
+        end
+
+        it "accepts the content with allowed charset" do
+          allow(bork_file).to receive(:content_type).and_return('text/plain; charset=utf-8')
+          expect { uploader.cache!(bork_file) }.not_to raise_error
+        end
+
+        it "rejects the content without charset" do
+          allow(bork_file).to receive(:content_type).and_return('text/plain')
+          expect { uploader.cache!(bork_file) }.to raise_error(CarrierWave::IntegrityError)
+        end
+      end
     end
 
     context "when there is a whitelist" do
