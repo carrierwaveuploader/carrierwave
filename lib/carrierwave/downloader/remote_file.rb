@@ -33,9 +33,9 @@ module CarrierWave
 
       def original_filename
         filename = filename_from_header || filename_from_uri
-        mime_type = Marcel::TYPES[content_type]
-        unless File.extname(filename).present? || mime_type.blank?
-          extension = mime_type[0].first
+        extensions = Marcel::TYPE_EXTS[content_type]
+        unless File.extname(filename).present? || extensions.blank?
+          extension = extensions.first
           filename = "#{filename}.#{extension}"
         end
         filename
