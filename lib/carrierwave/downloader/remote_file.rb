@@ -33,7 +33,7 @@ module CarrierWave
 
       def original_filename
         filename = filename_from_header || filename_from_uri
-        extensions = Marcel::TYPE_EXTS[content_type]
+        extensions = Marcel::Magic.new(content_type).extensions
         unless File.extname(filename).present? || extensions.blank?
           extension = extensions.first
           filename = "#{filename}.#{extension}"
