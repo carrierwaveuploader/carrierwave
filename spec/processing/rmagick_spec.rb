@@ -243,7 +243,7 @@ describe CarrierWave::RMagick, :rmagick => true do
         instance.manipulate! :read => {
           :foo => "1"
         }
-      end.to raise_error NoMethodError, /private method `foo=' called/
+      end.to raise_error NoMethodError, /private method .foo=. called/
     end
   end
 
