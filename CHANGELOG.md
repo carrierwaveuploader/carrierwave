@@ -5,13 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 3.0.6 - 2024-03-09
+
+### Fixed
+* Fix #derived_versions and #active_sibling_versions returning an Array where Hash is expected (@mshibuya [46e4f20](https://github.com/carrierwaveuploader/carrierwave/commit/46e4f20f8f85f75043cec76aa1f331c55a3ba103))
+* Fix incompatibility with Marcel 1.0.3 (@schinery [#2728](https://github.com/carrierwaveuploader/carrierwave/pull/2728), [#2729](https://github.com/carrierwaveuploader/carrierwave/issues/2729))
+* Fix assigning a file with the same name not marking the column as changed (@mshibuya [4c65b39](https://github.com/carrierwaveuploader/carrierwave/commit/4c65b393cd85b66bc256d04363cf3e3a97c8fd64), [#2719](https://github.com/carrierwaveuploader/carrierwave/issues/2719))
+* Fix failing to remove files with ActiveRecord 7.1 after_commit order change enabled (@mshibuya [63113e9](https://github.com/carrierwaveuploader/carrierwave/commit/63113e96dc172114cb92af239ba73e50ed8a72f2), [#2713](https://github.com/carrierwaveuploader/carrierwave/issues/2713))
+
 ## 3.0.5 - 2023-11-29
 
 ### Fixed
-* Remove unnecessary if clause within #filename left in the uploader template (@rajyan, [#2711](https://github.com/carrierwaveuploader/carrierwave/pull/2711))
+* Remove unnecessary if clause within #filename left in the uploader template (@rajyan [#2711](https://github.com/carrierwaveuploader/carrierwave/pull/2711))
 
 ### Security
-* Fix Content-Type allowlist bypass vulnerability, possibly leading to XSS (@mshibuya, [863d425](https://github.com/carrierwaveuploader/carrierwave/commit/863d425c76eba12c3294227b39018f6b2dccbbf3), [GHSA-gxhx-g4fq-49hj](https://github.com/carrierwaveuploader/carrierwave/security/advisories/GHSA-gxhx-g4fq-49hj))
+* Fix Content-Type allowlist bypass vulnerability, possibly leading to XSS (@mshibuya [863d425](https://github.com/carrierwaveuploader/carrierwave/commit/863d425c76eba12c3294227b39018f6b2dccbbf3), [GHSA-gxhx-g4fq-49hj](https://github.com/carrierwaveuploader/carrierwave/security/advisories/GHSA-gxhx-g4fq-49hj))
 
 ## 3.0.4 - 2023-10-08
 
