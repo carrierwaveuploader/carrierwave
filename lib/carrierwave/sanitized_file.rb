@@ -307,7 +307,7 @@ module CarrierWave
     def declared_content_type
       @declared_content_type ||
         if @file.respond_to?(:content_type) && @file.content_type
-          @file.content_type.to_s.chomp
+          Marcel::MimeType.for(declared_type: @file.content_type.to_s.chomp)
         end
     end
 

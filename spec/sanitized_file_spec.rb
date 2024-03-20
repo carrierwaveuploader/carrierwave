@@ -326,6 +326,33 @@ describe CarrierWave::SanitizedFile do
 
       expect { sanitized_file.content_type }.not_to raise_error
     end
+
+    it "uses the first one when multiple mime types are given using a semicolon" do
+      file = File.open(file_path("bork.txt"))
+      allow(file).to receive(:content_type) { 'image/png; text/html' }
+
+      sanitized_file = CarrierWave::SanitizedFile.new(file)
+
+      expect(sanitized_file.content_type).to eq("image/png")
+    end
+
+    it "uses the first one when multiple mime types are given using a comma" do
+      file = File.open(file_path("bork.txt"))
+      allow(file).to receive(:content_type) { 'image/png, text/html' }
+
+      sanitized_file = CarrierWave::SanitizedFile.new(file)
+
+      expect(sanitized_file.content_type).to eq("image/png")
+    end
+
+    it "drops content type parameters" do
+      file = File.open(file_path("bork.txt"))
+      allow(file).to receive(:content_type) { 'text/html; charset=utf-8' }
+
+      sanitized_file = CarrierWave::SanitizedFile.new(file)
+
+      expect(sanitized_file.content_type).to eq("text/html")
+    end
   end
 
   describe "#content_type=" do
