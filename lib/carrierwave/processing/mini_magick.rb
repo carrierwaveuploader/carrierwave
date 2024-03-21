@@ -266,7 +266,7 @@ module CarrierWave
     rescue ::MiniMagick::Error, ::MiniMagick::Invalid => e
       raise e if e.message =~ /(You must have .+ installed|is not installed|executable not found)/
       message = I18n.translate(:"errors.messages.processing_error")
-      raise CarrierWave::ProcessingError, message
+      raise CarrierWave::ProcessingError, "#{message}: #{e.message}"
     ensure
       image.destroy! if image
     end
@@ -313,7 +313,7 @@ module CarrierWave
     rescue ::MiniMagick::Error, ::MiniMagick::Invalid => e
       raise e if e.message =~ /(You must have .+ installed|is not installed|executable not found)/
       message = I18n.translate(:"errors.messages.processing_error")
-      raise CarrierWave::ProcessingError, message
+      raise CarrierWave::ProcessingError, "#{message}: #{e.message}"
     end
 
   private

@@ -366,8 +366,8 @@ module CarrierWave
       end
 
       destroy_image(frames)
-    rescue ::Magick::ImageMagickError
-      raise CarrierWave::ProcessingError, I18n.translate(:"errors.messages.processing_error")
+    rescue ::Magick::ImageMagickError => e
+      raise CarrierWave::ProcessingError, I18n.translate(:"errors.messages.processing_error") + ": #{e.message}"
     end
 
   private
