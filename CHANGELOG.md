@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 3.0.7 - 2024-03-23
+
+### Security
+* Fix Content-Type allowlist bypass vulnerability remained (@mshibuya [00676e2](https://github.com/carrierwaveuploader/carrierwave/commit/00676e23d7f4beac12beddee6f2486b686fb7e46), [GHSA-vfmv-jfc5-pjjw](https://github.com/carrierwaveuploader/carrierwave/security/advisories/GHSA-vfmv-jfc5-pjjw))
+
 ## 3.0.6 - 2024-03-09
 
 ### Fixed
