@@ -287,7 +287,7 @@ describe CarrierWave::Mount do
           expect(instance.images.map { |u| u.file.filename }).to eq ['test.jpg']
         end
 
-        context "when adding a file which has the same filename with the exsting one" do
+        context "when adding a file which has the same filename with the existing one" do
           before { FileUtils.cp(file_path('bork.json'), tmp_path('bork.txt')) }
           after { FileUtils.rm(tmp_path('bork.txt')) }
 
@@ -362,7 +362,7 @@ describe CarrierWave::Mount do
           expect(instance.images.map(&:identifier)).to eq ['bork.txt']
         end
 
-        context "when adding a file which has the same filename with the exsting one" do
+        context "when adding a file which has the same filename with the existing one" do
           before { FileUtils.cp(file_path('bork.json'), tmp_path('bork.txt')) }
           after { FileUtils.rm(tmp_path('bork.txt')) }
 

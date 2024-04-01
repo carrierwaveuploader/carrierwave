@@ -2125,7 +2125,7 @@ describe CarrierWave::ActiveRecord do
         end
       end
 
-      it "wont affect the duplicated object's saved path" do
+      it "won't affect the duplicated object's saved path" do
         @event.image = stub_file('test.jpeg')
         expect(@event.save).to be_truthy
         expect(@event.image.current_path).to eq public_path("uploads/event/image/#{@event.id}/test.jpeg")
