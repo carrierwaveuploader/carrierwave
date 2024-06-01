@@ -664,8 +664,6 @@ Also, you can disable SSRF protection at your own risk using the `skip_ssrf_prot
 
 In Rails you could do that by adding an initializer with:
 
-file storage. In Rails you could do that by adding an initializer with:
-
 ```ruby
 if Rails.env.test? or Rails.env.cucumber?
   CarrierWave.configure do |config|
@@ -806,7 +804,7 @@ gem "fog"
 ```
 
 You'll need to configure a directory (also known as a container), username and API key in the initializer.
-For the sake of performance it is assumed that the directory already exists, so please create it if need be.
+For the sake of performance it is assumed that the directory already exists, so please create it if needs to be.
 
 Using a US-based account:
 
@@ -865,7 +863,7 @@ gem "fog-google"
 ```
 
 You'll need to configure a directory (also known as a bucket) and the credentials in the initializer.
-For the sake of performance it is assumed that the directory already exists, so please create it if need be.
+For the sake of performance it is assumed that the directory already exists, so please create it if needs to be.
 
 Please read the [fog-google README](https://github.com/fog/fog-google/blob/master/README.md) on how to get credentials.
 
@@ -1029,7 +1027,7 @@ end
 ### List of available processing methods:
 
 > [!NOTE]
-> While the intetion is to provide uniform interfaces to al three processing libraries the availability and implementation of processing methods can <a href="supported-processing-methods">vary slightly between them</a>.
+> While the intention is to provide uniform interfaces to al three processing libraries the availability and implementation of processing methods can <a href="supported-processing-methods">vary slightly between them</a>.
 
 - `convert` - Changes the image encoding format to the given format (eg. jpg). This operation is treated specially to trigger the change of the file extension, so it matches with the format of the resulting file.
 - `resize_to_limit` - Resize the image to fit within the specified dimensions while retaining the original aspect ratio. Will only resize the image if it is larger than the specified dimensions. The resulting image may be shorter or narrower than specified in the smaller dimension but will not be larger than the specified values.
