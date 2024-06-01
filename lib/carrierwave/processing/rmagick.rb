@@ -408,7 +408,7 @@ module CarrierWave
       proc do |img|
         options.each do |k, v|
           if v.is_a?(String) && (matches = v.match(/^["'](.+)["']/))
-            ActiveSupport::Deprecation.warn "Passing quoted strings like #{v} to #manipulate! is deprecated, pass them without quoting."
+            CarrierWave.deprecator.warn "Passing quoted strings like #{v} to #manipulate! is deprecated, pass them without quoting."
             v = matches[1]
           end
           img.public_send(:"#{k}=", v)

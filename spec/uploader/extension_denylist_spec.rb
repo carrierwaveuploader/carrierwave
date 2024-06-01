@@ -32,7 +32,7 @@ describe CarrierWave::Uploader do
         end
 
         it "shows up" do
-          expect(ActiveSupport::Deprecation).to receive(:warn).with('Use of #extension_denylist is deprecated for the security reason, use #extension_allowlist instead to explicitly state what are safe to accept')
+          expect(CarrierWave.deprecator).to receive(:warn).with('Use of #extension_denylist is deprecated for the security reason, use #extension_allowlist instead to explicitly state what are safe to accept')
           expect { subject }.to raise_error(CarrierWave::IntegrityError)
         end
       end
@@ -125,7 +125,7 @@ describe CarrierWave::Uploader do
       it "uses the blacklist but shows deprecation" do
         allow(uploader).to receive(:extension_blacklist).and_return(%w(jpg gif png))
 
-        expect(ActiveSupport::Deprecation).to receive(:warn).with('#extension_blacklist is deprecated, use #extension_denylist instead.')
+        expect(CarrierWave.deprecator).to receive(:warn).with('#extension_blacklist is deprecated, use #extension_denylist instead.')
         expect { subject }.to raise_error(CarrierWave::IntegrityError)
       end
 

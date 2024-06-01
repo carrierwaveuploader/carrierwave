@@ -3,6 +3,7 @@ require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/object/try'
 require 'active_support/core_ext/class/attribute'
 require 'active_support/concern'
+require 'active_support/deprecation'
 
 module CarrierWave
 
@@ -20,6 +21,10 @@ module CarrierWave
 
     def tmp_path
       @tmp_path ||= File.expand_path(File.join('..', 'tmp'), root)
+    end
+
+    def deprecator
+      @deprecator ||= ActiveSupport::Deprecation.new("#{CarrierWave::VERSION.split('.')[0].to_i + 1}.0", "CarrierWave")
     end
   end
 
@@ -62,6 +67,10 @@ elsif defined?(Rails)
         ActiveSupport.on_load :active_record do
           require 'carrierwave/orm/activerecord'
         end
+      end
+
+      initializer "carrierwave.deprecator" do |app|
+        app.deprecators[:carrierwave] = CarrierWave.deprecator
       end
 
       config.before_eager_load do

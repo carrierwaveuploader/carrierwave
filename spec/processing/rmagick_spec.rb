@@ -226,13 +226,13 @@ describe CarrierWave::RMagick, :rmagick => true do
 
     it 'shows deprecation but still accepts strings enclosed with double quotes' do
       expect_any_instance_of(::Magick::Image::Info).to receive(:size=).once.with("200x200")
-      expect(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
+      expect(CarrierWave.deprecator).to receive(:warn).with(any_args)
       instance.manipulate! :read => {:size => %{"200x200"}}
     end
 
     it 'shows deprecation but still accepts strings enclosed with single quotes' do
       expect_any_instance_of(::Magick::Image::Info).to receive(:size=).once.with("200x200")
-      expect(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
+      expect(CarrierWave.deprecator).to receive(:warn).with(any_args)
       instance.manipulate! :read => {:size => %{'200x200'}}
     end
 

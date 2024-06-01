@@ -278,7 +278,7 @@ describe CarrierWave::ActiveRecord do
 
       context 'when validating denylist integrity' do
         before do
-          allow(ActiveSupport::Deprecation).to receive(:warn).with(/#extension_denylist/)
+          allow(CarrierWave.deprecator).to receive(:warn).with(/#extension_denylist/)
           @uploader.class_eval do
             def extension_denylist
               %w(jpg)
@@ -1327,7 +1327,7 @@ describe CarrierWave::ActiveRecord do
 
       context 'when validating denylist integrity' do
         before do
-          allow(ActiveSupport::Deprecation).to receive(:warn).with(/#extension_denylist/)
+          allow(CarrierWave.deprecator).to receive(:warn).with(/#extension_denylist/)
           @uploader.class_eval do
             def extension_denylist
               %w(jpg)

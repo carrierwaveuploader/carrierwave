@@ -120,7 +120,7 @@ describe CarrierWave::Uploader do
       it "uses the whitelist but shows deprecation" do
         allow(@uploader).to receive(:extension_whitelist).and_return(%w(txt doc xls))
 
-        expect(ActiveSupport::Deprecation).to receive(:warn).with('#extension_whitelist is deprecated, use #extension_allowlist instead.')
+        expect(CarrierWave.deprecator).to receive(:warn).with('#extension_whitelist is deprecated, use #extension_allowlist instead.')
         expect {
           @uploader.cache!(File.open(file_path('test.jpg')))
         }.to raise_error(CarrierWave::IntegrityError)

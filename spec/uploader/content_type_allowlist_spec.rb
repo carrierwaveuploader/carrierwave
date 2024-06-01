@@ -93,7 +93,7 @@ describe CarrierWave::Uploader do
       it "uses the whitelist but shows deprecation" do
         allow(uploader).to receive(:content_type_whitelist).and_return(['image/gif'])
 
-        expect(ActiveSupport::Deprecation).to receive(:warn).with('#content_type_whitelist is deprecated, use #content_type_allowlist instead.')
+        expect(CarrierWave.deprecator).to receive(:warn).with('#content_type_whitelist is deprecated, use #content_type_allowlist instead.')
         expect {
           uploader.cache!(bork_file)
         }.to raise_error(CarrierWave::IntegrityError)

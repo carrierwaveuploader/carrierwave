@@ -36,7 +36,7 @@ module CarrierWave
       def check_content_type_allowlist!(new_file)
         allowlist = content_type_allowlist
         if !allowlist && respond_to?(:content_type_whitelist) && content_type_whitelist
-          ActiveSupport::Deprecation.warn "#content_type_whitelist is deprecated, use #content_type_allowlist instead." unless instance_variable_defined?(:@content_type_whitelist_warned)
+          CarrierWave.deprecator.warn "#content_type_whitelist is deprecated, use #content_type_allowlist instead." unless instance_variable_defined?(:@content_type_whitelist_warned)
           @content_type_whitelist_warned = true
           allowlist = content_type_whitelist
         end

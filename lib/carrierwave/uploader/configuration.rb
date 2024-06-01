@@ -157,19 +157,19 @@ module CarrierWave
         def add_deprecated_config(name)
           class_eval <<-RUBY, __FILE__, __LINE__ + 1
             def self.#{name}(value=nil)
-              ActiveSupport::Deprecation.warn "##{name} is deprecated and has no effect"
+              CarrierWave.deprecator.warn "##{name} is deprecated and has no effect"
             end
 
             def self.#{name}=(value)
-              ActiveSupport::Deprecation.warn "##{name} is deprecated and has no effect"
+              CarrierWave.deprecator.warn "##{name} is deprecated and has no effect"
             end
 
             def #{name}=(value)
-              ActiveSupport::Deprecation.warn "##{name} is deprecated and has no effect"
+              CarrierWave.deprecator.warn "##{name} is deprecated and has no effect"
             end
 
             def #{name}
-              ActiveSupport::Deprecation.warn "##{name} is deprecated and has no effect"
+              CarrierWave.deprecator.warn "##{name} is deprecated and has no effect"
             end
           RUBY
         end

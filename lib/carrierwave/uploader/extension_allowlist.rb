@@ -39,7 +39,7 @@ module CarrierWave
       def check_extension_allowlist!(new_file)
         allowlist = extension_allowlist
         if !allowlist && respond_to?(:extension_whitelist) && extension_whitelist
-          ActiveSupport::Deprecation.warn "#extension_whitelist is deprecated, use #extension_allowlist instead." unless instance_variable_defined?(:@extension_whitelist_warned)
+          CarrierWave.deprecator.warn "#extension_whitelist is deprecated, use #extension_allowlist instead." unless instance_variable_defined?(:@extension_whitelist_warned)
           @extension_whitelist_warned = true
           allowlist = extension_whitelist
         end

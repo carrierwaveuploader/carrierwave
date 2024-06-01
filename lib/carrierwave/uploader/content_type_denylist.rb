@@ -36,14 +36,14 @@ module CarrierWave
       def check_content_type_denylist!(new_file)
         denylist = content_type_denylist
         if !denylist && respond_to?(:content_type_blacklist) && content_type_blacklist
-          ActiveSupport::Deprecation.warn "#content_type_blacklist is deprecated, use #content_type_denylist instead." unless instance_variable_defined?(:@content_type_blacklist_warned)
+          CarrierWave.deprecator.warn "#content_type_blacklist is deprecated, use #content_type_denylist instead." unless instance_variable_defined?(:@content_type_blacklist_warned)
           @content_type_blacklist_warned = true
           denylist = content_type_blacklist
         end
 
         return unless denylist
 
-        ActiveSupport::Deprecation.warn "Use of #content_type_denylist is deprecated for the security reason, use #content_type_allowlist instead to explicitly state what are safe to accept" unless instance_variable_defined?(:@content_type_denylist_warned)
+        CarrierWave.deprecator.warn "Use of #content_type_denylist is deprecated for the security reason, use #content_type_allowlist instead to explicitly state what are safe to accept" unless instance_variable_defined?(:@content_type_denylist_warned)
         @content_type_denylist_warned = true
 
         content_type = new_file.content_type

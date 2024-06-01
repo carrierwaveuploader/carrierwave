@@ -39,14 +39,14 @@ module CarrierWave
       def check_extension_denylist!(new_file)
         denylist = extension_denylist
         if !denylist && respond_to?(:extension_blacklist) && extension_blacklist
-          ActiveSupport::Deprecation.warn "#extension_blacklist is deprecated, use #extension_denylist instead." unless instance_variable_defined?(:@extension_blacklist_warned)
+          CarrierWave.deprecator.warn "#extension_blacklist is deprecated, use #extension_denylist instead." unless instance_variable_defined?(:@extension_blacklist_warned)
           @extension_blacklist_warned = true
           denylist = extension_blacklist
         end
 
         return unless denylist
 
-        ActiveSupport::Deprecation.warn "Use of #extension_denylist is deprecated for the security reason, use #extension_allowlist instead to explicitly state what are safe to accept" unless instance_variable_defined?(:@extension_denylist_warned)
+        CarrierWave.deprecator.warn "Use of #extension_denylist is deprecated for the security reason, use #extension_allowlist instead to explicitly state what are safe to accept" unless instance_variable_defined?(:@extension_denylist_warned)
         @extension_denylist_warned = true
 
         extension = new_file.extension.to_s
