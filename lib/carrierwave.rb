@@ -70,7 +70,7 @@ elsif defined?(Rails)
       end
 
       initializer "carrierwave.deprecator" do |app|
-        app.deprecators[:carrierwave] = CarrierWave.deprecator
+        app.deprecators[:carrierwave] = CarrierWave.deprecator if app.respond_to?(:deprecators)
       end
 
       config.before_eager_load do
