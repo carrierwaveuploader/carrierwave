@@ -72,7 +72,7 @@ describe CarrierWave::Uploader do
 
     it "should set the class name" do
       @uploader_class.version :thumb
-      expect(@uploader.thumb.class).to eq @uploader_class.const_get :ThumbVersionUploader
+      expect(@uploader.thumb.class).to eq @uploader_class.const_get :VersionUploaderThumb
     end
 
     it "should remember mount options" do
@@ -151,6 +151,13 @@ describe CarrierWave::Uploader do
     it "should accept option :from_version" do
       @uploader_class.version :small_thumb, :from_version => :thumb
       expect(@uploader.small_thumb.class.version_options[:from_version]).to eq(:thumb)
+    end
+
+    context 'when version name starts with non-alphabetic character' do
+      it "should set the class name" do
+        @uploader_class.version :_800x600
+        expect(@uploader._800x600.class).to eq @uploader_class.const_get :VersionUploader800x600
+      end
     end
 
     describe 'with nested versions' do
