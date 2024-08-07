@@ -20,7 +20,7 @@ module CarrierWave
         def build(superclass)
           return @klass if @klass
           @klass = Class.new(superclass)
-          superclass.const_set("#{@name.to_s.camelize}VersionUploader", @klass)
+          superclass.const_set("VersionUploader#{@name.to_s.camelize}", @klass)
 
           @klass.version_names += [@name]
           @klass.versions = {}
