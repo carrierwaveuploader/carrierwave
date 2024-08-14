@@ -22,7 +22,7 @@ module CarrierWave
   #     end
   #
   # Or create your own helpers with the powerful manipulate! method. Check
-  # out the RMagick docs at http://www.imagemagick.org/RMagick/doc/ for more
+  # out the RMagick docs at https://rmagick.github.io/ for more
   # info
   #
   #     class MyUploader < CarrierWave::Uploader::Base
@@ -111,7 +111,7 @@ module CarrierWave
     ##
     # Changes the image encoding format to the given format
     #
-    # See even http://www.imagemagick.org/RMagick/doc/magick.html#formats
+    # See even https://rmagick.github.io/magick.html#formats
     #
     # === Parameters
     #
@@ -165,7 +165,7 @@ module CarrierWave
     # image may be shorter or narrower than specified in the smaller dimension
     # but will not be larger than the specified values."
     #
-    # See even http://www.imagemagick.org/RMagick/doc/image3.html#resize_to_fit
+    # See even https://rmagick.github.io/image3.html#resize_to_fit
     #
     # === Parameters
     #
@@ -191,7 +191,7 @@ module CarrierWave
     # specified dimensions while retaining the aspect ratio of the original
     # image. If necessary, crop the image in the larger dimension."
     #
-    # See even http://www.imagemagick.org/RMagick/doc/image3.html#resize_to_fill
+    # See even https://rmagick.github.io/image3.html#resize_to_fill
     #
     # === Parameters
     #
