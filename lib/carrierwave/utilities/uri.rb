@@ -11,7 +11,7 @@ module CarrierWave
     private
 
       def encode_path(path)
-        URI::DEFAULT_PARSER.escape(path, PATH_UNSAFE)
+        URI::DEFAULT_PARSER.escape(path.to_s, PATH_UNSAFE)
       end
 
       def encode_non_ascii(str)
