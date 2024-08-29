@@ -64,6 +64,19 @@ describe CarrierWave::Uploader do
           expect { uploader.cache!(test_file) }.not_to raise_error
         end
       end
+
+      context "with a crafted content type" do
+        let(:bork_file) { File.open(file_path('bork.txt')) }
+
+        before do
+          allow(bork_file).to receive(:content_type).and_return('text/plain; image/png')
+          allow(uploader).to receive(:content_type_whitelist).and_return('image/png')
+        end
+
+        it "does not allow spoofing" do
+          expect { uploader.cache!(bork_file) }.to raise_error(CarrierWave::IntegrityError)
+        end
+      end
     end
   end
 end
