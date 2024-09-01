@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 3.1.0.beta - 2024-09-01
+
+### Added
+* Add support for the `crop` processing method (@clickworkorange [#2721](https://github.com/carrierwaveuploader/carrierwave/pull/2721))
+* Add global `skip_ssrf_protection` configuration (@rajyan [#2696](https://github.com/carrierwaveuploader/carrierwave/pull/2696), [#2695](https://github.com/carrierwaveuploader/carrierwave/issues/2695))
+
+### Changed
+* Show warning if #filename is safeguarded as in the pre-3.x style (@mshibuya [#2718](https://github.com/carrierwaveuploader/carrierwave/pull/2718), [#2708](https://github.com/carrierwaveuploader/carrierwave/issues/2708))
+
+### Fixed
+* Fix version names starting with a non-alphabet character lead to NameError (@r7kamura [#2748](https://github.com/carrierwaveuploader/carrierwave/pull/2748), [#2722](https://github.com/carrierwaveuploader/carrierwave/issues/2722))
+* Fix Rails 7.2 incompatibility due to incorrect use of ActiveSupport::Deprecation (@mshibuya [b25477d](https://github.com/carrierwaveuploader/carrierwave/commit/b25477d4dc2b32ee3da896714b081e6123737fa3), [8761240](https://github.com/carrierwaveuploader/carrierwave/commit/8761240283abc2e58bd97004f30a9419cad34109), [#2751](https://github.com/carrierwaveuploader/carrierwave/issues/2751))
+* Fix assigning a file with the same name not marking the column as changed (@mshibuya [47f1737](https://github.com/carrierwaveuploader/carrierwave/commit/47f1737443f47cd188e555836b26ccdfcee91d49), [#2719](https://github.com/carrierwaveuploader/carrierwave/issues/2719))
+* Fix content type magic detection for files packaged in .zip (@dzhikvas [#2705](https://github.com/carrierwaveuploader/carrierwave/pull/2705), [#2704](https://github.com/carrierwaveuploader/carrierwave/issues/2704))
+
 ## 3.0.7 - 2024-03-23
 
 ### Security
