@@ -196,9 +196,9 @@ module CarrierWave
       #
       # === Returns
       #
-      # [Boolean] True when the version exists according to its :if or :unless condition
+      # [Boolean] True when the version satisfy its :if or :unless condition
       #
-      def version_exists?(name)
+      def version_active?(name)
         name = name.to_sym
 
         return false unless versions.has_key?(name)
@@ -222,6 +222,8 @@ module CarrierWave
           true
         end
       end
+      alias_method :version_exists?, :version_active?
+      CarrierWave.deprecator.deprecate_methods(self, version_exists?: :version_active?)
 
       ##
       # Copies the parent's cache_id when caching a version file.
@@ -299,7 +301,7 @@ module CarrierWave
 
       def active_versions
         versions.select do |name, uploader|
-          version_exists?(name)
+          version_active?(name)
         end
       end
 

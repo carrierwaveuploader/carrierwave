@@ -773,6 +773,32 @@ describe CarrierWave::Uploader do
         end
       end
     end
+
+    describe '#version_active?' do
+      before do
+        @file = File.open(file_path('test.jpg'))
+        @uploader_class.version(:preview, if: :true?)
+      end
+
+      it 'returns true when active' do
+        expect(@uploader).to receive(:true?).at_least(:once).and_return(true)
+        @uploader.store!(@file)
+        expect(@uploader.version_active?(:preview)).to be true
+      end
+
+      it 'returns false when inactive' do
+        expect(@uploader).to receive(:true?).at_least(:once).and_return(false)
+        @uploader.store!(@file)
+        expect(@uploader.version_active?(:preview)).to be false
+      end
+    end
+
+    describe '#version_exists' do
+      it 'shows deprecation' do
+        expect(CarrierWave.deprecator).to receive(:warn).with(/use version_active\? instead/, any_args)
+        @uploader.version_exists?(:preview)
+      end
+    end
   end
 
   describe 'with a version with option :from_version' do
