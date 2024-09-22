@@ -704,6 +704,32 @@ def fog_tests(fog_credentials)
           @fog_file.copy_to('uploads/new_path.jpg')
         end
       end
+
+      describe '#empty?' do
+        it "returns false when the file exists" do
+          expect(@fog_file.empty?).to be false
+        end
+
+        context "when the remote file doesn't exist" do
+          before do
+            @fog_file.delete
+          end
+
+          it "returns true" do
+            expect(@fog_file.empty?).to be true
+          end
+        end
+
+        context "when the remote file has no content" do
+          before do
+            @fog_file = @storage.store!(CarrierWave::SanitizedFile.new(StringIO.new('')))
+          end
+
+          it "returns true" do
+            expect(@fog_file.empty?).to be true
+          end
+        end
+      end
     end
   end
 end

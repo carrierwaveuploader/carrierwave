@@ -310,6 +310,15 @@ module CarrierWave
         end
 
         ##
+        # === Returns
+        #
+        # [Boolean] whether the file is non-existent or empty
+        #
+        def empty?
+          !exists? || size.zero?
+        end
+
+        ##
         # Check if the file exists on the remote service
         #
         # === Returns
