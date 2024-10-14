@@ -557,6 +557,7 @@ describe CarrierWave::ActiveRecord do
     describe "#remote_image_url=" do
       before do
         stub_request(:get, "http://www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
+        stub_request(:get, "http://www.example.com/missing.jpg").to_return(status: 404)
       end
 
       # FIXME: ideally image_changed? and remote_image_url_changed? would return true
@@ -567,6 +568,15 @@ describe CarrierWave::ActiveRecord do
         @event.save!
         @event.reload
         expect(@event.image_changed?).to be_falsey
+      end
+
+      it "should clear validation errors from the previous attempt" do
+        @event.remote_image_url = 'http://www.example.com/missing.jpg'
+        expect(@event).to_not be_valid
+        expect(@event.errors[:image]).to eq(['could not download file: 404 ""'])
+        @event.remote_image_url = 'http://www.example.com/test.jpg'
+        expect(@event).to be_valid
+        expect(@event.errors).to be_empty
       end
 
       context 'when validating download' do
@@ -1570,6 +1580,7 @@ describe CarrierWave::ActiveRecord do
     describe "#remote_images_urls=" do
       before do
         stub_request(:get, "http://www.example.com/test.jpg").to_return(body: File.read(file_path("test.jpg")))
+        stub_request(:get, "http://www.example.com/missing.jpg").to_return(status: 404)
       end
 
       # FIXME: ideally images_changed? and remote_images_urls_changed? would return true
@@ -1580,6 +1591,15 @@ describe CarrierWave::ActiveRecord do
         @event.save!
         @event.reload
         expect(@event.images_changed?).to be_falsey
+      end
+
+      it "should clear validation errors from the previous attempt" do
+        @event.remote_images_urls = ['http://www.example.com/missing.jpg']
+        expect(@event).to_not be_valid
+        expect(@event.errors[:images]).to eq(['could not download file: 404 ""'])
+        @event.remote_images_urls = ['http://www.example.com/test.jpg']
+        expect(@event).to be_valid
+        expect(@event.errors).to be_empty
       end
 
       context 'when validating download' do

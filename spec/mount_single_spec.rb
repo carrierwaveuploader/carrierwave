@@ -586,6 +586,13 @@ describe CarrierWave::Mount do
         @instance.remote_image_url = "http://www.example.com/missing.jpg"
         expect(@instance.image_download_error).to be_an_instance_of(CarrierWave::DownloadError)
       end
+
+      it "clears the existing download error on the second attempt" do
+        @instance.remote_image_url = "http://www.example.com/missing.jpg"
+        expect(@instance.image_download_error).to be_an_instance_of(CarrierWave::DownloadError)
+        @instance.remote_image_url = "http://www.example.com/test.jpg"
+        expect(@instance.image_download_error).to be_nil
+      end
     end
 
     describe '#image_download_error' do

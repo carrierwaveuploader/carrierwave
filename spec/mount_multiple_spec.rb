@@ -881,6 +881,15 @@ describe CarrierWave::Mount do
 
         it { is_expected.to include(a_kind_of(CarrierWave::DownloadError)) }
       end
+
+      context "on the second attempt" do
+        it "clears the existing download errors" do
+          instance.remote_images_urls = ["http://www.example.com/missing.jpg"]
+          is_expected.not_to be_empty
+          instance.remote_images_urls = ["http://www.example.com/#{test_file_name}"]
+          is_expected.to be_empty
+        end
+      end
     end
 
     describe '#write_images_identifier' do

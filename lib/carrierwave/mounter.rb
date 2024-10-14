@@ -125,6 +125,7 @@ module CarrierWave
         urls = Array.wrap(urls).reject(&:blank?)
         return if urls.blank?
       end
+      @download_errors.clear
       @remote_urls = urls
 
       clear_unstaged
