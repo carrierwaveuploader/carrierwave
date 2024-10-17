@@ -1027,7 +1027,7 @@ end
 ### List of available processing methods:
 
 > [!NOTE]
-> While the intention is to provide uniform interfaces to al three processing libraries the availability and implementation of processing methods can <a href="supported-processing-methods">vary slightly between them</a>.
+> While the intention is to provide uniform interfaces to all three processing libraries the availability and implementation of processing methods can <a href="supported-processing-methods">vary slightly between them</a>.
 
 - `convert` - Changes the image encoding format to the given format (eg. jpg). This operation is treated specially to trigger the change of the file extension, so it matches with the format of the resulting file.
 - `resize_to_limit` - Resize the image to fit within the specified dimensions while retaining the original aspect ratio. Will only resize the image if it is larger than the specified dimensions. The resulting image may be shorter or narrower than specified in the smaller dimension but will not be larger than the specified values.
