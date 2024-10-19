@@ -23,7 +23,7 @@ describe CarrierWave::Uploader do
     it "should raise an error when a user tries to use a Builder for configuration" do
       @uploader_class.version :thumb
       expect { @uploader_class.versions[:thumb].storage = :file }.to raise_error NoMethodError, /{ self.storage= :file }/
-      expect { @uploader_class.versions[:thumb].process convert: :png }.to raise_error NoMethodError, /{ self.process {:convert=>:png} }/
+      expect { @uploader_class.versions[:thumb].process convert: :png }.to raise_error NoMethodError, /{ self.process {:?convert(=>|: ):png} }/
     end
 
     it "should add an version instance to #versions" do
