@@ -139,7 +139,7 @@ module CarrierWave
 
       def stub_request(method, uri)
         uri = URI.parse(uri) if uri.is_a?(String)
-        if uri.is_a?(URI)
+        if uri.is_a?(URI) && Gem::Version.new(SsrfFilter::VERSION) < Gem::Version.new('1.2.0')
           super method, Matcher.new(uri)
         else
           super
