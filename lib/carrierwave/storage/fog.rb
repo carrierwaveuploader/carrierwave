@@ -163,6 +163,8 @@ module CarrierWave
 
       class File
         DEFAULT_S3_REGION = 'us-east-1'.freeze
+        AWS_FIPS_REGIONS = %w(us-east-1 us-east-2 us-west-1 us-west-2 us-gov-east-1 us-gov-west-1 ca-central-1 ca-west-1).freeze
+        AWS_GOVCLOUD_REGIONS = %w(us-gov-east-1 us-gov-west-1).freeze
 
         include CarrierWave::Utilities::Uri
         include CarrierWave::Utilities::FileName
@@ -383,15 +385,17 @@ module CarrierWave
                 use_virtual_hosted_style = @uploader.fog_directory.to_s =~ subdomain_regex && !(protocol == 'https' && @uploader.fog_directory =~ /\./)
 
                 region = @uploader.fog_credentials[:region].to_s
-                regional_host = case region
-                                when DEFAULT_S3_REGION, ''
-                                  's3.amazonaws.com'
-                                else
-                                  "s3.#{region}.amazonaws.com"
-                                end
+                regional_host = 's3.amazonaws.com' # used for DEFAULT_S3_REGION or no region set
+                if ENV['AWS_USE_FIPS_ENDPOINT'] == 'true' && AWS_FIPS_REGIONS.include?(region)
+                  regional_host = "s3-fips.#{region}.amazonaws.com" # https://aws.amazon.com/compliance/fips/
+                elsif ![DEFAULT_S3_REGION, ''].include?(region)
+                  regional_host = "s3.#{region}.amazonaws.com"
+                end
 
                 if use_virtual_hosted_style
-                  regional_host = 's3-accelerate.amazonaws.com' if @uploader.fog_aws_accelerate
+                  # GovCloud doesn't support S3 Transfer Acceleration https://docs.aws.amazon.com/govcloud-us/latest/UserGuide/govcloud-s3.html
+                  # S3 Transfer Acceleration doesn't support FIPS endpoints.  When both fog_aws_accelerate=true and AWS_USE_FIPS_ENDPOINT=true, don't use Accelerate.
+                  regional_host = 's3-accelerate.amazonaws.com' if @uploader.fog_aws_accelerate && !AWS_GOVCLOUD_REGIONS.include?(region) && ENV['AWS_USE_FIPS_ENDPOINT'] != 'true'
                   "#{protocol}://#{@uploader.fog_directory}.#{regional_host}/#{encoded_path}"
                 else # directory is not a valid subdomain, so use path style for access
                   "#{protocol}://#{regional_host}/#{@uploader.fog_directory}/#{encoded_path}"
