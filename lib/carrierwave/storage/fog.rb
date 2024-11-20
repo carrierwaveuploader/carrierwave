@@ -392,10 +392,14 @@ module CarrierWave
                   regional_host = "s3.#{region}.amazonaws.com"
                 end
 
+                # GovCloud doesn't support S3 Transfer Acceleration https://docs.aws.amazon.com/govcloud-us/latest/UserGuide/govcloud-s3.html
+                # S3 Transfer Acceleration doesn't support FIPS endpoints.  When both fog_aws_accelerate=true and AWS_USE_FIPS_ENDPOINT=true, don't use Accelerate.
+                if @uploader.fog_aws_accelerate && (AWS_GOVCLOUD_REGIONS.include?(region) || ENV['AWS_USE_FIPS_ENDPOINT'] == 'true')
+                  @uploader.fog_aws_accelerate = false
+                end
+
                 if use_virtual_hosted_style
-                  # GovCloud doesn't support S3 Transfer Acceleration https://docs.aws.amazon.com/govcloud-us/latest/UserGuide/govcloud-s3.html
-                  # S3 Transfer Acceleration doesn't support FIPS endpoints.  When both fog_aws_accelerate=true and AWS_USE_FIPS_ENDPOINT=true, don't use Accelerate.
-                  regional_host = 's3-accelerate.amazonaws.com' if @uploader.fog_aws_accelerate && !AWS_GOVCLOUD_REGIONS.include?(region) && ENV['AWS_USE_FIPS_ENDPOINT'] != 'true'
+                  regional_host = 's3-accelerate.amazonaws.com' if @uploader.fog_aws_accelerate
                   "#{protocol}://#{@uploader.fog_directory}.#{regional_host}/#{encoded_path}"
                 else # directory is not a valid subdomain, so use path style for access
                   "#{protocol}://#{regional_host}/#{@uploader.fog_directory}/#{encoded_path}"
