@@ -395,7 +395,7 @@ module CarrierWave
                 # GovCloud doesn't support S3 Transfer Acceleration https://docs.aws.amazon.com/govcloud-us/latest/UserGuide/govcloud-s3.html
                 # S3 Transfer Acceleration doesn't support FIPS endpoints.  When both fog_aws_accelerate=true and AWS_USE_FIPS_ENDPOINT=true, don't use Accelerate.
                 if @uploader.fog_aws_accelerate && (AWS_GOVCLOUD_REGIONS.include?(region) || ENV['AWS_USE_FIPS_ENDPOINT'] == 'true')
-                  warn "S3 Transfer Acceleration is not available in GovCloud regions or when AWS_USE_FIPS_ENDPOINT=true. Disabling accelearation."
+                  warn "S3 Transfer Acceleration is not available in GovCloud regions or when AWS_USE_FIPS_ENDPOINT=true. Disabling acceleration."
                   @uploader.fog_aws_accelerate = false
                 end
 
