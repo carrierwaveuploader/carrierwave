@@ -164,7 +164,6 @@ module CarrierWave
       class File
         DEFAULT_S3_REGION = 'us-east-1'.freeze
         AWS_FIPS_REGIONS = %w(us-east-1 us-east-2 us-west-1 us-west-2 us-gov-east-1 us-gov-west-1 ca-central-1 ca-west-1).freeze
-        AWS_GOVCLOUD_REGIONS = %w(us-gov-east-1 us-gov-west-1).freeze
 
         include CarrierWave::Utilities::Uri
         include CarrierWave::Utilities::FileName
@@ -390,13 +389,6 @@ module CarrierWave
                   regional_host = "s3-fips.#{region}.amazonaws.com" # https://aws.amazon.com/compliance/fips/
                 elsif ![DEFAULT_S3_REGION, ''].include?(region)
                   regional_host = "s3.#{region}.amazonaws.com"
-                end
-
-                # GovCloud doesn't support S3 Transfer Acceleration https://docs.aws.amazon.com/govcloud-us/latest/UserGuide/govcloud-s3.html
-                # S3 Transfer Acceleration doesn't support FIPS endpoints.  When both fog_aws_accelerate=true and AWS_USE_FIPS_ENDPOINT=true, don't use Accelerate.
-                if @uploader.fog_aws_accelerate && (AWS_GOVCLOUD_REGIONS.include?(region) || ENV['AWS_USE_FIPS_ENDPOINT'] == 'true')
-                  warn "S3 Transfer Acceleration is not available in GovCloud regions or when AWS_USE_FIPS_ENDPOINT=true. Disabling acceleration."
-                  @uploader.fog_aws_accelerate = false
                 end
 
                 if use_virtual_hosted_style
