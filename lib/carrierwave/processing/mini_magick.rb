@@ -291,7 +291,7 @@ module CarrierWave
       image = yield(image)
       FileUtils.mv image.path, current_path
 
-      image.run_command("identify", current_path)
+      ::MiniMagick::Image.new(current_path).identify
     rescue ::MiniMagick::Error, ::MiniMagick::Invalid => e
       raise e if e.message =~ /(You must have .+ installed|is not installed|executable not found)/
       message = I18n.translate(:"errors.messages.processing_error")

@@ -300,6 +300,14 @@ describe CarrierWave::MiniMagick do
       expect(instance).to be_format('png')
     end
 
+    it "returns the result of #identify on the manipulated image" do
+      expect(
+        instance.manipulate! do |image|
+          image.format('png')
+        end
+      ).to include 'landscape_copy.jpg PNG 640x480'
+    end
+
     context "on failing to find ImageMagick/GraphicsMagick" do
       before do
         MiniMagick.remove_instance_variable(:@processor) if MiniMagick.instance_variable_defined?(:@processor)
