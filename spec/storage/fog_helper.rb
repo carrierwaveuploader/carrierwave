@@ -362,9 +362,11 @@ def fog_tests(fog_credentials)
     describe "CarrierWave::Storage::Fog::File" do
       let(:store_path) { 'uploads/test.jpg' }
       let(:fog_public) { true }
+      let(:endpoint) { nil }
       before do
         allow(@uploader).to receive(:store_path).and_return(store_path)
         allow(@uploader).to receive(:fog_public).and_return(fog_public)
+        allow(@uploader).to receive(:endpoint).and_return(endpoint)
         @fog_file = @storage.store!(CarrierWave::SanitizedFile.new(stub_file('test.jpg', 'image/jpeg')))
       end
 
@@ -502,6 +504,20 @@ def fog_tests(fog_credentials)
           it "should use accelerate domain if fog_aws_accelerate is true" do
             allow(@uploader).to receive(:fog_aws_accelerate).and_return(true)
             expect(@fog_file.public_url).to include("https://#{CARRIERWAVE_DIRECTORY}.s3-accelerate.amazonaws.com")
+          end
+
+          it 'returns nil when both :endpoint and :fog_aws_fips=true' do
+            allow(@uploader).to receive(:fog_credentials).and_return(@uploader.fog_credentials.merge(endpoint: 'https://custom-endpoint.example.com'))
+            allow(@uploader).to receive(:fog_directory).and_return('SiteAssets')
+            allow(@uploader).to receive(:fog_aws_fips).and_return(true)
+            expect(@fog_file.url).to be nil
+          end
+
+          it 'returns endpoint+bucket when :endpoint and !:fog_aws_fips' do
+            allow(@uploader).to receive(:fog_credentials).and_return(@uploader.fog_credentials.merge(endpoint: 'https://custom-endpoint.example.com'))
+            allow(@uploader).to receive(:fog_directory).and_return('SiteAssets')
+            allow(@uploader).to receive(:fog_aws_fips).and_return(false)
+            expect(@fog_file.url).to include('https://custom-endpoint.example.com/SiteAssets')
           end
 
           context 'when the directory is not a valid subdomain' do

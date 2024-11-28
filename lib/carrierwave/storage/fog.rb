@@ -376,7 +376,12 @@ module CarrierWave
             when 'AWS'
               # check if some endpoint is set in fog_credentials
               if @uploader.fog_credentials.has_key?(:endpoint)
-                "#{@uploader.fog_credentials[:endpoint]}/#{@uploader.fog_directory}/#{encoded_path}"
+                if !@uploader.fog_aws_fips
+                  "#{@uploader.fog_credentials[:endpoint]}/#{@uploader.fog_directory}/#{encoded_path}"
+                else
+                  warn 'Use of options :endpoint and :fog_aws_fips=true together will fail, as FIPS endpoints do not support path-style URLs.'
+                  nil
+                end
               else
                 protocol = @uploader.fog_use_ssl_for_aws ? "https" : "http"
 
