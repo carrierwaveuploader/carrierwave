@@ -376,20 +376,14 @@ module CarrierWave
             when 'AWS'
               # check if some endpoint is set in fog_credentials
               if @uploader.fog_credentials.has_key?(:endpoint)
-                if !@uploader.fog_aws_fips
-                  "#{@uploader.fog_credentials[:endpoint]}/#{@uploader.fog_directory}/#{encoded_path}"
-                else
-                  warn 'Use of options :endpoint and :fog_aws_fips=true together will fail, as FIPS endpoints do not support path-style URLs.'
-                  nil
-                end
+                raise 'fog_aws_fips = true is incompatible with :endpoint, as FIPS endpoints do not support path-style URLs.' if @uploader.fog_aws_fips
+                "#{@uploader.fog_credentials[:endpoint]}/#{@uploader.fog_directory}/#{encoded_path}"
               else
                 protocol = @uploader.fog_use_ssl_for_aws ? "https" : "http"
 
                 subdomain_regex = /^(?:[a-z]|\d(?!\d{0,2}(?:\d{1,3}){3}$))(?:[a-z0-9\.]|(?![\-])|\-(?![\.])){1,61}[a-z0-9]$/
                 # To use the virtual-hosted style, the bucket name needs to be representable as a subdomain
                 use_virtual_hosted_style = @uploader.fog_directory.to_s =~ subdomain_regex && !(protocol == 'https' && @uploader.fog_directory =~ /\./)
-
-                return nil if !use_virtual_hosted_style && @uploader.fog_aws_fips # FIPS Endpoints can only be used with Virtual Hosted-Style addressing.
 
                 region = @uploader.fog_credentials[:region].to_s
                 regional_host = 's3.amazonaws.com' # used for DEFAULT_S3_REGION or no region set
@@ -403,6 +397,7 @@ module CarrierWave
                   regional_host = 's3-accelerate.amazonaws.com' if @uploader.fog_aws_accelerate
                   "#{protocol}://#{@uploader.fog_directory}.#{regional_host}/#{encoded_path}"
                 else # directory is not a valid subdomain, so use path style for access
+                  raise 'FIPS Endpoints can only be used with Virtual Hosted-Style addressing.' if @uploader.fog_aws_fips
                   "#{protocol}://#{regional_host}/#{@uploader.fog_directory}/#{encoded_path}"
                 end
               end

@@ -1,4 +1,4 @@
-def fog_tests(fog_credentials)
+shared_examples "Fog storage" do |fog_credentials|
   describe "with #{fog_credentials[:provider]} provider", with_retry: !Fog.mocking do
     before do
       WebMock.disable! unless Fog.mocking?
@@ -506,11 +506,11 @@ def fog_tests(fog_credentials)
             expect(@fog_file.public_url).to include("https://#{CARRIERWAVE_DIRECTORY}.s3-accelerate.amazonaws.com")
           end
 
-          it 'returns nil when both :endpoint and :fog_aws_fips=true' do
+          it 'raises an error when both :endpoint and :fog_aws_fips=true' do
             allow(@uploader).to receive(:fog_credentials).and_return(@uploader.fog_credentials.merge(endpoint: 'https://custom-endpoint.example.com'))
             allow(@uploader).to receive(:fog_directory).and_return('SiteAssets')
             allow(@uploader).to receive(:fog_aws_fips).and_return(true)
-            expect(@fog_file.url).to be nil
+            expect { @fog_file.url }.to raise_error RuntimeError, /incompatible/
           end
 
           it 'returns endpoint+bucket when :endpoint and !:fog_aws_fips' do
@@ -562,13 +562,13 @@ def fog_tests(fog_credentials)
               'us-east-2',
               'us-gov-west-1'
             ].each do |region|
-              it "public_url should be nil" do
+              it "raises an error" do
                 allow(@uploader).to receive(:fog_use_ssl_for_aws).and_return(true)
                 allow(@uploader).to receive(:fog_directory).and_return('foo.bar')
                 allow(@uploader).to receive(:fog_aws_fips).and_return(true)
                 allow(@uploader).to receive(:fog_credentials).and_return(@uploader.fog_credentials.merge(region: region))
 
-                expect(@fog_file.public_url).to be_nil
+                expect { @fog_file.url }.to raise_error RuntimeError, /Virtual Hosted-Style/
               end
             end
           end

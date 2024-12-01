@@ -17,7 +17,7 @@ require_relative './fog_helper'
 
 describe CarrierWave::Storage::Fog do
   FOG_CREDENTIALS.each do |credential|
-    fog_tests(credential)
+    include_examples 'Fog storage', credential
   end
 
   describe '.eager_load' do

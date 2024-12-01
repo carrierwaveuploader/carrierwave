@@ -90,7 +90,7 @@ Metrics/ClassLength:
   Enabled: false
 
 Metrics/CyclomaticComplexity:
-  Max: 28
+  Max: 18
 
 Metrics/MethodLength:
   Enabled: false
