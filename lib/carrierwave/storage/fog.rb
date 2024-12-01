@@ -18,6 +18,8 @@ module CarrierWave
     # [:fog_use_ssl_for_aws]              (optional) #public_url will use https for the AWS generated URL]
     # [:fog_aws_accelerate]               (optional) #public_url will use s3-accelerate subdomain
     #   instead of s3, defaults to false
+    # [:fog_aws_fips]                     (optional) #public_url will use s3-fips subdomain
+    #   instead of s3, defaults to false
     #
     #
     # AWS credentials contain the following keys:
@@ -374,7 +376,12 @@ module CarrierWave
             when 'AWS'
               # check if some endpoint is set in fog_credentials
               if @uploader.fog_credentials.has_key?(:endpoint)
-                "#{@uploader.fog_credentials[:endpoint]}/#{@uploader.fog_directory}/#{encoded_path}"
+                if !@uploader.fog_aws_fips
+                  "#{@uploader.fog_credentials[:endpoint]}/#{@uploader.fog_directory}/#{encoded_path}"
+                else
+                  warn 'Use of options :endpoint and :fog_aws_fips=true together will fail, as FIPS endpoints do not support path-style URLs.'
+                  nil
+                end
               else
                 protocol = @uploader.fog_use_ssl_for_aws ? "https" : "http"
 
@@ -382,13 +389,15 @@ module CarrierWave
                 # To use the virtual-hosted style, the bucket name needs to be representable as a subdomain
                 use_virtual_hosted_style = @uploader.fog_directory.to_s =~ subdomain_regex && !(protocol == 'https' && @uploader.fog_directory =~ /\./)
 
+                return nil if !use_virtual_hosted_style && @uploader.fog_aws_fips # FIPS Endpoints can only be used with Virtual Hosted-Style addressing.
+
                 region = @uploader.fog_credentials[:region].to_s
-                regional_host = case region
-                                when DEFAULT_S3_REGION, ''
-                                  's3.amazonaws.com'
-                                else
-                                  "s3.#{region}.amazonaws.com"
-                                end
+                regional_host = 's3.amazonaws.com' # used for DEFAULT_S3_REGION or no region set
+                if @uploader.fog_aws_fips
+                  regional_host = "s3-fips.#{region}.amazonaws.com" # https://aws.amazon.com/compliance/fips/
+                elsif ![DEFAULT_S3_REGION, ''].include?(region)
+                  regional_host = "s3.#{region}.amazonaws.com"
+                end
 
                 if use_virtual_hosted_style
                   regional_host = 's3-accelerate.amazonaws.com' if @uploader.fog_aws_accelerate

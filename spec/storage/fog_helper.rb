@@ -362,9 +362,11 @@ def fog_tests(fog_credentials)
     describe "CarrierWave::Storage::Fog::File" do
       let(:store_path) { 'uploads/test.jpg' }
       let(:fog_public) { true }
+      let(:endpoint) { nil }
       before do
         allow(@uploader).to receive(:store_path).and_return(store_path)
         allow(@uploader).to receive(:fog_public).and_return(fog_public)
+        allow(@uploader).to receive(:endpoint).and_return(endpoint)
         @fog_file = @storage.store!(CarrierWave::SanitizedFile.new(stub_file('test.jpg', 'image/jpeg')))
       end
 
@@ -504,6 +506,20 @@ def fog_tests(fog_credentials)
             expect(@fog_file.public_url).to include("https://#{CARRIERWAVE_DIRECTORY}.s3-accelerate.amazonaws.com")
           end
 
+          it 'returns nil when both :endpoint and :fog_aws_fips=true' do
+            allow(@uploader).to receive(:fog_credentials).and_return(@uploader.fog_credentials.merge(endpoint: 'https://custom-endpoint.example.com'))
+            allow(@uploader).to receive(:fog_directory).and_return('SiteAssets')
+            allow(@uploader).to receive(:fog_aws_fips).and_return(true)
+            expect(@fog_file.url).to be nil
+          end
+
+          it 'returns endpoint+bucket when :endpoint and !:fog_aws_fips' do
+            allow(@uploader).to receive(:fog_credentials).and_return(@uploader.fog_credentials.merge(endpoint: 'https://custom-endpoint.example.com'))
+            allow(@uploader).to receive(:fog_directory).and_return('SiteAssets')
+            allow(@uploader).to receive(:fog_aws_fips).and_return(false)
+            expect(@fog_file.url).to include('https://custom-endpoint.example.com/SiteAssets')
+          end
+
           context 'when the directory is not a valid subdomain' do
             it "should not use a subdomain URL for AWS" do
               allow(@uploader).to receive(:fog_directory).and_return('SiteAssets')
@@ -526,7 +542,8 @@ def fog_tests(fog_credentials)
               nil            => 's3.amazonaws.com',
               'us-east-1'    => 's3.amazonaws.com',
               'us-east-2'    => 's3.us-east-2.amazonaws.com',
-              'eu-central-1' => 's3.eu-central-1.amazonaws.com'
+              'eu-central-1' => 's3.eu-central-1.amazonaws.com',
+              'us-gov-west-1' => 's3.us-gov-west-1.amazonaws.com'
             }.each do |region, expected_host|
               it "should use a #{expected_host} hostname when using path style for access #{region} region" do
                 allow(@uploader).to receive(:fog_use_ssl_for_aws).and_return(true)
@@ -535,6 +552,23 @@ def fog_tests(fog_credentials)
                 allow(@uploader).to receive(:fog_credentials).and_return(@uploader.fog_credentials.merge(region: region))
 
                 expect(@fog_file.public_url).to include("https://#{expected_host}/foo.bar")
+              end
+            end
+          end
+
+          context 'when the directory is not a valid subdomain and :fog_aws_fips' do
+            [
+              'us-east-1',
+              'us-east-2',
+              'us-gov-west-1'
+            ].each do |region|
+              it "public_url should be nil" do
+                allow(@uploader).to receive(:fog_use_ssl_for_aws).and_return(true)
+                allow(@uploader).to receive(:fog_directory).and_return('foo.bar')
+                allow(@uploader).to receive(:fog_aws_fips).and_return(true)
+                allow(@uploader).to receive(:fog_credentials).and_return(@uploader.fog_credentials.merge(region: region))
+
+                expect(@fog_file.public_url).to be_nil
               end
             end
           end
@@ -550,6 +584,24 @@ def fog_tests(fog_credentials)
                 allow(@uploader).to receive(:fog_use_ssl_for_aws).and_return(true)
                 allow(@uploader).to receive(:fog_directory).and_return('foobar')
 
+                allow(@uploader).to receive(:fog_credentials).and_return(@uploader.fog_credentials.merge(region: region))
+
+                expect(@fog_file.public_url).to include("https://#{expected_host}/")
+              end
+            end
+          end
+
+          context 'when the directory is a valid subdomain and :fog_aws_fips' do
+            {
+              'us-east-1'    => 'foobar.s3-fips.us-east-1.amazonaws.com',
+              'us-east-2'    => 'foobar.s3-fips.us-east-2.amazonaws.com',
+              'eu-central-1' => 'foobar.s3-fips.eu-central-1.amazonaws.com', # Carrierwave shouldn't know which regions are FIPS-capable
+              'us-gov-west-1' => 'foobar.s3-fips.us-gov-west-1.amazonaws.com'
+            }.each do |region, expected_host|
+              it "should use a #{expected_host} hostname when using path style for access #{region} region" do
+                allow(@uploader).to receive(:fog_use_ssl_for_aws).and_return(true)
+                allow(@uploader).to receive(:fog_directory).and_return('foobar')
+                allow(@uploader).to receive(:fog_aws_fips).and_return(true)
                 allow(@uploader).to receive(:fog_credentials).and_return(@uploader.fog_credentials.merge(region: region))
 
                 expect(@fog_file.public_url).to include("https://#{expected_host}/")
