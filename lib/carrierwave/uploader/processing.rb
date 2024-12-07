@@ -70,6 +70,9 @@ module CarrierWave
             if processor == :convert
               # Treat :convert specially, since it should trigger the file extension change
               force_extension processor_args
+              if condition
+                warn "Use of 'process convert: format' with conditionals has an issue and doesn't work correctly. See https://github.com/carrierwaveuploader/carrierwave/issues/2723 for details. "
+              end
             end
           end
         end
