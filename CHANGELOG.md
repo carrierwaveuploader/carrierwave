@@ -5,6 +5,21 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 3.1.0.rc - 2024-12-07
+
+### Added
+* Support for AWS S3 FIPS endpoints (@matt-domsch-sp [#2763](https://github.com/carrierwaveuploader/carrierwave/pull/2763), [04bfab3](https://github.com/carrierwaveuploader/carrierwave/commit/04bfab3f00b8290965e72fd944a8beb0477c5e8e), [#2762](https://github.com/carrierwaveuploader/carrierwave/issues/2762))
+* Add CarrierWave::Storage::Fog::File#empty? (@mshibuya [2d1af56](https://github.com/carrierwaveuploader/carrierwave/commit/2d1af56cd798da65b16b2285f67ef049f0af8c35), [#1926](https://github.com/carrierwaveuploader/carrierwave/issues/1926))
+
+### Changed
+* Show warning when conditionals are used with :convert (@mshibuya [fb287f3](https://github.com/carrierwaveuploader/carrierwave/commit/fb287f326eb6d4e759f56ec1f008c957466b0331), [#2723](https://github.com/carrierwaveuploader/carrierwave/issues/2723))
+* Rename #version_exists? to #version_active?, to reduce confusion (@mshibuya [21ca90a](https://github.com/carrierwaveuploader/carrierwave/commit/21ca90a1b0ecfd5a10b82af43c03bee6bedf2801), [#1926](https://github.com/carrierwaveuploader/carrierwave/issues/1926))
+
+### Fixed
+* Fix incompatibility with MiniMagick >= 5.0 (@mshibuya [a60d8d8](https://github.com/carrierwaveuploader/carrierwave/commit/a60d8d8a33bc2aa6b0ff09c745def6b8e1a892e9), [#2761](https://github.com/carrierwaveuploader/carrierwave/issues/2761))
+* Fix incompatibility with uri gem >= 1.0 (@ollym [#2760](https://github.com/carrierwaveuploader/carrierwave/pull/2760), [#2759](https://github.com/carrierwaveuploader/carrierwave/issues/2759))
+* Clear download errors on reassigning remote urls (@mshibuya [bb8c6e1](https://github.com/carrierwaveuploader/carrierwave/commit/bb8c6e1f9eccae8650c70ab46ca487ec878cda0b), [#2725](https://github.com/carrierwaveuploader/carrierwave/issues/2725))
+
 ## 3.1.0.beta - 2024-09-01
 
 ### Added
