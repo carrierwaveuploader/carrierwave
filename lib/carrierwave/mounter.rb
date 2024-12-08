@@ -66,7 +66,11 @@ module CarrierWave
     def uploaders
       @uploaders ||= read_identifiers.map do |identifier|
         uploader = blank_uploader
-        uploader.retrieve_from_store!(identifier)
+
+        # Assign the identifier to the uploader here,
+        # instead of forcing the uploader to make a round-trip
+        # to the store if we already have the identifier.
+        uploader.identifier = identifier
         uploader
       end
     end
