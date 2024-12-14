@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 3.1.0 - 2024-12-14
+
+_No changes._
+
 ## 3.1.0.rc - 2024-12-07
 
 ### Added
