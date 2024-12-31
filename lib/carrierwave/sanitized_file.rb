@@ -129,22 +129,33 @@ module CarrierWave
     # [String] contents of the file
     #
     def read(*args)
-      if @content
-        if args.empty?
+      if args.empty?
+        if @content
           @content
+        elsif is_path?
+          File.open(@file, "rb") {|file| file.read }
         else
-          length, outbuf = args
-          raise ArgumentError, "outbuf argument not supported since the content is already loaded" if outbuf
-          @content[0, length]
+          @file.try(:rewind)
+          @content = @file.read
+          @file.try(:close) unless @file.class.ancestors.include?(::StringIO) || @file.try(:closed?)
+          @content
         end
-      elsif is_path?
-        File.open(@file, "rb") {|file| file.read(*args)}
       else
-        @file.try(:rewind)
-        @content = @file.read(*args)
-        @file.try(:close) unless @file.class.ancestors.include?(::StringIO) || @file.try(:closed?)
-        @content
+        if is_path?
+          @file = File.open(path, "rb")
+        elsif @file.is_a?(CarrierWave::Uploader::Base)
+          @file = StringIO.new(@file.read)
+        end
+
+        @file.read(*args)
       end
+    end
+
+    ##
+    # Rewinds the underlying file.
+    #
+    def rewind
+      @file.rewind if @file.respond_to?(:rewind)
     end
 
     ##

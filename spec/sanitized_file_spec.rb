@@ -407,7 +407,22 @@ describe CarrierWave::SanitizedFile do
       end
 
       it "always reads from the file if arguments are given" do
-        sanitized_file.read
+        sanitized_file.read(0)
+        expect(sanitized_file.file).to receive(:read).with(4).and_call_original
+        expect(sanitized_file.read(4)).to eq("this")
+      end
+
+      it "properly emulates the behavior of IO#read" do
+        expect(sanitized_file.read(4)).to eq("this")
+        expect(sanitized_file.read(10)).to eq(" is stuff")
+        expect(sanitized_file.read(1)).to be_nil
+      end
+    end
+
+    describe "#rewind" do
+      it "rewinds the underlying file" do
+        sanitized_file.read(5)
+        sanitized_file.rewind
         expect(sanitized_file.read(4)).to eq("this")
       end
     end
