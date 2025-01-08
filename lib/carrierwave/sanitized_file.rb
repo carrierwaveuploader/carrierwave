@@ -312,7 +312,7 @@ module CarrierWave
       name = name.gsub(sanitize_regexp, "_")
       name = "_#{name}" if name =~ /\A\.+\z/
       name = "unnamed" if name.size.zero?
-      name.mb_chars.to_s
+      name.to_s
     end
 
     def declared_content_type
