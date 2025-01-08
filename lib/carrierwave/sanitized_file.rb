@@ -1,5 +1,4 @@
 require 'pathname'
-require 'active_support/core_ext/string/multibyte'
 require 'marcel'
 
 module CarrierWave
