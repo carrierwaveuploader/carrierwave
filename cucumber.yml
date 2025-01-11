@@ -1,2 +1,2 @@
-default: --format pretty --no-source
+default: --format pretty --no-source --publish-quiet
 html: --format html --out features.html
