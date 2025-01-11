@@ -2181,6 +2181,30 @@ describe CarrierWave::ActiveRecord do
       end
     end
 
+    context 'when #write_uploader is overridden in the model' do
+      before do
+        Event.class_eval do
+          attribute :called_write_uploader_with, :json, default: {}
+          def write_uploader(*args)
+            self.called_write_uploader_with[args] ||= 0
+            self.called_write_uploader_with[args] += 1
+            write_attribute(*args)
+          end
+        end
+        @event = Event.new
+      end
+
+      it "clears previous attribute value to prevent unintended deduplication" do
+        @event.image = stub_file('test.jpeg')
+        @event.save
+        new_event = @event.dup
+        new_event.save
+
+        expect(new_event.called_write_uploader_with[[:image, nil].to_s]).to eq 1
+        expect(new_event.image.url).to eq '/uploads/test.jpeg'
+      end
+    end
+
     context ':mount_on in options' do
       before { Event.mount_uploader(:image_v2, @uploader, mount_on: :image) }
       it do
