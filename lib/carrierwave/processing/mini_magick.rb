@@ -293,7 +293,7 @@ module CarrierWave
 
       ::MiniMagick::Image.new(current_path).identify
     rescue ::MiniMagick::Error, ::MiniMagick::Invalid => e
-      raise e if e.message =~ /(You must have .+ installed|is not installed|executable not found)/
+      raise e if e.message =~ /(You must have .+ installed|is not installed|executable not found|delegate failed)/
       message = I18n.translate(:"errors.messages.processing_error")
       raise CarrierWave::ProcessingError, message
     ensure
