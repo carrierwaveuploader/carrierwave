@@ -217,7 +217,7 @@ module CarrierWave
             config.base_path = CarrierWave.base_path
             config.enable_processing = true
             config.ensure_multipart_form = true
-            config.download_retry_count = 0
+            config.download_retry_count = 3
             config.download_retry_wait_time = 5
             config.skip_ssrf_protection = false
           end
