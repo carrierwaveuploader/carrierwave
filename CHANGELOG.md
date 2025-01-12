@@ -5,6 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 3.1.1 - 2025-01-12
+
+### Fixed
+* Stop calling #mb_chars, as it is no longer necessary (@chaadow [#2773](https://github.com/carrierwaveuploader/carrierwave/pull/2773))
+* Fix to raise error when imagemagick is missing on Alpine >= 3.19 (@danwilliams-fl [#2772](https://github.com/carrierwaveuploader/carrierwave/pull/2772))
+* Fix #dup with custom serialisation (@nassim-platogo [#2771](https://github.com/carrierwaveuploader/carrierwave/pull/2771))
+* Fix SanitizedFile#read to behave in the same way with IO#read with arguments (@mshibuya [9eace1c](https://github.com/carrierwaveuploader/carrierwave/commit/9eace1c7625808565baeb72a52ec293589b62dfe), [#2770](https://github.com/carrierwaveuploader/carrierwave/issues/2770))
+
 ## 3.1.0 - 2024-12-14
 
 _No changes._
