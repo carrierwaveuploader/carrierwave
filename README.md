@@ -5,8 +5,6 @@ It works well with Rack based web applications, such as Ruby on Rails.
 
 [![Build Status](https://github.com/carrierwaveuploader/carrierwave/workflows/Test/badge.svg)](https://github.com/carrierwaveuploader/carrierwave/actions)
 [![Code Climate](https://codeclimate.com/github/carrierwaveuploader/carrierwave.svg)](https://codeclimate.com/github/carrierwaveuploader/carrierwave)
-[![SemVer](https://api.dependabot.com/badges/compatibility_score?dependency-name=carrierwave&package-manager=bundler&version-scheme=semver)](https://dependabot.com/compatibility-score.html?dependency-name=carrierwave&package-manager=bundler&version-scheme=semver)
-
 
 ## Information
 
