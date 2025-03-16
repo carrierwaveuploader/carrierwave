@@ -168,6 +168,7 @@ module CarrierWave
     end
 
     def remove=(value)
+      uploaders # Ensure that uploaders are initialized based on the current value
       @remove = value
       write_temporary_identifier
     end
@@ -220,7 +221,7 @@ module CarrierWave
     end
 
     def clear_unstaged
-      @uploaders ||= []
+      uploaders # Ensure that uploaders are initialized based on the current value
       staged, unstaged = @uploaders.partition(&:staged)
       @uploaders = staged
       @removed_uploaders += unstaged

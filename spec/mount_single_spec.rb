@@ -304,6 +304,12 @@ describe CarrierWave::Mount do
         @instance.image_cache = ''
         expect(@instance.image.current_path).to match(/test.jpg$/)
       end
+
+      it "marks the previously uploaded file as removed" do
+        allow(@instance).to receive(:read_uploader).and_return('bork.txt')
+        @instance.image_cache = '1369894322-123-0123-1234/test.jpg'
+        expect(@instance.send(:_mounter, :image).instance_variable_get(:@removed_uploaders).map(&:identifier)).to eq ['bork.txt']
+      end
     end
 
     describe "#remote_image_url" do
@@ -384,6 +390,12 @@ describe CarrierWave::Mount do
 
         expect(@instance.remote_image_url).to be_nil
       end
+
+      it "marks the previously uploaded file as removed" do
+        allow(@instance).to receive(:read_uploader).and_return('bork.txt')
+        @instance.remote_image_url = "http://www.example.com/test.jpg"
+        expect(@instance.send(:_mounter, :image).instance_variable_get(:@removed_uploaders).map(&:identifier)).to eq ['bork.txt']
+      end
     end
 
     describe '#store_image!' do
@@ -450,6 +462,17 @@ describe CarrierWave::Mount do
         expect(@instance.remove_image).to be_truthy
       end
 
+    end
+
+    describe '#remove_image=' do
+      it "marks the previously uploaded file as removed" do
+        @attribute = 'bork.txt'
+        allow(@instance).to receive(:read_uploader) { @attribute }
+        allow(@instance).to receive(:write_uploader) { |_, value| @attribute = value }
+        @instance.remove_image = true
+        @instance.write_image_identifier
+        expect(@instance.send(:_mounter, :image).instance_variable_get(:@removed_uploaders).map(&:identifier)).to eq ['bork.txt']
+      end
     end
 
     describe '#remove_image?' do
