@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'open3'
 
 describe CarrierWave::MiniMagick do
   let(:klass) { Class.new(CarrierWave::Uploader::Base) { include CarrierWave::MiniMagick } }
@@ -270,8 +271,7 @@ describe CarrierWave::MiniMagick do
 
     context "of failing to find ImageMagick/GraphicsMagick" do
       before do
-        MiniMagick.remove_instance_variable(:@processor) if MiniMagick.instance_variable_defined?(:@processor)
-        MiniMagick.remove_instance_variable(:@cli) if MiniMagick.instance_variable_defined?(:@cli)
+        allow(MiniMagick).to receive(:cli_prefix).and_return('invalid')
         allow(MiniMagick::Utilities).to receive(:which).and_return(nil)
       end
 
@@ -283,6 +283,7 @@ describe CarrierWave::MiniMagick do
     context "of being configured to use ImageMagick but failing to execute" do
       before do
         allow(MiniMagick).to receive(:processor).and_return(:magick)
+        allow(Open3).to receive(:capture3).and_raise(Errno::ENOENT)
         allow_any_instance_of(MiniMagick::Shell).to receive(:execute_open3).and_raise(Errno::ENOENT)
       end
 
@@ -293,6 +294,11 @@ describe CarrierWave::MiniMagick do
   end
 
   describe "#manipulate!" do
+    let(:minimagick_error) do
+      # MiniMagick >= 5.0 does not call #validate! on Image.create, hence the error changes
+      MiniMagick::VERSION::MAJOR >= 5 ? MiniMagick::Error : MiniMagick::Invalid
+    end
+
     it "performs manipulation using the given block" do
       instance.manipulate! do |image|
         image.format('png')
@@ -310,8 +316,7 @@ describe CarrierWave::MiniMagick do
 
     context "on failing to find ImageMagick/GraphicsMagick" do
       before do
-        MiniMagick.remove_instance_variable(:@processor) if MiniMagick.instance_variable_defined?(:@processor)
-        MiniMagick.remove_instance_variable(:@cli) if MiniMagick.instance_variable_defined?(:@cli)
+        allow(MiniMagick).to receive(:cli_prefix).and_return('invalid')
         allow(MiniMagick::Utilities).to receive(:which).and_return(nil)
       end
 
@@ -320,23 +325,24 @@ describe CarrierWave::MiniMagick do
           instance.manipulate! do |image|
             image.format('png')
           end
-        end.to raise_exception(MiniMagick::Invalid)
+        end.to raise_exception(minimagick_error)
       end
     end
 
     context "on being configured to use ImageMagick but failing to execute" do
       before do
         allow(MiniMagick).to receive(:processor).and_return(:magick)
+        allow(Open3).to receive(:capture3).and_raise(Errno::ENOENT)
         allow_any_instance_of(MiniMagick::Shell).to receive(:execute_open3).and_raise(Errno::ENOENT)
       end
-      after { MiniMagick.remove_instance_variable(:@processor) }
+      after { MiniMagick.remove_instance_variable(:@processor) if MiniMagick.instance_variable_defined?(:@processor) }
 
       it "raises MiniMagick::Invalid" do
         expect do
           instance.manipulate! do |image|
             image.format('png')
           end
-        end.to raise_exception(MiniMagick::Invalid)
+        end.to raise_exception(minimagick_error)
       end
     end
   end
