@@ -541,6 +541,15 @@ describe CarrierWave::Mount do
           expect(instance.images[0].current_path).to match(/test.jpg$/)
         end
       end
+
+      context "when a file is already stored" do
+        before { allow(instance).to receive(:read_uploader).and_return(['bork.txt']) }
+
+        it "marks the previously uploaded file as removed" do
+          instance.images_cache = ['1369894322-123-0123-1234/test.jpg'].to_json
+          expect(instance.send(:_mounter, :images).instance_variable_get(:@removed_uploaders).map(&:identifier)).to eq ['bork.txt']
+        end
+      end
     end
 
     describe "#remote_images_urls" do
@@ -565,17 +574,16 @@ describe CarrierWave::Mount do
       before do
         stub_request(:get, "http://www.example.com/#{test_file_name}").to_return(body: File.read(test_file_stub))
         stub_request(:get, "http://www.example.com/test.txt").to_return(status: 404)
-        instance.remote_images_urls = remote_images_url
       end
 
       context "does nothing when nil is assigned" do
-        let(:remote_images_url) { nil }
+        before { instance.remote_images_urls = nil }
 
         it { is_expected.to be_empty }
       end
 
       context "does nothing when an empty string is assigned" do
-        let(:remote_images_url) { '' }
+        before { instance.remote_images_urls = '' }
 
         it { is_expected.to be_empty }
       end
@@ -583,7 +591,7 @@ describe CarrierWave::Mount do
       context "retrieves from cache when a cache name is assigned" do
         subject { images[0].current_path }
 
-        let(:remote_images_url) { ["http://www.example.com/test.jpg"] }
+        before { instance.remote_images_urls = ["http://www.example.com/test.jpg"] }
 
         it { is_expected.to match(/test.jpg$/) }
 
@@ -595,12 +603,10 @@ describe CarrierWave::Mount do
       context "writes over a previously stored file" do
         subject { images[0].current_path }
 
-        let(:remote_images_url) { ["http://www.example.com/test.jpg"] }
-
         before do
           instance.images = [stub_file("portrait.jpg")]
           instance.store_images!
-          instance.remote_images_urls = remote_images_url
+          instance.remote_images_urls = ["http://www.example.com/test.jpg"]
         end
 
         it { is_expected.to match(/test.jpg$/) }
@@ -609,11 +615,9 @@ describe CarrierWave::Mount do
       context "does not write over a previously assigned file" do
         subject { images[0].current_path }
 
-        let(:remote_images_url) { ["http://www.example.com/test.jpg"] }
-
         before do
           instance.images = [stub_file("portrait.jpg")]
-          instance.remote_images_urls = remote_images_url
+          instance.remote_images_urls = ["http://www.example.com/test.jpg"]
         end
 
         it { is_expected.to match(/portrait.jpg$/) }
@@ -622,12 +626,10 @@ describe CarrierWave::Mount do
       context "when an empty string is assigned" do
         subject { images[0].current_path }
 
-        let(:remote_images_url) { [""] }
-
         before do
           instance.images = [stub_file("portrait.jpg")]
           instance.store_images!
-          instance.remote_images_urls = remote_images_url
+          instance.remote_images_urls = [""]
         end
 
         it "does not write over a previously stored file" do
@@ -636,7 +638,7 @@ describe CarrierWave::Mount do
       end
 
       context "if a file fails to be downloaded" do
-        let(:remote_images_url) { ["http://www.example.com/test.txt", "http://www.example.com/test.jpg"] }
+        before { instance.remote_images_urls = ["http://www.example.com/test.txt", "http://www.example.com/test.jpg"] }
 
         it "keeps files which was downloaded successfully" do
           expect(instance.images.map(&:identifier)).to eq ['test.jpg']
@@ -645,13 +647,24 @@ describe CarrierWave::Mount do
 
       context "clears the unsaved remote urls when nil is assigned" do
         subject { instance.remote_images_urls }
-        let(:remote_images_url) { ['invalid'] }
+        before { instance.remote_images_urls = ['invalid'] }
 
         before do
           instance.remote_images_urls = nil
         end
 
         it { is_expected.to be_empty }
+      end
+
+      context "when a file is already stored" do
+        before do
+          allow(instance).to receive(:read_uploader).and_return(['bork.txt'])
+          instance.remote_images_urls = ["http://www.example.com/test.jpg"]
+        end
+
+        it "marks the previously uploaded file as removed" do
+          expect(instance.send(:_mounter, :images).instance_variable_get(:@removed_uploaders).map(&:identifier)).to eq ['bork.txt']
+        end
       end
     end
 
@@ -713,6 +726,22 @@ describe CarrierWave::Mount do
 
       it "stores a value" do
         expect(instance.remove_images).to be_truthy
+      end
+    end
+
+    describe '#remove_images=' do
+      context "when a file is already stored" do
+        before do
+          attribute = ['bork.txt']
+          allow(instance).to receive(:read_uploader) { attribute }
+          allow(instance).to receive(:write_uploader) { |_, value| attribute.replace(value || []) }
+        end
+
+        it "marks the previously uploaded file as removed" do
+          instance.remove_images = true
+          instance.write_images_identifier
+          expect(instance.send(:_mounter, :images).instance_variable_get(:@removed_uploaders).map(&:identifier)).to eq ['bork.txt']
+        end
       end
     end
 

@@ -548,6 +548,37 @@ describe CarrierWave::ActiveRecord do
           @event.remove_image?
         }.from(true).to(false)
       end
+
+      it "should remove the existing image file" do
+        # Use another instance to simulate the real use case
+        @another = Event.find(@event.id)
+        @another.remove_image = true
+        @another.save!
+        expect(@event.image.file).not_to exist
+      end
+    end
+
+    describe "image_cache=" do
+      let(:cache_id) { Event.new(image: stub_file('test.jpg')).image_cache }
+
+      before do
+      end
+
+      it "sets the cached image" do
+        @event.image_cache = cache_id
+        @event.save!
+        expect(@event.image.to_s).to eq '/uploads/test.jpg'
+      end
+
+      it "removes the previous image file on save" do
+        @event.image = stub_file('test.jpeg')
+        @event.save!
+        # Use another instance to simulate the real use case
+        @another = Event.find(@event.id)
+        @another.image_cache = cache_id
+        @another.save!
+        expect(@event.image.file).not_to exist
+      end
     end
 
     describe "#remote_image_url=" do
@@ -573,6 +604,16 @@ describe CarrierWave::ActiveRecord do
         @event.remote_image_url = 'http://www.example.com/test.jpg'
         expect(@event).to be_valid
         expect(@event.errors).to be_empty
+      end
+
+      it "should remove the existing image" do
+        @event.image = stub_file('test.jpeg')
+        @event.save!
+        # Use another instance to simulate the real use case
+        @another = Event.find(@event.id)
+        @another.remote_image_url = 'http://www.example.com/test.jpg'
+        @another.save!
+        expect(@event.image.file).not_to exist
       end
 
       context 'when validating download' do
@@ -1567,6 +1608,37 @@ describe CarrierWave::ActiveRecord do
           @event.remove_images?
         }.from(true).to(false)
       end
+
+      it "should remove the existing image file" do
+        # Use another instance to simulate the real use case
+        @another = Event.find(@event.id)
+        @another.remove_images = true
+        @another.save!
+        expect(@event.images.first.file).not_to exist
+      end
+    end
+
+    describe "images_cache=" do
+      let(:cache_id) { Event.new(images: [stub_file('test.jpg')]).images_cache }
+
+      before do
+      end
+
+      it "sets the cached image" do
+        @event.images_cache = cache_id
+        @event.save!
+        expect(@event.images.first.to_s).to eq '/uploads/test.jpg'
+      end
+
+      it "removes the previous image file on save" do
+        @event.images = [stub_file('test.jpeg')]
+        @event.save!
+        # Use another instance to simulate the real use case
+        @another = Event.find(@event.id)
+        @another.images_cache = cache_id
+        @another.save!
+        expect(@event.images.first.file).not_to exist
+      end
     end
 
     describe "#remote_images_urls=" do
@@ -1592,6 +1664,16 @@ describe CarrierWave::ActiveRecord do
         @event.remote_images_urls = ['http://www.example.com/test.jpg']
         expect(@event).to be_valid
         expect(@event.errors).to be_empty
+      end
+
+      it "should remove the existing image" do
+        @event.images = [stub_file('test.jpeg')]
+        @event.save!
+        # Use another instance to simulate the real use case
+        @another = Event.find(@event.id)
+        @another.remote_images_urls = ['http://www.example.com/test.jpg']
+        @another.save!
+        expect(@event.images.first.file).not_to exist
       end
 
       context 'when validating download' do
