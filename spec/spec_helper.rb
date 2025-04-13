@@ -166,6 +166,7 @@ RSpec.configure do |config|
   config.around :each, :with_retry do |example|
     example.run_with_retry retry: 2
   end
+  config.example_status_persistence_file_path = "tmp/failures.txt"
   config.retry_callback = proc do |example|
     sleep 1
   end
