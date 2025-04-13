@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 3.1.2 - 2025-04-13
+
+### Fixed
+* Fix failing to remove existing files on updating by `#remove_#{column}=`, `##{column}_cache=`, and `#remote_#{column}_url=` (@mshibuya [7b2ce50](https://github.com/carrierwaveuploader/carrierwave/commit/7b2ce502c5027cc700ed36a5728a945922d9367e), [#2778](https://github.com/carrierwaveuploader/carrierwave/issues/2778), [#2779](https://github.com/carrierwaveuploader/carrierwave/issues/2779))
+
 ## 3.1.1 - 2025-01-12
 
 ### Fixed
