@@ -33,7 +33,7 @@ jobs:
           - ruby: jruby-head
             gemfile: gemfiles/rails-6-0.gemfile
             experimental: false
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     services:
       postgres:
         image: postgres:11
@@ -61,10 +61,10 @@ jobs:
         key: ${{ runner.os }}-gems-${{ matrix.ruby }}-${{ hashFiles(matrix.gemfile) }}
         restore-keys: |
           ${{ runner.os }}-gems-${{ matrix.ruby }}-
-    - name: Setup ImageMagick policy
-      run: sudo sh -c 'echo '\''<policymap><policy domain="coder" rights="read|write" pattern="PDF" /></policymap>'\'' > /etc/ImageMagick-6/policy.xml'
     - name: Update package list
       run: sudo apt update
+    - name: Install ImageMagick and setup policy
+      run: sudo apt-get install imagemagick && sudo sh -c 'echo '\''<policymap><policy domain="coder" rights="read|write" pattern="PDF" /></policymap>'\'' > /etc/ImageMagick-6/policy.xml'
     - name: Install ghostscript to process PDF
       run: sudo apt-get -y install ghostscript
     - name: Install libvips-dev for Carrierwave::Vips
