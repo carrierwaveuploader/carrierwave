@@ -45,7 +45,7 @@ jobs:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
       JRUBY_OPTS: --debug
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: Update package list
       run: sudo apt update
     - name: Install ImageMagick and setup policy
@@ -68,7 +68,7 @@ jobs:
     name: RuboCop
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install ImageMagick to build RMagick
         run: sudo apt-get install libmagickwand-dev
       - name: Set up Ruby
