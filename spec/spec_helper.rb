@@ -113,7 +113,7 @@ module CarrierWave
 
     module ManipulationHelpers
       def color_of_pixel(path, x, y)
-        convert = ::MiniMagick::Tool::Convert.new
+        convert = ::MiniMagick::Tool.new('convert')
         convert << path
         convert.crop("1x1+#{x}+#{y}")
         convert.depth(8)

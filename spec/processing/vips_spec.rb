@@ -26,7 +26,7 @@ describe CarrierWave::Vips do
     it "respects the page parameter" do
       # create a multi-layer image
       tiff = Tempfile.new(["file", ".tiff"])
-      MiniMagick::Tool::Convert.new do |convert|
+      MiniMagick::Tool.new('convert') do |convert|
         convert.merge! [landscape_file_path, landscape_file_path, landscape_file_path]
         convert << tiff.path
       end
@@ -58,12 +58,12 @@ describe CarrierWave::Vips do
     end
 
     it "scales up the image if it smaller than the given dimensions" do
-      expect(::MiniMagick::Tool::Identify.new.verbose(instance.current_path).call).to_not include('Quality: 70')
+      expect(::MiniMagick::Tool.new('identify').verbose(instance.current_path).call).to_not include('Quality: 70')
 
       instance.resize_to_fill(1000, 1000, combine_options: { saver: { quality: 70 } })
 
       expect(instance).to have_dimensions(1000, 1000)
-      expect(::MiniMagick::Tool::Identify.new.verbose(instance.current_path).call).to include('Quality: 70')
+      expect(::MiniMagick::Tool.new('identify').verbose(instance.current_path).call).to include('Quality: 70')
     end
   end
 
@@ -116,21 +116,21 @@ describe CarrierWave::Vips do
     end
 
     it 'accepts combine_options and set quality' do
-      expect(::MiniMagick::Tool::Identify.new.verbose(instance.current_path).call).to_not include('Quality: 70')
+      expect(::MiniMagick::Tool.new('identify').verbose(instance.current_path).call).to_not include('Quality: 70')
 
       instance.resize_and_pad(1000, 1000, combine_options: { saver: { quality: 70 } })
 
       expect(instance).to have_dimensions(1000, 1000)
-      expect(::MiniMagick::Tool::Identify.new.verbose(instance.current_path).call).to include('Quality: 70')
+      expect(::MiniMagick::Tool.new('identify').verbose(instance.current_path).call).to include('Quality: 70')
     end
 
     it 'accepts non-argument option as combine_options' do
-      expect(::MiniMagick::Tool::Identify.new.verbose(instance.current_path).call).to include('exif:ColorSpace: 1')
+      expect(::MiniMagick::Tool.new('identify').verbose(instance.current_path).call).to include('exif:ColorSpace: 1')
 
       instance.resize_and_pad(1000, 1000, combine_options: { saver: { strip: true } })
 
       expect(instance).to have_dimensions(1000, 1000)
-      expect(::MiniMagick::Tool::Identify.new.verbose(instance.current_path).call).to_not include('exif:ColorSpace: 1')
+      expect(::MiniMagick::Tool.new('identify').verbose(instance.current_path).call).to_not include('exif:ColorSpace: 1')
     end
   end
 
@@ -152,24 +152,24 @@ describe CarrierWave::Vips do
     end
 
     it 'scales up the image if it smaller than the given dimensions and set quality' do
-      expect(::MiniMagick::Tool::Identify.new.verbose(instance.current_path).call).to_not include('Quality: 70')
+      expect(::MiniMagick::Tool.new('identify').verbose(instance.current_path).call).to_not include('Quality: 70')
 
       instance.resize_to_fit(1000, 1000, combine_options: { saver: { quality: 70} })
 
       expect(instance).to have_dimensions(1000, 750)
-      expect(::MiniMagick::Tool::Identify.new.verbose(instance.current_path).call).to include('Quality: 70')
+      expect(::MiniMagick::Tool.new('identify').verbose(instance.current_path).call).to include('Quality: 70')
     end
   end
 
   describe '#resize_to_limit' do
     it 'resizes the image to fit within the given dimensions, maintain file type and set quality' do
-      expect(::MiniMagick::Tool::Identify.new.verbose(instance.current_path).call).to_not include('Quality: 70')
+      expect(::MiniMagick::Tool.new('identify').verbose(instance.current_path).call).to_not include('Quality: 70')
 
       instance.resize_to_limit(200, 200, combine_options: { saver: { quality: 70} })
 
       expect(instance).to have_dimensions(200, 150)
       expect(::Vips::Image.new_from_file(instance.current_path).get("vips-loader")).to match(/jpeg/)
-      expect(::MiniMagick::Tool::Identify.new.verbose(instance.current_path).call).to include('Quality: 70')
+      expect(::MiniMagick::Tool.new('identify').verbose(instance.current_path).call).to include('Quality: 70')
     end
 
     it "resizes the image to fit within the given dimensions and maintain updated file type" do
