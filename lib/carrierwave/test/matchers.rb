@@ -336,6 +336,8 @@ module CarrierWave
         def self.load_image(filename)
           if defined? ::MiniMagick
             MiniMagickWrapper.new(filename)
+          elsif defined? ::Vips
+            VipsWrapper.new(filename)
           else
             unless defined? ::Magick
               begin
@@ -390,6 +392,28 @@ module CarrierWave
 
         def initialize(filename)
           @image = ::MiniMagick::Image.open(filename)
+        end
+      end
+
+      class VipsWrapper # :nodoc:
+        attr_reader :image
+
+        def width
+          image.width
+        end
+
+        def height
+          image.height
+        end
+
+        def format
+          # This returns the name of the vips loader (e.g. pngload) as Vips
+          # doesn't do content detection.
+          image.get("vips-loader").delete_suffix("load")
+        end
+
+        def initialize(filename)
+          @image = ::Vips::Image.new_from_file(filename)
         end
       end
 
