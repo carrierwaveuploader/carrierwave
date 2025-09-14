@@ -4,7 +4,5 @@ gem "rails", "~> 7.1.0"
 gem "activemodel-serializers-xml"
 gem "sqlite3", "~> 1.0", platforms: :ruby
 gem "activerecord-jdbcsqlite3-adapter", platform: [:jruby, :truffleruby]
-# Until https://github.com/cucumber/cucumber-ruby/pull/1757 gets released
-gem "cucumber", github: "cucumber/cucumber-ruby" if RUBY_VERSION.to_f >= 3.4
 
 gemspec :path => "../"

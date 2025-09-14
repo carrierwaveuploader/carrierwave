@@ -9,7 +9,7 @@ jobs:
       fail-fast: false
       matrix:
         ruby: [ '2.7', '3.0', '3.1', '3.2', '3.3', '3.4' ]
-        gemfile: [ gemfiles/rails-7-1.gemfile ]
+        gemfile: [ gemfiles/rails-7-2.gemfile ]
         experimental: [ false ]
         include:
           - ruby: '2.5'
@@ -22,22 +22,22 @@ jobs:
             gemfile: gemfiles/rails-7-0.gemfile
             experimental: false
           - ruby: '3.3'
-            gemfile: gemfiles/rails-7-2.gemfile
+            gemfile: gemfiles/rails-7-1.gemfile
             experimental: false
-          - ruby: '3.3'
+          - ruby: '3.4'
             gemfile: gemfiles/rails-8-0.gemfile
             experimental: false
-          - ruby: '3.3'
+          - ruby: '3.4'
             gemfile: gemfiles/rails-main.gemfile
             experimental: false
           - ruby: ruby-head
             gemfile: gemfiles/rails-8-0.gemfile
             experimental: true
           - ruby: jruby
-            gemfile: gemfiles/rails-7-0.gemfile
+            gemfile: gemfiles/rails-7-1.gemfile
             experimental: false
           - ruby: jruby-head
-            gemfile: gemfiles/rails-7-0.gemfile
+            gemfile: gemfiles/rails-7-1.gemfile
             experimental: true
     runs-on: ubuntu-24.04
     continue-on-error: ${{ matrix.experimental }}
