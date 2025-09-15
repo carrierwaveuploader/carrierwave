@@ -3,6 +3,7 @@ module CarrierWave
     module Mountable
 
       attr_reader :model, :mounted_as
+      attr_writer :identifier
 
       ##
       # If a model is given as the first parameter, it will be stored in the

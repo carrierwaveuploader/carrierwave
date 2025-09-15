@@ -8,6 +8,8 @@ module CarrierWave
       include CarrierWave::Uploader::Cache
 
       included do
+        attr_accessor :retrieval_retry_count
+
         prepend Module.new {
           def initialize(*)
             super
@@ -107,6 +109,22 @@ module CarrierWave
         end
       end
 
+      # Attempt to retrieve the file from the store
+      # if the file is nil, but to avoid calling this
+      # over and over if retrieving it returns nil,
+      # we keep track of the number of times we've
+      # attempted to retrieve it and just return nil
+      # if we exceed the maximum number of retries
+      #
+      # === Returns
+      #
+      # [CarrierWave::SanitizedFile, nil] the stored file or nil
+      def file
+        return @file unless @identifier
+        retrieve_from_store!(@identifier) unless @file
+        @file
+      end
+
       ##
       # Retrieves the file from the storage.
       #
@@ -114,10 +132,18 @@ module CarrierWave
       #
       # [identifier (String)] uniquely identifies the file to retrieve
       #
-      def retrieve_from_store!(identifier)
-        with_callbacks(:retrieve_from_store, identifier) do
-          @file = storage.retrieve!(identifier)
-          @identifier = identifier
+      def retrieve_from_store!(file_identifier)
+        self.retrieval_retry_count ||= 0
+        return if self.retrieval_retry_count > download_retry_count
+        self.retrieval_retry_count += 1
+        with_callbacks(:retrieve_from_store, file_identifier) do
+          # We can't retrieve the file if we have no identifier
+          # to retrieve it with. Identifier should be assigned
+          # when setting up the uploader, or when caching,
+          # or storing a new file
+          next unless file_identifier
+          @file = storage.retrieve!(file_identifier)
+          @identifier = file_identifier
         end
       end
 
