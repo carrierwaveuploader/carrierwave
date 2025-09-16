@@ -319,14 +319,17 @@ module CarrierWave
     #
     # [CarrierWave::ProcessingError] if processing failed.
     def minimagick!(block = nil)
-      builder = ImageProcessing::MiniMagick.source(current_path)
-      builder = yield(builder)
+      builder = ImageProcessing::MiniMagick.source(current_path).convert(content_type)
 
+      original_format = builder.options[:format]
+      builder = yield(builder)
+      new_format = builder.options[:format]
       result = builder.call
       result.close
 
       # backwards compatibility (we want to eventually move away from MiniMagick::Image)
       if block
+        # TODO: do we want to still support this, or remove it?
         image  = ::MiniMagick::Image.new(result.path, result)
         image  = block.call(image)
         result = image.instance_variable_get(:@tempfile)
@@ -334,7 +337,7 @@ module CarrierWave
 
       FileUtils.mv result.path, current_path
 
-      if File.extname(result.path) != File.extname(current_path)
+      if original_format != new_format
         move_to = current_path.chomp(File.extname(current_path)) + File.extname(result.path)
         file.content_type = Marcel::Magic.by_path(move_to).try(:type)
         file.move_to(move_to, permissions, directory_permissions)
