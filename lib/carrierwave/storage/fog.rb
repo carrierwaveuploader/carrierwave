@@ -257,7 +257,7 @@ module CarrierWave
         def delete
           # avoid a get by just using local reference
           directory.files.new(:key => path).destroy.tap do |result|
-            @file = nil if result
+            remove_instance_variable(:@file) if result && defined?(@file)
           end
         end
 
@@ -296,7 +296,7 @@ module CarrierWave
           return read_source_file if ::File.exist?(file_body.path)
 
           # If the source file doesn't exist, the remote content is read
-          @file = nil
+          remove_instance_variable(:@file) if defined?(@file)
           file.body
         end
 
@@ -512,7 +512,9 @@ module CarrierWave
         # [Fog::#{provider}::File] file data from remote service
         #
         def file
-          @file ||= directory.files.head(path)
+          return @file if defined?(@file)
+
+          @file = directory.files.head(path)
         end
 
         def copy_options
