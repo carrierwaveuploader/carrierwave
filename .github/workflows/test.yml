@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: [ '3.2', '3.3', '3.4' ]
+        ruby: [ '3.2', '3.3', '3.4', '4.0' ]
         gemfile: [ gemfiles/rails-8-0.gemfile ]
         experimental: [ false ]
         include:
@@ -28,6 +28,9 @@ jobs:
             gemfile: gemfiles/rails-7-2.gemfile
             experimental: false
           - ruby: '3.4'
+            gemfile: gemfiles/rails-main.gemfile
+            experimental: true
+          - ruby: '4.0'
             gemfile: gemfiles/rails-main.gemfile
             experimental: true
           - ruby: ruby-head
