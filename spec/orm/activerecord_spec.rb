@@ -2268,8 +2268,8 @@ describe CarrierWave::ActiveRecord do
         Event.class_eval do
           attribute :called_write_uploader_with, :json, default: {}
           def write_uploader(*args)
-            self.called_write_uploader_with[args] ||= 0
-            self.called_write_uploader_with[args] += 1
+            self.called_write_uploader_with[args.to_s] ||= 0
+            self.called_write_uploader_with[args.to_s] += 1
             write_attribute(*args)
           end
         end
