@@ -264,6 +264,38 @@ describe CarrierWave::Downloader::Base do
       uri = '~http:'
       expect { subject.process_uri(uri) }.to raise_error(CarrierWave::DownloadError)
     end
+
+    context "with Firebase Storage URLs" do
+      it "preserves %2F encoding in path for firebasestorage.googleapis.com" do
+        uri = 'https://firebasestorage.googleapis.com/v0/b/my-app.appspot.com/o/images%2Fsubfolder%2Fphoto.jpg?alt=media&token=abc123'
+        processed = subject.process_uri(uri)
+        expect(processed.path).to include('%2F')
+        expect(processed.path).not_to include('images/subfolder')
+        expect(processed.query).to include('alt=media')
+      end
+    end
+
+    context "with non-Firebase URLs" do
+      it "still decodes %2F for regular hosts" do
+        uri = 'http://example.com/path%2Fto%2Ffile.jpg'
+        processed = subject.process_uri(uri)
+        expect(processed.path).to eq('/path/to/file.jpg')
+      end
+    end
+  end
+
+  describe "#preserve_path_encoding?" do
+    it "returns true for firebasestorage.googleapis.com" do
+      expect(subject.preserve_path_encoding?('firebasestorage.googleapis.com')).to be true
+    end
+
+    it "returns false for regular hosts" do
+      expect(subject.preserve_path_encoding?('example.com')).to be false
+    end
+
+    it "returns false for nil host" do
+      expect(subject.preserve_path_encoding?(nil)).to be false
+    end
   end
 
   describe "#skip_ssrf_protection?" do

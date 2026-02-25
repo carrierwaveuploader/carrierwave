@@ -67,12 +67,41 @@ module CarrierWave
         uri = Addressable::URI.parse(source)
         uri.host = uri.normalized_host
         # Perform decode first, as the path is likely to be already encoded
-        uri.path = encode_path(decode_uri(uri.path)) if uri.path =~ CarrierWave::Utilities::Uri::PATH_UNSAFE
+        # Skip decode/encode for hosts that use encoded slashes as part of object identifiers (e.g. Firebase Storage)
+        if uri.path =~ CarrierWave::Utilities::Uri::PATH_UNSAFE && !preserve_path_encoding?(uri.host)
+          uri.path = encode_path(decode_uri(uri.path))
+        end
         uri.query = encode_non_ascii(uri.query) if uri.query
         uri.fragment = encode_non_ascii(uri.fragment) if uri.fragment
         URI.parse(uri.to_s)
       rescue URI::InvalidURIError, Addressable::URI::InvalidURIError
         raise CarrierWave::DownloadError, "couldn't parse URL: #{source}"
+      end
+
+      ##
+      # Returns true if the path encoding should be preserved for the given host.
+      # Override this method to add custom hosts that require preserved path encoding.
+      #
+      # Firebase Storage uses encoded slashes (%2F) as part of object identifiers.
+      # Decoding these breaks the URL.
+      #
+      # === Parameters
+      #
+      # [host (String)] The hostname from the URL
+      #
+      # === Examples
+      #
+      #     # To add additional hosts:
+      #     class MyDownloader < CarrierWave::Downloader::Base
+      #       def preserve_path_encoding?(host)
+      #         super || host == 'my-custom-storage.com'
+      #       end
+      #     end
+      #
+      def preserve_path_encoding?(host)
+        return false unless host
+
+        host.downcase == 'firebasestorage.googleapis.com'
       end
 
       ##
