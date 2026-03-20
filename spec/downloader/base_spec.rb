@@ -124,6 +124,19 @@ describe CarrierWave::Downloader::Base do
     end
   end
 
+  context "with a url that contains a plus sign in the path" do
+    let(:filename) { "my+test.jpg" }
+    let(:uri) { "http://www.example.com/#{filename}" }
+
+    before do
+      stub_request(:get, uri).to_return(body: file)
+    end
+
+    it "does not rewrite the plus sign before downloading" do
+      expect(subject.download(uri).file.read).to eq file
+    end
+  end
+
   context "with redirects" do
     let(:another_uri) { 'http://example.com/redirected.jpg' }
     before do
@@ -263,6 +276,48 @@ describe CarrierWave::Downloader::Base do
     it "throws an exception on bad uris" do
       uri = '~http:'
       expect { subject.process_uri(uri) }.to raise_error(CarrierWave::DownloadError)
+    end
+
+    it "preserves percent-encoded reserved characters in path" do
+      uri = 'http://example.com/path%2Fto/file.jpg'
+      processed = subject.process_uri(uri)
+      expect(processed.to_s).to eq(uri)
+    end
+
+    it "preserves percent-encoded plus signs in path" do
+      uri = 'http://example.com/file%2Bname.jpg'
+      processed = subject.process_uri(uri)
+      expect(processed.to_s).to eq(uri)
+    end
+
+    it "preserves literal plus signs in path" do
+      uri = 'http://example.com/file+name.jpg'
+      processed = subject.process_uri(uri)
+      expect(processed.to_s).to eq(uri)
+    end
+
+    it "preserves percent-encoded characters in presigned URLs" do
+      uri = 'https://d111111abcdef8.cloudfront.net/images%2Fphoto%2Balbum/image%2B1.jpg?Expires=1234567890&Signature=abc'
+      processed = subject.process_uri(uri)
+      expect(processed.to_s).to eq(uri)
+    end
+
+    it "encodes incomplete percent sequences" do
+      uri = 'http://example.com/file%ZZname.jpg'
+      processed = subject.process_uri(uri)
+      expect(processed.to_s).to eq('http://example.com/file%25ZZname.jpg')
+    end
+
+    it "preserves multiple plus signs in path" do
+      uri = 'http://example.com/a+b+c+d.jpg'
+      processed = subject.process_uri(uri)
+      expect(processed.to_s).to eq(uri)
+    end
+
+    it "encodes a trailing percent sign" do
+      uri = 'http://example.com/file%.jpg'
+      processed = subject.process_uri(uri)
+      expect(processed.to_s).to eq('http://example.com/file%25.jpg')
     end
   end
 

@@ -66,8 +66,7 @@ module CarrierWave
       def process_uri(source)
         uri = Addressable::URI.parse(source)
         uri.host = uri.normalized_host
-        # Perform decode first, as the path is likely to be already encoded
-        uri.path = encode_path(decode_uri(uri.path)) if uri.path =~ CarrierWave::Utilities::Uri::PATH_UNSAFE
+        uri.path = encode_path_preserving_encoding(uri.path, PATH_UNSAFE_WITH_PLUS) if uri.path =~ PATH_UNSAFE_WITH_PLUS
         uri.query = encode_non_ascii(uri.query) if uri.query
         uri.fragment = encode_non_ascii(uri.fragment) if uri.fragment
         URI.parse(uri.to_s)
