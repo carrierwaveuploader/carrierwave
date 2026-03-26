@@ -89,7 +89,7 @@ module CarrierWave
               raise CarrierWave::UnknownStorageError, "Unknown storage: #{storage}"
             end
           when nil
-            storage
+            # no-op, returns _storage below
           else
             self._storage = storage
           end
