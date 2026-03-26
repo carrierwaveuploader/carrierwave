@@ -12,6 +12,13 @@ module CarrierWave
     # [:fog_directory]    specifies name of directory to store data in, assumed to already exist
     #
     # [:fog_attributes]                   (optional) additional attributes to set on files
+    # [:fog_acl]                          (optional) overrides the ACL set on stored/copied files.
+    #   When nil (default), ACL is derived from fog_public (:public attribute passed to fog).
+    #   When false, no ACL is set at all (omits :public; use for buckets/containers with ACLs disabled).
+    #   When a String, used as the explicit ACL value: passed as x-amz-acl for AWS
+    #   (e.g. 'bucket-owner-full-control') or destination_predefined_acl for Google
+    #   (e.g. 'bucketOwnerFullControl'). For store operations, pair with fog_attributes to
+    #   set the provider-specific header.
     # [:fog_public]                       (optional) public readability, defaults to true
     # [:fog_authenticated_url_expiration] (optional) time (in seconds) that authenticated urls
     #   will be valid, when fog_public is false and provider is AWS or Google, defaults to 600
@@ -144,16 +151,18 @@ module CarrierWave
       end
 
       def clean_cache!(seconds)
-        connection.directories.new(
-          :key    => uploader.fog_directory,
-          :public => uploader.fog_public
-        ).files.all(:prefix => uploader.cache_dir).each do |file|
+        directory = connection.directories.new(fog_public_attrs.merge(:key => uploader.fog_directory))
+        directory.files.all(:prefix => uploader.cache_dir).each do |file|
           # generate_cache_id returns key formatted TIMEINT-PID(-COUNTER)-RND
           matched = file.key.match(/(\d+)-\d+-\d+(?:-\d+)?/)
           next unless matched
           time = Time.at(matched[1].to_i)
           file.destroy if time < (Time.now.utc - seconds)
         end
+      end
+
+      def fog_public_attrs
+        uploader.fog_acl.nil? ? { :public => uploader.fog_public } : {}
       end
 
       def connection
@@ -342,12 +351,11 @@ module CarrierWave
           else
             fog_file = new_file.to_file
             @content_type ||= new_file.content_type
-            @file = directory.files.create({
+            @file = directory.files.create(fog_public_attrs.merge(
               :body         => fog_file || new_file.read,
               :content_type => @content_type,
-              :key          => path,
-              :public       => @uploader.fog_public
-            }.merge(@uploader.fog_attributes))
+              :key          => path
+            ).merge(@uploader.fog_attributes))
             fog_file.close if fog_file && !fog_file.closed?
           end
           true
@@ -498,10 +506,7 @@ module CarrierWave
         # [Fog::#{provider}::Directory] containing directory
         #
         def directory
-          @directory ||= connection.directories.new(
-            :key    => @uploader.fog_directory,
-            :public => @uploader.fog_public
-          )
+          @directory ||= connection.directories.new(fog_public_attrs.merge(:key => @uploader.fog_directory))
         end
 
         ##
@@ -523,11 +528,19 @@ module CarrierWave
         end
 
         def acl_header
+          fog_acl = @uploader.fog_acl
+          return {} if fog_acl == false
+
           case fog_provider
           when 'AWS'
-            { 'x-amz-acl' => @uploader.fog_public ? 'public-read' : 'private' }
+            acl_value = fog_acl || (@uploader.fog_public ? 'public-read' : 'private')
+            { 'x-amz-acl' => acl_value }
           when "Google"
-            @uploader.fog_public ? { destination_predefined_acl: "publicRead" } : {}
+            if fog_acl
+              { destination_predefined_acl: fog_acl }
+            else
+              @uploader.fog_public ? { destination_predefined_acl: "publicRead" } : {}
+            end
           else
             {}
           end
@@ -535,6 +548,10 @@ module CarrierWave
 
         def fog_provider
           @uploader.fog_credentials[:provider].to_s
+        end
+
+        def fog_public_attrs
+          @uploader.fog_acl.nil? ? { :public => @uploader.fog_public } : {}
         end
 
         def read_source_file
