@@ -28,6 +28,7 @@ module CarrierWave
 
         # fog
         add_deprecated_config :fog_provider
+        add_config :fog_acl
         add_config :fog_attributes
         add_config :fog_credentials
         add_config :fog_directory
@@ -88,7 +89,7 @@ module CarrierWave
               raise CarrierWave::UnknownStorageError, "Unknown storage: #{storage}"
             end
           when nil
-            storage
+            # no-op, returns _storage below
           else
             self._storage = storage
           end

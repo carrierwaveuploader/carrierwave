@@ -755,6 +755,29 @@ shared_examples "Fog storage" do |fog_credentials|
 
           @fog_file.copy_to('uploads/new_path.jpg')
         end
+
+        context 'when fog_acl is false' do
+          before { allow(@uploader).to receive(:fog_acl).and_return(false) }
+
+          it 'returns an empty hash regardless of provider' do
+            expect(@fog_file.send(:acl_header)).to eq({})
+          end
+        end
+
+        context 'when fog_acl is a custom string' do
+          before { allow(@uploader).to receive(:fog_acl).and_return('custom-acl-value') }
+
+          it 'uses the custom value for AWS and Google, empty hash for other providers' do
+            case @provider
+            when 'AWS'
+              expect(@fog_file.send(:acl_header)).to eq({ 'x-amz-acl' => 'custom-acl-value' })
+            when 'Google'
+              expect(@fog_file.send(:acl_header)).to eq({ destination_predefined_acl: 'custom-acl-value' })
+            else
+              expect(@fog_file.send(:acl_header)).to eq({})
+            end
+          end
+        end
       end
 
       describe '#empty?' do
