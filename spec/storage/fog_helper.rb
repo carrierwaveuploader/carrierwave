@@ -780,6 +780,18 @@ shared_examples "Fog storage" do |fog_credentials|
           it "returns true" do
             expect(@fog_file.empty?).to be true
           end
+
+          context "when fog_emptiness_check_method is set to :local" do
+            before do
+              CarrierWave.configure do |config|
+                config.fog_emptiness_check_method = :local
+              end
+            end
+
+            it "returns false" do
+              expect(@fog_file.empty?).to be false
+            end
+          end
         end
       end
     end

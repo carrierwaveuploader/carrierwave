@@ -741,6 +741,14 @@ following lines
 config.fog_credentials = { ... } # Provider specific credentials
 ```
 
+## How Carrierwave checks file existance
+
+Before 3.10.0, if you tried to check file existance (i.e. `file?`, `present?`, or even `validate :file, presence: true`), Carrierwave was just checking identifier existance. After 3.10.0 it makes HEAD request to fog storage. If you want to use legacy method of existance recongnition, please set:
+
+```ruby
+config.fog_emptiness_check_method = :local # default is :remote
+```
+
 ## Using Amazon S3
 
 [Fog AWS](http://github.com/fog/fog-aws) is used to support Amazon S3. Ensure you have it in your Gemfile:

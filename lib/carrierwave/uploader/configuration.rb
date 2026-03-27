@@ -36,6 +36,7 @@ module CarrierWave
         add_config :fog_use_ssl_for_aws
         add_config :fog_aws_accelerate
         add_config :fog_aws_fips
+        add_config :fog_emptiness_check_method
 
         # Mounting
         add_config :ignore_integrity_errors
@@ -199,6 +200,7 @@ module CarrierWave
             config.fog_use_ssl_for_aws = true
             config.fog_aws_accelerate = false
             config.fog_aws_fips = false
+            config.fog_emptiness_check_method = :remote
             config.store_dir = 'uploads'
             config.cache_dir = 'uploads/tmp'
             config.delete_tmp_file_after_storage = true

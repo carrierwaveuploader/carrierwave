@@ -317,6 +317,8 @@ module CarrierWave
         # [Boolean] whether the file is non-existent or empty
         #
         def empty?
+          return path.blank? if CarrierWave::Uploader::Base.fog_emptiness_check_method == :local
+
           !exists? || size.zero?
         end
 
