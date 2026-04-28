@@ -33,12 +33,9 @@ jobs:
           - ruby: ruby-head
             gemfile: gemfiles/rails-8-0.gemfile
             experimental: false
-          - ruby: jruby
+          - ruby: jruby-10.0.5.0
             gemfile: gemfiles/rails-7-2.gemfile
             experimental: false
-          - ruby: jruby-head
-            gemfile: gemfiles/rails-7-2.gemfile
-            experimental: true
     runs-on: ubuntu-24.04
     continue-on-error: ${{ matrix.experimental }}
     env:
