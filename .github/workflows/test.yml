@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: [ '3.2', '3.3', '3.4' ]
+        ruby: [ '3.2', '3.3', '3.4', '4.0' ]
         gemfile: [ gemfiles/rails-8-0.gemfile ]
         experimental: [ false ]
         include:
@@ -27,7 +27,7 @@ jobs:
           - ruby: '3.1'
             gemfile: gemfiles/rails-7-2.gemfile
             experimental: false
-          - ruby: '3.4'
+          - ruby: '4.0'
             gemfile: gemfiles/rails-main.gemfile
             experimental: true
           - ruby: ruby-head
@@ -69,7 +69,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.4"
+          ruby-version: "4.0"
           bundler-cache: true
       - name: Run check
         run: bundle exec rubocop
