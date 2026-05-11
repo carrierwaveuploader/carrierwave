@@ -257,6 +257,13 @@ describe CarrierWave::RMagick, :rmagick => true do
         }
       end.to raise_error NoMethodError, /private method .foo=. called/
     end
+
+    it 'raises a ProcessingError when all frames are filtered out by the block' do
+      allow(::Magick::Image).to receive_messages(:read => image)
+      expect do
+        instance.manipulate! { |frame, index| nil }
+      end.to raise_error(CarrierWave::ProcessingError, /file format is not supported/)
+    end
   end
 
   describe "#width and #height" do
