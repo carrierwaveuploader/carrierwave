@@ -2,7 +2,11 @@ require 'spec_helper'
 require 'fog/aws'
 require 'fog/google'
 require 'fog/local'
-require 'fog/rackspace'
+begin
+  require 'fog/rackspace'
+rescue LoadError
+  # Can be missing in CI
+end
 
 unless ENV['REMOTE'] == 'true'
   Fog.mock!

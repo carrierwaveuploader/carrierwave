@@ -34,7 +34,13 @@ Gem::Specification.new do |s|
     s.add_development_dependency "pg"
   end
   s.add_development_dependency "rails", ">= 5.0.0"
-  s.add_development_dependency "cucumber", "~> 2.3"
+  if RUBY_VERSION.to_f >= 2.5
+    s.add_development_dependency "benchmark"
+    s.add_development_dependency "csv", "~> 3.0"
+    s.add_development_dependency "drb" if RUBY_ENGINE == 'jruby'
+    s.add_development_dependency "mutex_m"
+  end
+  s.add_development_dependency "cucumber"
   s.add_development_dependency "rspec", "~> 3.4"
   s.add_development_dependency "rspec-retry"
   s.add_development_dependency "webmock"
@@ -46,8 +52,7 @@ Gem::Specification.new do |s|
     s.add_development_dependency "fog-google", ["~> 1.7", "!= 1.12.1"]
   end
   s.add_development_dependency "fog-local"
-  s.add_development_dependency "fog-rackspace"
-  s.add_development_dependency "mini_magick", ">= 3.6.0"
+  s.add_development_dependency "mini_magick", [">= 3.6.0", "< 5"]
   if RUBY_ENGINE != 'jruby'
     s.add_development_dependency "rmagick", ">= 2.16"
   end
