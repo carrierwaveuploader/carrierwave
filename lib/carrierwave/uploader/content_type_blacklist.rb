@@ -49,7 +49,10 @@ module CarrierWave
       end
 
       def blacklisted_content_type?(content_type)
-        Array(content_type_denylist).any? { |item| content_type =~ /#{item}/ }
+        Array(content_type_denylist).any? do |item|
+          item = Regexp.quote(item) if item.class != Regexp
+          content_type =~ /#{item}/
+        end
       end
 
     end # ContentTypeBlacklist

@@ -36,6 +36,28 @@ describe CarrierWave::Uploader do
           expect { uploader.cache!(ruby_file) }.to raise_error(CarrierWave::IntegrityError, 'You are not allowed to upload image/png files')
         end
 
+        it "properly escapes metacharacters" do
+          allow(uploader).to receive(:content_type_denylist).and_return(['image/svg+xml'])
+
+          sanitized_file = CarrierWave::SanitizedFile.new(ruby_file)
+          allow(sanitized_file).to receive(:content_type).and_return('image/svg+xml')
+
+          expect { uploader.send(:check_content_type_blacklist!, sanitized_file) }.to raise_error(CarrierWave::IntegrityError)
+        end
+
+        it "matches anywhere in the string to be more restrictive" do
+          allow(uploader).to receive(:content_type_denylist).and_return(['html'])
+
+          sanitized_file = CarrierWave::SanitizedFile.new(ruby_file)
+          allow(sanitized_file).to receive(:content_type).and_return('text/html')
+
+          expect { uploader.send(:check_content_type_blacklist!, sanitized_file) }.to raise_error(CarrierWave::IntegrityError)
+
+          allow(sanitized_file).to receive(:content_type).and_return('application/html')
+
+          expect { uploader.send(:check_content_type_blacklist!, sanitized_file) }.to raise_error(CarrierWave::IntegrityError)
+        end
+
         it "accepts content types as regular expressions" do
           allow(uploader).to receive(:content_type_denylist).and_return([/image\//])
 
