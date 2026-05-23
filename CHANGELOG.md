@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 2.2.7 - 2026-05-23
+### Security
+* Fix bypass in content_type_blacklist via unescaped RegExp chars (@mshibuya [4c4a005](https://github.com/carrierwaveuploader/carrierwave/commit/4c4a005775a436c5165df014dc9b1874c227d86c), [GHSA-7g26-2qgj-chfg](https://github.com/carrierwaveuploader/carrierwave/security/advisories/GHSA-7g26-2qgj-chfg))
+
 ## 2.2.6 - 2024-03-23
 ### Security
 * Fix Content-Type allowlist bypass vulnerability remained (@mshibuya [4317871](https://github.com/carrierwaveuploader/carrierwave/commit/431787193795dda9b01a0ee748bd93e2ec7101c2), [GHSA-vfmv-jfc5-pjjw](https://github.com/carrierwaveuploader/carrierwave/security/advisories/GHSA-vfmv-jfc5-pjjw))
