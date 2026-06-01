@@ -54,7 +54,10 @@ module CarrierWave
       end
 
       def denylisted_content_type?(denylist, content_type)
-        Array(denylist).any? { |item| content_type =~ /#{item}/ }
+        Array(denylist).any? do |item|
+          item = Regexp.quote(item) if item.class != Regexp
+          content_type =~ /#{item}/
+        end
       end
 
     end # ContentTypeDenylist
