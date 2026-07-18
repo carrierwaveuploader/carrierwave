@@ -11,13 +11,13 @@ It works well with Rack based web applications, such as Ruby on Rails.
 ## Information
 
 * RDoc documentation [available on RubyDoc.info](https://rubydoc.info/gems/carrierwave)
-* Source code [available on GitHub](http://github.com/carrierwaveuploader/carrierwave)
+* Source code [available on GitHub](https://github.com/carrierwaveuploader/carrierwave)
 * More information, known limitations, and how-tos [available on the wiki](https://github.com/carrierwaveuploader/carrierwave/wiki)
 
 ## Getting Help
 
 * Please ask the community on [Stack Overflow](https://stackoverflow.com/questions/tagged/carrierwave) for help if you have any questions. Please do not post usage questions on the issue tracker.
-* Please report bugs on the [issue tracker](http://github.com/carrierwaveuploader/carrierwave/issues) but read the "getting help" section in the wiki first.
+* Please report bugs on the [issue tracker](https://github.com/carrierwaveuploader/carrierwave/issues) but read the "getting help" section in the wiki first.
 
 ## Installation
 
@@ -305,7 +305,7 @@ end
 ### Filenames and unicode chars
 
 Another security issue you should care for is the file names (see
-[Ruby On Rails Security Guide](http://guides.rubyonrails.org/security.html#file-uploads)).
+[Ruby On Rails Security Guide](https://guides.rubyonrails.org/security.html#file-uploads)).
 By default, CarrierWave provides only English letters, arabic numerals and some symbols as
 allowlisted characters in the file name. If you want to support local scripts (Cyrillic letters, letters with diacritics and so on), you
 have to override `sanitize_regexp` method. It should return regular expression which would match
@@ -743,7 +743,7 @@ config.fog_credentials = { ... } # Provider specific credentials
 
 ## Using Amazon S3
 
-[Fog AWS](http://github.com/fog/fog-aws) is used to support Amazon S3. Ensure you have it in your Gemfile:
+[Fog AWS](https://github.com/fog/fog-aws) is used to support Amazon S3. Ensure you have it in your Gemfile:
 
 ```ruby
 gem "fog-aws"
@@ -797,7 +797,7 @@ That's it! You can still use the `CarrierWave::Uploader#url` method to return th
 
 ## Using Rackspace Cloud Files
 
-[Fog](http://github.com/fog/fog) is used to support Rackspace Cloud Files. Ensure you have it in your Gemfile:
+[Fog](https://github.com/fog/fog) is used to support Rackspace Cloud Files. Ensure you have it in your Gemfile:
 
 ```ruby
 gem "fog"
@@ -840,7 +840,7 @@ This is *highly* recommended, as without it every request requires a lookup
 of this information.
 
 ```ruby
-config.asset_host = "http://c000000.cdn.rackspacecloud.com"
+config.asset_host = "https://c000000.cdn.rackspacecloud.com"
 ```
 
 In your uploader, set the storage to :fog
@@ -856,7 +856,7 @@ the url to the file on Rackspace Cloud Files.
 
 ## Using Google Cloud Storage
 
-[Fog](http://github.com/fog/fog-google) is used to support Google Cloud Storage. Ensure you have it in your Gemfile:
+[Fog](https://github.com/fog/fog-google) is used to support Google Cloud Storage. Ensure you have it in your Gemfile:
 
 ```ruby
 gem "fog-google"
@@ -936,7 +936,7 @@ The `asset_host` config property can be assigned a proc (or anything that respon
 CarrierWave.configure do |config|
   config.asset_host = proc do |file|
     identifier = # some logic
-    "http://#{identifier}.cdn.rackspacecloud.com"
+    "https://#{identifier}.cdn.rackspacecloud.com"
   end
 end
 ```
@@ -964,7 +964,7 @@ $ brew install imagemagick
 
 And the ImageMagick command line options for more for what's on offer:
 
-http://www.imagemagick.org/script/command-line-options.php
+https://www.imagemagick.org/script/command-line-options.php
 
 Currently, the MiniMagick carrierwave processor provides exactly the same methods as
 for the RMagick processor.
