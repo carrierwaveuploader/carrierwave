@@ -92,7 +92,9 @@ module CarrierWave
       def sanitized_file
         file
       end
-      CarrierWave.deprecator.warn('#sanitized_file is deprecated, use #file instead.')
+
+      # NOTE: this emits a deprecation warning only when `sanitized_file` is actually called.
+      CarrierWave.deprecator.deprecate_methods(self, sanitized_file: :file)
 
       ##
       # Returns a String which uniquely identifies the currently cached file for later retrieval
