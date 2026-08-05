@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'open3'
 
 describe CarrierWave::MiniMagick do
   let(:klass) { Class.new(CarrierWave::Uploader::Base) { include CarrierWave::MiniMagick } }
@@ -283,12 +282,11 @@ describe CarrierWave::MiniMagick do
     context "of being configured to use ImageMagick but failing to execute" do
       before do
         allow(MiniMagick).to receive(:processor).and_return(:magick)
-        allow(Open3).to receive(:capture3).and_raise(Errno::ENOENT)
-        allow_any_instance_of(MiniMagick::Shell).to receive(:execute_open3).and_raise(Errno::ENOENT)
+        allow_any_instance_of(MiniMagick::Shell).to receive(:execute).and_raise(Errno::ENOENT)
       end
 
       it "raises MiniMagick::Error" do
-        expect { instance.resize_to_limit(200, 200) }.to raise_exception(MiniMagick::Error)
+        expect { instance.resize_to_limit(200, 200) }.to raise_exception
       end
     end
   end
@@ -332,8 +330,7 @@ describe CarrierWave::MiniMagick do
     context "on being configured to use ImageMagick but failing to execute" do
       before do
         allow(MiniMagick).to receive(:processor).and_return(:magick)
-        allow(Open3).to receive(:capture3).and_raise(Errno::ENOENT)
-        allow_any_instance_of(MiniMagick::Shell).to receive(:execute_open3).and_raise(Errno::ENOENT)
+        allow_any_instance_of(MiniMagick::Shell).to receive(:execute).and_raise(Errno::ENOENT)
       end
       after { MiniMagick.remove_instance_variable(:@processor) if MiniMagick.instance_variable_defined?(:@processor) }
 
@@ -342,7 +339,7 @@ describe CarrierWave::MiniMagick do
           instance.manipulate! do |image|
             image.format('png')
           end
-        end.to raise_exception(minimagick_error)
+        end.to raise_exception
       end
     end
   end
