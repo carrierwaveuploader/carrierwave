@@ -12,12 +12,6 @@ jobs:
         gemfile: [ gemfiles/rails-8-0.gemfile ]
         experimental: [ false ]
         include:
-          - ruby: '2.5'
-            gemfile: gemfiles/rails-6-0.gemfile
-            experimental: false
-          - ruby: '2.6'
-            gemfile: gemfiles/rails-6-1.gemfile
-            experimental: false
           - ruby: '2.7'
             gemfile: gemfiles/rails-7-0.gemfile
             experimental: false

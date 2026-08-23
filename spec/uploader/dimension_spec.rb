@@ -67,21 +67,19 @@ describe CarrierWave::Uploader do
           end
         end
 
-        if RUBY_VERSION.to_f >= 2.7
-          context "when the minimum range is not specified" do
-            let(:range) { nil..1000 }
+        context "when the minimum range is not specified" do
+          let(:range) { nil..1000 }
 
-            it "doesn't raise an integrity error" do
-              expect { subject }.not_to raise_error
-            end
+          it "doesn't raise an integrity error" do
+            expect { subject }.not_to raise_error
           end
+        end
 
-          context "when the maximum range is not specified" do
-            let(:range) { 1..nil }
+        context "when the maximum range is not specified" do
+          let(:range) { 1..nil }
 
-            it "doesn't raise an integrity error" do
-              expect { subject }.not_to raise_error
-            end
+          it "doesn't raise an integrity error" do
+            expect { subject }.not_to raise_error
           end
         end
       end
@@ -141,21 +139,19 @@ describe CarrierWave::Uploader do
           end
         end
 
-        if RUBY_VERSION.to_f >= 2.7
-          context "when the minimum range is not specified" do
-            let(:range) { nil..1000 }
+        context "when the minimum range is not specified" do
+          let(:range) { nil..1000 }
 
-            it "doesn't raise an integrity error" do
-              expect { subject }.not_to raise_error
-            end
+          it "doesn't raise an integrity error" do
+            expect { subject }.not_to raise_error
           end
+        end
 
-          context "when the maximum range is not specified" do
-            let(:range) { 1..nil }
+        context "when the maximum range is not specified" do
+          let(:range) { 1..nil }
 
-            it "doesn't raise an integrity error" do
-              expect { subject }.not_to raise_error
-            end
+          it "doesn't raise an integrity error" do
+            expect { subject }.not_to raise_error
           end
         end
       end

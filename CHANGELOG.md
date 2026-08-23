@@ -15,6 +15,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 * Fix `#process_uri` being called twice on every download attempt (@mshibuya)
 
+### Removed
+* Drop support for Ruby < 2.7 and Rails 6.x (@mshibuya)
+
 ## 3.1.3 - 2026-05-23
 
 ### Security

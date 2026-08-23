@@ -18,10 +18,10 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.licenses = ["MIT"]
 
-  s.required_ruby_version = ">= 2.5.0"
+  s.required_ruby_version = ">= 2.7.0"
 
-  s.add_dependency "activesupport", ">= 6.0.0"
-  s.add_dependency "activemodel", ">= 6.0.0"
+  s.add_dependency "activesupport", ">= 7.0.0"
+  s.add_dependency "activemodel", ">= 7.0.0"
   s.add_dependency "image_processing", "~> 1.1"
   s.add_dependency "marcel", ">= 1.0.0", "< 2"
   s.add_dependency "addressable", "~> 2.6"
