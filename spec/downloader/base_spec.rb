@@ -124,6 +124,22 @@ describe CarrierWave::Downloader::Base do
     end
   end
 
+  context "with a plus sign in the path" do
+    let(:filename) { "my+test.jpg" }
+    let(:uri) { "http://www.example.com/#{filename}" }
+    before do
+      stub_request(:get, uri).to_return(body: file)
+    end
+
+    it "does not rewrite the plus sign before requesting (#2800)" do
+      expect(subject.download(uri).file.read).to eq file
+    end
+
+    it "keeps the plus sign in the filename" do
+      expect(subject.download(uri).original_filename).to eq filename
+    end
+  end
+
   context "with redirects" do
     let(:another_uri) { 'http://example.com/redirected.jpg' }
     before do
@@ -195,6 +211,8 @@ describe CarrierWave::Downloader::Base do
   end
 
   describe '#process_uri' do
+    # The examples below reproduce reported bugs. Keep them, with their issue numbers.
+
     it "returns an URI instance" do
       uri = "http://example.com/"
       expect(subject.process_uri(uri)).to be_an_instance_of(URI::HTTP)
@@ -228,6 +246,7 @@ describe CarrierWave::Downloader::Base do
       uri = 'http://example.com/ %[].jpg'
       processed = subject.process_uri(uri)
       expect(processed.to_s).to eq('http://example.com/%20%25%5B%5D.jpg')
+      expect(subject.process_uri(processed.to_s).to_s).to eq(processed.to_s)
     end
 
     it "parses but not escape uris with query-string characters representing urls not needing escaping " do
@@ -246,6 +265,7 @@ describe CarrierWave::Downloader::Base do
       uri = 'http://example.com/あああ.jpg'
       processed = subject.process_uri(uri)
       expect(processed.to_s).to eq('http://example.com/%E3%81%82%E3%81%82%E3%81%82.jpg')
+      expect(subject.process_uri(processed.to_s).to_s).to eq(processed.to_s)
     end
 
     it "escapes and parse unescaped characters in query string" do
@@ -258,6 +278,74 @@ describe CarrierWave::Downloader::Base do
       uri = 'http://example.com/#あああ'
       processed = subject.process_uri(uri)
       expect(processed.to_s).to eq('http://example.com/#%E3%81%82%E3%81%82%E3%81%82')
+    end
+
+    it "preserves %28 and %29 in an S3 signed URL (#858)" do
+      # Decoding changes what the signature was computed over, resulting in a 403
+      uri = 'https://bucket.s3.amazonaws.com/f%20%281%29.jpg?X-Amz-Signature=abc'
+      expect(subject.process_uri(uri).to_s).to eq(uri)
+    end
+
+    it "preserves a literal + in the path (#2505, #2800)" do
+      # A path parameter of an image transformation CDN, which 404s when sent as %2B
+      uri = 'https://cdn.example.com/crop/4032x2117+0+0/resize/1200x630!/img.jpg'
+      expect(subject.process_uri(uri).to_s).to eq(uri)
+    end
+
+    it "preserves a literal + in a stored filename (#2590)" do
+      uri = 'https://bucket.s3.amazonaws.com/uploads/test+x.pdf'
+      expect(subject.process_uri(uri).to_s).to eq(uri)
+    end
+
+    it "preserves %2B in the path" do
+      uri = 'https://bucket.s3.amazonaws.com/uploads/test%2Bx.pdf'
+      expect(subject.process_uri(uri).to_s).to eq(uri)
+    end
+
+    it "preserves a decomposed umlaut in a signed URL (#2631)" do
+      # The NFD form macOS produces; normalizing it to NFC breaks the signature
+      uri = 'https://bucket.s3.amazonaws.com/o%CC%88.png?X-Amz-Signature=abc'
+      expect(subject.process_uri(uri).to_s).to eq(uri)
+    end
+
+    it "preserves %2F used as part of an object identifier (#2808)" do
+      # Firebase Storage uses %2F within an object name, so decoding it points elsewhere
+      uri = 'https://firebasestorage.googleapis.com/v0/b/x/o/images%2Fp.jpg?alt=media'
+      expect(subject.process_uri(uri).to_s).to eq(uri)
+    end
+
+    it "preserves sub-delims that are legal in a path" do
+      uri = 'https://example.com/x,y;z=1(2)$3&4!5.jpg'
+      expect(subject.process_uri(uri).to_s).to eq(uri)
+    end
+
+    it "escapes a percent sign that does not form a valid escape sequence" do
+      expect(subject.process_uri('http://example.com/50%OFF.jpg').to_s).
+        to eq('http://example.com/50%25OFF.jpg')
+      expect(subject.process_uri('http://example.com/file%.jpg').to_s).
+        to eq('http://example.com/file%25.jpg')
+      expect(subject.process_uri('http://example.com/f%ZZ.jpg').to_s).
+        to eq('http://example.com/f%25ZZ.jpg')
+    end
+
+    it "strips whitespace and newlines left over from pasting" do
+      expect(subject.process_uri("  http://example.com/a.jpg\n").to_s).
+        to eq('http://example.com/a.jpg')
+      expect(subject.process_uri("http://example.com/a.jpg ").to_s).
+        to eq('http://example.com/a.jpg')
+      expect(subject.process_uri("http://example.com/a\nb.jpg").to_s).
+        to eq('http://example.com/ab.jpg')
+    end
+
+    it "supplies a scheme when the url starts with a host name" do
+      expect(subject.process_uri('example.com/a.jpg').to_s).to eq('https://example.com/a.jpg')
+      expect(subject.process_uri('example.com:8080/a.jpg').to_s).to eq('https://example.com:8080/a.jpg')
+      expect(subject.process_uri('//example.com/a.jpg').to_s).to eq('https://example.com/a.jpg')
+    end
+
+    it "does not promote a local path to a url" do
+      expect(subject.process_uri('/etc/passwd').to_s).to eq('/etc/passwd')
+      expect(subject.process_uri('file:///etc/passwd').to_s).to eq('file:///etc/passwd')
     end
 
     it "throws an exception on bad uris" do

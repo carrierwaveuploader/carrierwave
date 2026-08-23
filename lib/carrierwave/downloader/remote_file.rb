@@ -1,6 +1,8 @@
 module CarrierWave
   module Downloader
     class RemoteFile
+      include CarrierWave::Utilities::Uri
+
       attr_reader :file, :uri
 
       def initialize(file)
@@ -53,7 +55,7 @@ module CarrierWave
       end
 
       def filename_from_uri
-        CGI.unescape(File.basename(uri.path))
+        decode_path(File.basename(uri.path))
       end
 
       def method_missing(*args, &block)

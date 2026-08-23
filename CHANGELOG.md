@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+* [BREAKING CHANGE] Stop percent-decoding the URL on download, keeping `%2F` and `/`, `%2B` and `+` distinct (@mshibuya, [#858](https://github.com/carrierwaveuploader/carrierwave/issues/858), [#2505](https://github.com/carrierwaveuploader/carrierwave/issues/2505), [#2590](https://github.com/carrierwaveuploader/carrierwave/issues/2590), [#2800](https://github.com/carrierwaveuploader/carrierwave/issues/2800))
+* [BREAKING CHANGE] Decode the filename taken from a URL with URI semantics instead of form encoding, so a literal `+` no longer becomes a space (@mshibuya)
+
+### Added
+* Make the downloader accept URLs as pasted by end users, stripping surrounding whitespace and embedded newlines and supplying a missing scheme (@mshibuya)
+
+### Fixed
+* Fix `#process_uri` being called twice on every download attempt (@mshibuya)
+
 ## 3.1.3 - 2026-05-23
 
 ### Security

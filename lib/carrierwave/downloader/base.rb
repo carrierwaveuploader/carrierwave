@@ -1,12 +1,20 @@
 require 'open-uri'
 require 'ssrf_filter'
-require 'addressable'
+require 'addressable/uri'
 require 'carrierwave/downloader/remote_file'
 
 module CarrierWave
   module Downloader
     class Base
       include CarrierWave::Utilities::Uri
+
+      # Leftovers from pasting, removed before parsing as in the first steps of
+      # https://url.spec.whatwg.org/#concept-basic-url-parser
+      LEADING_TRAILING_JUNK = /\A[\x00-\x20]+|[\x00-\x20]+\z/.freeze
+      EMBEDDED_JUNK = /[\t\n\r]/.freeze
+      # Matches a host name with an optional port, but not a scheme like 'http://' or 'data:'
+      HOSTISH = /\A[[:alnum:]][[:alnum:]\-._]*(?::\d+)?(?:[\/?#]|\z)/.freeze
+      DEFAULT_SCHEME = 'https'.freeze
 
       attr_reader :uploader
 
@@ -29,7 +37,7 @@ module CarrierWave
         uri = process_uri(url.to_s)
         begin
           if skip_ssrf_protection?(uri)
-            response = OpenURI.open_uri(process_uri(url.to_s), headers)
+            response = OpenURI.open_uri(uri, headers)
           else
             request = nil
             if ::SsrfFilter::VERSION.to_f < 1.1
@@ -59,20 +67,40 @@ module CarrierWave
       ##
       # Processes the given URL by parsing it, and escaping if necessary. Public to allow overriding.
       #
+      # Never decodes, as that would make %2F and '/', %2B and '+' indistinguishable.
+      #
       # === Parameters
       #
       # [url (String)] The URL where the remote file is stored
       #
       def process_uri(source)
-        uri = Addressable::URI.parse(source)
+        uri = Addressable::URI.parse(normalize_input(source))
         uri.host = uri.normalized_host
-        # Perform decode first, as the path is likely to be already encoded
-        uri.path = encode_path(decode_uri(uri.path)) if uri.path =~ CarrierWave::Utilities::Uri::PATH_UNSAFE
-        uri.query = encode_non_ascii(uri.query) if uri.query
-        uri.fragment = encode_non_ascii(uri.fragment) if uri.fragment
+        uri.path = sanitize_component(uri.path, SANITIZE_PATH) if uri.path
+        uri.query = sanitize_component(uri.query, SANITIZE_QUERY) if uri.query
+        uri.fragment = sanitize_component(uri.fragment, SANITIZE_FRAGMENT) if uri.fragment
         URI.parse(uri.to_s)
       rescue URI::InvalidURIError, Addressable::URI::InvalidURIError
         raise CarrierWave::DownloadError, "couldn't parse URL: #{source}"
+      end
+
+      ##
+      # Cleans up a URL as pasted by an end user, since `remote_#{column}_url=` is meant to be
+      # fed from a text field. Public to allow overriding.
+      #
+      # === Parameters
+      #
+      # [source (String)] The URL given by the user
+      #
+      def normalize_input(source)
+        source = source.to_s.gsub(LEADING_TRAILING_JUNK, '').gsub(EMBEDDED_JUNK, '')
+
+        return "#{DEFAULT_SCHEME}:#{source}" if source.start_with?('//')
+        # Don't promote a local path like '/etc/passwd' into a URL
+        return source if source.start_with?('/')
+        return "#{DEFAULT_SCHEME}://#{source}" if source.match?(HOSTISH)
+
+        source
       end
 
       ##
