@@ -500,6 +500,11 @@ case of images, a small thumbnail would be a good indicator:
 <% end %>
 ```
 
+When the cache storage is a remote one, uploading the cached file to it is deferred until
+it turns out to be needed beyond the current request, which reading `avatar_cache` or
+`avatar_url` tells CarrierWave. If you carry the cache name over by other means, call
+`user.avatar.materialize_cache!` before handing it out.
+
 ## Removing uploaded files
 
 If you want to remove a previously uploaded file on a mounted uploader, you can

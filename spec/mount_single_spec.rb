@@ -267,6 +267,13 @@ describe CarrierWave::Mount do
         expect(@instance.image_cache).to match(%r(^[\d]+\-[\d]+\-[\d]{4}\-[\d]{4}/test\.jpg$))
       end
 
+      it "should materialize the cache, as the name is carried over to the next request" do
+        @instance.image = stub_file('test.jpg')
+        expect(@instance.image).to receive(:materialize_cache!)
+
+        @instance.image_cache
+      end
+
     end
 
     describe '#image_cache=' do

@@ -97,6 +97,7 @@ module CarrierWave
         attr_accessor :parent_version
 
         after :cache, :cache_versions!
+        after :materialize_cache, :materialize_versions_cache!
         after :store, :store_versions!
         after :remove, :remove_versions!
         after :retrieve_from_cache, :retrieve_versions_from_cache!
@@ -329,6 +330,10 @@ module CarrierWave
 
       def cache_versions!(new_file)
         derived_versions.each_value { |v| v.cache!(new_file) }
+      end
+
+      def materialize_versions_cache!
+        versions.each_value(&:materialize_cache!)
       end
 
       def store_versions!(new_file)

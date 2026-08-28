@@ -105,7 +105,8 @@ module CarrierWave
       end
 
       ##
-      # Stores given file to cache directory.
+      # Stages given file to be cached, deferring the upload until #materialize_cache!,
+      # as a cached file usually goes straight to the store within the same request.
       #
       # === Parameters
       #
@@ -113,12 +114,35 @@ module CarrierWave
       #
       # === Returns
       #
-      # [CarrierWave::SanitizedFile] a sanitized file
+      # [CarrierWave::SanitizedFile] the staged file
+      #   or
+      # [CarrierWave::Storage::Fog::File] the uploaded file, with cache_only
       #
       def cache!(new_file)
-        f = CarrierWave::Storage::Fog::File.new(uploader, self, uploader.cache_path)
-        f.store(new_file)
-        f
+        # With cache_only there's no store to move to, so the cache is the final location
+        return upload_to_cache(new_file) if uploader.cache_only
+
+        local_storage.cache!(new_file)
+      end
+
+      ##
+      # Uploads the staged file to the cache directory.
+      #
+      # === Parameters
+      #
+      # [file (CarrierWave::SanitizedFile)] the staged file
+      #
+      # === Returns
+      #
+      # [CarrierWave::Storage::Fog::File] the uploaded file
+      #
+      def materialize_cache!(file)
+        return file if file.is_a?(CarrierWave::Storage::Fog::File)
+
+        upload_to_cache(file).tap do
+          file.delete
+          local_storage.delete_dir!(uploader.cache_path(nil))
+        end
       end
 
       ##
@@ -140,10 +164,12 @@ module CarrierWave
       # Deletes a cache dir
       #
       def delete_dir!(path)
-        # do nothing, because there's no such things as 'empty directory'
+        # Only the local cache has dirs, as there's no such things as 'empty directory'
+        local_storage.delete_dir!(path)
       end
 
       def clean_cache!(seconds)
+        local_storage.clean_cache!(seconds)
         connection.directories.new(
           :key    => uploader.fog_directory,
           :public => uploader.fog_public
@@ -552,6 +578,18 @@ module CarrierWave
           parameters = local_file.method(:url).parameters
           parameters.count == 2 && parameters[1].include?(:options)
         end
+      end
+
+    private
+
+      def upload_to_cache(new_file)
+        f = CarrierWave::Storage::Fog::File.new(uploader, self, uploader.cache_path)
+        f.store(new_file)
+        f
+      end
+
+      def local_storage
+        @local_storage ||= CarrierWave::Storage::File.new(uploader)
       end
 
     end # Fog

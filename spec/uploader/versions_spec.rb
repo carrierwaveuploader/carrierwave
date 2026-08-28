@@ -283,6 +283,19 @@ describe CarrierWave::Uploader do
       @uploader_class.version(:thumb)
     end
 
+    describe '#materialize_cache!' do
+      before { @uploader.cache!(File.open(file_path('test.jpg'))) }
+
+      it "should materialize the versions as well" do
+        [@uploader, @uploader.thumb].each do |uploader|
+          expect(uploader.send(:cache_storage)).to receive(:materialize_cache!).
+            with(uploader.file).and_return(uploader.file)
+        end
+
+        @uploader.materialize_cache!
+      end
+    end
+
     describe '#cache!' do
 
       before do

@@ -468,6 +468,12 @@ describe CarrierWave::Mount do
           instance.images = [test_file_stub, stub_file('old.jpeg')]
         end
 
+        it "materializes the cache, as the names are carried over to the next request" do
+          instance.images.each { |uploader| expect(uploader).to receive(:materialize_cache!) }
+
+          instance.images_cache
+        end
+
         it { expect(json_response[0]).to match(%r(^[\d]+\-[\d]+\-[\d]{4}\-[\d]{4}/test\.jpg$)) }
 
         it { expect(json_response[1]).to match(%r(^[\d]+\-[\d]+\-[\d]{4}\-[\d]{4}/old\.jpeg$)) }

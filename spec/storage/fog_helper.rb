@@ -20,7 +20,8 @@ shared_examples "Fog storage" do |fog_credentials|
 
       @provider = fog_credentials[:provider]
 
-      @uploader = eval("FogSpec#{@provider}Uploader")
+      @uploader_class = eval("FogSpec#{@provider}Uploader")
+      @uploader = @uploader_class.new
       allow(@uploader).to receive(:store_path).and_return('uploads/test.jpg')
 
       @storage = CarrierWave::Storage::Fog.new(@uploader)
@@ -40,21 +41,6 @@ shared_examples "Fog storage" do |fog_credentials|
     end
 
     shared_examples_for "#{fog_credentials[:provider]} storage accepting files" do
-      describe '#cache!' do
-        before do
-          allow(@uploader).to receive(:cache_path).and_return('uploads/tmp/test.jpg')
-          @fog_file = @storage.cache!(file)
-        end
-
-        it "should upload the file" do
-          expect(@directory.files.get('uploads/tmp/test.jpg').body).to eq('this is stuff')
-        end
-
-        it 'should preserve content type' do
-          expect(@fog_file.content_type).to eq(file.content_type)
-        end
-      end
-
       describe '#store!' do
         let(:store_path) { 'uploads/test.jpg' }
 
@@ -215,6 +201,80 @@ shared_examples "Fog storage" do |fog_credentials|
       it_should_behave_like "#{fog_credentials[:provider]} storage accepting files"
     end
 
+    describe '#cache!' do
+      # A Tempfile, as #cache! takes ownership of the given file
+      let(:file) { CarrierWave::SanitizedFile.new(stub_tempfile('test.jpg', 'image/jpeg')) }
+
+      before do
+        allow(@uploader).to receive(:cache_path).and_return('uploads/tmp/test.jpg')
+      end
+
+      after { FileUtils.rm_rf(public_path) }
+
+      it "should stage the file locally, deferring the upload" do
+        cached_file = @storage.cache!(file)
+
+        expect(cached_file).to be_a(CarrierWave::SanitizedFile)
+        expect(@directory.files.head('uploads/tmp/test.jpg')).to be_nil
+      end
+
+      context "with the cache_only option set to true" do
+        before { allow(@uploader).to receive(:cache_only).and_return(true) }
+
+        it "should upload the file right away, as there's nothing to defer" do
+          expect(@storage.cache!(file)).to be_a(CarrierWave::Storage::Fog::File)
+          expect(@directory.files.get('uploads/tmp/test.jpg').body).to eq('this is stuff')
+        end
+      end
+    end
+
+    describe '#materialize_cache!' do
+      let(:file) { CarrierWave::SanitizedFile.new(stub_tempfile('test.jpg', 'image/jpeg')) }
+      let(:cached_file) { @storage.cache!(file) }
+
+      before do
+        allow(@uploader).to receive(:cache_path).and_return('uploads/tmp/test.jpg')
+      end
+
+      after { FileUtils.rm_rf(public_path) }
+
+      it "should upload the staged file" do
+        fog_file = @storage.materialize_cache!(cached_file)
+
+        expect(fog_file).to be_a(CarrierWave::Storage::Fog::File)
+        expect(@directory.files.get('uploads/tmp/test.jpg').body).to eq('this is stuff')
+      end
+
+      it "should preserve content type" do
+        expect(@storage.materialize_cache!(cached_file).content_type).to eq('image/jpeg')
+      end
+
+      it "should remove the locally staged file" do
+        staged_path = cached_file.path
+        @storage.materialize_cache!(cached_file)
+
+        expect(File.exist?(staged_path)).to be false
+      end
+
+      it "should do nothing for a file which is already uploaded" do
+        fog_file = @storage.materialize_cache!(cached_file)
+
+        expect(@storage.materialize_cache!(fog_file)).to equal fog_file
+      end
+    end
+
+    describe 'caching and then storing a file' do
+      after { FileUtils.rm_rf(public_path) }
+
+      it "should upload it only once, as the cache is never uploaded to" do
+        uploader = @uploader_class.new
+        uploader.cache!(CarrierWave::SanitizedFile.new(stub_tempfile('test.jpg', 'image/jpeg')))
+        uploader.store!
+
+        expect(@directory.files.all.map(&:key)).to eq ['uploads/test.jpg']
+      end
+    end
+
     describe '#cache_stored_file!' do
       before do
         allow(@uploader).to receive(:store_path).and_return('uploads/test.jpg')
@@ -222,19 +282,19 @@ shared_examples "Fog storage" do |fog_credentials|
       end
 
       it "should cache_stored_file! after store!" do
-        uploader = @uploader.new
+        uploader = @uploader_class.new
         uploader.store!(@fog_file)
         expect { uploader.cache_stored_file! }.not_to raise_error
       end
 
       it "should create local file for processing" do
-        @uploader.class_eval do
+        @uploader_class.class_eval do
           def check_file
             raise unless File.exist?(file.path)
           end
           process :check_file
         end
-        uploader = @uploader.new
+        uploader = @uploader_class.new
         uploader.store!(@fog_file)
         uploader.cache_stored_file!
       end
@@ -288,8 +348,16 @@ shared_examples "Fog storage" do |fog_credentials|
     end
 
     describe '#delete_dir' do
-      it "should do nothing" do
+      it "should not raise an error when there's nothing to delete" do
         expect { @storage.delete_dir!('foobar') }.not_to raise_error
+      end
+
+      it "should delete the local dir a file may have been staged in" do
+        dir = public_path('uploads/tmp/deleteme')
+        FileUtils.mkdir_p(dir)
+
+        expect { @storage.delete_dir!('uploads/tmp/deleteme') }.
+          to change { File.exist?(dir) }.from(true).to(false)
       end
     end
 
@@ -311,21 +379,21 @@ shared_examples "Fog storage" do |fog_credentials|
 
       it "should clear all files older than now in the default cache directory" do
         Timecop.freeze(today) do
-          @uploader.clean_cached_files!(0)
+          @uploader_class.clean_cached_files!(0)
         end
         expect(@directory.files.all(:prefix => 'uploads/tmp').size).to eq(0)
       end
 
       it "should clear all files older than, by default, 24 hours in the default cache directory" do
         Timecop.freeze(today) do
-          @uploader.clean_cached_files!
+          @uploader_class.clean_cached_files!
         end
         expect(@directory.files.all(:prefix => 'uploads/tmp').size).to eq(2)
       end
 
       it "should permit to set since how many seconds delete the cached files" do
         Timecop.freeze(today) do
-          @uploader.clean_cached_files!(4.days)
+          @uploader_class.clean_cached_files!(4.days)
         end
         expect(@directory.files.all(:prefix => 'uploads/tmp').size).to eq(3)
       end
@@ -340,7 +408,7 @@ shared_examples "Fog storage" do |fog_credentials|
       it "cleans a directory named using old format of cache id" do
         @directory.files.create(:key => "uploads/tmp/#{yesterday.utc.to_i}-100-1234/test.jpg", :body => 'A test, 1234', :public => true)
         Timecop.freeze(today) do
-          @uploader.clean_cached_files!(0)
+          @uploader_class.clean_cached_files!(0)
         end
         expect(@directory.files.all(:prefix => 'uploads/tmp').size).to eq(0)
       end
@@ -352,7 +420,7 @@ shared_examples "Fog storage" do |fog_credentials|
 
         it "should just ignore that" do
           Timecop.freeze(today) do
-            @uploader.clean_cached_files!(0)
+            @uploader_class.clean_cached_files!(0)
           end
           expect(@directory.files.all(:prefix => 'uploads/tmp').size).to eq(1)
         end

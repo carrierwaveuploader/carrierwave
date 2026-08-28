@@ -27,6 +27,26 @@ describe CarrierWave::Uploader do
       expect { uploader.url({}) }.not_to raise_error
     end
 
+    context "when the file is cached" do
+      before { uploader.cache!(test_file) }
+
+      it "materializes the cache, as the URL is to be fetched beyond the current request" do
+        expect(uploader).to receive(:materialize_cache!)
+
+        uploader.url
+      end
+    end
+
+    context "when the file is stored" do
+      before { uploader.store!(test_file) }
+
+      it "doesn't materialize the cache" do
+        expect(uploader).not_to receive(:materialize_cache!)
+
+        uploader.url
+      end
+    end
+
     it "encodes the path of a file without an asset host" do
       uploader.cache!(File.open(file_path('test+.jpg')))
       is_expected.to eq("/uploads/tmp/#{cache_id}/test%2B.jpg")

@@ -101,6 +101,8 @@ module CarrierWave
     end
 
     def cache_names
+      # The names are carried over to the next request, which the files have to survive
+      uploaders.each(&:materialize_cache!)
       uploaders.map(&:cache_name).compact
     end
 

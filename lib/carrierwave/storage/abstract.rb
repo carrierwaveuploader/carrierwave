@@ -31,6 +31,11 @@ module CarrierWave
         raise NotImplementedError, "Need to implement #retrieve_from_cache! if you want to use #{self.class.name} as a cache storage."
       end
 
+      # Storage engines which defer writing to the cache have to flush it here
+      def materialize_cache!(file)
+        file
+      end
+
       def delete_dir!(path)
         raise NotImplementedError, "Need to implement #delete_dir! if you want to use #{self.class.name} as a cache storage."
       end

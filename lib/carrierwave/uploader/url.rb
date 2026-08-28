@@ -15,6 +15,9 @@ module CarrierWave
       # [String] the location where this file is accessible via a url
       #
       def url(options = {})
+        # The URL is to be fetched by a browser, which the file has to survive this request for
+        materialize_cache! if cached?
+
         if file.respond_to?(:url)
           tmp_url = file.method(:url).arity.zero? ? file.url : file.url(options)
           return tmp_url if tmp_url.present?

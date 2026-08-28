@@ -152,6 +152,16 @@ module CarrierWave
       end
 
       ##
+      # Makes sure the cached file is written to the cache storage, which may have
+      # deferred it. Needed when the file has to outlive the current request.
+      #
+      def materialize_cache!
+        with_callbacks(:materialize_cache) do
+          @file = cache_storage.materialize_cache!(@file) if @file
+        end
+      end
+
+      ##
       # Retrieves the file with the given cache_name from the cache.
       #
       # === Parameters
