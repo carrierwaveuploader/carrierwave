@@ -283,9 +283,7 @@ describe CarrierWave::MiniMagick do
     context "of being configured to use ImageMagick but failing to execute" do
       before do
         allow(MiniMagick).to receive(:processor).and_return(:magick)
-        allow(Open3).to receive(:capture3).and_raise(Errno::ENOENT)
         allow(Open3).to receive(:popen3).and_raise(Errno::ENOENT)
-        allow_any_instance_of(MiniMagick::Shell).to receive(:execute_open3).and_raise(Errno::ENOENT)
       end
 
       it "raises MiniMagick::Error" do
@@ -333,9 +331,7 @@ describe CarrierWave::MiniMagick do
     context "on being configured to use ImageMagick but failing to execute" do
       before do
         allow(MiniMagick).to receive(:processor).and_return(:magick)
-        allow(Open3).to receive(:capture3).and_raise(Errno::ENOENT)
         allow(Open3).to receive(:popen3).and_raise(Errno::ENOENT)
-        allow_any_instance_of(MiniMagick::Shell).to receive(:execute_open3).and_raise(Errno::ENOENT)
       end
       after { MiniMagick.remove_instance_variable(:@processor) if MiniMagick.instance_variable_defined?(:@processor) }
 
