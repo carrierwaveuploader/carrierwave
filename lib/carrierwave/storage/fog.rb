@@ -322,7 +322,7 @@ module CarrierWave
           return read_source_file if ::File.exist?(file_body.path)
 
           # If the source file doesn't exist, the remote content is read
-          @file = nil
+          remove_instance_variable(:@file)
           file.body
         end
 
@@ -334,7 +334,7 @@ module CarrierWave
         # [Integer] size of file body
         #
         def size
-          file.nil? ? 0 : file.content_length
+          file&.content_length || 0
         end
 
         ##
@@ -538,7 +538,9 @@ module CarrierWave
         # [Fog::#{provider}::File] file data from remote service
         #
         def file
-          @file ||= directory.files.head(path)
+          return @file if defined?(@file)
+
+          @file = directory.files.head(path)
         end
 
         def copy_options

@@ -327,6 +327,27 @@ shared_examples "Fog storage" do |fog_credentials|
         expect(@fog_file.size).to eq(12)
       end
 
+      it "should return 0 as the filesize when the size is unknown" do
+        allow(@fog_file).to receive(:file).and_return(double(content_length: nil))
+
+        expect(@fog_file.size).to eq(0)
+      end
+
+      context "when the file is not there" do
+        let(:fog_file) { @storage.retrieve!('nonexistent.jpg') }
+
+        before do
+          allow(@uploader).to receive(:store_path).with('nonexistent.jpg').
+            and_return('uploads/nonexistent.jpg')
+        end
+
+        it "should look it up only once, instead of on every access" do
+          expect(fog_file.send(:directory).files).to receive(:head).once.and_call_original
+
+          2.times { expect(fog_file.exists?).to be false }
+        end
+      end
+
       it "should be deletable" do
         @fog_file.delete
         expect(@directory.files.head("uploads/#{filename}")).to eq(nil)

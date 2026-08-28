@@ -5,10 +5,26 @@ module CarrierWave
       ##
       # === Returns
       #
-      # [Boolean] Whether the uploaded file is blank
+      # [Boolean] Whether a file is assigned. Use #exists? to ask the storage whether
+      #   the file is actually there.
       #
       def blank?
-        file.blank?
+        return true unless file
+        # A cache name can point at a cache which is gone, so it is verified. It is
+        # local and thus cheap, unlike asking a remote store.
+        return file.empty? if cached?
+
+        false
+      end
+
+      ##
+      # === Returns
+      #
+      # [Boolean] Whether the file exists in the storage. Asking costs a request when
+      #   the storage is a remote one.
+      #
+      def exists?
+        !!file&.exists?
       end
 
       ##

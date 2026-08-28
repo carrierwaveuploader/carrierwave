@@ -8,14 +8,18 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 * [BREAKING CHANGE] Stop percent-decoding the URL on download, keeping `%2F` and `/`, `%2B` and `+` distinct (@mshibuya, [#858](https://github.com/carrierwaveuploader/carrierwave/issues/858), [#2505](https://github.com/carrierwaveuploader/carrierwave/issues/2505), [#2590](https://github.com/carrierwaveuploader/carrierwave/issues/2590), [#2800](https://github.com/carrierwaveuploader/carrierwave/issues/2800))
 * [BREAKING CHANGE] Decode the filename taken from a URL with URI semantics instead of form encoding, so a literal `+` no longer becomes a space (@mshibuya)
+* [BREAKING CHANGE] Stop asking the storage whether the file is there in `#blank?` and `#present?`, which now only tell whether a file is assigned (@mshibuya, [#2802](https://github.com/carrierwaveuploader/carrierwave/issues/2802), [#2776](https://github.com/carrierwaveuploader/carrierwave/issues/2776), [#2784](https://github.com/carrierwaveuploader/carrierwave/issues/2784))
 * Defer uploading a cached file to the remote cache storage until it's needed beyond the current request (@mshibuya, [#2605](https://github.com/carrierwaveuploader/carrierwave/issues/2605))
 
 ### Added
 * Support for marcel 2.x (@mshibuya)
 * Make the downloader accept URLs as pasted by end users, stripping surrounding whitespace and embedded newlines and supplying a missing scheme (@mshibuya)
+* Add `#exists?` to ask the storage whether the file is actually there (@mshibuya, [#1926](https://github.com/carrierwaveuploader/carrierwave/issues/1926))
 
 ### Fixed
 * Fix `#process_uri` being called twice on every download attempt (@mshibuya)
+* Fix the remote storage being asked again on every access when the file is not there (@mshibuya, [#2698](https://github.com/carrierwaveuploader/carrierwave/pull/2698), [#2793](https://github.com/carrierwaveuploader/carrierwave/pull/2793))
+* Fix `NoMethodError` on `#size` when the remote storage reports no content length (@mshibuya, [#2787](https://github.com/carrierwaveuploader/carrierwave/issues/2787))
 
 ### Removed
 * Drop support for Ruby < 2.7 and Rails 6.x (@mshibuya)

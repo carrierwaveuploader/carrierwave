@@ -425,6 +425,10 @@ end
 
 The `model` variable points to the instance object the uploader is attached to.
 
+Note that `present?` on a version only tells whether a file is assigned, not whether
+that version was actually created. Use `uploader.thumb.exists?` to ask the storage,
+which costs a request when the storage is a remote one.
+
 ### Create versions from existing versions
 
 For performance reasons, it is often useful to create versions from existing ones
