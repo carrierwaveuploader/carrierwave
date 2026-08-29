@@ -63,6 +63,14 @@ class AvatarUploader < CarrierWave::Uploader::Base
 end
 ```
 
+Since the default `#store_dir` depends on a model, override it when using an uploader stand-alone to avoid NoMethodErroron model.id.
+
+```ruby
+def store_dir
+  "upload/avatars"
+end
+```
+
 You can use your uploader class to store and retrieve files like this:
 
 ```ruby
