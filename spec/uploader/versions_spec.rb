@@ -376,6 +376,13 @@ describe CarrierWave::Uploader do
         expect(@uploader.thumb.store_path).to eq('uploads/thumb_test.jpg')
         expect(@uploader.thumb.store_path('kebab.png')).to eq('uploads/thumb_kebab.png')
       end
+
+      it "should not evaluate the version condition until a version is accessed" do
+        @uploader_class.version(:preview, if: :true?)
+        expect(@uploader).not_to receive(:true?)
+        @uploader.retrieve_from_cache!('1369894322-345-1234-2255/test.jpg')
+        expect(@uploader.current_path).to eq(public_path('uploads/tmp/1369894322-345-1234-2255/test.jpg'))
+      end
     end
 
     describe '#store!' do
@@ -765,6 +772,13 @@ describe CarrierWave::Uploader do
           @uploader.retrieve_from_store!('monkey.txt')
           expect(@uploader.thumb).to be_present
           expect(@uploader.preview).to be_blank
+        end
+
+        it "should not evaluate the condition until a version is accessed" do
+          @uploader_class.version(:preview, if: :true?)
+          expect(@uploader).not_to receive(:true?)
+          @uploader.retrieve_from_store!('monkey.txt')
+          expect(@uploader.url).to eq('http://www.example.com')
         end
       end
 

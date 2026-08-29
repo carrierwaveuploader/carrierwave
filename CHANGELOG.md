@@ -10,6 +10,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * [BREAKING CHANGE] Decode the filename taken from a URL with URI semantics instead of form encoding, so a literal `+` no longer becomes a space (@mshibuya)
 * [BREAKING CHANGE] Stop asking the storage whether the file is there in `#blank?` and `#present?`, which now only tell whether a file is assigned (@mshibuya, [#2802](https://github.com/carrierwaveuploader/carrierwave/issues/2802), [#2776](https://github.com/carrierwaveuploader/carrierwave/issues/2776), [#2784](https://github.com/carrierwaveuploader/carrierwave/issues/2784))
 * Defer uploading a cached file to the remote cache storage until it's needed beyond the current request (@mshibuya, [#2605](https://github.com/carrierwaveuploader/carrierwave/issues/2605))
+* Defer evaluating the `:if`/`:unless` condition of versions until a version is accessed (@mshibuya, [#2461](https://github.com/carrierwaveuploader/carrierwave/issues/2461), [#2132](https://github.com/carrierwaveuploader/carrierwave/issues/2132), [#2669](https://github.com/carrierwaveuploader/carrierwave/pull/2669))
 
 ### Added
 * Support for marcel 2.x (@mshibuya)

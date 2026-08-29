@@ -106,7 +106,7 @@ module CarrierWave
         prepend Module.new {
           def initialize(*)
             super
-            @versions = nil
+            @versions = @deferred_version_retrieval = nil
           end
         }
       end
@@ -171,11 +171,16 @@ module CarrierWave
       # [Hash{Symbol => CarrierWave::Uploader}] a list of uploader instances
       #
       def versions
-        return @versions if @versions
-        @versions = {}
-        self.class.versions.each do |name, version|
-          @versions[name] = version.build(self.class).new(model, mounted_as)
-          @versions[name].parent_version = self
+        unless @versions
+          @versions = {}
+          self.class.versions.each do |name, version|
+            @versions[name] = version.build(self.class).new(model, mounted_as)
+            @versions[name].parent_version = self
+          end
+        end
+        if (retrieval = @deferred_version_retrieval)
+          @deferred_version_retrieval = nil
+          active_versions.each_value { |v| v.public_send(*retrieval) }
         end
         @versions
       end
@@ -344,12 +349,14 @@ module CarrierWave
         versions.each_value { |v| v.remove! }
       end
 
+      # Retrieval is deferred until #versions is accessed, as evaluating the versions'
+      # conditions can be costly and is pointless when no version is used
       def retrieve_versions_from_cache!(cache_name)
-        active_versions.each_value { |v| v.retrieve_from_cache!(cache_name) }
+        @deferred_version_retrieval = [:retrieve_from_cache!, cache_name]
       end
 
       def retrieve_versions_from_store!(identifier)
-        active_versions.each_value { |v| v.retrieve_from_store!(identifier) }
+        @deferred_version_retrieval = [:retrieve_from_store!, identifier]
       end
 
     end # Versions

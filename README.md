@@ -424,6 +424,8 @@ end
 ```
 
 The `model` variable points to the instance object the uploader is attached to.
+The condition is evaluated when the version is accessed, so it isn't called at all
+as long as you only use the original file.
 
 Note that `present?` on a version only tells whether a file is assigned, not whether
 that version was actually created. Use `uploader.thumb.exists?` to ask the storage,
