@@ -317,8 +317,16 @@ module CarrierWave
     def declared_content_type
       @declared_content_type ||
         if @file.respond_to?(:content_type) && @file.content_type
-          Marcel::MimeType.for(declared_type: @file.content_type.to_s.chomp)
+          Marcel::MimeType.for(declared_type: first_declared_content_type(@file.content_type))
         end
+    end
+
+    # Clients occasionally send more than one MIME type in a single header
+    # (e.g. "image/png; text/html" or "image/png, text/html"). Marcel 2 validates
+    # the declared type against the RFC grammar and rejects such values, so pick
+    # the first media type ourselves before handing it over.
+    def first_declared_content_type(content_type)
+      content_type.to_s.strip.split(/[;,\s]/, 2).first
     end
 
     # Guess content type from its file extension. Limit what to be returned to prevent spoofing.

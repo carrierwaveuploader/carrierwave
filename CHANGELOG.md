@@ -10,6 +10,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * [BREAKING CHANGE] Decode the filename taken from a URL with URI semantics instead of form encoding, so a literal `+` no longer becomes a space (@mshibuya)
 
 ### Added
+* Support for marcel 2.x (@mshibuya)
 * Make the downloader accept URLs as pasted by end users, stripping surrounding whitespace and embedded newlines and supplying a missing scheme (@mshibuya)
 
 ### Fixed
