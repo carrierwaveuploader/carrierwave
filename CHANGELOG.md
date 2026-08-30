@@ -5,8 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 3.1.4 - 2026-08-30
+
 ### Added
-* Support for marcel 2.x (@mshibuya)
+* Support for marcel 2.x (@mshibuya [214f309](https://github.com/carrierwaveuploader/carrierwave/commit/214f309fd04bc870f40456b37f82de081ce52e6a))
+
+### Changed
+* Relax the `marcel` dependency constraint (@mkon [#2828](https://github.com/carrierwaveuploader/carrierwave/pull/2828))
+* Relax the `image_processing` dependency to allow `~> 2.0` (@amiryalsa [#2826](https://github.com/carrierwaveuploader/carrierwave/pull/2826))
 
 ## 3.1.3 - 2026-05-23
 
