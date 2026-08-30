@@ -116,8 +116,10 @@ module CarrierWave
       #
       def retrieve_from_store!(identifier)
         with_callbacks(:retrieve_from_store, identifier) do
-          @file = storage.retrieve!(identifier)
+          # Has to come first, as the storage derives the path from what was recorded
+          # for the identifier
           @identifier = identifier
+          @file = storage.retrieve!(identifier)
         end
       end
 

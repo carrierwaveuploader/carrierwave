@@ -16,6 +16,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Support for marcel 2.x (@mshibuya)
 * Make the downloader accept URLs as pasted by end users, stripping surrounding whitespace and embedded newlines and supplying a missing scheme (@mshibuya)
 * Add `#exists?` to ask the storage whether the file is actually there (@mshibuya, [#1926](https://github.com/carrierwaveuploader/carrierwave/issues/1926))
+* Add the `metadata_column` option to record what was stored, so that which versions were created no longer has to be decided again on retrieval (@mshibuya, [#2148](https://github.com/carrierwaveuploader/carrierwave/issues/2148), [#1926](https://github.com/carrierwaveuploader/carrierwave/issues/1926))
 
 ### Fixed
 * Fix `#process_uri` being called twice on every download attempt (@mshibuya)

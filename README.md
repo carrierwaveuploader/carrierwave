@@ -429,7 +429,8 @@ as long as you only use the original file.
 
 Note that `present?` on a version only tells whether a file is assigned, not whether
 that version was actually created. Use `uploader.thumb.exists?` to ask the storage,
-which costs a request when the storage is a remote one.
+which costs a request when the storage is a remote one, or
+[record what was stored](#recording-what-was-stored) to have the answer at hand.
 
 ### Create versions from existing versions
 
@@ -473,6 +474,43 @@ end
 Please note that `#full_filename` mustn't be constructed based on a dynamic value
 that can change from the time of store and time of retrieval, since it will result in
 being unable to retrieve a file previously stored.
+Recording what was stored lifts this limitation.
+
+## Recording what was stored
+
+By default CarrierWave persists the identifier alone, and works out everything else on
+retrieval by re-running the uploader's definition and asking the storage. Which versions
+a conditional creates is decided when the file is stored, so re-deciding it later can
+give a different answer than what is actually there, and asking a remote storage for
+things like the size costs a request per record.
+
+Give the mount a column to record it in, and it stops guessing:
+
+```ruby
+class Event < ActiveRecord::Base
+  mount_uploader :image, ImageUploader, metadata_column: :image_metadata
+end
+```
+
+```ruby
+add_column :events, :image_metadata, :json
+```
+
+The column can be a `json`/`jsonb` one, a serialized one, or plain text holding JSON.
+For `mount_uploaders` it holds one set of facts per file.
+
+Records stored before the column was added have nothing recorded, and keep working as
+they always have, so no backfill is needed.
+
+Override `#build_metadata` to record your own facts:
+
+```ruby
+class ImageUploader < CarrierWave::Uploader::Base
+  def build_metadata
+    super.merge('width' => width, 'height' => height)
+  end
+end
+```
 
 ## Making uploads work across form redisplays
 

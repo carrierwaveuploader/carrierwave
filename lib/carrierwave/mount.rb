@@ -102,6 +102,7 @@ module CarrierWave
     # === Options
     #
     # [:mount_on => Symbol] if the name of the column to be serialized to differs you can override it using this option
+    # [:metadata_column => Symbol] the column to record what was stored in, so that it does not have to be worked out again
     # [:ignore_integrity_errors => Boolean] if set to true, integrity errors will result in caching failing silently
     # [:ignore_processing_errors => Boolean] if set to true, processing errors will result in caching failing silently
     #
@@ -247,6 +248,7 @@ module CarrierWave
     # === Options
     #
     # [:mount_on => Symbol] if the name of the column to be serialized to differs you can override it using this option
+    # [:metadata_column => Symbol] the column to record what was stored in, so that it does not have to be worked out again
     # [:ignore_integrity_errors => Boolean] if set to true, integrity errors will result in caching failing silently
     # [:ignore_processing_errors => Boolean] if set to true, processing errors will result in caching failing silently
     #

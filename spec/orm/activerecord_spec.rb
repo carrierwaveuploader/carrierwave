@@ -9,6 +9,8 @@ describe CarrierWave::ActiveRecord do
       t.column :textfile, :string
       t.column :textfiles, :json
       t.column :foo, :string
+      t.column :image_metadata, :json
+      t.column :images_metadata, :json
     end
   end
 
@@ -120,7 +122,7 @@ describe CarrierWave::ActiveRecord do
         @event.save!
         @event.reload
 
-        expect(@event.as_json(:except => [:id, :image, :images, :textfiles, :foo])).to eq({"textfile" => nil})
+        expect(@event.as_json(:except => [:id, :image, :images, :textfiles, :foo, :image_metadata, :images_metadata])).to eq({"textfile" => nil})
       end
       it "should respect both options[:only] and options[:except] when passed to as_json for the serializable hash" do
         @event[:image] = 'test.jpeg'
@@ -830,6 +832,99 @@ describe CarrierWave::ActiveRecord do
     end
   end
 
+  describe '#mount_uploader with metadata_column' do
+    before do
+      @uploader.version(:thumb)
+      @uploader.version(:preview, if: :preview?)
+      @uploader.class_eval { def preview?(file); model.foo == 'yes'; end }
+      Event.mount_uploader(:image, @uploader, metadata_column: :image_metadata)
+      @event.foo = 'yes'
+      @event.image = stub_file('test.jpeg')
+      @event.save!
+    end
+
+    after { FileUtils.rm_rf(public_path("uploads")) }
+
+    it "should record what was stored" do
+      expect(@event.image_metadata).to include(
+        'filename' => 'test.jpeg',
+        'size' => stub_file('test.jpeg').size,
+        'content_type' => 'application/octet-stream'
+      )
+      expect(@event.image_metadata['versions'].keys).to eq %w[thumb preview]
+    end
+
+    it "should tell which versions were created without asking the conditions again" do
+      @event.reload
+      expect_any_instance_of(@uploader).not_to receive(:preview?)
+      expect(@event.image.version_active?(:preview)).to be true
+      expect(@event.image.preview.url).to eq('/uploads/preview_test.jpeg')
+    end
+
+    it "should keep telling so when the condition would now answer otherwise" do
+      Event.where(id: @event.id).update_all(foo: 'no')
+      expect(Event.first.image.preview.url).to eq('/uploads/preview_test.jpeg')
+    end
+
+    it "should not offer a version which was not created, whatever the condition says now" do
+      @event.foo = 'no'
+      @event.image = stub_file('new.jpeg')
+      @event.save!
+      Event.where(id: @event.id).update_all(foo: 'yes')
+
+      expect(Event.first.image.preview.url).to be_nil
+    end
+
+    it "should answer the size and the content type without touching the file" do
+      @event.reload
+      FileUtils.rm_rf(public_path("uploads"))
+
+      expect(@event.image.size).to eq stub_file('test.jpeg').size
+      expect(@event.image.content_type).to eq 'application/octet-stream'
+    end
+
+    it "should be cleared along with the file" do
+      @event.remove_image = true
+      @event.save!
+
+      expect(@event.image_metadata).to be_nil
+    end
+
+    it "should fall back to asking the conditions when nothing is recorded" do
+      Event.where(id: @event.id).update_all(image_metadata: nil)
+
+      expect(Event.first.image.preview.url).to eq('/uploads/preview_test.jpeg')
+    end
+
+    it "should accept a column holding JSON as text" do
+      Event.where(id: @event.id).update_all(image_metadata: @event.image_metadata.to_json)
+
+      expect(Event.first.image.version_active?(:preview)).to be true
+    end
+  end
+
+  describe '#mount_uploaders with metadata_column' do
+    before do
+      @uploader.version(:thumb)
+      Event.mount_uploaders(:images, @uploader, metadata_column: :images_metadata)
+      @event.images = [stub_file('test.jpeg'), stub_file('old.jpeg')]
+      @event.save!
+    end
+
+    after { FileUtils.rm_rf(public_path("uploads")) }
+
+    it "should record one set of facts per file" do
+      expect(@event.images_metadata.map { |metadata| metadata['filename'] }).to eq %w[test.jpeg old.jpeg]
+    end
+
+    it "should give each file the facts recorded for it" do
+      @event.reload
+
+      expect(@event.images.map(&:content_type)).to eq %w[application/octet-stream application/octet-stream]
+      expect(@event.images.map { |image| image.thumb.url }).to eq ['/uploads/thumb_test.jpeg', '/uploads/thumb_old.jpeg']
+    end
+  end
+
   describe '#mount_uploader removing old files' do
     before do
       reset_class("Event")
@@ -1286,7 +1381,7 @@ describe CarrierWave::ActiveRecord do
         @event.save!
         @event.reload
 
-        expect(@event.as_json(:except => [:id, :image, :images, :textfile, :foo])).to eq({"textfiles" => nil})
+        expect(@event.as_json(:except => [:id, :image, :images, :textfile, :foo, :image_metadata, :images_metadata])).to eq({"textfiles" => nil})
       end
       it "should respect both options[:only] and options[:except] when passed to as_json for the serializable hash" do
         @event[:images] = ['test.jpeg']

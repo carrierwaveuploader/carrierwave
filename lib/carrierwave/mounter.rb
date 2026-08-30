@@ -1,3 +1,6 @@
+require "json"
+require "active_support/core_ext/array/wrap"
+
 module CarrierWave
 
   # this is an internal class, used by CarrierWave::Mount so that
@@ -8,6 +11,10 @@ module CarrierWave
         uploaders.first&.identifier
       end
 
+      def metadata
+        uploaders.first&.build_metadata
+      end
+
       def temporary_identifier
         temporary_identifiers.first
       end
@@ -16,6 +23,10 @@ module CarrierWave
     class Multiple < Mounter # :nodoc
       def identifier
         uploaders.map(&:identifier).presence
+      end
+
+      def metadata
+        uploaders.map(&:build_metadata).presence
       end
 
       def temporary_identifier
@@ -63,11 +74,28 @@ module CarrierWave
       [record.read_uploader(serialization_column)].flatten.reject(&:blank?)
     end
 
+    ##
+    # The stored metadata, as many as there are identifiers. Whatever the column gives
+    # is accepted, so that it can be a json column, a serialized one, or plain text.
+    #
+    def read_metadata
+      return [] unless metadata_column
+
+      value = record.read_uploader(metadata_column)
+      value = JSON.parse(value) rescue nil if value.is_a?(String)
+      Array.wrap(value)
+    end
+
     def uploaders
-      @uploaders ||= read_identifiers.map do |identifier|
-        uploader = blank_uploader
-        uploader.retrieve_from_store!(identifier)
-        uploader
+      @uploaders ||= begin
+        metadata = read_metadata
+        read_identifiers.each_with_index.map do |identifier, index|
+          uploader = blank_uploader
+          # Has to come first, as retrieval derives the path from what was recorded
+          uploader.metadata = metadata[index]
+          uploader.retrieve_from_store!(identifier)
+          uploader
+        end
       end
     end
 
@@ -159,6 +187,7 @@ module CarrierWave
       @added_uploaders += additions
 
       record.write_uploader(serialization_column, identifier)
+      record.write_uploader(metadata_column, metadata) if metadata_column
     end
 
     def urls(*args)
@@ -197,6 +226,10 @@ module CarrierWave
 
     def serialization_column
       option(:mount_on) || column
+    end
+
+    def metadata_column
+      option(:metadata_column)
     end
 
     def remove_previous

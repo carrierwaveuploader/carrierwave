@@ -45,6 +45,7 @@ module CarrierWave
         add_config :validate_processing
         add_config :validate_download
         add_config :mount_on
+        add_config :metadata_column
         add_config :cache_only
         add_config :download_retry_count
         add_config :download_retry_wait_time
