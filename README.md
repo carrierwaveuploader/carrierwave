@@ -499,6 +499,21 @@ add_column :events, :image_metadata, :json
 The column can be a `json`/`jsonb` one, a serialized one, or plain text holding JSON.
 For `mount_uploaders` it holds one set of facts per file.
 
+Recording is what makes `process convert: format` usable with a condition. The
+extension follows the conversion which actually took place, and without a record of
+it the stored file cannot be found again, so mounting such an uploader without a
+`metadata_column` is refused. Put such a conversion on the uploader
+itself rather than inside a version, as a version's cached file is named after the
+parent's cache name, which cannot carry an extension of its own across a form
+redisplay. To have a version in a format of its own, make the version conditional
+instead and convert it unconditionally:
+
+```ruby
+version :webp, if: :convert_to_webp? do
+  process convert: :webp
+end
+```
+
 Records stored before the column was added have nothing recorded, and keep working as
 they always have, so no backfill is needed.
 

@@ -47,6 +47,17 @@ module CarrierWave
         }
       end
 
+      ##
+      # === Returns
+      #
+      # [Boolean] Whether what is stored gets recorded, which the mount decides
+      #
+      def metadata_recorded?
+        model.class.respond_to?(:uploader_option) &&
+          model.class.uploaders.has_key?(mounted_as) &&
+          !!model.class.uploader_option(mounted_as, :metadata_column)
+      end
+
       def size
         metadata['size'] || super
       end

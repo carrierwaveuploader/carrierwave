@@ -196,10 +196,10 @@ describe CarrierWave::Uploader do
       expect(uploader.file.filename).to eq 'landscape.png'
     end
 
-    it "does not change #original_filename but changes #cache_path and #url to have new extension" do
+    it "does not change #original_filename but changes #cache_name, #cache_path and #url to have new extension" do
       uploader.cache!(File.open(file_path('landscape.jpg')))
       expect(uploader.send(:original_filename)).to eq 'landscape.jpg'
-      expect(uploader.cache_name.split('/').last).to eq 'landscape.jpg'
+      expect(uploader.cache_name.split('/').last).to eq 'landscape.png'
       expect(File.basename(uploader.cache_path)).to eq 'landscape.png'
       expect(File.basename(uploader.url)).to eq 'landscape.png'
     end
@@ -257,6 +257,68 @@ describe CarrierWave::Uploader do
           expect(uploader).to be_format('png')
         end
       end
+    end
+  end
+
+  context "when using #convert with a condition" do
+    let(:another_uploader) { uploader_class.new }
+    before do
+      uploader_class.class_eval do
+        include CarrierWave::MiniMagick
+        attr_writer :should_convert
+
+        process convert: :png, if: :should_convert?
+
+        def should_convert?(file)
+          @should_convert
+        end
+      end
+      allow(uploader).to receive(:warn)
+      allow(another_uploader).to receive(:warn)
+    end
+
+    it "warns that the resulting extension has to be recorded" do
+      uploader.should_convert = true
+      uploader.cache!(File.open(file_path('landscape.jpg')))
+      expect(uploader).to have_received(:warn).with(/metadata_column/)
+    end
+
+    it "does not warn when nothing is converted after all" do
+      uploader.should_convert = false
+      uploader.cache!(File.open(file_path('landscape.jpg')))
+      expect(uploader).not_to have_received(:warn)
+    end
+
+    it "changes the extension when the condition is met" do
+      uploader.should_convert = true
+      uploader.store!(File.open(file_path('landscape.jpg')))
+      expect(File.basename(uploader.store_path)).to eq 'landscape.png'
+      expect(uploader.build_metadata['filename']).to eq 'landscape.png'
+    end
+
+    it "leaves the extension alone when the condition is not met" do
+      uploader.should_convert = false
+      uploader.store!(File.open(file_path('landscape.jpg')))
+      expect(File.basename(uploader.store_path)).to eq 'landscape.jpg'
+      expect(uploader.build_metadata['filename']).to eq 'landscape.jpg'
+    end
+
+    it "allows the stored file to be retrieved with what was recorded" do
+      uploader.should_convert = true
+      uploader.store!(File.open(file_path('landscape.jpg')))
+
+      another_uploader.metadata = uploader.build_metadata
+      another_uploader.retrieve_from_store!(uploader.identifier)
+      expect(File.exist?(another_uploader.path)).to be true
+    end
+
+    it "allows the cached file to be retrieved across a form redisplay" do
+      uploader.should_convert = true
+      uploader.cache!(File.open(file_path('landscape.jpg')))
+
+      another_uploader.retrieve_from_cache!(uploader.cache_name)
+      expect(another_uploader.cache_path).to eq uploader.cache_path
+      expect(File.exist?(another_uploader.path)).to be true
     end
   end
 
