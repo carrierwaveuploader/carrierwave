@@ -40,12 +40,13 @@ module CarrierWave
             response = OpenURI.open_uri(uri, headers)
           else
             request = nil
+            ssrf_options = @uploader.ssrf_filter_options || {}
             if ::SsrfFilter::VERSION.to_f < 1.1
-              response = SsrfFilter.get(uri, headers: headers) do |req|
+              response = SsrfFilter.get(uri, headers: headers, **ssrf_options) do |req|
                 request = req
               end
             else
-              response = SsrfFilter.get(uri, headers: headers, request_proc: ->(req) { request = req }) do |res|
+              response = SsrfFilter.get(uri, headers: headers, request_proc: ->(req) { request = req }, **ssrf_options) do |res|
                 res.body # ensure to read body
               end
             end
