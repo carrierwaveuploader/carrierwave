@@ -9,8 +9,6 @@ module CarrierWave
         class_attribute :processors, :instance_writer => false
         self.processors = []
 
-        class_attribute :convert_condition_checked
-
         before :cache, :process!
       end
 
@@ -69,20 +67,9 @@ module CarrierWave
           new_processors.each do |processor, processor_args|
             self.processors += [[processor, processor_args, condition, condition_type]]
 
-            # Treat :convert specially, since it should trigger the file extension change.
-            # A conditional one is settled per file by #process!, so it is left alone here.
-            force_extension processor_args if processor == :convert && !condition
+            # Treat :convert specially, since it should trigger the file extension change
+            force_extension processor_args if processor == :convert
           end
-        end
-
-        ##
-        # === Returns
-        #
-        # [Boolean] Whether the file is converted only on a condition, which makes the
-        #   resulting file extension unknowable without a record of it
-        #
-        def conditional_convert?
-          processors.any? { |method, _, condition, _| method == :convert && condition }
         end
       end # ClassMethods
 
@@ -94,6 +81,8 @@ module CarrierWave
 
         with_callbacks(:process, new_file) do
           self.class.processors.each do |method, args, condition, condition_type|
+            ensure_convert_condition_is_recoverable(condition, condition_type) if method == :convert && condition
+
             if condition && condition_type == :if
               if condition.respond_to?(:call)
                 next unless condition.call(self, :args => args, :method => method, :file => new_file)
@@ -106,11 +95,6 @@ module CarrierWave
               elsif self.send(condition, new_file)
                 next
               end
-            end
-
-            if method == :convert
-              self.force_extension = args
-              show_warning_when_the_extension_is_unrecordable if condition
             end
 
             if args.is_a? Array
@@ -129,21 +113,41 @@ module CarrierWave
 
     private
 
-      # The mount raises over this, but it cannot see a version's processors, as those
-      # are only built once a version is used
-      def show_warning_when_the_extension_is_unrecordable
-        return if self.class.convert_condition_checked
-        self.class.convert_condition_checked = true
-        return if metadata_recorded?
+      # The condition decides whether the conversion takes place, so it decides the
+      # extension too. It is evaluated against the filename alone, which is all that
+      # is known when a stored file is being located again.
+      def convert_applies_to?(filename)
+        _, _, condition, condition_type = self.class.processors.detect { |method,| method == :convert }
+        return true unless condition
 
-        warn <<~MESSAGE
-          [WARNING] #{self.class.name || 'An uploader'} converts the file conditionally, so the extension of the stored file cannot be worked out again on retrieval, and has to be recorded.
-          Give the mount a `metadata_column` to record it in. Note that a conditional conversion within a version doesn't survive a form redisplay either way, as a version's cached file is named after the parent's cache name: https://github.com/carrierwaveuploader/carrierwave#recording-what-was-stored
-        MESSAGE
+        evaluate_convert_condition(condition, condition_type, CarrierWave::FileReference.new(filename))
+      end
+
+      def evaluate_convert_condition(condition, condition_type, file)
+        result =
+          if condition.respond_to?(:call)
+            condition.call(self, :method => :convert, :file => file)
+          else
+            send(condition, file)
+          end
+        condition_type == :unless ? !result : !!result
+      end
+
+      def ensure_convert_condition_is_recoverable(condition, condition_type)
+        from_file = evaluate_convert_condition(condition, condition_type, file)
+        from_name = begin
+          evaluate_convert_condition(condition, condition_type, CarrierWave::FileReference.new(original_filename))
+        rescue CarrierWave::FileUnavailable
+          :unavailable
+        end
+        return if from_file == from_name
+
+        raise CarrierWave::ProcessingError, "The condition given to `process convert:` answered #{from_file.inspect} for the file itself but #{from_name.inspect} from its name #{original_filename.inspect} alone. " \
+          "It has to be answerable from the filename, so that the resulting file extension can be worked out again when the file is retrieved."
       end
 
       def forcing_extension(filename)
-        if force_extension && filename
+        if force_extension && filename && convert_applies_to?(filename)
           Pathname.new(filename).sub_ext(".#{force_extension.to_s.delete_prefix('.')}").to_s
         else
           filename

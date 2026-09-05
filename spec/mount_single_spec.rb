@@ -18,25 +18,6 @@ describe CarrierWave::Mount do
       @instance = @class.new
     end
 
-    context "when the uploader converts the file conditionally" do
-      before do
-        @uploader.class_eval do
-          include CarrierWave::MiniMagick
-          process convert: :png, if: :convert?
-        end
-      end
-
-      it "should require a column to record the resulting extension in" do
-        expect { @class.mount_uploader(:image, @uploader) }
-          .to raise_error(ArgumentError, /metadata_column/)
-      end
-
-      it "should be accepted once given one" do
-        expect { @class.mount_uploader(:image, @uploader, metadata_column: :image_metadata) }
-          .not_to raise_error
-      end
-    end
-
     it "should maintain the ability to super" do
       @class.class_eval do
         def image_uploader

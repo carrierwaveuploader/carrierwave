@@ -103,9 +103,7 @@ module CarrierWave
       # [String] a cache name, in the format TIMEINT-PID-COUNTER-RND/filename.txt
       #
       def cache_name
-        # Carries the extension the processing settled on, which cannot be worked out
-        # again in the request the file is retrieved in
-        File.join(cache_id, full_original_filename) if cache_id && original_filename
+        File.join(cache_id, original_filename) if cache_id && original_filename
       end
 
       ##

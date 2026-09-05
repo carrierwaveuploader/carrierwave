@@ -330,11 +330,6 @@ module CarrierWave
       include CarrierWave::Mount::Extension
 
       uploader = build_uploader(uploader, column, &block)
-      if uploader.conditional_convert? && !options[:metadata_column]
-        raise ArgumentError, "Mounting an uploader which converts the file conditionally requires a column to record the resulting file extension in, as it cannot be worked out again on retrieval. " \
-                             "Give the mount a `metadata_column`, like `mount_uploader :#{column}, TheUploader, metadata_column: :#{column}_metadata`. " \
-                             "See https://github.com/carrierwaveuploader/carrierwave#recording-what-was-stored for details."
-      end
       uploaders[column.to_sym] = uploader
       uploader_options[column.to_sym] = options
 

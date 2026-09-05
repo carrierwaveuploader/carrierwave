@@ -378,6 +378,34 @@ class MyUploader < CarrierWave::Uploader::Base
 end
 ```
 
+When the conversion is conditional, the resulting file extension depends on the
+condition, and it has to be worked out again when the file is retrieved, where the
+file itself is not at hand. The condition is therefore answered from the filename
+alone, and it is checked on upload: if it answers differently for the file and for
+its name, the upload is refused, as the stored file could not be found again.
+
+```ruby
+class MyUploader < CarrierWave::Uploader::Base
+  include CarrierWave::MiniMagick
+
+  process convert: :png, unless: :already_png?
+
+  def already_png?(file)
+    file.extension == 'png'   # answerable from the name
+  end
+end
+```
+
+Note that a condition which is answerable from the name but can change over time,
+such as one reading a model attribute, will orphan the file when it changes. To
+convert based on the file's content instead, do it in a version of its own:
+
+```ruby
+version :webp, if: :convert_to_webp? do
+  process convert: :webp
+end
+```
+
 ### Nested versions
 
 It is possible to nest versions within versions:
@@ -474,17 +502,17 @@ end
 Please note that `#full_filename` mustn't be constructed based on a dynamic value
 that can change from the time of store and time of retrieval, since it will result in
 being unable to retrieve a file previously stored.
-Recording what was stored lifts this limitation.
 
 ## Recording what was stored
 
 By default CarrierWave persists the identifier alone, and works out everything else on
 retrieval by re-running the uploader's definition and asking the storage. Which versions
-a conditional creates is decided when the file is stored, so re-deciding it later can
-give a different answer than what is actually there, and asking a remote storage for
-things like the size costs a request per record.
+a conditional creates is settled when the file is stored, so deciding it again later can
+give a different answer than what is actually there: a version which exists loses its
+URL, or one which was never created gets a URL leading to nothing. Asking a remote
+storage for the size or the content type costs a request per record.
 
-Give the mount a column to record it in, and it stops guessing:
+Give the mount a column to record it in, and it stops working them out:
 
 ```ruby
 class Event < ActiveRecord::Base
@@ -496,23 +524,23 @@ end
 add_column :events, :image_metadata, :json
 ```
 
-The column can be a `json`/`jsonb` one, a serialized one, or plain text holding JSON.
-For `mount_uploaders` it holds one set of facts per file.
-
-Recording is what makes `process convert: format` usable with a condition. The
-extension follows the conversion which actually took place, and without a record of
-it the stored file cannot be found again, so mounting such an uploader without a
-`metadata_column` is refused. Put such a conversion on the uploader
-itself rather than inside a version, as a version's cached file is named after the
-parent's cache name, which cannot carry an extension of its own across a form
-redisplay. To have a version in a format of its own, make the version conditional
-instead and convert it unconditionally:
+What gets recorded is the stored filename, the size, the content type, and the same for
+each version which was created:
 
 ```ruby
-version :webp, if: :convert_to_webp? do
-  process convert: :webp
-end
+event.image_metadata
+# => { "filename" => "guitar.jpg", "size" => 34124, "content_type" => "image/jpeg",
+#      "versions" => { "thumb" => { "filename" => "thumb_guitar.jpg", ... } } }
 ```
+
+`#version_active?`, `#size` and `#content_type` then read the record instead of working
+it out again or asking the storage, and a stored file is looked for under the name it
+was given, so changing the uploader afterwards doesn't orphan what is already there.
+`#exists?` still asks the storage, as whether the file is really there is the one
+question a record cannot answer.
+
+The column can be a `json`/`jsonb` one, a serialized one, or plain text holding JSON.
+For `mount_uploaders` it holds one set of facts per file.
 
 Records stored before the column was added have nothing recorded, and keep working as
 they always have, so no backfill is needed.
