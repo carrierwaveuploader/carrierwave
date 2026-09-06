@@ -94,6 +94,7 @@ module CarrierWave
         cache!(new_file) if new_file && !cached?
         if !cache_only && @file && @cache_id
           with_callbacks(:store, new_file) do
+            ensure_the_filename_can_be_worked_out_again
             new_file = storage.store!(@file)
             if delete_tmp_file_after_storage
               @file.delete unless move_to_store
@@ -144,6 +145,25 @@ module CarrierWave
       end
 
     private
+
+      ##
+      # A later request gets the identifier and nothing else, so the name the file is
+      # stored under has to follow from it. Ask a fresh uploader what it would work out,
+      # and refuse before anything is written rather than leave the file somewhere it
+      # would never be found. Versions are left out: as long as the original is found,
+      # they can be made again. So is a mount which records what it stored, which is
+      # spared having to work the name out at all.
+      #
+      def ensure_the_filename_can_be_worked_out_again
+        return if parent_version || metadata_recorded?
+
+        for_file = deduplicated_filename
+        would_look_for = self.class.new(model, mounted_as).send(:full_filename, for_file)
+        return if would_look_for == full_filename(for_file)
+
+        raise CarrierWave::UnretrievableFile, "The file would be stored as #{full_filename(for_file).inspect}, but a later request given only the identifier #{for_file.inspect} would look for #{would_look_for.inspect}. " \
+          "#full_filename has to follow from the identifier, as that is all such a request gets."
+      end
 
       def full_filename(for_file)
         forcing_extension(for_file)

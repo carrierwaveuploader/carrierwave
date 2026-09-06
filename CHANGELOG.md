@@ -6,14 +6,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Changed
+* [BREAKING CHANGE] Refuse `process convert: format` with `:if`/`:unless`, as the resulting file extension cannot be worked out again on retrieval (@mshibuya, [#2723](https://github.com/carrierwaveuploader/carrierwave/issues/2723))
 * [BREAKING CHANGE] Stop percent-decoding the URL on download, keeping `%2F` and `/`, `%2B` and `+` distinct (@mshibuya, [#858](https://github.com/carrierwaveuploader/carrierwave/issues/858), [#2505](https://github.com/carrierwaveuploader/carrierwave/issues/2505), [#2590](https://github.com/carrierwaveuploader/carrierwave/issues/2590), [#2800](https://github.com/carrierwaveuploader/carrierwave/issues/2800))
 * [BREAKING CHANGE] Decode the filename taken from a URL with URI semantics instead of form encoding, so a literal `+` no longer becomes a space (@mshibuya)
 * [BREAKING CHANGE] Stop asking the storage whether the file is there in `#blank?` and `#present?`, which now only tell whether a file is assigned (@mshibuya, [#2802](https://github.com/carrierwaveuploader/carrierwave/issues/2802), [#2776](https://github.com/carrierwaveuploader/carrierwave/issues/2776), [#2784](https://github.com/carrierwaveuploader/carrierwave/issues/2784))
 * Defer uploading a cached file to the remote cache storage until it's needed beyond the current request (@mshibuya, [#2605](https://github.com/carrierwaveuploader/carrierwave/issues/2605))
 * Defer evaluating the `:if`/`:unless` condition of versions until a version is accessed (@mshibuya, [#2461](https://github.com/carrierwaveuploader/carrierwave/issues/2461), [#2132](https://github.com/carrierwaveuploader/carrierwave/issues/2132), [#2669](https://github.com/carrierwaveuploader/carrierwave/pull/2669))
-* [BREAKING CHANGE] `#cache_name` now carries the file extension the processing settled on, instead of the one the file was uploaded with (@mshibuya, [#2723](https://github.com/carrierwaveuploader/carrierwave/issues/2723))
 
 ### Added
+* Refuse to store a file where a later request given only the identifier would not look for it (@mshibuya)
 * Support for marcel 2.x (@mshibuya)
 * Make the downloader accept URLs as pasted by end users, stripping surrounding whitespace and embedded newlines and supplying a missing scheme (@mshibuya)
 * Add `#exists?` to ask the storage whether the file is actually there (@mshibuya, [#1926](https://github.com/carrierwaveuploader/carrierwave/issues/1926))
@@ -23,7 +24,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Fix `#process_uri` being called twice on every download attempt (@mshibuya)
 * Fix the remote storage being asked again on every access when the file is not there (@mshibuya, [#2698](https://github.com/carrierwaveuploader/carrierwave/pull/2698), [#2793](https://github.com/carrierwaveuploader/carrierwave/pull/2793))
 * Fix `NoMethodError` on `#size` when the remote storage reports no content length (@mshibuya, [#2787](https://github.com/carrierwaveuploader/carrierwave/issues/2787))
-* Fix `process convert: format` with a condition changing the file extension even when the conversion doesn't take place. Mounting an uploader which does so now requires a `metadata_column` to record the resulting extension in (@mshibuya, [#2723](https://github.com/carrierwaveuploader/carrierwave/issues/2723))
 
 ### Removed
 * Drop support for Ruby < 2.7 and Rails 6.x (@mshibuya)

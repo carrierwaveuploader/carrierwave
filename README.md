@@ -378,6 +378,32 @@ class MyUploader < CarrierWave::Uploader::Base
 end
 ```
 
+`process convert: format` cannot be given a condition. The file extension follows the
+conversion, and it has to be worked out again when the file is retrieved, where whether
+the condition held is not known. Convert unconditionally, or give the format a version
+of its own:
+
+```ruby
+version :webp, if: :convert_to_webp? do
+  process convert: :webp   # unconditional within the version
+end
+```
+
+If you need to convert on a condition and keep it on the uploader itself, take the
+naming over so that it still follows from the identifier:
+
+```ruby
+process :to_jpeg, if: :heic?
+
+def to_jpeg
+  minimagick! { |builder| builder.convert('jpg') }
+end
+
+def full_filename(for_file)
+  for_file.sub(/\.heic\z/i, '.jpg')
+end
+```
+
 ### Nested versions
 
 It is possible to nest versions within versions:
@@ -473,8 +499,8 @@ end
 
 Please note that `#full_filename` mustn't be constructed based on a dynamic value
 that can change from the time of store and time of retrieval, since it will result in
-being unable to retrieve a file previously stored.
-Recording what was stored lifts this limitation.
+being unable to retrieve a file previously stored. Storing refuses to leave a file
+somewhere a later request would not look, so this is caught rather than silent.
 
 ## Recording what was stored
 
@@ -498,21 +524,6 @@ add_column :events, :image_metadata, :json
 
 The column can be a `json`/`jsonb` one, a serialized one, or plain text holding JSON.
 For `mount_uploaders` it holds one set of facts per file.
-
-Recording is what makes `process convert: format` usable with a condition. The
-extension follows the conversion which actually took place, and without a record of
-it the stored file cannot be found again, so mounting such an uploader without a
-`metadata_column` is refused. Put such a conversion on the uploader
-itself rather than inside a version, as a version's cached file is named after the
-parent's cache name, which cannot carry an extension of its own across a form
-redisplay. To have a version in a format of its own, make the version conditional
-instead and convert it unconditionally:
-
-```ruby
-version :webp, if: :convert_to_webp? do
-  process convert: :webp
-end
-```
 
 Records stored before the column was added have nothing recorded, and keep working as
 they always have, so no backfill is needed.

@@ -23,6 +23,62 @@ describe CarrierWave::Uploader do
     end
   end
 
+  describe '#store! when the name could not be worked out again' do
+    let(:file) { File.open(file_path('test.jpg')) }
+
+    it "refuses when the name is built from state the uploader won't have again" do
+      @uploader_class.class_eval do
+        process :remember
+        def remember; @tag = 'abc'; end
+        def full_filename(for_file); "#{@tag}-#{for_file}"; end
+      end
+
+      expect { @uploader.store!(file) }
+        .to raise_error(CarrierWave::UnretrievableFile, /would look for "-test.jpg"/)
+    end
+
+    it "leaves nothing behind when it refuses" do
+      @uploader_class.class_eval do
+        process :remember
+        def remember; @tag = 'abc'; end
+        def full_filename(for_file); "#{@tag}-#{for_file}"; end
+      end
+
+      expect { @uploader.store!(file) }.to raise_error(CarrierWave::UnretrievableFile)
+      expect(Dir[public_path('uploads/*.*')]).to be_empty
+    end
+
+    it "stores as usual when the name follows from the identifier" do
+      @uploader_class.class_eval do
+        def full_filename(for_file); "prefixed-#{for_file}"; end
+      end
+
+      expect { @uploader.store!(file) }.not_to raise_error
+      expect(@uploader.store_path).to eq 'uploads/prefixed-test.jpg'
+    end
+
+    it "allows a name built from the model, which is settled by the time it is stored" do
+      model = double('a model', tag: 'abc')
+      @uploader_class.class_eval do
+        def full_filename(for_file); "#{model.tag}-#{for_file}"; end
+      end
+
+      expect { @uploader_class.new(model, :image).store!(file) }.not_to raise_error
+    end
+
+    it "leaves a version alone, as it can be made again" do
+      @uploader_class.class_eval do
+        version(:thumb) do
+          process :remember
+          def remember; @tag = 'abc'; end
+          def full_filename(for_file); "#{@tag}-thumb-#{for_file}"; end
+        end
+      end
+
+      expect { @uploader.store!(file) }.not_to raise_error
+    end
+  end
+
   describe '#store!' do
     before do
       @file = File.open(file_path('test.jpg'))
