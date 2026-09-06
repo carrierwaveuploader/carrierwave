@@ -9,8 +9,6 @@ module CarrierWave
         class_attribute :processors, :instance_writer => false
         self.processors = []
 
-        class_attribute :convert_condition_checked
-
         before :cache, :process!
       end
 
@@ -69,20 +67,18 @@ module CarrierWave
           new_processors.each do |processor, processor_args|
             self.processors += [[processor, processor_args, condition, condition_type]]
 
-            # Treat :convert specially, since it should trigger the file extension change.
-            # A conditional one is settled per file by #process!, so it is left alone here.
-            force_extension processor_args if processor == :convert && !condition
-          end
-        end
+            next unless processor == :convert
 
-        ##
-        # === Returns
-        #
-        # [Boolean] Whether the file is converted only on a condition, which makes the
-        #   resulting file extension unknowable without a record of it
-        #
-        def conditional_convert?
-          processors.any? { |method, _, condition, _| method == :convert && condition }
+            # Treat :convert specially, since it should trigger the file extension change.
+            # That has to be worked out again when the file is retrieved, where whether
+            # the condition held cannot be known, so a conditional one is refused.
+            if condition
+              raise ArgumentError, "`process convert:` cannot be given `:if` or `:unless`. The file extension follows the conversion, and it has to be worked out again when the file is retrieved, where whether the condition held is not known. " \
+                                   "Convert unconditionally, or put the conversion in a version of its own, or take the naming over by overriding #full_filename."
+            end
+
+            force_extension processor_args
+          end
         end
       end # ClassMethods
 
@@ -108,11 +104,6 @@ module CarrierWave
               end
             end
 
-            if method == :convert
-              self.force_extension = args
-              show_warning_when_the_extension_is_unrecordable if condition
-            end
-
             if args.is_a? Array
               kwargs, args = args.partition { |arg| arg.is_a? Hash }
             end
@@ -128,19 +119,6 @@ module CarrierWave
       end
 
     private
-
-      # The mount raises over this, but it cannot see a version's processors, as those
-      # are only built once a version is used
-      def show_warning_when_the_extension_is_unrecordable
-        return if self.class.convert_condition_checked
-        self.class.convert_condition_checked = true
-        return if metadata_recorded?
-
-        warn <<~MESSAGE
-          [WARNING] #{self.class.name || 'An uploader'} converts the file conditionally, so the extension of the stored file cannot be worked out again on retrieval, and has to be recorded.
-          Give the mount a `metadata_column` to record it in. Note that a conditional conversion within a version doesn't survive a form redisplay either way, as a version's cached file is named after the parent's cache name: https://github.com/carrierwaveuploader/carrierwave#recording-what-was-stored
-        MESSAGE
-      end
 
       def forcing_extension(filename)
         if force_extension && filename

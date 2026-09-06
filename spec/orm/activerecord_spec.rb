@@ -896,6 +896,20 @@ describe CarrierWave::ActiveRecord do
       expect(Event.first.image.preview.url).to eq('/uploads/preview_test.jpeg')
     end
 
+    it "should not require the stored name to follow from the identifier, as it is recorded" do
+      @uploader.class_eval do
+        process :remember
+        def remember; @tag = 'abc'; end
+        def full_filename(for_file); "#{@tag}-#{for_file}"; end
+      end
+      other = Event.new
+      other.foo = 'yes'
+
+      other.image = stub_file('new.jpeg')
+      expect { other.save! }.not_to raise_error
+      expect(other.image_metadata['filename']).to eq 'abc-new.jpeg'
+    end
+
     it "should accept a column holding JSON as text" do
       Event.where(id: @event.id).update_all(image_metadata: @event.image_metadata.to_json)
 
