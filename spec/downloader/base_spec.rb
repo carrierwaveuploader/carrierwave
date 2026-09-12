@@ -354,6 +354,43 @@ describe CarrierWave::Downloader::Base do
     end
   end
 
+  describe '#ssrf_filter_options' do
+    it 'defaults to empty hash' do
+      expect(uploader.ssrf_filter_options).to eq({})
+    end
+
+    context 'when custom resolver is provided' do
+      let(:custom_resolver) { proc { |hostname| [IPAddr.new('1.2.3.4')] } }
+      before do
+        uploader.ssrf_filter_options = { resolver: custom_resolver }
+      end
+
+      it 'passes resolver option to SsrfFilter' do
+        stub_request(:get, //).to_return(body: file)
+        expect(SsrfFilter).to receive(:get).with(
+          anything,
+          hash_including(resolver: custom_resolver)
+        ).and_call_original
+        subject.download(uri)
+      end
+    end
+
+    context 'when http_options are provided' do
+      before do
+        uploader.ssrf_filter_options = { http_options: { open_timeout: 5 } }
+        stub_request(:get, uri).to_return(body: file)
+      end
+
+      it 'passes http_options to SsrfFilter' do
+        expect(SsrfFilter).to receive(:get).with(
+          anything,
+          hash_including(http_options: { open_timeout: 5 })
+        ).and_call_original
+        subject.download(uri)
+      end
+    end
+  end
+
   describe "#skip_ssrf_protection?" do
     context "when ssrf_protection is skipped" do
       let(:uri) { 'http://localhost/test.jpg' }
