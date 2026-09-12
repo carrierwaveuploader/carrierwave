@@ -28,6 +28,7 @@ module CarrierWave
 
         # fog
         add_deprecated_config :fog_provider
+        add_config :fog_acl
         add_config :fog_attributes
         add_config :fog_credentials
         add_config :fog_directory
