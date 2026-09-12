@@ -27,6 +27,45 @@ describe CarrierWave::Uploader do
 
       it { is_expected.not_to be_blank }
     end
+
+    context "when a file has been stored" do
+      before { uploader.store!(test_file) }
+
+      it { is_expected.not_to be_blank }
+
+      it "doesn't ask the storage whether the file is there" do
+        expect(uploader.file).not_to receive(:exists?)
+        expect(uploader.file).not_to receive(:empty?)
+
+        uploader.blank?
+      end
+
+      context "when the stored file is gone" do
+        before { FileUtils.rm(uploader.file.path) }
+
+        it { is_expected.not_to be_blank }
+      end
+    end
+  end
+
+  describe '#exists?' do
+    subject { uploader }
+
+    context "when nothing has been done" do
+      it { is_expected.not_to be_exists }
+    end
+
+    context "when a file has been stored" do
+      before { uploader.store!(test_file) }
+
+      it { is_expected.to be_exists }
+
+      context "when the stored file is gone" do
+        before { FileUtils.rm(uploader.file.path) }
+
+        it { is_expected.not_to be_exists }
+      end
+    end
   end
 
   describe '#identifier' do

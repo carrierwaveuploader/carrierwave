@@ -5,4 +5,5 @@ module CarrierWave
   class ProcessingError < UploadError; end
   class DownloadError < UploadError; end
   class UnknownStorageError < StandardError; end
+  class FilenameNotReproducible < StandardError; end
 end

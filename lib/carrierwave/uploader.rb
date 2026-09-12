@@ -15,6 +15,7 @@ require "carrierwave/uploader/file_size"
 require "carrierwave/uploader/dimension"
 require "carrierwave/uploader/processing"
 require "carrierwave/uploader/versions"
+require "carrierwave/uploader/metadata"
 require "carrierwave/uploader/default_url"
 
 require "carrierwave/uploader/serialization"
@@ -61,6 +62,7 @@ module CarrierWave
       include CarrierWave::Uploader::Dimension
       include CarrierWave::Uploader::Processing
       include CarrierWave::Uploader::Versions
+      include CarrierWave::Uploader::Metadata
       include CarrierWave::Uploader::DefaultUrl
       include CarrierWave::Uploader::Serialization
     end # Base

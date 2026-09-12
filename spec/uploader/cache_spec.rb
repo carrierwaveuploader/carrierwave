@@ -223,6 +223,26 @@ describe CarrierWave::Uploader do
     end
   end
 
+  describe '#materialize_cache!' do
+    let(:materialized_file) { double('a materialized file') }
+
+    it "has the cache storage materialize the cached file" do
+      uploader.cache!(test_file)
+      expect(uploader.send(:cache_storage)).to receive(:materialize_cache!).
+        with(uploader.file).and_return(materialized_file)
+
+      uploader.materialize_cache!
+
+      expect(uploader.file).to eq materialized_file
+    end
+
+    it "does nothing when no file is cached" do
+      expect(uploader.send(:cache_storage)).not_to receive(:materialize_cache!)
+
+      uploader.materialize_cache!
+    end
+  end
+
   describe '#retrieve_from_cache!' do
     before { uploader.retrieve_from_cache!("#{cache_id}/#{test_file_name}") }
 

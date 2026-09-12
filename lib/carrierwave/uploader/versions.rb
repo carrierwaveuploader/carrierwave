@@ -9,6 +9,7 @@ module CarrierWave
           @options = {}
           @blocks = []
           @klass = nil
+          @mutex = Mutex.new
         end
 
         def configure(options, &block)
@@ -18,55 +19,68 @@ module CarrierWave
         end
 
         def build(superclass)
+          # Double-checked locking pattern for thread-safe lazy initialization.
+          # Without synchronization, concurrent threads can observe a partially
+          # initialized @klass where the class is created but version_options
+          # is not yet set, causing NoMethodError in version_active?.
           return @klass if @klass
-          @klass = Class.new(superclass)
-          superclass.const_set("VersionUploader#{@name.to_s.camelize}", @klass)
 
-          @klass.version_names += [@name]
-          @klass.versions = {}
-          @klass.processors = []
-          @klass.version_options = @options
-          @klass.class_eval <<-RUBY, __FILE__, __LINE__ + 1
-            # Define the enable_processing method for versions so they get the
-            # value from the parent class unless explicitly overwritten
-            def self.enable_processing(value=nil)
-              self.enable_processing = value if value
-              if defined?(@enable_processing) && !@enable_processing.nil?
-                @enable_processing
-              else
-                superclass.enable_processing
+          @mutex.synchronize do
+            return @klass if @klass
+
+            klass = Class.new(superclass)
+            superclass.const_set("VersionUploader#{@name.to_s.camelize}", klass)
+
+            klass.version_names += [@name]
+            klass.versions = {}
+            klass.processors = []
+            klass.version_options = @options
+            klass.class_eval <<-RUBY, __FILE__, __LINE__ + 1
+              # Define the enable_processing method for versions so they get the
+              # value from the parent class unless explicitly overwritten
+              def self.enable_processing(value=nil)
+                self.enable_processing = value if value
+                if defined?(@enable_processing) && !@enable_processing.nil?
+                  @enable_processing
+                else
+                  superclass.enable_processing
+                end
               end
-            end
 
-            # Regardless of what is set in the parent uploader, do not enforce the
-            # move_to_cache config option on versions because it moves the original
-            # file to the version's target file.
-            #
-            # If you want to enforce this setting on versions, override this method
-            # in each version:
-            #
-            # version :thumb do
-            #   def move_to_cache
-            #     true
-            #   end
-            # end
-            #
-            def move_to_cache
-              false
-            end
+              # Regardless of what is set in the parent uploader, do not enforce the
+              # move_to_cache config option on versions because it moves the original
+              # file to the version's target file.
+              #
+              # If you want to enforce this setting on versions, override this method
+              # in each version:
+              #
+              # version :thumb do
+              #   def move_to_cache
+              #     true
+              #   end
+              # end
+              #
+              def move_to_cache
+                false
+              end
 
-            # Need to rely on the parent version's identifier, as versions don't have its own one.
-            def identifier
-              parent_version.identifier
-            end
-          RUBY
-          @blocks.each { |block| @klass.class_eval(&block) }
-          @klass
+              # Need to rely on the parent version's identifier, as versions don't have its own one.
+              def identifier
+                parent_version.identifier
+              end
+            RUBY
+            @blocks.each { |block| klass.class_eval(&block) }
+
+            # Only assign to @klass after full initialization to ensure
+            # other threads never see a partially initialized class.
+            @klass = klass
+          end
         end
 
         def deep_dup
           other = dup
           other.instance_variable_set(:@blocks, @blocks.dup)
+          other.instance_variable_set(:@mutex, Mutex.new)
           other
         end
 
@@ -97,6 +111,7 @@ module CarrierWave
         attr_accessor :parent_version
 
         after :cache, :cache_versions!
+        after :materialize_cache, :materialize_versions_cache!
         after :store, :store_versions!
         after :remove, :remove_versions!
         after :retrieve_from_cache, :retrieve_versions_from_cache!
@@ -105,7 +120,7 @@ module CarrierWave
         prepend Module.new {
           def initialize(*)
             super
-            @versions = nil
+            @versions = @deferred_version_retrieval = nil
           end
         }
       end
@@ -170,11 +185,16 @@ module CarrierWave
       # [Hash{Symbol => CarrierWave::Uploader}] a list of uploader instances
       #
       def versions
-        return @versions if @versions
-        @versions = {}
-        self.class.versions.each do |name, version|
-          @versions[name] = version.build(self.class).new(model, mounted_as)
-          @versions[name].parent_version = self
+        unless @versions
+          @versions = {}
+          self.class.versions.each do |name, version|
+            @versions[name] = version.build(self.class).new(model, mounted_as)
+            @versions[name].parent_version = self
+          end
+        end
+        if (retrieval = @deferred_version_retrieval)
+          @deferred_version_retrieval = nil
+          active_versions.each_value { |v| v.public_send(*retrieval) }
         end
         @versions
       end
@@ -331,6 +351,10 @@ module CarrierWave
         derived_versions.each_value { |v| v.cache!(new_file) }
       end
 
+      def materialize_versions_cache!
+        versions.each_value(&:materialize_cache!)
+      end
+
       def store_versions!(new_file)
         active_versions.each_value { |v| v.store!(new_file) }
       end
@@ -339,12 +363,14 @@ module CarrierWave
         versions.each_value { |v| v.remove! }
       end
 
+      # Retrieval is deferred until #versions is accessed, as evaluating the versions'
+      # conditions can be costly and is pointless when no version is used
       def retrieve_versions_from_cache!(cache_name)
-        active_versions.each_value { |v| v.retrieve_from_cache!(cache_name) }
+        @deferred_version_retrieval = [:retrieve_from_cache!, cache_name]
       end
 
       def retrieve_versions_from_store!(identifier)
-        active_versions.each_value { |v| v.retrieve_from_store!(identifier) }
+        @deferred_version_retrieval = [:retrieve_from_store!, identifier]
       end
 
     end # Versions

@@ -216,6 +216,64 @@ describe CarrierWave::Uploader do
       end
     end
 
+    describe 'thread safety' do
+      it "should safely initialize version class when accessed concurrently" do
+        # Create a fresh uploader class with a conditional version
+        # The :if option is important because it requires version_options to be set
+        uploader_class = Class.new(CarrierWave::Uploader::Base)
+        uploader_class.version :thumb, if: :always_true?
+        uploader_class.class_eval do
+          def always_true?(_file)
+            true
+          end
+        end
+
+        errors = []
+        threads = 20.times.map do
+          Thread.new do
+            # Each thread creates a new uploader instance, which triggers Builder#build
+            # through the versions method. Without proper synchronization, some threads
+            # may see a partially initialized class where version_options is nil.
+            uploader = uploader_class.new
+            begin
+              # version_active? accesses version_options[:if], which would fail
+              # if the class is not fully initialized
+              uploader.version_active?(:thumb)
+            rescue NoMethodError => e
+              errors << e
+            end
+          end
+        end
+
+        threads.each(&:join)
+
+        # If the race condition exists, some threads would have encountered
+        # NoMethodError: undefined method `[]' for nil:NilClass
+        expect(errors).to be_empty, "Race condition detected: #{errors.map(&:message).join(', ')}"
+      end
+
+      it "should return the same version class from concurrent builds" do
+        uploader_class = Class.new(CarrierWave::Uploader::Base)
+        uploader_class.version :thumb
+
+        builder = uploader_class.versions[:thumb]
+        classes = []
+        mutex = Mutex.new
+
+        threads = 20.times.map do
+          Thread.new do
+            klass = builder.build(uploader_class)
+            mutex.synchronize { classes << klass }
+          end
+        end
+
+        threads.each(&:join)
+
+        # All threads should get the exact same class instance
+        expect(classes.uniq.size).to eq(1)
+      end
+    end
+
     describe 'with inheritance' do
 
       before do
@@ -281,6 +339,19 @@ describe CarrierWave::Uploader do
   describe 'with a version' do
     before do
       @uploader_class.version(:thumb)
+    end
+
+    describe '#materialize_cache!' do
+      before { @uploader.cache!(File.open(file_path('test.jpg'))) }
+
+      it "should materialize the versions as well" do
+        [@uploader, @uploader.thumb].each do |uploader|
+          expect(uploader.send(:cache_storage)).to receive(:materialize_cache!).
+            with(uploader.file).and_return(uploader.file)
+        end
+
+        @uploader.materialize_cache!
+      end
     end
 
     describe '#cache!' do
@@ -362,6 +433,13 @@ describe CarrierWave::Uploader do
         expect(@uploader.store_path).to eq('uploads/test.jpg')
         expect(@uploader.thumb.store_path).to eq('uploads/thumb_test.jpg')
         expect(@uploader.thumb.store_path('kebab.png')).to eq('uploads/thumb_kebab.png')
+      end
+
+      it "should not evaluate the version condition until a version is accessed" do
+        @uploader_class.version(:preview, if: :true?)
+        expect(@uploader).not_to receive(:true?)
+        @uploader.retrieve_from_cache!('1369894322-345-1234-2255/test.jpg')
+        expect(@uploader.current_path).to eq(public_path('uploads/tmp/1369894322-345-1234-2255/test.jpg'))
       end
     end
 
@@ -752,6 +830,13 @@ describe CarrierWave::Uploader do
           @uploader.retrieve_from_store!('monkey.txt')
           expect(@uploader.thumb).to be_present
           expect(@uploader.preview).to be_blank
+        end
+
+        it "should not evaluate the condition until a version is accessed" do
+          @uploader_class.version(:preview, if: :true?)
+          expect(@uploader).not_to receive(:true?)
+          @uploader.retrieve_from_store!('monkey.txt')
+          expect(@uploader.url).to eq('http://www.example.com')
         end
       end
 

@@ -378,6 +378,32 @@ class MyUploader < CarrierWave::Uploader::Base
 end
 ```
 
+`process convert: format` cannot be given a condition. The file extension follows the
+conversion, and it has to be worked out again when the file is retrieved, where whether
+the condition held is not known. Convert unconditionally, or give the format a version
+of its own:
+
+```ruby
+version :webp, if: :convert_to_webp? do
+  process convert: :webp   # unconditional within the version
+end
+```
+
+If you need to convert on a condition and keep it on the uploader itself, take the
+naming over so that it still follows from the identifier:
+
+```ruby
+process :to_jpeg, if: :heic?
+
+def to_jpeg
+  minimagick! { |builder| builder.convert('jpg') }
+end
+
+def full_filename(for_file)
+  for_file.sub(/\.heic\z/i, '.jpg')
+end
+```
+
 ### Nested versions
 
 It is possible to nest versions within versions:
@@ -424,6 +450,13 @@ end
 ```
 
 The `model` variable points to the instance object the uploader is attached to.
+The condition is evaluated when the version is accessed, so it isn't called at all
+as long as you only use the original file.
+
+Note that `present?` on a version only tells whether a file is assigned, not whether
+that version was actually created. Use `uploader.thumb.exists?` to ask the storage,
+which costs a request when the storage is a remote one, or
+[record what was stored](#recording-what-was-stored) to have the answer at hand.
 
 ### Create versions from existing versions
 
@@ -466,7 +499,44 @@ end
 
 Please note that `#full_filename` mustn't be constructed based on a dynamic value
 that can change from the time of store and time of retrieval, since it will result in
-being unable to retrieve a file previously stored.
+being unable to retrieve a file previously stored. Storing refuses to leave a file
+somewhere a later request would not look, so this is caught rather than silent.
+
+## Recording what was stored
+
+By default CarrierWave persists the identifier alone, and works out everything else on
+retrieval by re-running the uploader's definition and asking the storage. Which versions
+a conditional creates is decided when the file is stored, so re-deciding it later can
+give a different answer than what is actually there, and asking a remote storage for
+things like the size costs a request per record.
+
+Give the mount a column to record it in, and it stops guessing:
+
+```ruby
+class Event < ActiveRecord::Base
+  mount_uploader :image, ImageUploader, metadata_column: :image_metadata
+end
+```
+
+```ruby
+add_column :events, :image_metadata, :json
+```
+
+The column can be a `json`/`jsonb` one, a serialized one, or plain text holding JSON.
+For `mount_uploaders` it holds one set of facts per file.
+
+Records stored before the column was added have nothing recorded, and keep working as
+they always have, so no backfill is needed.
+
+Override `#build_metadata` to record your own facts:
+
+```ruby
+class ImageUploader < CarrierWave::Uploader::Base
+  def build_metadata
+    super.merge('width' => width, 'height' => height)
+  end
+end
+```
 
 ## Making uploads work across form redisplays
 
@@ -499,6 +569,11 @@ case of images, a small thumbnail would be a good indicator:
   </p>
 <% end %>
 ```
+
+When the cache storage is a remote one, uploading the cached file to it is deferred until
+it turns out to be needed beyond the current request, which reading `avatar_cache` or
+`avatar_url` tells CarrierWave. If you carry the cache name over by other means, call
+`user.avatar.materialize_cache!` before handing it out.
 
 ## Removing uploaded files
 

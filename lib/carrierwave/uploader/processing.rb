@@ -67,13 +67,17 @@ module CarrierWave
           new_processors.each do |processor, processor_args|
             self.processors += [[processor, processor_args, condition, condition_type]]
 
-            if processor == :convert
-              # Treat :convert specially, since it should trigger the file extension change
-              force_extension processor_args
-              if condition
-                warn "Use of 'process convert: format' with conditionals has an issue and doesn't work correctly. See https://github.com/carrierwaveuploader/carrierwave/issues/2723 for details. "
-              end
+            next unless processor == :convert
+
+            # Treat :convert specially, since it should trigger the file extension change.
+            # That has to be worked out again when the file is retrieved, where whether
+            # the condition held cannot be known, so a conditional one is refused.
+            if condition
+              raise ArgumentError, "`process convert:` cannot be given `:if` or `:unless`. The file extension follows the conversion, and it has to be worked out again when the file is retrieved, where whether the condition held is not known. " \
+                                   "Convert unconditionally, or put the conversion in a version of its own, or take the naming over by overriding #full_filename."
             end
+
+            force_extension processor_args
           end
         end
       end # ClassMethods

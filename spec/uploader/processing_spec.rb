@@ -260,6 +260,22 @@ describe CarrierWave::Uploader do
     end
   end
 
+  context "when using #convert with a condition" do
+    it "is refused, as the resulting extension could not be worked out again" do
+      expect { uploader_class.process convert: :png, if: :heic? }
+        .to raise_error(ArgumentError, /cannot be given `:if` or `:unless`/)
+    end
+
+    it "is refused with an 'unless' as well" do
+      expect { uploader_class.process convert: :png, unless: :already_png? }
+        .to raise_error(ArgumentError, /cannot be given `:if` or `:unless`/)
+    end
+
+    it "does not stand in the way of a conditional processor which isn't :convert" do
+      expect { uploader_class.process :scale, if: :image? }.not_to raise_error
+    end
+  end
+
   context "when file extension changes not using #convert" do
     let(:another_uploader) { uploader_class.new }
     before do

@@ -8,16 +8,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: [ '3.2', '3.3', '3.4' ]
-        gemfile: [ gemfiles/rails-8-0.gemfile ]
+        ruby: [ '3.2', '3.3', '3.4', '4.0' ]
+        gemfile: [ gemfiles/rails-8-1.gemfile ]
         experimental: [ false ]
         include:
-          - ruby: '2.5'
-            gemfile: gemfiles/rails-6-0.gemfile
-            experimental: false
-          - ruby: '2.6'
-            gemfile: gemfiles/rails-6-1.gemfile
-            experimental: false
           - ruby: '2.7'
             gemfile: gemfiles/rails-7-0.gemfile
             experimental: false
@@ -27,25 +21,25 @@ jobs:
           - ruby: '3.1'
             gemfile: gemfiles/rails-7-2.gemfile
             experimental: false
-          - ruby: '3.4'
+          - ruby: '4.0'
+            gemfile: gemfiles/rails-8-0.gemfile
+            experimental: false
+          - ruby: '4.0'
             gemfile: gemfiles/rails-main.gemfile
             experimental: true
           - ruby: ruby-head
-            gemfile: gemfiles/rails-8-0.gemfile
+            gemfile: gemfiles/rails-8-1.gemfile
             experimental: false
-          - ruby: jruby
+          - ruby: jruby-10.1.1.0
             gemfile: gemfiles/rails-7-2.gemfile
             experimental: false
-          - ruby: jruby-head
-            gemfile: gemfiles/rails-7-2.gemfile
-            experimental: true
     runs-on: ubuntu-24.04
     continue-on-error: ${{ matrix.experimental }}
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
       JRUBY_OPTS: --debug
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v7
     - name: Update package list
       run: sudo apt update
     - name: Install ImageMagick and setup policy
@@ -68,11 +62,11 @@ jobs:
     name: RuboCop
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.4"
+          ruby-version: "4.0"
           bundler-cache: true
       - name: Run check
         run: bundle exec rubocop

@@ -383,6 +383,11 @@ module CarrierWave
         frame = yield(*[frame, index, options].take(block.arity)) if block_given?
         frames << frame if frame
       end
+
+      if frames.none?
+        raise CarrierWave::ProcessingError, I18n.translate(:"errors.messages.unsupported_image_format_error")
+      end
+
       frames.append(true) if block_given?
 
       write_block = create_info_block(options[:write])
