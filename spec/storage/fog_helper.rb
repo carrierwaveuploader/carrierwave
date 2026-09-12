@@ -779,11 +779,38 @@ shared_examples "Fog storage" do |fog_credentials|
         end
       end
 
+      describe '#store' do
+        context 'when the given file is already at the destination' do
+          it "keeps the stored file instead of copying it onto itself" do
+            destination = CarrierWave::Storage::Fog::File.new(@uploader, @storage, @fog_file.path)
+            expect(@fog_file.send(:file)).not_to receive(:copy)
+
+            expect(destination.store(@fog_file)).to be true
+            expect(@directory.files.get(@fog_file.path).body).to eq('this is stuff')
+          end
+        end
+      end
+
       describe '#copy_to' do
         it "uses Fog's File#copy, instead of Storage#copy_object" do
           expect(@fog_file.send(:file)).to receive(:copy).with(anything, 'uploads/new_path.jpg', anything).and_call_original
 
           @fog_file.copy_to('uploads/new_path.jpg')
+        end
+
+        context 'when the destination is where the file already is' do
+          it "leaves the file alone instead of copying it onto itself" do
+            expect(@fog_file.send(:file)).not_to receive(:copy)
+
+            @fog_file.copy_to(@fog_file.path)
+          end
+
+          it "returns a file at that path" do
+            copy = @fog_file.copy_to(@fog_file.path)
+
+            expect(copy.path).to eq(@fog_file.path)
+            expect(copy.read).to eq('this is stuff')
+          end
         end
       end
 

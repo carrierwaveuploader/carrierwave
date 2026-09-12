@@ -477,7 +477,8 @@ module CarrierWave
         end
 
         ##
-        # Creates a copy of this file and returns it.
+        # Creates a copy of this file and returns it. Copying to where the file already is
+        # leaves it alone, as S3 refuses a copy onto the same key.
         #
         # === Parameters
         #
@@ -488,7 +489,7 @@ module CarrierWave
         # @return [CarrierWave::Storage::Fog::File] the location where the file will be stored.
         #
         def copy_to(new_path)
-          file.copy(@uploader.fog_directory, new_path, copy_options)
+          file.copy(@uploader.fog_directory, new_path, copy_options) unless new_path == path
           CarrierWave::Storage::Fog::File.new(@uploader, @base, new_path)
         end
 
