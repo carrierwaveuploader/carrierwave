@@ -125,6 +125,27 @@ module CarrierWave
       end
 
       ##
+      # Takes the file already stored with the given identifier as its own, for when
+      # something other than CarrierWave put it there.
+      #
+      # === Parameters
+      #
+      # [identifier (String)] identifies the file in the store
+      #
+      # === Raises
+      #
+      # [CarrierWave::InvalidParameter] if the identifier points out of the store dir
+      #
+      def adopt!(identifier)
+        # The file gets removed when replaced, so it must not point out of the store dir
+        raise CarrierWave::InvalidParameter, "invalid identifier" if identifier.start_with?('/') || identifier.split('/').include?('..')
+
+        with_callbacks(:adopt, identifier) do
+          retrieve_from_store!(identifier)
+        end
+      end
+
+      ##
       # Look for an identifier which doesn't collide with the given already-stored identifiers.
       # It is done by adding a index number as the suffix.
       # For example, if there's 'image.jpg' and the @deduplication_index is set to 2,

@@ -282,6 +282,33 @@ describe CarrierWave::Uploader do
     end
   end
 
+  describe '#adopt!' do
+    before do
+      @stored_file = double('a stored file')
+      allow(@stored_file).to receive(:path).and_return('/path/to/somewhere')
+
+      @storage = double('a storage engine')
+      allow(@storage).to receive(:retrieve!).and_return(@stored_file)
+
+      allow(@uploader_class.storage).to receive(:new).with(@uploader).and_return(@storage)
+    end
+
+    it "takes the stored file as its own" do
+      expect(@storage).to receive(:retrieve!).with('sub/monkey.txt').and_return(@stored_file)
+      @uploader.adopt!('sub/monkey.txt')
+      expect(@uploader.file).to eq(@stored_file)
+      expect(@uploader.identifier).to eq('sub/monkey.txt')
+      expect(@uploader).not_to be_cached
+    end
+
+    it "refuses an identifier pointing out of the store dir" do
+      ['../secret.txt', 'sub/../../secret.txt', '/tmp/secret.txt'].each do |identifier|
+        expect { @uploader.adopt!(identifier) }.to raise_error(CarrierWave::InvalidParameter)
+      end
+      expect(@uploader.file).to be_nil
+    end
+  end
+
   describe 'with an overridden filename' do
     before do
       @uploader_class.class_eval do

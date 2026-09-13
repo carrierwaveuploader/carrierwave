@@ -859,6 +859,19 @@ describe CarrierWave::Uploader do
       end
     end
 
+    describe '#adopt!' do
+      it "refuses the file, as nothing would create the versions" do
+        expect { @uploader.adopt!('test.jpg') }.to raise_error(RuntimeError, /thumb/)
+      end
+
+      it "takes the file when no version is active for it" do
+        @uploader_class.version(:thumb, if: :false?)
+        allow(@uploader).to receive(:false?).and_return(false)
+        @uploader.adopt!('test.jpg')
+        expect(@uploader.identifier).to eq('test.jpg')
+      end
+    end
+
     describe '#version_active?' do
       before do
         @file = File.open(file_path('test.jpg'))
