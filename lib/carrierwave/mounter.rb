@@ -128,6 +128,23 @@ module CarrierWave
       write_temporary_identifier
     end
 
+    ##
+    # Takes the stored files with the given identifiers as the mounted ones, for when
+    # they were put in the store by something other than CarrierWave.
+    #
+    def identifiers=(new_identifiers)
+      return if !new_identifiers.is_a?(Array) && new_identifiers.blank?
+
+      old_uploaders = uploaders
+      @uploaders = new_identifiers.map do |identifier|
+        next if identifier.blank?
+
+        blank_uploader.tap { |uploader| uploader.adopt!(identifier) }
+      end.compact
+      @removed_uploaders += (old_uploaders - @uploaders)
+      write_temporary_identifier
+    end
+
     def cache_names
       # The names are carried over to the next request, which the files have to survive
       uploaders.each(&:materialize_cache!)

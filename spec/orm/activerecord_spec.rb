@@ -939,6 +939,107 @@ describe CarrierWave::ActiveRecord do
     end
   end
 
+  describe '#mount_uploader with an identifier assigned' do
+    before do
+      reset_class("Event")
+      Event.mount_uploader(:image, @uploader)
+      @event = Event.new
+      FileUtils.mkdir_p(public_path('uploads'))
+      FileUtils.cp(file_path('new.jpeg'), public_path('uploads/already-there.jpeg'))
+    end
+
+    after do
+      FileUtils.rm_rf(public_path("uploads"))
+    end
+
+    it "takes the stored file as the mounted one" do
+      @event.image_identifier = 'already-there.jpeg'
+
+      expect(@event.image.identifier).to eq('already-there.jpeg')
+      expect(@event.image.current_path).to eq(public_path('uploads/already-there.jpeg'))
+    end
+
+    it "records the identifier on save, without putting anything in the store" do
+      @event.image_identifier = 'already-there.jpeg'
+
+      expect(@event.save).to be_truthy
+      @event.reload
+
+      expect(@event[:image]).to eq('already-there.jpeg')
+      expect(Dir.children(public_path('uploads'))).to eq(['already-there.jpeg'])
+    end
+
+    it "removes the file which was mounted before" do
+      @event.image = stub_file('old.jpeg')
+      expect(@event.save).to be_truthy
+
+      @event.image_identifier = 'already-there.jpeg'
+      expect(@event.save).to be_truthy
+
+      expect(File.exist?(public_path('uploads/old.jpeg'))).to be_falsey
+      expect(File.exist?(public_path('uploads/already-there.jpeg'))).to be_truthy
+    end
+
+    it "marks the column as changed when assigned to a persisted record" do
+      @event.image = stub_file('old.jpeg')
+      @event.save!
+
+      @event.image_identifier = 'already-there.jpeg'
+
+      expect(@event.changes.keys).to include('image')
+    end
+
+    it "clears the mount when nil is assigned" do
+      @event.image_identifier = 'already-there.jpeg'
+      @event.image_identifier = nil
+
+      expect(@event.image).to be_blank
+    end
+
+    it "leaves the file alone during rollback, as it was not put there by the mount" do
+      Event.transaction do
+        @event.image_identifier = 'already-there.jpeg'
+        @event.save
+
+        raise ActiveRecord::Rollback
+      end
+
+      expect(File.exist?(public_path('uploads/already-there.jpeg'))).to be_truthy
+    end
+
+    it "keeps the mounted file when the identifier is refused" do
+      @event.image_identifier = 'already-there.jpeg'
+
+      expect { @event.image_identifier = '../secret.jpeg' }.to raise_error(CarrierWave::InvalidParameter)
+      expect(@event.image.identifier).to eq('already-there.jpeg')
+    end
+  end
+
+  describe '#mount_uploaders with identifiers assigned' do
+    before do
+      reset_class("Event")
+      Event.mount_uploaders(:images, @uploader)
+      @event = Event.new
+      FileUtils.mkdir_p(public_path('uploads'))
+      FileUtils.cp(file_path('new.jpeg'), public_path('uploads/one.jpeg'))
+      FileUtils.cp(file_path('old.jpeg'), public_path('uploads/two.jpeg'))
+    end
+
+    after do
+      FileUtils.rm_rf(public_path("uploads"))
+    end
+
+    it "takes the stored files as the mounted ones and records them on save" do
+      @event.images_identifiers = ['one.jpeg', 'two.jpeg']
+
+      expect(@event.save).to be_truthy
+      @event.reload
+
+      expect(@event.images.map(&:identifier)).to eq(['one.jpeg', 'two.jpeg'])
+      expect(Dir.children(public_path('uploads')).sort).to eq(['one.jpeg', 'two.jpeg'])
+    end
+  end
+
   describe '#mount_uploader removing old files' do
     before do
       reset_class("Event")

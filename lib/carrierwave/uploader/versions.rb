@@ -116,6 +116,7 @@ module CarrierWave
         after :remove, :remove_versions!
         after :retrieve_from_cache, :retrieve_versions_from_cache!
         after :retrieve_from_store, :retrieve_versions_from_store!
+        after :adopt, :adopt_versions!
 
         prepend Module.new {
           def initialize(*)
@@ -371,6 +372,13 @@ module CarrierWave
 
       def retrieve_versions_from_store!(identifier)
         @deferred_version_retrieval = [:retrieve_from_store!, identifier]
+      end
+
+      # Versions are created only through the cache, which an adopted file never goes through
+      def adopt_versions!(identifier)
+        return if active_versions.empty?
+
+        raise "#{identifier.inspect} can't be adopted, as nothing would create the versions #{active_versions.keys.join(', ')}"
       end
 
     end # Versions

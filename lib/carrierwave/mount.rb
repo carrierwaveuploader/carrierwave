@@ -175,6 +175,10 @@ module CarrierWave
           _mounter(:#{column}).read_identifiers[0]
         end
 
+        def #{column}_identifier=(identifier)
+          _mounter(:#{column}).identifiers = [identifier]
+        end
+
         def #{column}_integrity_error
           #{column}_integrity_errors.last
         end
@@ -320,6 +324,10 @@ module CarrierWave
 
         def #{column}_identifiers
           _mounter(:#{column}).read_identifiers
+        end
+
+        def #{column}_identifiers=(identifiers)
+          _mounter(:#{column}).identifiers = identifiers
         end
       RUBY
     end
