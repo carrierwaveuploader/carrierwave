@@ -123,5 +123,17 @@ describe CarrierWave::Storage::File do
         expect(File).to exist("#{cache_dir}/invalid")
       end
     end
+
+    context "when a directory name only contains something like a cache_id" do
+      before do
+        FileUtils.mkdir_p File.expand_path("backup-#{five_days_ago.utc.to_i}-100-1234", cache_dir)
+      end
+
+      it "leaves it alone" do
+        Timecop.freeze(today) { uploader_class.clean_cached_files!(0) }
+
+        expect(Dir.glob("#{cache_dir}/*").map { |dir| File.basename(dir) }).to eq(["backup-#{five_days_ago.utc.to_i}-100-1234"])
+      end
+    end
   end
 end

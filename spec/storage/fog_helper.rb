@@ -446,6 +446,35 @@ shared_examples "Fog storage" do |fog_credentials|
           expect(@directory.files.all(:prefix => 'uploads/tmp').size).to eq(1)
         end
       end
+
+      context "when a file looking like a cache is outside the cache directory" do
+        before do
+          %w(uploads/tmp-archive uploads).each do |dir|
+            @directory.files.create(:key => "#{dir}/#{five_days_ago.utc.to_i}-100-1234/test.jpg", :body => 'A test, 1234', :public => true)
+          end
+        end
+
+        it "leaves it alone" do
+          Timecop.freeze(today) do
+            @uploader_class.clean_cached_files!(0)
+          end
+          expect(@directory.files.all(:prefix => 'uploads/').map(&:key)).to match_array [
+            "uploads/tmp-archive/#{five_days_ago.utc.to_i}-100-1234/test.jpg",
+            "uploads/#{five_days_ago.utc.to_i}-100-1234/test.jpg"
+          ]
+        end
+
+        it "leaves it alone even if the listing ignores the prefix" do
+          allow_any_instance_of(@directory.files.class).to receive(:all).and_wrap_original { |original, *| original.call }
+          Timecop.freeze(today) do
+            @uploader_class.clean_cached_files!(0)
+          end
+          expect(@directory.files.all(:prefix => 'uploads/').map(&:key)).to match_array [
+            "uploads/tmp-archive/#{five_days_ago.utc.to_i}-100-1234/test.jpg",
+            "uploads/#{five_days_ago.utc.to_i}-100-1234/test.jpg"
+          ]
+        end
+      end
     end
 
     describe "CarrierWave::Storage::Fog::File" do
