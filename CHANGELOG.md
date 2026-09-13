@@ -11,6 +11,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 * Fix obsolete warnings from `URI::RFC3986_PARSER#escape` and `#unescape` (@mshibuya [#2796](https://github.com/carrierwaveuploader/carrierwave/issues/2796))
 * Fix a Fog file being copied onto itself when it is stored to where it already is, which S3 refuses (@mshibuya)
+* Fix `clean_cached_files!` removing files outside the cache directory which merely look like a cache, such as ones under a sibling directory sharing the name as a prefix (@mshibuya)
 
 ## 4.0.0.beta - 2026-09-07
 

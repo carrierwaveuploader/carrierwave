@@ -178,9 +178,12 @@ module CarrierWave
       def clean_cache!(seconds)
         local_storage.clean_cache!(seconds)
         directory = connection.directories.new(fog_public_attrs.merge(:key => uploader.fog_directory))
-        directory.files.all(:prefix => uploader.cache_dir).each do |file|
-          # generate_cache_id returns key formatted TIMEINT-PID(-COUNTER)-RND
-          matched = file.key.match(/(\d+)-\d+-\d+(?:-\d+)?/)
+        prefix = "#{uploader.cache_dir.to_s.chomp('/')}/"
+        # generate_cache_id returns key formatted TIMEINT-PID(-COUNTER)-RND
+        # checked with the prefix too, as some providers may not honor it when listing
+        cache_key = /\A#{Regexp.escape(prefix)}(\d+)-\d+-\d+(?:-\d+)?\//
+        directory.files.all(:prefix => prefix).each do |file|
+          matched = file.key.match(cache_key)
           next unless matched
           time = Time.at(matched[1].to_i)
           file.destroy if time < (Time.now.utc - seconds)

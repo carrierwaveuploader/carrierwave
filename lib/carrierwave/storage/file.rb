@@ -111,9 +111,9 @@ module CarrierWave
       def clean_cache!(seconds)
         Dir.glob(::File.expand_path(::File.join(uploader.cache_dir, '*'), uploader.root)).each do |dir|
           # generate_cache_id returns key formatted TIMEINT-PID(-COUNTER)-RND
-          matched = dir.scan(/(\d+)-\d+-\d+(?:-\d+)?/).first
+          matched = ::File.basename(dir).match(/\A(\d+)-\d+-\d+(?:-\d+)?\z/)
           next unless matched
-          time = Time.at(matched[0].to_i)
+          time = Time.at(matched[1].to_i)
           if time < (Time.now.utc - seconds)
             FileUtils.rm_rf(dir)
           end
