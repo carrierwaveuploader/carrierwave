@@ -5,7 +5,7 @@ describe CarrierWave::Downloader::Base do
   let(:uploader) { uploader_class.new }
   let(:file) { File.read(file_path("test.jpg")) }
   let(:filename) { "test.jpg" }
-  let(:uri) { "http://www.example.com/#{URI::DEFAULT_PARSER.escape(filename)}" }
+  let(:uri) { "http://www.example.com/#{URI::RFC2396_Parser.new.escape(filename)}" }
 
   subject { CarrierWave::Downloader::Base.new(uploader) }
 

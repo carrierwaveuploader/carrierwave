@@ -19,17 +19,20 @@ module CarrierWave
 
       PERCENT_ENCODED = /%[0-9a-fA-F]{2}/.freeze
 
+      # URI::DEFAULT_PARSER#escape warns as obsolete, and URI::RFC2396_PARSER is missing in older uri gems
+      RFC2396_PARSER = URI::RFC2396_Parser.new
+
     module_function
 
       # Not idempotent, as '%' is escaped to '%25' every time
       def encode_path(path)
-        URI::DEFAULT_PARSER.escape(path, PATH_UNSAFE)
+        RFC2396_PARSER.escape(path, PATH_UNSAFE)
       end
 
       # Only for strings not sent over the wire, like a filename to be shown to the user.
       # CGI.unescape is for form encoding and would turn '+' into a space.
       def decode_path(str)
-        URI::DEFAULT_PARSER.unescape(str)
+        RFC2396_PARSER.unescape(str)
       end
 
       # Escapes only what cannot appear in the component, leaving existing %XX alone.
