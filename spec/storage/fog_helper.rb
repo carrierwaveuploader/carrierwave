@@ -304,7 +304,7 @@ shared_examples "Fog storage" do |fog_credentials|
       # Include timestamp to work around GCS cache behavior
       let(:filename) { "test#{Time.now.to_i}.jpg" }
       before do
-        @directory.files.create(:key => "uploads/#{filename}", :body => 'A test, 1234', :public => true)
+        @directory.files.create(:key => "uploads/#{filename}", :body => +'A test, 1234', :public => true)
         allow(@uploader).to receive(:store_path).with(filename).and_return("uploads/#{filename}")
         @fog_file = @storage.retrieve!(filename)
       end
@@ -358,7 +358,7 @@ shared_examples "Fog storage" do |fog_credentials|
       # Include timestamp to work around GCS cache behavior
       let(:filename) { "test#{Time.now.to_i}.jpg" }
       before do
-        @directory.files.create(:key => "uploads/tmp/#{filename}", :body => 'A test, 1234', :public => true)
+        @directory.files.create(:key => "uploads/tmp/#{filename}", :body => +'A test, 1234', :public => true)
         allow(@uploader).to receive(:cache_path).with(filename).and_return("uploads/tmp/#{filename}")
         @fog_file = @storage.retrieve_from_cache!(filename)
       end
@@ -394,7 +394,7 @@ shared_examples "Fog storage" do |fog_credentials|
           Timecop.freeze created_date do
             key = "uploads/tmp/#{CarrierWave.generate_cache_id}/test.jpg"
           end
-          @directory.files.create(:key => key, :body => 'A test, 1234', :public => true)
+          @directory.files.create(:key => key, :body => +'A test, 1234', :public => true)
         end
       end
 
@@ -427,7 +427,7 @@ shared_examples "Fog storage" do |fog_credentials|
       end
 
       it "cleans a directory named using old format of cache id" do
-        @directory.files.create(:key => "uploads/tmp/#{yesterday.utc.to_i}-100-1234/test.jpg", :body => 'A test, 1234', :public => true)
+        @directory.files.create(:key => "uploads/tmp/#{yesterday.utc.to_i}-100-1234/test.jpg", :body => +'A test, 1234', :public => true)
         Timecop.freeze(today) do
           @uploader_class.clean_cached_files!(0)
         end
@@ -436,7 +436,7 @@ shared_examples "Fog storage" do |fog_credentials|
 
       context "when a file which does not conform to the cache_id format exists" do
         before do
-          @directory.files.create(:key => "uploads/tmp/invalid", :body => 'A test, 1234', :public => true)
+          @directory.files.create(:key => "uploads/tmp/invalid", :body => +'A test, 1234', :public => true)
         end
 
         it "should just ignore that" do

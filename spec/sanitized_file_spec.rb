@@ -401,7 +401,7 @@ describe CarrierWave::SanitizedFile do
       end
 
       it "accepts the optional arguments length and outbuf" do
-        buf = ""
+        buf = +''
         sanitized_file.read(4, buf)
         expect(buf).to eq("this")
       end
