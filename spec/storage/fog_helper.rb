@@ -288,13 +288,13 @@ shared_examples "Fog storage" do |fog_credentials|
       end
 
       it "should create local file for processing" do
-        @uploader_class.class_eval do
+        # a subclass of its own, so that the processor doesn't leak to other examples
+        uploader = Class.new(@uploader_class) do
           def check_file
             raise unless File.exist?(file.path)
           end
           process :check_file
-        end
-        uploader = @uploader_class.new
+        end.new
         uploader.store!(@fog_file)
         uploader.cache_stored_file!
       end
@@ -379,6 +379,31 @@ shared_examples "Fog storage" do |fog_credentials|
 
         expect { @storage.delete_dir!('uploads/tmp/deleteme') }.
           to change { File.exist?(dir) }.from(true).to(false)
+      end
+    end
+
+    describe '#direct_upload' do
+      before do
+        @uploader_class.cache_storage = :fog
+        @uploader = @uploader_class.new
+      end
+
+      it "gives a url to upload to, and the name to hand the file back under" do
+        upload = @uploader.direct_upload(filename: 'test.jpg')
+
+        expect(upload.method).to eq('PUT')
+        expect(upload.url).to include(CARRIERWAVE_DIRECTORY)
+        expect(URI.parse(upload.url).path).to end_with("/uploads/tmp/#{upload.cache_name}")
+      end
+
+      it "takes the file uploaded to that url as a cached one" do
+        upload = @uploader.direct_upload(filename: 'test.jpg')
+        key = URI.parse(upload.url).path.delete_prefix('/').sub("#{CARRIERWAVE_DIRECTORY}/", '')
+        @directory.files.create(:key => key, :body => 'A test, 1234')
+
+        @uploader.retrieve_from_cache!(upload.cache_name)
+
+        expect(@uploader.read).to eq('A test, 1234')
       end
     end
 

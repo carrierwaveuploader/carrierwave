@@ -117,6 +117,7 @@ module CarrierWave
         after :retrieve_from_cache, :retrieve_versions_from_cache!
         after :retrieve_from_store, :retrieve_versions_from_store!
         after :adopt, :adopt_versions!
+        before :direct_upload, :refuse_direct_upload_of_versions!
 
         prepend Module.new {
           def initialize(*)
@@ -372,6 +373,13 @@ module CarrierWave
 
       def retrieve_versions_from_store!(identifier)
         @deferred_version_retrieval = [:retrieve_from_store!, identifier]
+      end
+
+      # Versions are created from a file the application has, which a direct upload never gives it
+      def refuse_direct_upload_of_versions!(filename)
+        return if versions.empty?
+
+        raise "#{filename.inspect} can't be uploaded directly, as nothing would create the versions #{versions.keys.join(', ')}"
       end
 
       # Versions are created only through the cache, which an adopted file never goes through

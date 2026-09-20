@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Added
+* Add `#direct_upload` to have the client upload a file straight into the cache on the storage service, without the bytes passing through the application (@mshibuya)
 * Add `#{column}_identifier=` and `#adopt!` to take a file which is already in the store as the mounted one, for when it was put there by something other than CarrierWave (@mshibuya)
 
 ### Fixed

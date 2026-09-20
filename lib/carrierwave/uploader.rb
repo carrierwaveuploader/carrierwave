@@ -5,6 +5,7 @@ require "carrierwave/uploader/url"
 require "carrierwave/uploader/mountable"
 require "carrierwave/uploader/cache"
 require "carrierwave/uploader/store"
+require "carrierwave/uploader/direct_upload"
 require "carrierwave/uploader/download"
 require "carrierwave/uploader/remove"
 require "carrierwave/uploader/extension_allowlist"
@@ -52,6 +53,7 @@ module CarrierWave
       include CarrierWave::Uploader::Mountable
       include CarrierWave::Uploader::Cache
       include CarrierWave::Uploader::Store
+      include CarrierWave::Uploader::DirectUpload
       include CarrierWave::Uploader::Download
       include CarrierWave::Uploader::Remove
       include CarrierWave::Uploader::ExtensionAllowlist

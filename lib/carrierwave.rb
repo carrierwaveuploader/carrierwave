@@ -98,6 +98,7 @@ end
 require "carrierwave/utilities"
 require "carrierwave/error"
 require "carrierwave/sanitized_file"
+require "carrierwave/direct_upload"
 require "carrierwave/mounter"
 require "carrierwave/mount"
 require "carrierwave/processing"

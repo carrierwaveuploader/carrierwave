@@ -10,6 +10,7 @@ module CarrierWave
         self.processors = []
 
         before :cache, :process!
+        before :direct_upload, :refuse_direct_upload_of_processed!
       end
 
       module ClassMethods
@@ -119,6 +120,13 @@ module CarrierWave
       end
 
     private
+
+      # Processing needs the file, which a direct upload never hands to the application
+      def refuse_direct_upload_of_processed!(filename)
+        return if !enable_processing || self.class.processors.empty?
+
+        raise "#{filename.inspect} can't be uploaded directly, as the processing of #{self.class} would be skipped"
+      end
 
       def forcing_extension(filename)
         if force_extension && filename

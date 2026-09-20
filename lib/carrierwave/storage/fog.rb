@@ -175,6 +175,14 @@ module CarrierWave
         local_storage.delete_dir!(path)
       end
 
+      ##
+      # Returns a URL a client can PUT the file to, to cache it without the bytes
+      # passing through the application.
+      #
+      def direct_upload_url(path, expires_in:, headers: {})
+        connection.put_object_url(uploader.fog_directory, path, ::Fog::Time.now.since(expires_in), headers)
+      end
+
       def clean_cache!(seconds)
         local_storage.clean_cache!(seconds)
         directory = connection.directories.new(fog_public_attrs.merge(:key => uploader.fog_directory))

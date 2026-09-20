@@ -36,6 +36,10 @@ module CarrierWave
         file
       end
 
+      def direct_upload_url(path, expires_in:, headers: {})
+        raise NotImplementedError, "Need to implement #direct_upload_url if you want to use #{self.class.name} for direct uploads."
+      end
+
       def delete_dir!(path)
         raise NotImplementedError, "Need to implement #delete_dir! if you want to use #{self.class.name} as a cache storage."
       end

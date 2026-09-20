@@ -637,6 +637,57 @@ CarrierWave.configure do |config|
 end
 ```
 
+## Uploading directly to the storage
+
+When the file is stored on a cloud service, it can be uploaded straight to it,
+without the bytes passing through your application. `#direct_upload` tells the
+client where to put the file, and under which name to hand it back afterwards:
+
+```ruby
+class UploadsController < ApplicationController
+  def create
+    upload = User.new.avatar.direct_upload(filename: params[:filename])
+    render json: upload.to_h
+    # => { url: "https://mybucket.s3.amazonaws.com/uploads/tmp/1758…-4829/cat.jpg?X-Amz-…",
+    #      method: "PUT", headers: {}, cache_name: "1758…-4829/cat.jpg" }
+  end
+end
+```
+
+The file goes where the cache expects it, so the upload is finished by assigning
+the returned name to the `avatar_cache` field you already have for form
+redisplays. In the browser:
+
+```js
+const upload = await (await fetch(`/uploads?filename=${encodeURIComponent(file.name)}`)).json();
+await fetch(upload.url, { method: upload.method, headers: upload.headers, body: file });
+document.querySelector('#user_avatar_cache').value = upload.cache_name;
+// then submit the form as usual
+```
+
+The file is stored where it belongs when the record is saved, as any cached file
+is. Libraries which upload for you take the same three values: with
+[Uppy](https://uppy.io/docs/aws-s3/), return `upload.to_h` from
+`getUploadParameters`.
+
+The cache has to be on the cloud service for this, which it is when `storage` is
+set to `:fog` and `cache_storage` is left alone. A few more things to know:
+
+* the filename is sanitized before it is signed into the URL, so the name the
+  file is stored under is the one in `cache_name`, not the one you passed;
+* the upload stays possible for `fog_authenticated_url_expiration` seconds, which
+  `expires_in:` overrides;
+* the size cannot be limited by the URL. Check it in the client and again with
+  `size_range` when the file comes back, and let `clean_cached_files!` or a
+  lifecycle rule on the cache directory collect what was uploaded and never used;
+* pass `content_type:` to fix the type the client has to send. It is signed into
+  the URL and returned in `headers`, so the client has to send exactly that;
+* uploaders which process what they store, or have versions, refuse to hand out
+  an upload: neither can be done to a file the application never sees.
+
+Your storage service has to allow the upload to be made from the browser, which
+for S3 means a CORS rule allowing `PUT` from your origin.
+
 ## Providing a default URL
 
 In many cases, especially when working with images, it might be a good idea to
