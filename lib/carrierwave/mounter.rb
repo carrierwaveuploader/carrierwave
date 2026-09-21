@@ -226,7 +226,8 @@ module CarrierWave
     end
 
     def remove!
-      uploaders.each(&:remove!)
+      # The reader leaves a blank uploader in place, which has nothing to remove
+      uploaders.reject { |uploader| uploader.file.nil? }.each(&:remove!)
       clear!
     end
 
@@ -252,7 +253,7 @@ module CarrierWave
     def remove_previous
       current_paths = uploaders.map(&:path)
       @removed_uploaders
-        .reject {|uploader| current_paths.include?(uploader.path) }
+        .reject {|uploader| uploader.file.nil? || current_paths.include?(uploader.path) }
         .each { |uploader| uploader.remove! if uploader.remove_previously_stored_files_after_update }
       reset_changes!
     end

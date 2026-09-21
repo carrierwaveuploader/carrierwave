@@ -526,6 +526,13 @@ describe CarrierWave::ActiveRecord do
           @event.remove_image?
         }.from(true).to(false)
       end
+
+      it "doesn't run the remove callbacks when there is no file" do
+        @event = Event.create!
+        expect_any_instance_of(@uploader).not_to receive(:remove!)
+
+        @event.remove_image!
+      end
     end
 
     describe "remove_image=" do
@@ -1064,6 +1071,14 @@ describe CarrierWave::ActiveRecord do
         expect(@event.save).to be_truthy
         expect(File.exist?(public_path('uploads/new.jpeg'))).to be_truthy
         expect(File.exist?(public_path('uploads/old.jpeg'))).to be_falsey
+      end
+
+      it "doesn't run the remove callbacks for a record which had no file" do
+        @event = Event.create!
+        expect_any_instance_of(@uploader).not_to receive(:remove!)
+
+        @event.image = stub_file('new.jpeg')
+        expect(@event.save).to be_truthy
       end
 
       it "should not remove old file if old file had a different path but config is false" do
