@@ -221,7 +221,8 @@ module CarrierWave
       end
 
       def cache_storage
-        @cache_storage ||= (self.class.cache_storage || self.class.storage).new(self)
+        # Falls back to this uploader's storage, which may not be the configured one
+        @cache_storage ||= self.class.cache_storage&.new(self) || storage
       end
 
       # We can override the full_original_filename method in other modules

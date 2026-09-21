@@ -10,6 +10,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Add `#{column}_identifier=` and `#adopt!` to take a file which is already in the store as the mounted one, for when it was put there by something other than CarrierWave (@mshibuya)
 
 ### Fixed
+* Fix the cache falling back to the configured storage instead of the one the uploader uses, so that an uploader which picks its storage per file caches where it stores (@mshibuya)
 * Fix obsolete warnings from `URI::RFC3986_PARSER#escape` and `#unescape` (@mshibuya [#2796](https://github.com/carrierwaveuploader/carrierwave/issues/2796))
 * Fix a Fog file being copied onto itself when it is stored to where it already is, which S3 refuses (@mshibuya)
 * Fix `clean_cached_files!` removing files outside the cache directory which merely look like a cache, such as ones under a sibling directory sharing the name as a prefix (@mshibuya)

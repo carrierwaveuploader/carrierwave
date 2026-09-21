@@ -336,6 +336,26 @@ describe CarrierWave::Uploader do
     end
   end
 
+  describe '#cache_storage' do
+    it "is the storage of the uploader, when no cache storage is configured" do
+      expect(uploader.send(:cache_storage)).to be(uploader.send(:storage))
+    end
+
+    it "follows an uploader which picks its storage itself" do
+      storage = CarrierWave::Storage::Fog.new(uploader)
+      allow(uploader).to receive(:storage).and_return(storage)
+
+      expect(uploader.send(:cache_storage)).to be(storage)
+    end
+
+    it "is the configured one when there is one" do
+      uploader_class.cache_storage = CarrierWave::Storage::File
+
+      expect(uploader.send(:cache_storage)).to be_an_instance_of(CarrierWave::Storage::File)
+      expect(uploader.send(:cache_storage)).not_to be(uploader.send(:storage))
+    end
+  end
+
   describe '.generate_cache_id' do
     it 'generates dir name based on UTC time' do
       Timecop.freeze(Time.at(1369896000)) do
