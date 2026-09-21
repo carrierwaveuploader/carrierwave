@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Added
+* Add `#parse_cache_id` as the one place which decides what a cache id is, so that cache ids made elsewhere can be taken by overriding it (@mshibuya)
 * Add `#direct_upload` to have the client upload a file straight into the cache on the storage service, without the bytes passing through the application (@mshibuya)
 * Add `#{column}_identifier=` and `#adopt!` to take a file which is already in the store as the mounted one, for when it was put there by something other than CarrierWave (@mshibuya)
 

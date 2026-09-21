@@ -336,6 +336,38 @@ describe CarrierWave::Uploader do
     end
   end
 
+  describe '#parse_cache_id' do
+    it "tells when the cache id was created" do
+      expect(uploader.parse_cache_id('1369894322-345-1234-2255')).to eq(Time.at(1369894322))
+    end
+
+    it "takes the three part cache id earlier versions made" do
+      expect(uploader.parse_cache_id('1369894322-345-2255')).to eq(Time.at(1369894322))
+    end
+
+    it "returns nil for what isn't a cache id" do
+      ['bork', '1369894322', "1369894322-345-1234-2255/#{test_file_name}", nil].each do |candidate|
+        expect(uploader.parse_cache_id(candidate)).to be_nil
+      end
+    end
+
+    context "when overridden to take cache ids made elsewhere" do
+      before do
+        uploader_class.class_eval do
+          def parse_cache_id(cache_id)
+            super(cache_id.to_s.sub(/-[a-f\d]+\z/, ''))
+          end
+        end
+      end
+
+      it "takes them as a cache name" do
+        uploader.retrieve_from_cache!("#{cache_id}-deadbeef/#{test_file_name}")
+
+        expect(uploader.current_path).to eq(public_path("uploads/tmp/#{cache_id}-deadbeef/#{test_file_name}"))
+      end
+    end
+  end
+
   describe "a cache name without a filename" do
     before { uploader.retrieve_from_cache!(cache_id) }
 

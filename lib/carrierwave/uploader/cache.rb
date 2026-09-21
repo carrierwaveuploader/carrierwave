@@ -107,6 +107,28 @@ module CarrierWave
       end
 
       ##
+      # Tells when the given cache id was created, and by returning nil, that it is
+      # not one. Override to take cache ids which were made elsewhere.
+      #
+      # === Parameters
+      #
+      # [cache_id (String)] the cache id to look at
+      #
+      # === Returns
+      #
+      # [Time] when it was created
+      #   or
+      # [NilClass] if it isn't a cache id
+      #
+      def parse_cache_id(cache_id)
+        # Earlier version used 3 part cache_id. Thus we should allow for
+        # the cache_id to have both 3 part and 4 part formats.
+        return unless cache_id.to_s =~ /\A(-?\d+)-\d+(-\d{4})?-\d{4}\z/
+
+        Time.at($1.to_i)
+      end
+
+      ##
       # Caches the given file. Calls process! to trigger any process callbacks.
       #
       # By default, cache!() uses copy_to(), which operates by copying the file
@@ -209,9 +231,7 @@ module CarrierWave
       attr_reader :original_filename
 
       def cache_id=(cache_id)
-        # Earlier version used 3 part cache_id. Thus we should allow for
-        # the cache_id to have both 3 part and 4 part formats.
-        raise CarrierWave::InvalidParameter, "invalid cache id" unless cache_id =~ /\A(-)?[\d]+\-[\d]+(\-[\d]{4})?\-[\d]{4}\z/
+        raise CarrierWave::InvalidParameter, "invalid cache id" unless parse_cache_id(cache_id)
         @cache_id = cache_id
       end
 

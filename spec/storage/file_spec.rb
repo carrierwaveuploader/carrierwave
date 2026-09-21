@@ -124,6 +124,23 @@ describe CarrierWave::Storage::File do
       end
     end
 
+    context "when the uploader takes cache ids made elsewhere" do
+      before do
+        uploader_class.class_eval do
+          def parse_cache_id(cache_id)
+            super(cache_id.to_s.sub(/-[a-f\d]+\z/, ''))
+          end
+        end
+        FileUtils.mkdir_p File.expand_path("#{five_days_ago.utc.to_i}-100-1234-deadbeef", cache_dir)
+      end
+
+      it "cleans those too" do
+        Timecop.freeze(today) { uploader_class.clean_cached_files!(0) }
+
+        expect(Dir.glob("#{cache_dir}/*").size).to eq(0)
+      end
+    end
+
     context "when a directory name only contains something like a cache_id" do
       before do
         FileUtils.mkdir_p File.expand_path("backup-#{five_days_ago.utc.to_i}-100-1234", cache_dir)
