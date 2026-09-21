@@ -336,6 +336,32 @@ describe CarrierWave::Uploader do
     end
   end
 
+  describe "a cache name without a filename" do
+    before { uploader.retrieve_from_cache!(cache_id) }
+
+    it "caches the file which is the cache entry itself" do
+      expect(uploader.current_path).to eq(public_path("uploads/tmp/#{cache_id}"))
+    end
+
+    it "gives the cache id back as the cache name" do
+      expect(uploader.cache_name).to eq(cache_id)
+    end
+
+    it "leaves the uploader to say what the file is stored as" do
+      uploader_class.class_eval { def filename; 'bork.txt'; end }
+      FileUtils.mkdir_p(public_path('uploads/tmp'))
+      FileUtils.cp(test_file_path, public_path("uploads/tmp/#{cache_id}"))
+
+      uploader.store!
+
+      expect(uploader.path).to eq(public_path('uploads/bork.txt'))
+    end
+
+    it "refuses to store when the uploader doesn't say either" do
+      expect { uploader.store! }.to raise_error(CarrierWave::FilenameNotReproducible, /no name/)
+    end
+  end
+
   describe '#cache_storage' do
     it "is the storage of the uploader, when no cache storage is configured" do
       expect(uploader.send(:cache_storage)).to be(uploader.send(:storage))

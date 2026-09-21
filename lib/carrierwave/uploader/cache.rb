@@ -103,7 +103,7 @@ module CarrierWave
       # [String] a cache name, in the format TIMEINT-PID-COUNTER-RND/filename.txt
       #
       def cache_name
-        File.join(cache_id, original_filename) if cache_id && original_filename
+        File.join(*[cache_id, original_filename].compact) if cache_id
       end
 
       ##

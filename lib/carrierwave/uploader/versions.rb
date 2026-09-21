@@ -346,7 +346,8 @@ module CarrierWave
       end
 
       def full_original_filename
-        [version_name, super].compact.join('_')
+        # nil stays nil, as a cached file doesn't have to carry a name of its own
+        [version_name, super].compact.join('_').presence
       end
 
       def cache_versions!(new_file)

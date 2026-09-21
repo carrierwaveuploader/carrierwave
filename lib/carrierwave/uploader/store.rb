@@ -176,6 +176,10 @@ module CarrierWave
       # spared having to work the name out at all.
       #
       def ensure_the_filename_can_be_worked_out_again
+        if filename.blank?
+          raise CarrierWave::FilenameNotReproducible, "The file has no name to be stored under. " \
+            "#filename has to give one, as a cached file doesn't have to carry a name of its own."
+        end
         return if parent_version || metadata_recorded?
 
         for_file = deduplicated_filename
