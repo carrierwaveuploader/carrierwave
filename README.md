@@ -35,6 +35,23 @@ gem 'carrierwave', '~> 3.0'
 
 Finally, restart the server to apply the changes.
 
+### Supported Ruby and Rails versions
+
+Each release is tested against the versions below. The gemspec only states a
+minimum, so Bundler will happily install an old CarrierWave alongside a Rails
+newer than it has ever seen — which is how a patch-level upgrade ends up failing
+at boot. Check this table when upgrading Rails.
+
+| CarrierWave | Rails      | Ruby     |
+|-------------|------------|----------|
+| 4.0         | 7.0 – 8.1  | >= 2.7   |
+| 3.1         | 6.0 – 8.0  | >= 2.5   |
+| 3.0         | 6.0 – 7.1  | >= 2.5   |
+| 2.2         | 5.0 – 6.1  | >= 2.2.2 |
+
+Only the latest release gets fixes; older lines are listed so you can tell
+whether your combination was ever supported.
+
 ## Upgrading from 2.x or earlier
 
 CarrierWave 3.0 comes with a change in the way of handling the file extension on conversion. This results in following issues if you use `process convert: :format` to change the file format:
@@ -1072,6 +1089,10 @@ end
 If you're uploading images, you'll probably want to manipulate them in some way,
 you might want to create thumbnail images for example.
 
+The processing library itself is not a dependency of CarrierWave, so add the one
+your uploaders use to your own Gemfile — `mini_magick`, `ruby-vips` or `rmagick`
+— along with the tool it drives (ImageMagick or libvips).
+
 ### Using MiniMagick
 
 MiniMagick performs all the operations using the 'convert' CLI which is part of the standard ImageMagick kit.
@@ -1150,10 +1171,24 @@ class ImageFileUploader < CarrierWave::Uploader::Base
 end
 ````
 
+For anything the methods below don't cover, `vips!` yields the [ImageProcessing](https://github.com/janko/image_processing/blob/master/doc/vips.md) builder (`minimagick!` does the same for MiniMagick). For example, to strip the metadata and set the quality:
+
+````ruby
+class ImageFileUploader < CarrierWave::Uploader::Base
+  include CarrierWave::Vips
+
+  process :optimize
+
+  def optimize
+    vips! { |builder| builder.saver(strip: true, quality: 90) }
+  end
+end
+````
+
 ### List of available processing methods:
 
 > [!NOTE]
-> While the intention is to provide uniform interfaces to all three processing libraries the availability and implementation of processing methods can <a href="supported-processing-methods">vary slightly between them</a>.
+> While the intention is to provide uniform interfaces to all three processing libraries the availability and implementation of processing methods can <a href="#supported-processing-methods">vary slightly between them</a>.
 
 - `convert` - Changes the image encoding format to the given format (eg. jpg). This operation is treated specially to trigger the change of the file extension, so it matches with the format of the resulting file.
 - `resize_to_limit` - Resize the image to fit within the specified dimensions while retaining the original aspect ratio. Will only resize the image if it is larger than the specified dimensions. The resulting image may be shorter or narrower than specified in the smaller dimension but will not be larger than the specified values.
