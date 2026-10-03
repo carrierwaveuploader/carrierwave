@@ -290,6 +290,7 @@ module CarrierWave
 
       image = yield(image)
       FileUtils.mv image.path, current_path
+      follow_extension_of image.path
 
       ::MiniMagick::Image.new(current_path).identify
     rescue ::MiniMagick::Error, ::MiniMagick::Invalid => e
@@ -333,12 +334,7 @@ module CarrierWave
       end
 
       FileUtils.mv result.path, current_path
-
-      if File.extname(result.path) != File.extname(current_path)
-        move_to = current_path.chomp(File.extname(current_path)) + File.extname(result.path)
-        file.content_type = Marcel::Magic.by_path(move_to).try(:type)
-        file.move_to(move_to, permissions, directory_permissions)
-      end
+      follow_extension_of result.path
     rescue ::MiniMagick::Error, ::MiniMagick::Invalid => e
       raise e if e.message =~ /(You must have .+ installed|is not installed|executable not found)/
       message = I18n.translate(:"errors.messages.processing_error")
@@ -346,6 +342,16 @@ module CarrierWave
     end
 
   private
+
+    # The processing may have changed the format, in which case the file is renamed so
+    # that its extension keeps telling what it actually holds
+    def follow_extension_of(processed_path)
+      return if File.extname(processed_path) == File.extname(current_path)
+
+      move_to = current_path.chomp(File.extname(current_path)) + File.extname(processed_path)
+      file.content_type = Marcel::Magic.by_path(move_to).try(:type)
+      file.move_to(move_to, permissions, directory_permissions)
+    end
 
     def resolve_dimensions(*dimensions)
       dimensions.map do |value|

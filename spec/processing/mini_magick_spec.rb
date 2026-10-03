@@ -310,7 +310,15 @@ describe CarrierWave::MiniMagick do
         instance.manipulate! do |image|
           image.format('png')
         end
-      ).to include 'landscape_copy.jpg PNG 640x480'
+      ).to include 'landscape_copy.png PNG 640x480'
+    end
+
+    it "renames the file when the manipulation changed the format" do
+      instance.manipulate! do |image|
+        image.format('png')
+      end
+      expect(instance.file.extension).to eq('png')
+      expect(instance.file.content_type).to eq('image/png')
     end
 
     context "on failing to find ImageMagick/GraphicsMagick" do
