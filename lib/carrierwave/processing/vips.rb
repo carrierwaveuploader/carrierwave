@@ -93,10 +93,6 @@ module CarrierWave
     #
     # [format (#to_s)] an abbreviation of the format
     #
-    # === Yields
-    #
-    # [Vips::Image] additional manipulations to perform
-    #
     # === Examples
     #
     #     image.convert(:png)
@@ -121,10 +117,6 @@ module CarrierWave
     # [height (Integer)] the height to scale the image to
     # [combine_options (Hash)] additional Vips options to apply before resizing
     #
-    # === Yields
-    #
-    # [Vips::Image] additional manipulations to perform
-    #
     def resize_to_limit(width, height, combine_options: {})
       width, height = resolve_dimensions(width, height)
 
@@ -145,10 +137,6 @@ module CarrierWave
     # [height (Integer)] the height to scale the image to
     # [combine_options (Hash)] additional Vips options to apply before resizing
     #
-    # === Yields
-    #
-    # [Vips::Image] additional manipulations to perform
-    #
     def resize_to_fit(width, height, combine_options: {})
       width, height = resolve_dimensions(width, height)
 
@@ -168,10 +156,6 @@ module CarrierWave
     # [width (Integer)] the width to scale the image to
     # [height (Integer)] the height to scale the image to
     # [combine_options (Hash)] additional vips options to apply before resizing
-    #
-    # === Yields
-    #
-    # [Vips::Image] additional manipulations to perform
     #
     def resize_to_fill(width, height, _gravity = nil, combine_options: {})
       width, height = resolve_dimensions(width, height)
@@ -199,10 +183,6 @@ module CarrierWave
     # [alpha (Boolean, nil)] pad the image with the alpha channel if supported
     # [combine_options (Hash)] additional vips options to apply before resizing
     #
-    # === Yields
-    #
-    # [Vips::Image] additional manipulations to perform
-    #
     def resize_and_pad(width, height, background=nil, gravity='centre', alpha=nil, combine_options: {})
       width, height = resolve_dimensions(width, height)
 
@@ -223,10 +203,6 @@ module CarrierWave
     # [top (integer)] top edge of area to extract
     # [width (Integer)] width of area to extract
     # [height (Integer)] height of area to extract
-    #
-    # === Yields
-    #
-    # [Vips::Image] additional manipulations to perform
     #
     def crop(left, top, width, height, combine_options: {})
       width, height = resolve_dimensions(width, height)

@@ -10,7 +10,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Add `#direct_upload` to have the client upload a file straight into the cache on the storage service, without the bytes passing through the application (@mshibuya)
 * Add `#{column}_identifier=` and `#adopt!` to take a file which is already in the store as the mounted one, for when it was put there by something other than CarrierWave (@mshibuya)
 
+### Deprecated
+* Deprecate the `MiniMagick::Image` yielded by `#convert`, `#resize_to_limit`, `#resize_to_fit`, `#resize_to_fill`, `#resize_and_pad` and `#crop`. Use `#manipulate!` to work with a `MiniMagick::Image`, or `#minimagick!` to build on the ImageProcessing builder (@mshibuya)
+
 ### Fixed
+* Fix `#manipulate!` leaving the file named after the old format when the manipulation changed it, so that the extension no longer tells what the file holds (@mshibuya [#2714](https://github.com/carrierwaveuploader/carrierwave/issues/2714))
 * Fix a cache name without a filename, which is what a file cached by something other than the uploader has, pointing at a directory instead of the file. Storing is now refused when the uploader doesn't say what to store it as either (@mshibuya)
 * Fix the cache falling back to the configured storage instead of the one the uploader uses, so that an uploader which picks its storage per file caches where it stores (@mshibuya)
 * Fix obsolete warnings from `URI::RFC3986_PARSER#escape` and `#unescape` (@mshibuya [#2796](https://github.com/carrierwaveuploader/carrierwave/issues/2796))

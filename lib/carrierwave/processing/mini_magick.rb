@@ -96,7 +96,7 @@ module CarrierWave
     #
     # === Yields
     #
-    # [MiniMagick::Image] additional manipulations to perform
+    # [MiniMagick::Image] additional manipulations to perform (deprecated, use #manipulate!)
     #
     # === Examples
     #
@@ -124,7 +124,7 @@ module CarrierWave
     #
     # === Yields
     #
-    # [MiniMagick::Image] additional manipulations to perform
+    # [MiniMagick::Image] additional manipulations to perform (deprecated, use #manipulate!)
     #
     def resize_to_limit(width, height, combine_options: {}, &block)
       width, height = resolve_dimensions(width, height)
@@ -148,7 +148,7 @@ module CarrierWave
     #
     # === Yields
     #
-    # [MiniMagick::Image] additional manipulations to perform
+    # [MiniMagick::Image] additional manipulations to perform (deprecated, use #manipulate!)
     #
     def resize_to_fit(width, height, combine_options: {}, &block)
       width, height = resolve_dimensions(width, height)
@@ -173,7 +173,7 @@ module CarrierWave
     #
     # === Yields
     #
-    # [MiniMagick::Image] additional manipulations to perform
+    # [MiniMagick::Image] additional manipulations to perform (deprecated, use #manipulate!)
     #
     def resize_to_fill(width, height, gravity = 'Center', combine_options: {}, &block)
       width, height = resolve_dimensions(width, height)
@@ -203,7 +203,7 @@ module CarrierWave
     #
     # === Yields
     #
-    # [MiniMagick::Image] additional manipulations to perform
+    # [MiniMagick::Image] additional manipulations to perform (deprecated, use #manipulate!)
     #
     def resize_and_pad(width, height, background=:transparent, gravity='Center', combine_options: {}, &block)
       width, height = resolve_dimensions(width, height)
@@ -228,7 +228,7 @@ module CarrierWave
     #
     # === Yields
     #
-    # [MiniMagick::Image] additional manipulations to perform
+    # [MiniMagick::Image] additional manipulations to perform (deprecated, use #manipulate!)
     #
     def crop(left, top, width, height, combine_options: {}, &block)
       width, height = resolve_dimensions(width, height)
@@ -326,8 +326,13 @@ module CarrierWave
       result = builder.call
       result.close
 
-      # backwards compatibility (we want to eventually move away from MiniMagick::Image)
       if block
+        unless @minimagick_image_block_warned
+          @minimagick_image_block_warned = true
+          CarrierWave.deprecator.warn "Passing a block to receive a MiniMagick::Image is deprecated. " \
+                                      "Use #manipulate! to work with a MiniMagick::Image, or #minimagick! to build on the ImageProcessing builder."
+        end
+
         image  = ::MiniMagick::Image.new(result.path, result)
         image  = block.call(image)
         result = image.instance_variable_get(:@tempfile)

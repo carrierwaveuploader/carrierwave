@@ -16,6 +16,19 @@ describe CarrierWave::MiniMagick do
 
   after { FileUtils.rm(landscape_copy_file_path) if File.exist?(landscape_copy_file_path) }
 
+  describe "the deprecated MiniMagick::Image yielded by the processing methods" do
+    it "yields it, warning once" do
+      expect(CarrierWave.deprecator).to receive(:warn).once.with(/Passing a block to receive a MiniMagick::Image is deprecated/)
+
+      yielded = []
+      collect = ->(image) { yielded << image and image }
+      instance.resize_to_fit(100, 100, &collect)
+      instance.resize_to_fit(50, 50, &collect)
+
+      expect(yielded).to all(be_a(MiniMagick::Image))
+    end
+  end
+
   describe "#convert" do
     it "converts from one format to another" do
       instance.convert('png')
