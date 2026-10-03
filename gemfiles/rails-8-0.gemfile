@@ -5,4 +5,7 @@ gem "activemodel-serializers-xml"
 gem "sqlite3", platforms: :ruby
 gem "activerecord-jdbcsqlite3-adapter", platform: [:jruby, :truffleruby]
 
+# This Rails version passes the :quirks_mode keyword which json 3 removed
+gem "json", "< 3"
+
 gemspec :path => "../"
