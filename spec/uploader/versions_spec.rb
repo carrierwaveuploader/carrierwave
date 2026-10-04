@@ -385,6 +385,21 @@ describe CarrierWave::Uploader do
       end
     end
 
+    describe '#cache_stored_file!' do
+      before do
+        @uploader.store!(File.open(file_path('test.jpg')))
+        @retrieved = @uploader_class.new
+        @retrieved.retrieve_from_store!('test.jpg')
+      end
+
+      it "caches a version of a file which was retrieved rather than cached" do
+        @retrieved.thumb.cache_stored_file!
+
+        expect(@retrieved.thumb).to be_cached
+        expect(File.exist?(@retrieved.thumb.current_path)).to be_truthy
+      end
+    end
+
     describe "version with move_to_cache set" do
       before do
         FileUtils.cp(file_path('test.jpg'), file_path('test_copy.jpg'))

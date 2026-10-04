@@ -14,6 +14,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Deprecate the `MiniMagick::Image` yielded by `#convert`, `#resize_to_limit`, `#resize_to_fit`, `#resize_to_fill`, `#resize_and_pad` and `#crop`. Use `#manipulate!` to work with a `MiniMagick::Image`, or `#minimagick!` to build on the ImageProcessing builder (@mshibuya)
 
 ### Fixed
+* Fix caching a version of a file which was retrieved from the store rather than cached, which raised `InvalidParameter` as it took the cache id of a parent that has none. `#manipulate!` on such a version was broken the same way (@mshibuya, @SergeyProger [#2798](https://github.com/carrierwaveuploader/carrierwave/issues/2798))
 * Fix `#manipulate!` leaving the file named after the old format when the manipulation changed it, so that the extension no longer tells what the file holds (@mshibuya [#2714](https://github.com/carrierwaveuploader/carrierwave/issues/2714))
 * Fix a cache name without a filename, which is what a file cached by something other than the uploader has, pointing at a directory instead of the file. Storing is now refused when the uploader doesn't say what to store it as either (@mshibuya)
 * Fix the cache falling back to the configured storage instead of the one the uploader uses, so that an uploader which picks its storage per file caches where it stores (@mshibuya)
