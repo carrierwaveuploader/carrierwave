@@ -81,10 +81,9 @@ module CarrierWave
       end
 
       ##
-      # Caches the remotely stored file
-      #
-      # This is useful when about to process images. Most processing solutions
-      # require the file to be stored on the local filesystem.
+      # Caches the stored file, so that it can be processed. Most processing solutions
+      # require the file to be on the local filesystem. It is staged as any assigned
+      # file is, so the next save stores the result; use #read for a copy only to read.
       #
       def cache_stored_file!
         cache!
