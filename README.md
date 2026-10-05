@@ -262,6 +262,14 @@ class MyUploader < CarrierWave::Uploader::Base
 end
 ```
 
+The name is worked out again whenever the stored file is located, so it has to come out the same every time. Memoise anything that would otherwise differ per call:
+
+```ruby
+def filename
+  @filename ||= "#{SecureRandom.uuid}.#{file.extension}"
+end
+```
+
 Some old documentations (like [this](https://stackoverflow.com/a/5865117)) may instruct you to safeguard the filename value with `if original_filename`, but it's no longer necessary with CarrierWave 3.0 or later.
 
 ## Securing uploads
