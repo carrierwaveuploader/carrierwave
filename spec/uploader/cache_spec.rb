@@ -368,6 +368,30 @@ describe CarrierWave::Uploader do
     end
   end
 
+  describe "caching a file which carries no name" do
+    it "caches it under a stand-in name" do
+      uploader.cache!(StringIO.new('this is stuff'))
+
+      expect(uploader.current_path).to eq(public_path("uploads/tmp/#{uploader.cache_name}"))
+      expect(uploader.cache_name).to end_with('/unnamed')
+      expect(uploader.read).to eq('this is stuff')
+    end
+
+    it "leaves the uploader to say what the file is stored as" do
+      uploader_class.class_eval { def filename; 'bork.txt'; end }
+
+      uploader.store!(StringIO.new('this is stuff'))
+
+      expect(uploader.path).to eq(public_path('uploads/bork.txt'))
+    end
+
+    it "stores it under the stand-in name when the uploader doesn't say otherwise" do
+      uploader.store!(StringIO.new('this is stuff'))
+
+      expect(uploader.path).to eq(public_path('uploads/unnamed'))
+    end
+  end
+
   describe "a cache name without a filename" do
     before { uploader.retrieve_from_cache!(cache_id) }
 

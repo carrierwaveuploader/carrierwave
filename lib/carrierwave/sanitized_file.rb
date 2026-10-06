@@ -53,7 +53,7 @@ module CarrierWave
     # [String] the sanitized filename
     #
     def filename
-      sanitize(original_filename) if original_filename
+      sanitize(original_filename.to_s)
     end
 
     alias_method :identifier, :filename

@@ -39,7 +39,9 @@ describe CarrierWave::Uploader do
     end
 
     it "rejects a filename which leaves nothing to store under" do
-      expect { uploader.direct_upload(filename: ' ') }.to raise_error(CarrierWave::InvalidParameter)
+      [nil, '', ' '].each do |filename|
+        expect { uploader.direct_upload(filename: filename) }.to raise_error(CarrierWave::InvalidParameter)
+      end
     end
 
     it "gives a new cache id to every upload" do

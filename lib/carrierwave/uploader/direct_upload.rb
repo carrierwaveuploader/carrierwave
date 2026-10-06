@@ -24,8 +24,9 @@ module CarrierWave
       # [CarrierWave::DirectUpload] where and how to upload, and the name to hand back
       #
       def direct_upload(filename:, expires_in: nil, content_type: nil)
-        filename = CarrierWave::SanitizedFile.new(filename).filename
         raise CarrierWave::InvalidParameter, "invalid filename" if filename.blank?
+
+        filename = CarrierWave::SanitizedFile.new(filename).filename
 
         upload = nil
         with_callbacks(:direct_upload, filename) do

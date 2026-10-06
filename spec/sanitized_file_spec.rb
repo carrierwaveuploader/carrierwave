@@ -985,21 +985,27 @@ describe CarrierWave::SanitizedFile do
       end
     end
 
-    describe "#filename" do
+    describe "#original_filename" do
       it "should be nil" do
-        expect(empty.filename).to be_nil
+        expect(empty.original_filename).to be_nil
+      end
+    end
+
+    describe "#filename" do
+      it "should be the stand-in name" do
+        expect(empty.filename).to eq("unnamed")
       end
     end
 
     describe "#basename" do
-      it "should be nil" do
-        expect(empty.basename).to be_nil
+      it "should be the stand-in name" do
+        expect(empty.basename).to eq("unnamed")
       end
     end
 
     describe "#extension" do
-      it "should be nil" do
-        expect(empty.extension).to be_nil
+      it "should be empty" do
+        expect(empty.extension).to eq("")
       end
     end
 
@@ -1055,21 +1061,27 @@ describe CarrierWave::SanitizedFile do
       end
     end
 
-    describe "#filename" do
+    describe "#original_filename" do
       it "should be nil" do
-        expect(empty.filename).to be_nil
+        expect(empty.original_filename).to be_nil
+      end
+    end
+
+    describe "#filename" do
+      it "should be the stand-in name" do
+        expect(empty.filename).to eq("unnamed")
       end
     end
 
     describe "#basename" do
-      it "should be nil" do
-        expect(empty.basename).to be_nil
+      it "should be the stand-in name" do
+        expect(empty.basename).to eq("unnamed")
       end
     end
 
     describe "#extension" do
-      it "should be nil" do
-        expect(empty.extension).to be_nil
+      it "should be empty" do
+        expect(empty.extension).to eq("")
       end
     end
 
