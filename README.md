@@ -176,6 +176,14 @@ example, create a migration like this:
 
 __Note__: JSON datatype doesn't exists in SQLite adapter, that's why you can use a string datatype which will be serialized in model.
 
+Leave the column nullable: `NULL` is what it holds when no file is mounted, so a `default: []` or `null: false` on it doesn't hold — the `NULL` is written on save. The uploader's own readers answer an empty array either way, and are what to read:
+
+```ruby
+user.avatars             # => [] when there is no file
+user.avatars_identifiers # => []
+user[:avatars]           # => nil, the column as it is stored
+```
+
 Open your model file and mount the uploader:
 
 
