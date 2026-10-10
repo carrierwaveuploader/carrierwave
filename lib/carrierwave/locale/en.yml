@@ -10,6 +10,7 @@ en:
       content_type_denylist_error: "You are not allowed to upload %{content_type} files"
       processing_error: "Failed to manipulate, maybe it is not an image?"
       unsupported_image_format_error: "Failed to manipulate, file format is not supported"
+      filename_too_long_error: "File name is too long"
       min_size_error: "File size should be greater than %{min_size}"
       max_size_error: "File size should be less than %{max_size}"
       min_width_error: "Image width should be greater than %{min_width}px"

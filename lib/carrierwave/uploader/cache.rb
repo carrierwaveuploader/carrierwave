@@ -167,6 +167,9 @@ module CarrierWave
           with_callbacks(:cache, @file) do
             @file = cache_storage.cache!(@file)
           end
+        rescue Errno::ENAMETOOLONG
+          # How long a name may be is the filesystem's to say, so let it say it
+          raise CarrierWave::IntegrityError, I18n.translate(:"errors.messages.filename_too_long_error")
         ensure
           FileUtils.rm_rf(workfile_path(''))
         end

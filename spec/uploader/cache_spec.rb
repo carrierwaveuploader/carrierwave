@@ -392,6 +392,24 @@ describe CarrierWave::Uploader do
     end
   end
 
+  describe "caching a file whose name is longer than the filesystem takes" do
+    let(:file) do
+      CarrierWave::SanitizedFile.new(test_file).tap do |sanitized_file|
+        allow(sanitized_file).to receive(:original_filename).and_return("#{'a' * 300}.jpg")
+      end
+    end
+
+    it "says the name is too long, rather than letting the filesystem's complaint through" do
+      expect { uploader.cache!(file) }.to raise_error(CarrierWave::IntegrityError, /name is too long/)
+    end
+
+    it "leaves nothing behind in the cache" do
+      expect { uploader.cache!(file) }.to raise_error(CarrierWave::IntegrityError)
+
+      expect(Dir.glob(public_path('uploads/tmp/*/*'))).to be_empty
+    end
+  end
+
   describe "a cache name without a filename" do
     before { uploader.retrieve_from_cache!(cache_id) }
 

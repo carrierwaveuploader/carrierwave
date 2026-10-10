@@ -15,6 +15,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 * Fix a filename carrying a NUL byte raising `ArgumentError`. The byte is now sanitised away like any other (@mshibuya)
+* Fix a filename too long for the filesystem raising `Errno::ENAMETOOLONG`, which is now a `CarrierWave::IntegrityError` and so fails validation (@mshibuya)
 * Fix `SanitizedFile#filename` answering `nil` for a file which carries no name of its own, such as a bare `StringIO`, which raised `TypeError` on caching it. It now gives the same stand-in name a name sanitised away to nothing already gets, leaving `#original_filename` to say whether a name arrived at all (@mshibuya [#1831](https://github.com/carrierwaveuploader/carrierwave/issues/1831))
 * Fix caching a version of a file which was retrieved from the store rather than cached, which raised `InvalidParameter` as it took the cache id of a parent that has none. `#manipulate!` on such a version was broken the same way (@mshibuya, @SergeyProger [#2798](https://github.com/carrierwaveuploader/carrierwave/issues/2798))
 * Fix `#manipulate!` leaving the file named after the old format when the manipulation changed it, so that the extension no longer tells what the file holds (@mshibuya [#2714](https://github.com/carrierwaveuploader/carrierwave/issues/2714))
