@@ -156,6 +156,12 @@ describe CarrierWave::SanitizedFile do
       expect(sanitized_file).to receive(:original_filename).at_least(:once).and_return("test\xDD.jpg")
       expect(sanitized_file.filename).to eq("test_.jpg")
     end
+
+    it "should remove a NUL byte from the filename, which would cut the path short" do
+      expect(sanitized_file).to receive(:original_filename).at_least(:once).and_return("test.jpg\0.exe")
+      expect(sanitized_file.filename).to eq("test.jpg.exe")
+    end
+
   end
 
   describe "#filename with an overridden sanitize_regexp" do

@@ -305,7 +305,7 @@ module CarrierWave
 
     # Sanitize the filename, to prevent hacking
     def sanitize(name)
-      name = name.scrub
+      name = name.scrub.delete("\0") # a NUL byte cuts the path short, and File.basename refuses one
       name = name.tr("\\", "/") # work-around for IE
       name = File.basename(name)
       name = name.gsub(sanitize_regexp, "_")
