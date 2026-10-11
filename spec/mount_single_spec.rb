@@ -165,6 +165,20 @@ describe CarrierWave::Mount do
         expect(@instance.image).to be_blank
       end
 
+      it "should keep the stored file when the assignment is refused" do
+        allow(@instance).to receive(:read_uploader).with(:image).and_return('old.jpeg')
+        @uploader.class_eval do
+          def extension_allowlist
+            %w(png)
+          end
+        end
+        expect(@instance).not_to receive(:write_uploader)
+
+        @instance.image = stub_file('test.jpg')
+
+        expect(@instance.image.identifier).to eq('old.jpeg')
+      end
+
       it "should fail silently if the image fails to be processed" do
         @uploader.class_eval do
           process :monkey

@@ -14,6 +14,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Deprecate the `MiniMagick::Image` yielded by `#convert`, `#resize_to_limit`, `#resize_to_fit`, `#resize_to_fill`, `#resize_and_pad` and `#crop`. Use `#manipulate!` to work with a `MiniMagick::Image`, or `#minimagick!` to build on the ImageProcessing builder (@mshibuya)
 
 ### Fixed
+* Fix a refused assignment taking the mounted file away, which could delete the stored file where the error is not validated (@mshibuya)
 * Fix a filename carrying a NUL byte raising `ArgumentError`. The byte is now sanitised away like any other (@mshibuya)
 * Fix a filename too long for the filesystem raising `Errno::ENAMETOOLONG`, which is now a `CarrierWave::IntegrityError` and so fails validation (@mshibuya)
 * Fix `SanitizedFile#filename` answering `nil` for a file which carries no name of its own, such as a bare `StringIO`, which raised `TypeError` on caching it. It now gives the same stand-in name a name sanitised away to nothing already gets, leaving `#original_filename` to say whether a name arrived at all (@mshibuya [#1831](https://github.com/carrierwaveuploader/carrierwave/issues/1831))

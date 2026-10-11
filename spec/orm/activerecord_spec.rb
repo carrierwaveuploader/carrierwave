@@ -204,6 +204,25 @@ describe CarrierWave::ActiveRecord do
         expect(@event.image.current_path).to match(%r(^#{public_path('uploads/tmp')}))
       end
 
+      context "when the assignment is refused" do
+        before do
+          @uploader.class_eval do
+            def extension_allowlist
+              %w(txt)
+            end
+          end
+        end
+
+        it "keeps the stored file" do
+          @event.image = stub_file('bork.txt')
+          @event.save!
+
+          @event.image = stub_file('test.jpeg')
+
+          expect(@event[:image]).to eq('bork.txt')
+        end
+      end
+
       context "when empty string is assigned" do
         it "does nothing when" do
           @event.image = ''

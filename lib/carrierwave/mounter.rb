@@ -102,7 +102,7 @@ module CarrierWave
     def cache(new_files)
       return if !new_files.is_a?(Array) && new_files.blank?
       old_uploaders = uploaders
-      @uploaders = new_files.map do |new_file|
+      attempts = new_files.map do |new_file|
         handle_error do
           if new_file.is_a?(String)
             if (uploader = old_uploaders.detect { |old_uploader| old_uploader.identifier == new_file })
@@ -123,7 +123,12 @@ module CarrierWave
             uploader
           end
         end
-      end.reject(&:blank?)
+      end
+      errors, new_uploaders = attempts.partition { |attempt| attempt.is_a?(CarrierWave::UploadError) }
+      # A refusal didn't ask for the mounted file to go
+      return if errors.any? && new_uploaders.all?(&:blank?)
+
+      @uploaders = new_uploaders.reject(&:blank?)
       @removed_uploaders += (old_uploaders - @uploaders)
       write_temporary_identifier
     end
@@ -175,14 +180,20 @@ module CarrierWave
       @download_errors.clear
       @remote_urls = urls
 
-      clear_unstaged
-      @remote_urls.zip(remote_request_headers || []) do |url, header|
+      old_uploaders = uploaders
+      attempts = @remote_urls.zip(remote_request_headers || []).map do |url, header|
         handle_error do
           uploader = blank_uploader
           uploader.download!(url, header || {})
-          @uploaders << uploader
+          uploader
         end
       end
+      errors, new_uploaders = attempts.partition { |attempt| attempt.is_a?(CarrierWave::UploadError) }
+      # A refusal didn't ask for the mounted file to go
+      return if errors.any? && new_uploaders.all?(&:blank?)
+
+      @uploaders = old_uploaders.select(&:staged) + new_uploaders.reject(&:blank?)
+      @removed_uploaders += (old_uploaders - @uploaders)
       write_temporary_identifier
     end
 
@@ -280,17 +291,21 @@ module CarrierWave
       @removed_uploaders += unstaged
     end
 
+    # Records the error and gives it back, unless the mount wants it raised
     def handle_error
       yield
     rescue CarrierWave::DownloadError => e
       @download_errors << e
       raise e unless option(:ignore_download_errors)
+      e
     rescue CarrierWave::ProcessingError => e
       @processing_errors << e
       raise e unless option(:ignore_processing_errors)
+      e
     rescue CarrierWave::IntegrityError => e
       @integrity_errors << e
       raise e unless option(:ignore_integrity_errors)
+      e
     end
 
     def write_temporary_identifier

@@ -312,6 +312,18 @@ describe CarrierWave::Mount do
           expect(instance.images.map(&:identifier)).to eq ['old.jpeg']
         end
 
+        it "keeps the stored files when the assignment is refused in full" do
+          uploader.class_eval do
+            def extension_allowlist
+              %w(png)
+            end
+          end
+
+          instance.images = [old_image_stub]
+
+          expect(instance.images.map(&:identifier)).to eq ['bork.txt', 'test.jpg']
+        end
+
         it "preserves existing image of given identifier" do
           instance.images = [identifiers[0], old_image_stub]
           instance.store_images!
