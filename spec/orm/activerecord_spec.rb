@@ -213,6 +213,12 @@ describe CarrierWave::ActiveRecord do
           end
         end
 
+        it "writes to dirty changes, so that the record is validated where it is saved through an association" do
+          @event.image = stub_file('test.jpeg')
+
+          expect(@event.changes.keys).to include("image")
+        end
+
         it "keeps the stored file" do
           @event.image = stub_file('bork.txt')
           @event.save!
@@ -623,6 +629,12 @@ describe CarrierWave::ActiveRecord do
         @event.save!
         @event.reload
         expect(@event.image_changed?).to be_falsey
+      end
+
+      it "writes to dirty changes when the file could not be downloaded" do
+        @event.remote_image_url = 'http://www.example.com/missing.jpg'
+
+        expect(@event.changes.keys).to include("image")
       end
 
       it "should clear validation errors from the previous attempt" do
@@ -1899,6 +1911,12 @@ describe CarrierWave::ActiveRecord do
         @event.save!
         @event.reload
         expect(@event.images_changed?).to be_falsey
+      end
+
+      it "writes to dirty changes when the files could not be downloaded" do
+        @event.remote_images_urls = ['http://www.example.com/missing.jpg']
+
+        expect(@event.changes.keys).to include("images")
       end
 
       it "should clear validation errors from the previous attempt" do

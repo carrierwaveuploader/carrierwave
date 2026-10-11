@@ -6,6 +6,38 @@ module CarrierWave
 
     include CarrierWave::Mount
 
+    ##
+    # See +CarrierWave::Mount#mount_uploader+ for documentation
+    #
+    def mount_uploader(column, uploader=nil, options={}, &block)
+      super
+
+      mod = Module.new
+      prepend mod
+      mod.class_eval <<-RUBY, __FILE__, __LINE__+1
+        def remote_#{column}_url=(url)
+          super
+          mark_#{column}_changed_on_error
+        end
+      RUBY
+    end
+
+    ##
+    # See +CarrierWave::Mount#mount_uploaders+ for documentation
+    #
+    def mount_uploaders(column, uploader=nil, options={}, &block)
+      super
+
+      mod = Module.new
+      prepend mod
+      mod.class_eval <<-RUBY, __FILE__, __LINE__+1
+        def remote_#{column}_urls=(urls)
+          super
+          mark_#{column}_changed_on_error
+        end
+      RUBY
+    end
+
   private
 
     def mount_base(column, uploader=nil, options={}, &block)
@@ -61,6 +93,22 @@ module CarrierWave
         def write_#{column}_identifier
           return unless has_attribute?(_mounter(:#{column}).serialization_column)
           super
+        end
+
+        def #{column}=(new_file)
+          super
+          mark_#{column}_changed_on_error
+        end
+
+      private
+
+        # A refusal leaves the column as it was, and a record saved through an
+        # association is only validated when it changed, so say it changed
+        def mark_#{column}_changed_on_error
+          return if #{column}_integrity_errors.empty? && #{column}_processing_errors.empty? &&
+            #{column}_download_errors.empty?
+
+          __send__(:"\#{_mounter(:#{column}).serialization_column}_will_change!")
         end
       RUBY
     end
