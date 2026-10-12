@@ -270,11 +270,11 @@ class MyUploader < CarrierWave::Uploader::Base
 end
 ```
 
-The name is worked out again whenever the stored file is located, so it has to come out the same every time. Memoise anything that would otherwise differ per call:
+The name is worked out again whenever the stored file is located, so it has to come out the same every time. Memoise anything that would otherwise differ per call, in an instance variable of your own, as `@filename` is the uploader's:
 
 ```ruby
 def filename
-  @filename ||= "#{SecureRandom.uuid}.#{file.extension}"
+  @stable_filename ||= "#{SecureRandom.uuid}.#{file.extension}"
 end
 ```
 
