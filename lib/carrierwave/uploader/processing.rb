@@ -75,7 +75,7 @@ module CarrierWave
             # the condition held cannot be known, so a conditional one is refused.
             if condition
               raise ArgumentError, "`process convert:` cannot be given `:if` or `:unless`. The file extension follows the conversion, and it has to be worked out again when the file is retrieved, where whether the condition held is not known. " \
-                                   "Convert unconditionally, or put the conversion in a version of its own, or take the naming over by overriding #full_filename."
+                                   "Convert unconditionally, or put the conversion in a version of its own, or convert in a processor of your own and have #filename answer the extension the file ended up with."
             end
 
             force_extension processor_args
