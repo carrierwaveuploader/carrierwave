@@ -1,3 +1,3 @@
 module CarrierWave
-  VERSION = "4.0.0.beta".freeze
+  VERSION = "4.0.0.rc".freeze
 end

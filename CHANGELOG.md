@@ -5,28 +5,32 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 4.0.0.rc - 2026-10-12
+
 ### Added
-* Add `#parse_cache_id` as the one place which decides what a cache id is, so that cache ids made elsewhere can be taken by overriding it (@mshibuya)
-* Add `#direct_upload` to have the client upload a file straight into the cache on the storage service, without the bytes passing through the application (@mshibuya)
-* Add `#{column}_identifier=` and `#adopt!` to take a file which is already in the store as the mounted one, for when it was put there by something other than CarrierWave (@mshibuya)
+* Support direct uploads with `#direct_upload`, where the client sends the file straight to the storage service and the bytes never pass through the application (@mshibuya [1677465](https://github.com/carrierwaveuploader/carrierwave/commit/1677465d2e2e9834afc4728cf35c2c18e8570db2))
+* Support cache ids which were made outside CarrierWave, by overriding `#parse_cache_id` (@mshibuya [ed90d7f](https://github.com/carrierwaveuploader/carrierwave/commit/ed90d7f3aa205fe2e6ee875ba18141e28e72ee71))
+* Support mounting a file which is already in the store with `#{column}_identifier=` and `#adopt!`, for when something other than CarrierWave put it there (@mshibuya [d12660d](https://github.com/carrierwaveuploader/carrierwave/commit/d12660df73e9ec68b734f0f6b7f7159a0b23dc77))
+* Support customising how a download resolves and connects, such as preferring IPv4, with the `ssrf_filter_options` configuration passed to SsrfFilter (@kaibadash [#2813](https://github.com/carrierwaveuploader/carrierwave/pull/2813))
+* Support storing to a bucket which has ACLs disabled, and setting the ACL apart from `fog_public`, with the `fog_acl` configuration (@stanhu [#2811](https://github.com/carrierwaveuploader/carrierwave/pull/2811))
 
 ### Deprecated
-* Deprecate the `MiniMagick::Image` yielded by `#convert`, `#resize_to_limit`, `#resize_to_fit`, `#resize_to_fill`, `#resize_and_pad` and `#crop`. Use `#manipulate!` to work with a `MiniMagick::Image`, or `#minimagick!` to build on the ImageProcessing builder (@mshibuya)
+* Deprecate passing a block to `#convert`, `#resize_to_limit`, `#resize_to_fit`, `#resize_to_fill`, `#resize_and_pad` and `#crop` to receive a `MiniMagick::Image`. Use `#manipulate!` for a `MiniMagick::Image`, or `#minimagick!` for the ImageProcessing builder (@mshibuya [acc722d](https://github.com/carrierwaveuploader/carrierwave/commit/acc722d751a2b550b366107f2ad4dbe6f66abeef))
 
 ### Fixed
-* Fix a refused assignment not marking the column as changed, so that a record saved through an association was not validated and the error went unseen (@mshibuya [#2727](https://github.com/carrierwaveuploader/carrierwave/issues/2727))
-* Fix a refused assignment taking the mounted file away, which could delete the stored file where the error is not validated (@mshibuya)
-* Fix a filename carrying a NUL byte raising `ArgumentError`. The byte is now sanitised away like any other (@mshibuya)
-* Fix a filename too long for the filesystem raising `Errno::ENAMETOOLONG`, which is now a `CarrierWave::IntegrityError` and so fails validation (@mshibuya)
-* Fix `SanitizedFile#filename` answering `nil` for a file which carries no name of its own, such as a bare `StringIO`, which raised `TypeError` on caching it. It now gives the same stand-in name a name sanitised away to nothing already gets, leaving `#original_filename` to say whether a name arrived at all (@mshibuya [#1831](https://github.com/carrierwaveuploader/carrierwave/issues/1831))
-* Fix caching a version of a file which was retrieved from the store rather than cached, which raised `InvalidParameter` as it took the cache id of a parent that has none. `#manipulate!` on such a version was broken the same way (@mshibuya, @SergeyProger [#2798](https://github.com/carrierwaveuploader/carrierwave/issues/2798))
-* Fix `#manipulate!` leaving the file named after the old format when the manipulation changed it, so that the extension no longer tells what the file holds (@mshibuya [#2714](https://github.com/carrierwaveuploader/carrierwave/issues/2714))
-* Fix a cache name without a filename, which is what a file cached by something other than the uploader has, pointing at a directory instead of the file. Storing is now refused when the uploader doesn't say what to store it as either (@mshibuya)
-* Fix the cache falling back to the configured storage instead of the one the uploader uses, so that an uploader which picks its storage per file caches where it stores (@mshibuya)
-* Fix obsolete warnings from `URI::RFC3986_PARSER#escape` and `#unescape` (@mshibuya [#2796](https://github.com/carrierwaveuploader/carrierwave/issues/2796))
-* Fix a Fog file being copied onto itself when it is stored to where it already is, which S3 refuses (@mshibuya)
-* Fix `clean_cached_files!` removing files outside the cache directory which merely look like a cache, such as ones under a sibling directory sharing the name as a prefix (@mshibuya)
-* Fix the remove callbacks being run for a mounted column which had no file, when a file is assigned to it on update or when it is removed (@mshibuya)
+* Fix a refused file going unreported when the record is saved through an association, so that the save appeared to succeed without it (@mshibuya [c7cd6e5](https://github.com/carrierwaveuploader/carrierwave/commit/c7cd6e5b994e5e6d22985a8fad43a07f502da02b), [#2727](https://github.com/carrierwaveuploader/carrierwave/issues/2727))
+* Fix assigning a refused file deleting the one which was already stored (@mshibuya [1cfb5f8](https://github.com/carrierwaveuploader/carrierwave/commit/1cfb5f856daae8eb86a1c51db512c61e1e333362))
+* Fix an upload whose filename carries a NUL byte raising `ArgumentError` instead of being accepted (@mshibuya [246ff3b](https://github.com/carrierwaveuploader/carrierwave/commit/246ff3b24d67b9c1891f7b9e13c72a8e9d0eb649))
+* Fix an upload whose filename is longer than the filesystem takes raising `Errno::ENAMETOOLONG`, which now fails validation instead (@mshibuya [c34c0d5](https://github.com/carrierwaveuploader/carrierwave/commit/c34c0d57a18f46eb3159b59f0df85660e36c798c))
+* Fix caching a file which carries no name of its own, such as a bare `StringIO`, raising `TypeError` (@mshibuya [2b0a12e](https://github.com/carrierwaveuploader/carrierwave/commit/2b0a12ee58bd956267534f00617279722a99a2a8), [#1831](https://github.com/carrierwaveuploader/carrierwave/issues/1831))
+* Fix `InvalidParameter` when caching or manipulating a version of a file which came from the store rather than the cache (@mshibuya, @SergeyProger [0d00f7e](https://github.com/carrierwaveuploader/carrierwave/commit/0d00f7ead938b9e3dbdcc67128c7dbe27af29d08), [#2798](https://github.com/carrierwaveuploader/carrierwave/issues/2798))
+* Fix a file keeping its old extension after `#manipulate!` changed its format (@mshibuya [cd0686f](https://github.com/carrierwaveuploader/carrierwave/commit/cd0686f68072625d27c5697ca7e86394e76d1c1f), [#2714](https://github.com/carrierwaveuploader/carrierwave/issues/2714))
+* Fix a cache name which is only a cache id, as a direct upload can leave behind, being taken for a directory instead of the file (@mshibuya [b9f8c62](https://github.com/carrierwaveuploader/carrierwave/commit/b9f8c62a053063181994063f3ed6fb28ac02e8cf))
+* Fix an uploader which picks its storage per file caching somewhere other than where it stores (@mshibuya [81da3b8](https://github.com/carrierwaveuploader/carrierwave/commit/81da3b88c8b34b26d248a1a2f2f1ae0d5f0113ce))
+* Fix obsolete warnings from `URI::RFC3986_PARSER#escape` and `#unescape` (@mshibuya [b3d77e6](https://github.com/carrierwaveuploader/carrierwave/commit/b3d77e6fa1192a99edc1eae170f701b6c708bf63), [#2796](https://github.com/carrierwaveuploader/carrierwave/issues/2796))
+* Fix storing a Fog file to where it already is being refused by S3 (@mshibuya [229fdfc](https://github.com/carrierwaveuploader/carrierwave/commit/229fdfcda55e033989b4dec63f0f61e8a8b46341))
+* Fix `clean_cached_files!` removing files outside the cache directory which merely look like a cache (@mshibuya [f4691e6](https://github.com/carrierwaveuploader/carrierwave/commit/f4691e6f9c76b583c0d0849d5169536b40395f7c))
+* Fix the remove callbacks being run for a mounted column which had no file (@mshibuya [b038f12](https://github.com/carrierwaveuploader/carrierwave/commit/b038f126776cdaa35e2a612fd95c20a88bb9adcc))
 
 ## 4.0.0.beta - 2026-09-07
 
