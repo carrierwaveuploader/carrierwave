@@ -280,6 +280,18 @@ describe CarrierWave::Uploader do
       @uploader.retrieve_from_store!('bork.txt')
       expect(@uploader.file).to eq(@stored_file)
     end
+
+    it "takes an identifier which names a file in a subdirectory of the store dir" do
+      @uploader.retrieve_from_store!('sub/monkey.txt')
+      expect(@uploader.identifier).to eq('sub/monkey.txt')
+    end
+
+    it "refuses an identifier pointing out of the store dir" do
+      ['../secret.txt', 'sub/../../secret.txt', '/tmp/secret.txt'].each do |identifier|
+        expect { @uploader.retrieve_from_store!(identifier) }.to raise_error(CarrierWave::InvalidParameter)
+      end
+      expect(@uploader.file).to be_nil
+    end
   end
 
   describe '#adopt!' do

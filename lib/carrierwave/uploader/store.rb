@@ -115,7 +115,13 @@ module CarrierWave
       #
       # [identifier (String)] uniquely identifies the file to retrieve
       #
+      # === Raises
+      #
+      # [CarrierWave::InvalidParameter] if the identifier points out of the store dir
+      #
       def retrieve_from_store!(identifier)
+        check_identifier!(identifier)
+
         with_callbacks(:retrieve_from_store, identifier) do
           # Has to come first, as the storage derives the path from what was recorded
           # for the identifier
@@ -137,8 +143,8 @@ module CarrierWave
       # [CarrierWave::InvalidParameter] if the identifier points out of the store dir
       #
       def adopt!(identifier)
-        # The file gets removed when replaced, so it must not point out of the store dir
-        raise CarrierWave::InvalidParameter, "invalid identifier" if identifier.start_with?('/') || identifier.split('/').include?('..')
+        # Before the callbacks run, as the file gets removed when replaced
+        check_identifier!(identifier)
 
         with_callbacks(:adopt, identifier) do
           retrieve_from_store!(identifier)
@@ -166,6 +172,18 @@ module CarrierWave
       end
 
     private
+
+      ##
+      # An identifier names a file in the store, so one which climbs out of it is not
+      # something this uploader stored, whatever handed it over: a record whose column
+      # was written by something else, or a caller passing one in.
+      #
+      def check_identifier!(identifier)
+        identifier = identifier.to_s
+        return unless identifier.start_with?('/') || identifier.split('/').include?('..')
+
+        raise CarrierWave::InvalidParameter, "invalid identifier"
+      end
 
       ##
       # A later request gets the identifier and nothing else, so the name the file is

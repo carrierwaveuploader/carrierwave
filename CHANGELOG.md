@@ -5,6 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+* Refuse an identifier which points out of the store dir in `#retrieve_from_store!`, as `#adopt!` already did, so a record whose identifier column was written by something other than CarrierWave cannot name a file elsewhere on the filesystem (reported by Adam Korcz [@AdamKorcz](https://github.com/AdamKorcz), @mshibuya)
+
 ## 4.0.0.rc - 2026-10-12
 
 ### Added
